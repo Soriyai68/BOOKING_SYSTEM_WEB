@@ -1,9 +1,9 @@
 <template>
   <div class="dashboard">
     <!-- Statistics Cards -->
-    <el-row :gutter="24" class="stats-row">
+    <el-row :gutter="24" class="stats-row" >
       <el-col :xs="24" :sm="12" :lg="6">
-        <el-card class="stat-card">
+        <el-card class="stat-card ">
           <div class="stat-content">
             <div class="stat-icon users">
               <el-icon><User /></el-icon>
@@ -273,7 +273,7 @@ onMounted(() => {
 }
 
 .stat-card {
-  height: 120px;
+  height: 140px;
 }
 
 .stat-content {

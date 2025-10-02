@@ -1,5 +1,4 @@
 @import "tailwindcss";
-
 /* Theme Variables */
 :root {
   /* Light Theme Colors */
@@ -18,7 +17,10 @@
   --danger-color: #f56c6c;
   --info-color: #909399;
 }
-
+:root {
+  --font-english: "Poppins", sans-serif;
+  --font-khmer: "Noto Sans Khmer", sans-serif;
+}
 /* Dark Theme Colors */
 [data-theme="dark"],
 .dark {
@@ -37,7 +39,6 @@
   --danger-color: #f56c6c;
   --info-color: #909399;
 }
-
 /* Global Theme Application */
 html {
   background-color: var(--bg-color-secondary);
@@ -108,7 +109,11 @@ body {
   background-color: var(--bg-color-primary) !important;
 }
 
-.dark .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+.dark
+  .el-table--striped
+  .el-table__body
+  tr.el-table__row--striped
+  td.el-table__cell {
   background-color: var(--bg-color-tertiary) !important;
 }
 
@@ -177,4 +182,3 @@ body {
 .theme-border {
   border-color: var(--border-color);
 }
-

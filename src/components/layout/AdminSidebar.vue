@@ -113,12 +113,14 @@ const sidebarBgColor = computed(() => {
 
 const sidebarTextColor = computed(() => {
   return theme.value === "dark"
-    ? "rgba(229, 229, 231, 0.65)"
-    : "rgba(255,255,255,0.65)";
+    ? "rgba(229, 229, 230,1)"
+    : "rgba(255,255,255,0.85)";
 });
 
 const sidebarActiveColor = computed(() => {
-  return theme.value === "dark" ? "#409eff" : "#1890ff";
+  return theme.value === "dark"
+    ? "#3B82F9"
+    : "#1E40AF"
 });
 </script>
 
@@ -127,6 +129,7 @@ const sidebarActiveColor = computed(() => {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 .logo {

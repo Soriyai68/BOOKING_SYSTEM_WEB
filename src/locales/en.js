@@ -97,7 +97,14 @@ export default {
     superadmin: 'Super Admin',
     user: 'User'
   },
-
+  //Seat Managment
+  seats: {
+    title: 'Seat Management',
+    addSeat: 'Add Seat',
+    createSeat: 'Create Seat',
+    editSeat: 'Edit Seat',
+    allSeats: 'All Seats',
+  },
   // Movie Management
   movies: {
     title: 'Movie Management',

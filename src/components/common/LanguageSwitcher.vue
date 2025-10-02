@@ -1,19 +1,23 @@
 <template>
-  <el-dropdown @command="handleLanguageChange" trigger="click" placement="bottom-end">
+  <el-dropdown
+    @command="handleLanguageChange"
+    trigger="click"
+    placement="bottom-end"
+  >
     <el-button text class="language-button">
-      <span class="flag">{{ currentLocaleData.flag }}</span>
+      <img :src="currentLocaleData.flag" alt="" class="flag-icon" />
       <span class="name">{{ currentLocaleData.nativeName }}</span>
       <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
     </el-button>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item 
-          v-for="locale in availableLocales" 
+        <el-dropdown-item
+          v-for="locale in availableLocales"
           :key="locale.code"
           :command="locale.code"
           :class="{ active: currentLocale === locale.code }"
         >
-          <span class="flag">{{ locale.flag }}</span>
+          <img :src="locale.flag" alt="" class="flag-icon" />
           <span class="name">{{ locale.nativeName }}</span>
           <el-icon v-if="currentLocale === locale.code" class="check-icon">
             <Check />
@@ -25,35 +29,38 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { availableLocales, setLanguage } from '@/i18n'
-import { ArrowDown, Check } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { availableLocales, setLanguage } from "@/i18n";
+import { ArrowDown, Check } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 
-const { locale } = useI18n()
+const { locale } = useI18n();
 
-const currentLocale = computed(() => locale.value)
+const currentLocale = computed(() => locale.value);
 
 const currentLocaleData = computed(() => {
-  return availableLocales.find(l => l.code === currentLocale.value) || availableLocales[0]
-})
+  return (
+    availableLocales.find((l) => l.code === currentLocale.value) ||
+    availableLocales[0]
+  );
+});
 
 const handleLanguageChange = (localeCode) => {
-  if (localeCode === currentLocale.value) return
-  
+  if (localeCode === currentLocale.value) return;
+
   try {
-    setLanguage(localeCode)
-    const selectedLocale = availableLocales.find(l => l.code === localeCode)
-    ElMessage.success(`Language changed to ${selectedLocale.nativeName}`)
-    
+    setLanguage(localeCode);
+    const selectedLocale = availableLocales.find((l) => l.code === localeCode);
+    ElMessage.success(`Language changed to ${selectedLocale.nativeName}`);
+
     // Optional: Reload page to ensure all components use new language
     // window.location.reload()
   } catch (error) {
-    ElMessage.error('Failed to change language')
-    console.error('Language change error:', error)
+    ElMessage.error("Failed to change language");
+    console.error("Language change error:", error);
   }
-}
+};
 </script>
 
 <style scoped>
@@ -114,5 +121,16 @@ html[dir="rtl"] .language-button {
 
 html[dir="rtl"] .name {
   text-align: right;
+}
+.flag-icon {
+  width: 20px;
+  height: 14px;
+  object-fit: cover;
+  margin-right: 6px;
+}
+.language-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 </style>

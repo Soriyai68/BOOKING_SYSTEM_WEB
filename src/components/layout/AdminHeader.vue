@@ -61,7 +61,7 @@
             </el-dropdown-item>
             <el-dropdown-item divided command="logout">
               <el-icon><SwitchButton /></el-icon>
-              Logout
+              Log out
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -127,7 +127,7 @@ const handleUserMenuCommand = async (command) => {
           'Are you sure you want to logout?',
           'Confirm Logout',
           {
-            confirmButtonText: 'Yes, Logout',
+            confirmButtonText: 'Yes, Log out.',
             cancelButtonText: 'Cancel',
             type: 'warning'
           }
@@ -166,10 +166,12 @@ const handleUserMenuCommand = async (command) => {
 <style scoped>
 .header-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   height: 100%;
   padding: 0 24px;
+  flex: 1;
+  justify-content: space-between;
+  
 }
 
 .header-left {

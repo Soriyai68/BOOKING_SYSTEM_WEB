@@ -33,17 +33,17 @@ export function setLanguage(locale) {
 // Export available locales
 export const availableLocales = [
   {
-    code: 'en',
-    name: 'English',
-    nativeName: 'English',
-    flag: '🥷'
+    code: "en",
+    name: "English",
+    nativeName: "English",
+    flag: "https://flagcdn.com/us.svg",
   },
   {
-    code: 'kh',
-    name: 'Khmer',
-    nativeName: 'ខ្មែរ',
-    flag: ''
-  }
-]
+    code: "kh",
+    name: "Khmer",
+    nativeName: "ខ្មែរ",
+    flag: "https://flagcdn.com/kh.svg",
+  },
+];
 
 export default i18n
