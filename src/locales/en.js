@@ -1,0 +1,239 @@
+export default {
+  // Navigation and Layout
+  nav: {
+    dashboard: 'Dashboard',
+    users: 'Users',
+    movies: 'Movies',
+    bookings: 'Bookings',
+    settings: 'Settings',
+    logout: 'Logout',
+    profile: 'Profile'
+  },
+
+  // Authentication
+  auth: {
+    login: 'Login',
+    loginTitle: 'Cinema Admin',
+    loginSubtitle: 'Sign in to your admin account',
+    phone: 'Phone Number',
+    phonePlaceholder: 'Phone Number (+855...)',
+    password: 'Password',
+    passwordPlaceholder: 'Password',
+    rememberMe: 'Remember me',
+    signIn: 'Sign In',
+    loginSuccess: 'Login successful!',
+    loginFailed: 'Login failed',
+    invalidCredentials: 'Invalid phone number or password',
+    demoMode: 'Demo Mode',
+    apiConnected: 'API Connected',
+    demoCredentials: 'Demo login: +855123456789 / password123',
+    apiCredentials: 'Connected to backend API. Use your real credentials.',
+    checkingApi: 'Checking API...',
+    testingConnection: 'Testing connection to backend API'
+  },
+
+  // Validation Messages
+  validation: {
+    required: 'This field is required',
+    phoneRequired: 'Please input your phone number',
+    phoneInvalid: 'Please input a valid Cambodian phone number (+855xxxxxxxx)',
+    passwordRequired: 'Please input your password',
+    passwordMin: 'Password must be at least 6 characters',
+    emailRequired: 'Please input your email',
+    emailInvalid: 'Please input a valid email',
+    verified: 'Verified',
+    unverified: 'Unverified'
+  },
+
+  // Dashboard
+  dashboard: {
+    title: 'Dashboard',
+    totalUsers: 'Total Users',
+    totalMovies: 'Total Movies',
+    totalBookings: 'Total Bookings',
+    totalRevenue: 'Total Revenue',
+    bookingTrends: 'Booking Trends',
+    recentActivities: 'Recent Activities',
+    recentBookings: 'Recent Bookings',
+    viewAll: 'View All',
+    thisWeek: 'This Week',
+    thisMonth: 'This Month',
+    thisYear: 'This Year',
+    chartPlaceholder: 'Chart will be displayed here'
+  },
+
+  // User Management
+  users: {
+    title: 'User Management',
+    addUser: 'Add User',
+    createUser: 'Create User',
+    editUser: 'Edit User',
+    allUsers: 'All Users',
+    searchUsers: 'Search users...',
+    filterByStatus: 'Filter by status',
+    name: 'Name',
+    email: 'Email',
+    phone: 'Phone',
+    role: 'Role',
+    status: 'Status',
+    created: 'Created',
+    actions: 'Actions',
+    edit: 'Edit',
+    delete: 'Delete',
+    deleteSelected: 'Delete Selected',
+    confirmDelete: 'Are you sure you want to delete this user?',
+    confirmDeleteMultiple: 'Are you sure you want to delete {count} users?',
+    deleteSuccess: 'User deleted successfully',
+    deleteMultipleSuccess: '{count} users deleted successfully',
+    createSuccess: 'User created successfully',
+    updateUser: 'Update User',
+    updateSuccess: 'User updated successfully',
+    passwordOptional: 'Leave empty to keep current password',
+    isVerified: 'Verified Status',
+    lastLogin: 'Last Login',
+    active: 'Active',
+    inactive: 'Inactive',
+    admin: 'Admin',
+    superadmin: 'Super Admin',
+    user: 'User'
+  },
+
+  // Movie Management
+  movies: {
+    title: 'Movie Management',
+    addMovie: 'Add Movie',
+    createMovie: 'Create Movie',
+    editMovie: 'Edit Movie',
+    allMovies: 'All Movies',
+    searchMovies: 'Search movies...',
+    movieTitle: 'Title',
+    genre: 'Genre',
+    duration: 'Duration',
+    releaseDate: 'Release Date',
+    status: 'Status',
+    poster: 'Poster',
+    trailer: 'Trailer',
+    description: 'Description',
+    rating: 'Rating',
+    language: 'Language',
+    director: 'Director',
+    cast: 'Cast',
+    nowShowing: 'Now Showing',
+    comingSoon: 'Coming Soon',
+    ended: 'Ended'
+  },
+
+  // Booking Management
+  bookings: {
+    title: 'Booking Management',
+    bookingDetails: 'Booking Details',
+    allBookings: 'All Bookings',
+    searchBookings: 'Search bookings...',
+    bookingId: 'Booking ID',
+    customer: 'Customer',
+    movie: 'Movie',
+    showDate: 'Show Date',
+    showTime: 'Show Time',
+    seats: 'Seats',
+    amount: 'Amount',
+    status: 'Status',
+    paymentStatus: 'Payment Status',
+    confirmed: 'Confirmed',
+    pending: 'Pending',
+    cancelled: 'Cancelled',
+    paid: 'Paid',
+    unpaid: 'Unpaid',
+    refunded: 'Refunded'
+  },
+
+  // Settings
+  settings: {
+    title: 'Settings',
+    general: 'General Settings',
+    appearance: 'Appearance',
+    notifications: 'Notifications',
+    security: 'Security',
+    language: 'Language',
+    theme: 'Theme',
+    darkMode: 'Dark Mode',
+    lightMode: 'Light Mode',
+    changePassword: 'Change Password',
+    currentPassword: 'Current Password',
+    newPassword: 'New Password',
+    confirmPassword: 'Confirm Password',
+    updateProfile: 'Update Profile',
+    save: 'Save',
+    cancel: 'Cancel'
+  },
+
+  // Common Actions
+  actions: {
+    add: 'Add',
+    edit: 'Edit',
+    delete: 'Delete',
+    save: 'Save',
+    cancel: 'Cancel',
+    submit: 'Submit',
+    reset: 'Reset',
+    search: 'Search',
+    filter: 'Filter',
+    export: 'Export',
+    import: 'Import',
+    refresh: 'Refresh',
+    back: 'Go Back',
+    next: 'Next',
+    previous: 'Previous',
+    close: 'Close',
+    confirm: 'Confirm',
+    view: 'View',
+    download: 'Download',
+    upload: 'Upload'
+  },
+
+  // Status Messages
+  messages: {
+    success: 'Operation completed successfully',
+    error: 'An error occurred',
+    warning: 'Warning',
+    info: 'Information',
+    loading: 'Loading...',
+    noData: 'No data available',
+    networkError: 'Network error. Please check your connection.',
+    serverError: 'Server error. Please try again later.',
+    validationFailed: 'Validation failed',
+    accessDenied: 'Access denied. You don\'t have permission.',
+    sessionExpired: 'Session expired. Please login again.',
+    tooManyRequests: 'Too many requests. Please try again later.'
+  },
+
+  // Table and Pagination
+  table: {
+    total: 'Total',
+    showing: 'Showing',
+    to: 'to',
+    of: 'of',
+    entries: 'entries',
+    noResults: 'No results found',
+    perPage: 'per page',
+    page: 'Page',
+    first: 'First',
+    last: 'Last',
+    sortBy: 'Sort by',
+    selectAll: 'Select all',
+    selected: 'selected'
+  },
+
+  // Date and Time
+  datetime: {
+    today: 'Today',
+    yesterday: 'Yesterday',
+    tomorrow: 'Tomorrow',
+    thisWeek: 'This week',
+    thisMonth: 'This month',
+    thisYear: 'This year',
+    now: 'Now',
+    minutesAgo: '{count} minutes ago',
+    hoursAgo: '{count} hours ago',
+    daysAgo: '{count} days ago'
+  }
+}

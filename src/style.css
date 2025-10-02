@@ -1,2 +1,180 @@
 @import "tailwindcss";
 
+/* Theme Variables */
+:root {
+  /* Light Theme Colors */
+  --bg-color-primary: #ffffff;
+  --bg-color-secondary: #f5f7fa;
+  --bg-color-tertiary: #fafbfc;
+  --text-color-primary: #303133;
+  --text-color-secondary: #606266;
+  --text-color-tertiary: #909399;
+  --border-color: #dcdfe6;
+  --border-color-light: #e4e7ed;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --primary-color: #1890ff;
+  --success-color: #67c23a;
+  --warning-color: #e6a23c;
+  --danger-color: #f56c6c;
+  --info-color: #909399;
+}
+
+/* Dark Theme Colors */
+[data-theme="dark"],
+.dark {
+  --bg-color-primary: #1d1d1f;
+  --bg-color-secondary: #2d2d30;
+  --bg-color-tertiary: #3d3d40;
+  --text-color-primary: #ffffff;
+  --text-color-secondary: #e5e5e7;
+  --text-color-tertiary: #a1a1a6;
+  --border-color: #48484a;
+  --border-color-light: #58585a;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --primary-color: #409eff;
+  --success-color: #67c23a;
+  --warning-color: #e6a23c;
+  --danger-color: #f56c6c;
+  --info-color: #909399;
+}
+
+/* Global Theme Application */
+html {
+  background-color: var(--bg-color-secondary);
+  color: var(--text-color-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body {
+  background-color: var(--bg-color-secondary);
+  color: var(--text-color-primary);
+  margin: 0;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Element Plus Dark Theme Override */
+.dark .el-card {
+  background-color: var(--bg-color-primary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color-primary) !important;
+}
+
+.dark .el-input__wrapper {
+  background-color: var(--bg-color-tertiary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color-primary) !important;
+}
+
+.dark .el-input__inner {
+  background-color: transparent !important;
+  color: var(--text-color-primary) !important;
+}
+
+.dark .el-menu {
+  background-color: var(--bg-color-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dark .el-menu-item {
+  color: var(--text-color-secondary) !important;
+}
+
+.dark .el-menu-item:hover {
+  background-color: var(--bg-color-tertiary) !important;
+  color: var(--text-color-primary) !important;
+}
+
+.dark .el-menu-item.is-active {
+  color: var(--primary-color) !important;
+  background-color: var(--bg-color-tertiary) !important;
+}
+
+.dark .el-table {
+  background-color: var(--bg-color-primary) !important;
+  color: var(--text-color-primary) !important;
+}
+
+.dark .el-table th.el-table__cell {
+  background-color: var(--bg-color-secondary) !important;
+  color: var(--text-color-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dark .el-table td.el-table__cell {
+  border-color: var(--border-color) !important;
+}
+
+.dark .el-table tr {
+  background-color: var(--bg-color-primary) !important;
+}
+
+.dark .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background-color: var(--bg-color-tertiary) !important;
+}
+
+.dark .el-button {
+  border-color: var(--border-color) !important;
+}
+
+.dark .el-button--default {
+  background-color: var(--bg-color-primary) !important;
+  color: var(--text-color-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dark .el-button--default:hover {
+  background-color: var(--bg-color-tertiary) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+.dark .el-select {
+  background-color: var(--bg-color-primary) !important;
+}
+
+.dark .el-select .el-input__wrapper {
+  background-color: var(--bg-color-tertiary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dark .el-popper {
+  background-color: var(--bg-color-primary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color-primary) !important;
+}
+
+.dark .el-dropdown-menu {
+  background-color: var(--bg-color-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dark .el-dropdown-menu__item {
+  color: var(--text-color-primary) !important;
+}
+
+.dark .el-dropdown-menu__item:hover {
+  background-color: var(--bg-color-tertiary) !important;
+  color: var(--primary-color) !important;
+}
+
+/* Custom Theme Classes */
+.theme-bg-primary {
+  background-color: var(--bg-color-primary);
+}
+
+.theme-bg-secondary {
+  background-color: var(--bg-color-secondary);
+}
+
+.theme-text-primary {
+  color: var(--text-color-primary);
+}
+
+.theme-text-secondary {
+  color: var(--text-color-secondary);
+}
+
+.theme-border {
+  border-color: var(--border-color);
+}
+

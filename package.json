@@ -1,23 +1,32 @@
 {
-  "name": "frontend_movie_booking",
+  "name": "cinema-admin-dashboard",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Cinema Admin Dashboard built with Vue 3, Element Plus, and Vite",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.2.0",
     "@tailwindcss/vite": "^4.1.13",
+    "@vueuse/core": "^13.9.0",
     "axios": "^1.12.0",
+    "element-plus": "^2.11.4",
+    "lodash-es": "^4.17.21",
+    "pinia": "^3.0.3",
     "vue": "^3.5.18",
+    "vue-i18n": "^9.14.5",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
+    "unplugin-auto-import": "^20.2.0",
+    "unplugin-vue-components": "^29.1.0",
     "vite": "^7.1.2"
   }
 }
