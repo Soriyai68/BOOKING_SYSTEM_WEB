@@ -11,15 +11,16 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import { useAppStore } from '@/stores/app'
+import { onMounted } from "vue";
+import { useAppStore } from "@/stores/app";
+import { useI18n } from "vue-i18n";
 
-const appStore = useAppStore()
-
+const appStore = useAppStore();
+const { t } = useI18n();
 onMounted(() => {
   appStore.setBreadcrumbs([
-    { title: 'Dashboard', path: '/admin/dashboard' },
-    { title: 'Movies', path: '/admin/movies' }
-  ])
-})
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("movies.title"), path: "/admin/movies" },
+  ]);
+});
 </script>

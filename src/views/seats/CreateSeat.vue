@@ -2,9 +2,9 @@
   <div class="create-seat">
     <!-- Page Header -->
     <div class="page-header">
-      <h2>{{ $t('seats.addSeat') }}</h2>
+      <h2>{{ $t("seats.addSeat") }}</h2>
       <el-button @click="$router.back()">
-        {{ $t('actions.back') }}
+        {{ $t("actions.back") }}
       </el-button>
     </div>
 
@@ -22,13 +22,13 @@
             <el-form-item :label="$t('seats.row')" prop="row">
               <el-input
                 v-model="form.row"
-                :placeholder="$t('seats.rowPlaceholder')"
+                :placeholder="$t('seats.row')"
                 maxlength="5"
                 show-word-limit
                 @input="form.row = form.row.toUpperCase()"
               />
               <div class="form-help">
-                {{ $t('seats.rowHelp') }}
+                {{ $t("seats.rowHelp") }}
               </div>
             </el-form-item>
           </el-col>
@@ -37,13 +37,15 @@
             <el-form-item :label="$t('seats.seatNumber')" prop="seat_number">
               <el-input
                 v-model="form.seat_number"
-                :placeholder="$t('seats.seatNumberPlaceholder')"
+                :placeholder="$t('seats.seatNumber')"
                 maxlength="10"
                 show-word-limit
-                @input="form.seat_number = form.seat_number.toString().toUpperCase()"
+                @input="
+                  form.seat_number = form.seat_number.toString().toUpperCase()
+                "
               />
               <div class="form-help">
-                {{ $t('seats.seatNumberHelp') }}
+                {{ $t("seats.seatNumberHelp") }}
               </div>
             </el-form-item>
           </el-col>
@@ -61,7 +63,7 @@
                 />
               </el-select>
               <div class="form-help">
-                {{ $t('seats.typeHelp') }}
+                {{ $t("seats.typeHelp") }}
               </div>
             </el-form-item>
           </el-col>
@@ -74,39 +76,35 @@
                 :inactive-text="$t('common.unavailable')"
               />
               <div class="form-help">
-                {{ $t('seats.availabilityHelp') }}
+                {{ $t("seats.availabilityHelp") }}
               </div>
             </el-form-item>
           </el-col>
         </el-row>
 
         <!-- Preview -->
-        <el-divider>{{ $t('seats.preview') }}</el-divider>
+        <el-divider>{{ $t("seats.preview") }}</el-divider>
         <div class="seat-preview">
           <div class="preview-item">
-            <span class="preview-label">{{ $t('seats.seatIdentifier') }}:</span>
+            <span class="preview-label">{{ $t("seats.seatIdentifier") }}:</span>
             <span class="preview-value">{{ seatIdentifier }}</span>
           </div>
           <div class="preview-item">
-            <span class="preview-label">{{ $t('seats.displayName') }}:</span>
+            <span class="preview-label">{{ $t("seats.displayName") }}:</span>
             <span class="preview-value">{{ displayName }}</span>
           </div>
         </div>
 
         <!-- Form Actions -->
         <el-form-item>
-          <el-button
-            type="primary"
-            @click="handleSubmit"
-            :loading="loading"
-          >
-            {{ $t('seats.createSeat') }}
+          <el-button type="primary" @click="handleSubmit" :loading="loading">
+            {{ $t("seats.createSeat") }}
           </el-button>
           <el-button @click="resetForm">
-            {{ $t('actions.reset') }}
+            {{ $t("actions.reset") }}
           </el-button>
           <el-button @click="$router.back()">
-            {{ $t('actions.cancel') }}
+            {{ $t("actions.cancel") }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -115,109 +113,118 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { ElMessage } from 'element-plus'
-import { seatService } from '@/services/seatService'
-import { useAppStore } from '@/stores/app'
+import { ref, reactive, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
+import { seatService } from "@/services/seatService";
+import { useAppStore } from "@/stores/app";
 
-const { t } = useI18n()
-const router = useRouter()
-const appStore = useAppStore()
+const { t } = useI18n();
+const router = useRouter();
+const appStore = useAppStore();
 
 // Form reference
-const formRef = ref()
-const loading = ref(false)
+const formRef = ref();
+const loading = ref(false);
 
 // Form data
 const form = reactive({
-  row: '',
-  seat_number: '',
-  seat_type: 'regular',
-  is_available: true
-})
+  row: "",
+  seat_number: "",
+  seat_type: "regular",
+  is_available: true,
+});
 
 // Seat types
 const seatTypes = ref([
-  { value: 'regular', label: 'Regular' },
-  { value: 'vip', label: 'VIP' },
-  { value: 'couple', label: 'Couple' },
-  { value: 'king', label: 'King' },
-  { value: 'queen', label: 'Queen' }
-])
+  { value: "regular", label: "Regular" },
+  { value: "vip", label: "VIP" },
+  { value: "couple", label: "Couple" },
+  { value: "queen", label: "Queen" },
+]);
 
 // Form validation rules
 const rules = {
   row: [
-    { required: true, message: t('validation.required'), trigger: 'blur' },
-    { min: 1, max: 5, message: 'Row must be between 1 and 5 characters', trigger: 'blur' }
+    { required: true, message: t("validation.required"), trigger: "blur" },
+    {
+      min: 1,
+      max: 5,
+      message: "Row must be between 1 and 5 characters",
+      trigger: "blur",
+    },
   ],
   seat_number: [
-    { required: true, message: t('validation.required'), trigger: 'blur' },
-    { min: 1, max: 10, message: 'Seat number must be between 1 and 10 characters', trigger: 'blur' }
+    { required: true, message: t("validation.required"), trigger: "blur" },
+    {
+      min: 1,
+      max: 10,
+      message: "Seat number must be between 1 and 10 characters",
+      trigger: "blur",
+    },
   ],
   seat_type: [
-    { required: true, message: t('validation.required'), trigger: 'change' }
-  ]
-}
+    { required: true, message: t("validation.required"), trigger: "change" },
+  ],
+};
 
 // Computed properties
 const seatIdentifier = computed(() => {
-  return form.row && form.seat_number ? `${form.row}${form.seat_number}` : '-'
-})
+  return form.row && form.seat_number ? `${form.row}${form.seat_number}` : "-";
+});
 
 const displayName = computed(() => {
-  return form.row && form.seat_number && form.seat_type 
-    ? `Seat ${form.row}${form.seat_number} (${form.seat_type})` 
-    : '-'
-})
+  return form.row && form.seat_number && form.seat_type
+    ? `Seat ${form.row}${form.seat_number} (${form.seat_type})`
+    : "-";
+});
 
 // Methods
 const handleSubmit = async () => {
-  if (!formRef.value) return
-  
-  try {
-    await formRef.value.validate()
-    loading.value = true
+  if (!formRef.value) return;
 
-    await seatService.createSeat(form)
-    
-    ElMessage.success(t('seats.createSuccess') || 'Seat created successfully')
-    router.push('/admin/seats')
+  try {
+    await formRef.value.validate();
+    loading.value = true;
+
+    await seatService.createSeat(form);
+
+    ElMessage.success(t("seats.createSuccess") || "Seat created successfully");
+    router.push("/admin/seats");
   } catch (error) {
-    console.error('Create seat error:', error)
-    
+    console.error("Create seat error:", error);
+
     if (error.response?.data?.message) {
-      ElMessage.error(error.response.data.message)
+      ElMessage.error(error.response.data.message);
     } else {
-      ElMessage.error('Failed to create seat')
+      ElMessage.error("Failed to create seat");
     }
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const resetForm = () => {
   if (formRef.value) {
-    formRef.value.resetFields()
+    formRef.value.resetFields();
   }
-  
+
   Object.assign(form, {
-    row: '',
-    seat_number: '',
-    seat_type: 'regular',
-    is_available: true
-  })
-}
+    row: "",
+    seat_number: "",
+    seat_type: "regular",
+    is_available: true,
+  });
+};
 
 onMounted(() => {
   appStore.setBreadcrumbs([
-    { title: t('nav.dashboard'), path: '/admin/dashboard' },
-    { title: t('seats.title'), path: '/admin/seats' },
-    { title: t('seats.addSeat'), path: '#' }
-  ])
-})
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("seats.title"), path: "/admin/seats" },
+    { title: t("seats.addSeat"), path: "/admin/seats/create" },
+  ]);
+});
 </script>
 
 <style scoped>

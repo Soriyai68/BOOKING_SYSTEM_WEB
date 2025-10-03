@@ -2,9 +2,10 @@
   <div class="edit-seat">
     <!-- Page Header -->
     <div class="page-header">
-      <h2>{{ $t('seats.editSeat') }}</h2>
+      <h2>{{ $t("seats.editSeat") }}</h2>
       <el-button @click="$router.back()">
-        {{ $t('actions.back') }}
+        <el-icon><ArrowLeft /></el-icon>
+        {{ $t("actions.back") }}
       </el-button>
     </div>
 
@@ -27,7 +28,7 @@
     <el-card v-else shadow="never">
       <!-- Original Seat Info -->
       <div v-if="originalSeat" class="original-info">
-        <h4>{{ $t('seats.originalInfo') }}</h4>
+        <h4>{{ $t("seats.originalInfo") }}</h4>
         <el-descriptions :column="3" size="small" border>
           <el-descriptions-item :label="$t('seats.seatId')">
             {{ originalSeat.seat_identifier }}
@@ -64,7 +65,7 @@
                 @input="form.row = form.row.toUpperCase()"
               />
               <div class="form-help">
-                {{ $t('seats.rowHelp') }}
+                {{ $t("seats.rowHelp") }}
               </div>
             </el-form-item>
           </el-col>
@@ -76,10 +77,12 @@
                 :placeholder="$t('seats.seatNumberPlaceholder')"
                 maxlength="10"
                 show-word-limit
-                @input="form.seat_number = form.seat_number.toString().toUpperCase()"
+                @input="
+                  form.seat_number = form.seat_number.toString().toUpperCase()
+                "
               />
               <div class="form-help">
-                {{ $t('seats.seatNumberHelp') }}
+                {{ $t("seats.seatNumberHelp") }}
               </div>
             </el-form-item>
           </el-col>
@@ -97,7 +100,7 @@
                 />
               </el-select>
               <div class="form-help">
-                {{ $t('seats.typeHelp') }}
+                {{ $t("seats.typeHelp") }}
               </div>
             </el-form-item>
           </el-col>
@@ -113,7 +116,7 @@
                 />
               </el-select>
               <div class="form-help">
-                {{ $t('seats.statusHelp') }}
+                {{ $t("seats.statusHelp") }}
               </div>
             </el-form-item>
           </el-col>
@@ -130,7 +133,7 @@
                 style="width: 100%"
               />
               <div class="form-help">
-                {{ $t('seats.priceHelp') }}
+                {{ $t("seats.priceHelp") }}
               </div>
             </el-form-item>
           </el-col>
@@ -143,7 +146,7 @@
                 :inactive-text="$t('common.unavailable')"
               />
               <div class="form-help">
-                {{ $t('seats.availabilityHelp') }}
+                {{ $t("seats.availabilityHelp") }}
               </div>
             </el-form-item>
           </el-col>
@@ -157,7 +160,7 @@
                 :placeholder="$t('seats.theaterIdPlaceholder')"
               />
               <div class="form-help">
-                {{ $t('seats.theaterIdHelp') }}
+                {{ $t("seats.theaterIdHelp") }}
               </div>
             </el-form-item>
           </el-col>
@@ -169,7 +172,7 @@
                 :placeholder="$t('seats.screenIdPlaceholder')"
               />
               <div class="form-help">
-                {{ $t('seats.screenIdHelp') }}
+                {{ $t("seats.screenIdHelp") }}
               </div>
             </el-form-item>
           </el-col>
@@ -185,44 +188,40 @@
             show-word-limit
           />
           <div class="form-help">
-            {{ $t('seats.notesHelp') }}
+            {{ $t("seats.notesHelp") }}
           </div>
         </el-form-item>
 
         <!-- Preview -->
-        <el-divider>{{ $t('seats.preview') }}</el-divider>
+        <el-divider>{{ $t("seats.preview") }}</el-divider>
         <div class="seat-preview">
           <div class="preview-item">
-            <span class="preview-label">{{ $t('seats.seatIdentifier') }}:</span>
+            <span class="preview-label">{{ $t("seats.seatIdentifier") }}:</span>
             <span class="preview-value">{{ seatIdentifier }}</span>
           </div>
           <div class="preview-item">
-            <span class="preview-label">{{ $t('seats.displayName') }}:</span>
+            <span class="preview-label">{{ $t("seats.displayName") }}:</span>
             <span class="preview-value">{{ displayName }}</span>
           </div>
         </div>
 
         <!-- Form Actions -->
         <el-form-item>
-          <el-button
-            type="primary"
-            @click="handleSubmit"
-            :loading="loading"
-          >
-            {{ $t('seats.updateSeat') }}
+          <el-button type="primary" @click="handleSubmit" :loading="loading">
+            {{ $t("seats.updateSeat") }}
           </el-button>
           <el-button @click="resetForm">
-            {{ $t('actions.reset') }}
+            {{ $t("actions.reset") }}
           </el-button>
           <el-button @click="$router.back()">
-            {{ $t('actions.cancel') }}
+            {{ $t("actions.cancel") }}
           </el-button>
           <el-button
             type="danger"
             @click="handleDelete"
             v-if="originalSeat && !originalSeat.deleted_at"
           >
-            {{ $t('seats.deleteSeat') }}
+            {{ $t("seats.deleteSeat") }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -231,194 +230,218 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { seatService } from '@/services/seatService'
-import { useAppStore } from '@/stores/app'
+import { ref, reactive, computed, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { seatService } from "@/services/seatService";
+import { useAppStore } from "@/stores/app";
+import { ArrowLeft } from "@element-plus/icons-vue";
 
-const { t } = useI18n()
-const router = useRouter()
-const route = useRoute()
-const appStore = useAppStore()
+const { t } = useI18n();
+const router = useRouter();
+const route = useRoute();
+const appStore = useAppStore();
 
 // Form reference
-const formRef = ref()
-const loading = ref(false)
-const pageLoading = ref(false)
-const loadError = ref('')
-const originalSeat = ref(null)
+const formRef = ref();
+const loading = ref(false);
+const pageLoading = ref(false);
+const loadError = ref("");
+const originalSeat = ref(null);
 
 // Form data
 const form = reactive({
-  row: '',
-  seat_number: '',
-  seat_type: 'regular',
-  is_available: true
-})
+  row: "",
+  seat_number: "",
+  seat_type: "regular",
+  is_available: true,
+});
 
 // Seat types
 const seatTypes = ref([
-  { value: 'regular', label: 'Regular' },
-  { value: 'vip', label: 'VIP' },
-  { value: 'couple', label: 'Couple' },
-  { value: 'king', label: 'King' },
-  { value: 'queen', label: 'Queen' }
-])
+  { value: "regular", label: "Regular" },
+  { value: "vip", label: "VIP" },
+  { value: "couple", label: "Couple" },
+  { value: "king", label: "King" },
+  { value: "queen", label: "Queen" },
+]);
 
 // Form validation rules
 const rules = {
   row: [
-    { required: true, message: t('validation.required'), trigger: 'blur' },
-    { min: 1, max: 5, message: 'Row must be between 1 and 5 characters', trigger: 'blur' },
-    { pattern: /^[A-Z][A-Z0-9]*$/, message: 'Row must start with a letter and contain only letters and numbers', trigger: 'blur' }
+    { required: true, message: t("validation.required"), trigger: "blur" },
+    {
+      min: 1,
+      max: 5,
+      message: "Row must be between 1 and 5 characters",
+      trigger: "blur",
+    },
+    {
+      pattern: /^[A-Z][A-Z0-9]*$/,
+      message:
+        "Row must start with a letter and contain only letters and numbers",
+      trigger: "blur",
+    },
   ],
   seat_number: [
-    { required: true, message: t('validation.required'), trigger: 'blur' },
-    { min: 1, max: 10, message: 'Seat number must be between 1 and 10 characters', trigger: 'blur' },
-    { pattern: /^[A-Z0-9]+$/, message: 'Seat number must contain only letters and numbers', trigger: 'blur' }
+    { required: true, message: t("validation.required"), trigger: "blur" },
+    {
+      min: 1,
+      max: 10,
+      message: "Seat number must be between 1 and 10 characters",
+      trigger: "blur",
+    },
+    {
+      pattern: /^[A-Z0-9]+$/,
+      message: "Seat number must contain only letters and numbers",
+      trigger: "blur",
+    },
   ],
   seat_type: [
-    { required: true, message: t('validation.required'), trigger: 'change' }
+    { required: true, message: t("validation.required"), trigger: "change" },
   ],
   status: [
-    { required: true, message: t('validation.required'), trigger: 'change' }
+    { required: true, message: t("validation.required"), trigger: "change" },
   ],
   price: [
-    { type: 'number', min: 0, message: 'Price must be greater than or equal to 0', trigger: 'blur' }
-  ]
-}
+    {
+      type: "number",
+      min: 0,
+      message: "Price must be greater than or equal to 0",
+      trigger: "blur",
+    },
+  ],
+};
 
 // Computed properties
 const seatIdentifier = computed(() => {
-  return form.row && form.seat_number ? `${form.row}${form.seat_number}` : '-'
-})
+  return form.row && form.seat_number ? `${form.row}${form.seat_number}` : "-";
+});
 
 const displayName = computed(() => {
-  return form.row && form.seat_number && form.seat_type 
-    ? `Seat ${form.row}${form.seat_number} (${form.seat_type})` 
-    : '-'
-})
+  return form.row && form.seat_number && form.seat_type
+    ? `Seat ${form.row}${form.seat_number} (${form.seat_type})`
+    : "-";
+});
 
 // Load seat data
 const loadSeat = async () => {
-  const seatId = route.params.id
+  const seatId = route.params.id;
   if (!seatId) {
-    loadError.value = 'Seat ID is missing'
-    return
+    loadError.value = "Seat ID is missing";
+    return;
   }
 
-  pageLoading.value = true
-  loadError.value = ''
-  
+  pageLoading.value = true;
+  loadError.value = "";
+
   try {
-    const seatData = await seatService.getSeat(seatId)
-    originalSeat.value = seatData
-    
+    const seatData = await seatService.getSeat(seatId);
+    originalSeat.value = seatData;
+
     // Populate form with seat data
     Object.assign(form, {
-      row: seatData.row || '',
-      seat_number: seatData.seat_number || '',
-      seat_type: seatData.seat_type || 'regular',
-      is_available: seatData.is_available ?? true
-    })
-    
+      row: seatData.row || "",
+      seat_number: seatData.seat_number || "",
+      seat_type: seatData.seat_type || "regular",
+      is_available: seatData.is_available ?? true,
+    });
   } catch (error) {
-    console.error('Load seat error:', error)
-    loadError.value = error.response?.data?.message || 'Failed to load seat data'
+    console.error("Load seat error:", error);
+    loadError.value =
+      error.response?.data?.message || "Failed to load seat data";
   } finally {
-    pageLoading.value = false
+    pageLoading.value = false;
   }
-}
+};
 
 // Submit form
 const handleSubmit = async () => {
-  if (!formRef.value) return
-  
-  try {
-    await formRef.value.validate()
-    loading.value = true
+  if (!formRef.value) return;
 
-    await seatService.updateSeat(route.params.id, form)
-    
-    ElMessage.success(t('seats.updateSuccess') || 'Seat updated successfully')
-    router.push('/admin/seats')
+  try {
+    await formRef.value.validate();
+    loading.value = true;
+
+    await seatService.updateSeat(route.params.id, form);
+
+    ElMessage.success(t("seats.updateSuccess") || "Seat updated successfully");
+    router.push("/admin/seats");
   } catch (error) {
-    console.error('Update seat error:', error)
-    
+    console.error("Update seat error:", error);
+
     if (error.response?.data?.message) {
-      ElMessage.error(error.response.data.message)
+      ElMessage.error(error.response.data.message);
     } else {
-      ElMessage.error('Failed to update seat')
+      ElMessage.error("Failed to update seat");
     }
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // Delete seat
 const handleDelete = async () => {
   try {
     await ElMessageBox.confirm(
-      t('seats.confirmDelete'),
-      t('seats.deleteSeat'),
+      t("seats.confirmDelete"),
+      t("seats.deleteSeat"),
       {
-        confirmButtonText: t('seats.deleteSeat'),
-        cancelButtonText: t('actions.cancel'),
-        type: 'warning'
+        confirmButtonText: t("seats.deleteSeat"),
+        cancelButtonText: t("actions.cancel"),
+        type: "warning",
       }
-    )
-    
-    await seatService.deleteSeat(route.params.id)
-    ElMessage.success(t('seats.deleteSuccess'))
-    router.push('/admin/seats')
-    
+    );
+
+    await seatService.deleteSeat(route.params.id);
+    ElMessage.success(t("seats.deleteSuccess"));
+    router.push("/admin/seats");
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('Delete seat error:', error)
-      ElMessage.error('Failed to delete seat')
+    if (error !== "cancel") {
+      console.error("Delete seat error:", error);
+      ElMessage.error("Failed to delete seat");
     }
   }
-}
+};
 
 // Reset form to original data
 const resetForm = () => {
   if (originalSeat.value) {
     Object.assign(form, {
-      row: originalSeat.value.row || '',
-      seat_number: originalSeat.value.seat_number || '',
-      seat_type: originalSeat.value.seat_type || 'regular',
-      is_available: originalSeat.value.is_available ?? true
-    })
+      row: originalSeat.value.row || "",
+      seat_number: originalSeat.value.seat_number || "",
+      seat_type: originalSeat.value.seat_type || "regular",
+      is_available: originalSeat.value.is_available ?? true,
+    });
   }
-  
+
   if (formRef.value) {
-    formRef.value.clearValidate()
+    formRef.value.clearValidate();
   }
-}
+};
 
 // Format date utility
 const formatDate = (dateString) => {
-  if (!dateString) return '-'
-  return new Date(dateString).toLocaleDateString()
-}
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleDateString();
+};
 
 // Format date and time
 const formatDateTime = (dateString) => {
-  if (!dateString) return '-'
-  return new Date(dateString).toLocaleString()
-}
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleString();
+};
 
 onMounted(async () => {
-  await loadSeat()
-  
+  await loadSeat();
+
   appStore.setBreadcrumbs([
-    { title: t('nav.dashboard'), path: '/admin/dashboard' },
-    { title: t('seats.title'), path: '/admin/seats' },
-    { title: t('seats.editSeat'), path: '#' }
-  ])
-})
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("seats.title"), path: "/admin/seats" },
+    { title: t("seats.editSeat"), path: "#" },
+  ]);
+});
 </script>
 
 <style scoped>

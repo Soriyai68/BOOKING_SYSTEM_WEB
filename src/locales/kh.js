@@ -1,3 +1,5 @@
+import { More } from "@element-plus/icons-vue";
+
 export default {
   // Navigation and Layout
   nav: {
@@ -6,13 +8,14 @@ export default {
     movies: "ភាពយន្ត",
     bookings: "ការកក់",
     settings: "ការកំណត់",
-    logout: "ចេញ",
+    logout: "ចាកចេញ",
     profile: "ប្រវត្តិរូប",
   },
 
   // Authentication
   auth: {
     login: "ចូលប្រព័ន្ធ",
+    logout: "​ចេញពីប្រព័ន្ធ",
     loginTitle: "គ្រប់គ្រងរោងកុន",
     loginSubtitle: "ចូលក្នុងគណនីរបស់អ្នក",
     phone: "លេខទូរសព្ទ",
@@ -63,11 +66,41 @@ export default {
   },
   // Seat Management
   seats: {
+    indentifier: "អត្តសញ្ញាណកៅអី",
     title: "គ្រប់គ្រងកៅអី",
     addSeat: "បន្ថែមកៅអី",
     createSeat: "បង្កើតកៅអី",
     editSeat: "កែសម្រួលកៅអី",
     allSeats: "កៅអីទាំងអស់",
+    row: "ជួរ",
+    type: "ប្រភេទកៅអី",
+    status: "ស្ថានភាព",
+    price: "តម្លៃ",
+    available: "អាចប្រើបាន",
+    searchSeats: "ស្វែងរកកៅអី...",
+    actions: "សកម្មភាព",
+    edit: "កែសម្រួល",
+    delete: "លុប",
+    updateStatus: "កែស្ថានភាព",
+    seatNumber: "លេខកៅអី",
+    seatType: "ប្រភេទកៅអី",
+    availability: "ភាពអាចប្រើប្រាស់បាន",
+    unvailable: "មិនអាចប្រើប្រាស់បាន",
+    available: "អាចប្រើប្រាស់បាន",
+    created: "បានបង្កើត",
+    preview: "ពិនិត្យមើល",
+    types: {
+      regular: "Regular",
+      vip: "VIP",
+      couple: "Couple",
+      queen: "Queen",
+    },
+    statuses: {
+      active: "អាចកក់បាន",
+      maintenance: "កំពុងជួសជុល",
+      out_of_order: "មិនអាចប្រើបានជាបណ្តោះអាសន្ន",
+      reserved: "បានកក់",
+    },
   },
   // User Management
   users: {
@@ -80,10 +113,10 @@ export default {
     filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
     name: "ឈ្មោះ",
     email: "អ៊ីមែល",
-    phone: "ទូរសព្ទ",
+    phone: "ទូរស័ព្ទ",
     role: "តួនាទី",
     status: "ស្ថានភាព",
-    created: "បង្កើត",
+    created: "បានបង្កើត",
     actions: "សកម្មភាព",
     edit: "កែសម្រួល",
     delete: "លុប",
@@ -195,6 +228,7 @@ export default {
     view: "មើល",
     download: "ទាញយក",
     upload: "បញ្ជូន",
+    more: "ផ្សេងៗ",
   },
 
   // Status Messages

@@ -2,14 +2,14 @@
   <div class="seats-list">
     <!-- Page Header -->
     <div class="page-header">
-      <h2>{{ $t('seats.title') }}</h2>
-      <el-button 
-        type="primary" 
-        :icon="Plus" 
+      <h2>{{ $t("seats.title") }}</h2>
+      <el-button
+        type="primary"
+        :icon="Plus"
         @click="$router.push('/admin/seats/create')"
         v-if="authStore.isAdmin"
       >
-        {{ $t('seats.addSeat') }}
+        {{ $t("seats.addSeat") }}
       </el-button>
     </div>
 
@@ -19,18 +19,18 @@
         <el-form-item>
           <el-input
             v-model="filters.search"
-            :placeholder="$t('seats.searchPlaceholder')"
+            :placeholder="$t('seats.searchSeats')"
             :prefix-icon="Search"
             clearable
             @keyup.enter="loadSeats"
             @clear="loadSeats"
           />
         </el-form-item>
-        
+
         <el-form-item>
           <el-select
             v-model="filters.seat_type"
-            :placeholder="$t('seats.selectType')"
+            :placeholder="$t('seats.filterByType')"
             clearable
           >
             <el-option
@@ -45,7 +45,7 @@
         <el-form-item>
           <el-select
             v-model="filters.status"
-            :placeholder="$t('seats.selectStatus')"
+            :placeholder="$t('seats.filterByStatus')"
             clearable
           >
             <el-option
@@ -60,7 +60,7 @@
         <el-form-item>
           <el-select
             v-model="filters.is_available"
-            :placeholder="$t('seats.selectAvailability')"
+            :placeholder="$t('seats.filterByAvailability')"
             clearable
           >
             <el-option :label="$t('common.available')" value="true" />
@@ -70,10 +70,10 @@
 
         <el-form-item>
           <el-button type="primary" @click="loadSeats" :loading="loading">
-            {{ $t('actions.search') }}
+            {{ $t("actions.search") }}
           </el-button>
           <el-button @click="resetFilters">
-            {{ $t('actions.reset') }}
+            {{ $t("actions.reset") }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -85,15 +85,23 @@
         :data="seats"
         v-loading="loading"
         :element-loading-text="$t('common.loading')"
-        empty-text="No seats found"
+        :empty-text="$t('messages.noData')"
         row-key="id"
       >
-        <el-table-column prop="seat_identifier" :label="$t('seats.seatId')" width="100" />
-        
+        <el-table-column
+          prop="seat_identifier"
+          :label="$t('seats.indentifier')"
+          width="150"
+        />
+
         <el-table-column prop="row" :label="$t('seats.row')" width="80" />
-        
-        <el-table-column prop="seat_number" :label="$t('seats.seatNumber')" width="100" />
-        
+
+        <el-table-column
+          prop="seat_number"
+          :label="$t('seats.seatNumber')"
+          width="120"
+        />
+
         <el-table-column prop="seat_type" :label="$t('seats.type')" width="120">
           <template #default="{ row }">
             <el-tag :type="getSeatTypeColor(row.seat_type)">
@@ -110,58 +118,79 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="is_available" :label="$t('seats.availability')" width="120">
+        <el-table-column
+          prop="is_available"
+          :label="$t('seats.availability')"
+          width="160"
+        >
           <template #default="{ row }">
             <el-tag :type="row.is_available ? 'success' : 'danger'">
-              {{ row.is_available ? $t('common.available') : $t('common.unavailable') }}
+              {{
+                row.is_available
+                  ? $t("seats.available")
+                  : $t("seats.unavailable")
+              }}
             </el-tag>
           </template>
         </el-table-column>
 
         <el-table-column prop="price" :label="$t('seats.price')" width="100">
           <template #default="{ row }">
-            ${{ row.price?.toFixed(2) || '0.00' }}
+            ${{ row.price?.toFixed(2) || "0.00" }}
           </template>
         </el-table-column>
 
-        <el-table-column prop="theater_id" :label="$t('seats.theaterId')" width="120">
+        <!-- <el-table-column
+          prop="theater_id"
+          :label="$t('seats.theaterId')"
+          width="120"
+        >
           <template #default="{ row }">
-            {{ row.theater_id || '-' }}
+            {{ row.theater_id || "-" }}
           </template>
-        </el-table-column>
+        </el-table-column> -->
 
-        <el-table-column prop="created_at" :label="$t('common.createdAt')" width="150">
+        <el-table-column
+          prop="created_at"
+          :label="$t('seats.created')"
+          width="150"
+        >
           <template #default="{ row }">
             {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('actions.title')" width="200" fixed="right" v-if="authStore.isAdmin">
+        <el-table-column
+          :label="$t('seats.actions')"
+          width="250"
+          fixed="right"
+          v-if="authStore.isAdmin"
+        >
           <template #default="{ row }">
-            <el-button
-              type="primary"
-              size="small"
-              @click="editSeat(row)"
-            >
-              {{ $t('actions.edit') }}
-            </el-button>
-            
-            <el-dropdown @command="handleCommand" trigger="click">
-              <el-button type="info" size="small">
-                {{ $t('actions.more') }}
-                <el-icon class="el-icon--right"><arrow-down /></el-icon>
+            <div class="flex gap-1">
+              <el-button type="primary" size="small" @click="editSeat(row.id)">
+                {{ $t("actions.edit") }}
               </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item :command="`status:${row.id}`">
-                    {{ $t('seats.updateStatus') }}
-                  </el-dropdown-item>
-                  <el-dropdown-item :command="`delete:${row.id}`" divided>
-                    <span style="color: #f56c6c">{{ $t('actions.delete') }}</span>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+
+              <el-dropdown @command="handleCommand" trigger="click">
+                <el-button type="info" size="small">
+                  {{ $t("actions.more") }}
+                  <el-icon class="el-icon--right"><arrow-down /></el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item :command="`status:${row.id}`">
+                      {{ $t("seats.updateStatus") }}
+                    </el-dropdown-item>
+                    <el-dropdown-item :command="`delete:${row.id}`" divided>
+                      <span style="color: #f56c6c">{{
+                        $t("actions.delete")
+                      }}</span>
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -198,14 +227,18 @@
           </el-select>
         </el-form-item>
       </el-form>
-      
+
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="statusDialog.visible = false">
-            {{ $t('actions.cancel') }}
+            {{ $t("actions.cancel") }}
           </el-button>
-          <el-button type="primary" @click="updateSeatStatus" :loading="statusDialog.loading">
-            {{ $t('actions.update') }}
+          <el-button
+            type="primary"
+            @click="updateSeatStatus"
+            :loading="statusDialog.loading"
+          >
+            {{ $t("actions.update") }}
           </el-button>
         </span>
       </template>
@@ -214,216 +247,225 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search, ArrowDown } from '@element-plus/icons-vue'
-import { seatService } from '@/services/seatService'
-import { useAuthStore } from '@/stores/auth'
-import { useAppStore } from '@/stores/app'
+import { ref, reactive, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { Plus, Search, ArrowDown } from "@element-plus/icons-vue";
+import { seatService } from "@/services/seatService";
+import { useAuthStore } from "@/stores/auth";
+import { useAppStore } from "@/stores/app";
 
-const { t } = useI18n()
-const router = useRouter()
-const authStore = useAuthStore()
-const appStore = useAppStore()
+const { t } = useI18n();
+const router = useRouter();
+const authStore = useAuthStore();
+const appStore = useAppStore();
 
 // Reactive data
-const loading = ref(false)
-const seats = ref([])
+const loading = ref(false);
+const seats = ref([]);
 
 const filters = reactive({
-  search: '',
-  seat_type: '',
-  status: '',
-  is_available: '',
-  sort_by: 'row',
-  sort_order: 'asc'
-})
+  search: "",
+  seat_type: "",
+  status: "",
+  is_available: "",
+  sort_by: "row",
+  sort_order: "asc",
+});
 
 const pagination = reactive({
   current_page: 1,
-  per_page: 20,
+  per_page: 10,
   total: 0,
   total_pages: 0,
   has_next_page: false,
-  has_prev_page: false
-})
+  has_prev_page: false,
+});
 
 const statusDialog = reactive({
   visible: false,
   loading: false,
   seatId: null,
-  status: ''
-})
+  status: "",
+});
 
 // Seat types and statuses
 const seatTypes = ref([
-  { value: 'regular', label: 'Regular' },
-  { value: 'vip', label: 'VIP' },
-  { value: 'king', label: 'King' },
-  { value: 'queen', label: 'Queen' },
-  { value: 'recliner', label: 'Recliner' }
-])
+  { value: "regular", label: "Regular" },
+  { value: "vip", label: "VIP" },
+  { value: "queen", label: "Queen" },
+  { value: "couple", label: "Couple" },
+]);
 
 const seatStatuses = ref([
-  { value: 'active', label: 'Active' },
-  { value: 'maintenance', label: 'Maintenance' },
-  { value: 'out_of_order', label: 'Out of Order' },
-  { value: 'reserved', label: 'Reserved' }
-])
+  { value: "active", label: "Active" },
+  { value: "maintenance", label: "Maintenance" },
+  { value: "out_of_order", label: "Out of Order" },
+  { value: "reserved", label: "Reserved" },
+]);
 
 // Methods
 const loadSeats = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     const params = {
-      ...filters,
+      ...filters.value,
       page: pagination.current_page,
-      per_page: pagination.per_page
-    }
-    
-    const response = await seatService.getSeats(params)
-    
-    seats.value = response.data || []
+      per_page: pagination.per_page,
+    };
+
+    const response = await seatService.getSeats(params);
+
+    seats.value = response.data || [];
     Object.assign(pagination, {
       current_page: response.current_page || 1,
       per_page: response.per_page || 20,
       total: response.total || 0,
       total_pages: response.total_pages || 0,
       has_next_page: response.has_next_page || false,
-      has_prev_page: response.has_prev_page || false
-    })
+      has_prev_page: response.has_prev_page || false,
+    });
+    console.log("Seats loaded:", seats.value);
   } catch (error) {
-    console.error('Load seats error:', error)
-    ElMessage.error(error.response?.data?.message || 'Failed to load seats')
+    console.error("Load seats error:", error);
+    ElMessage.error(error.response?.data?.message || "Failed to load seats");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const resetFilters = () => {
   Object.assign(filters, {
-    search: '',
-    seat_type: '',
-    status: '',
-    is_available: '',
-    sort_by: 'row',
-    sort_order: 'asc'
-  })
-  pagination.current_page = 1
-  loadSeats()
-}
+    search: "",
+    seat_type: "",
+    status: "",
+    is_available: "",
+    sort_by: "row",
+    sort_order: "asc",
+  });
+  pagination.current_page = 1;
+  loadSeats();
+};
 
 const handleSizeChange = (val) => {
-  pagination.per_page = val
-  pagination.current_page = 1
-  loadSeats()
-}
+  pagination.per_page = val;
+  pagination.current_page = 1;
+  loadSeats();
+};
 
 const handleCurrentChange = (val) => {
-  pagination.current_page = val
-  loadSeats()
-}
+  pagination.current_page = val;
+  loadSeats();
+};
 
-const editSeat = (seat) => {
-  router.push(`/admin/seats/edit/${seat.id}`)
-}
+const editSeat = (id) => {
+  router.push(`/admin/seats/${id}/edit`);
+};
 
 const handleCommand = (command) => {
-  const [action, id] = command.split(':')
-  
-  if (action === 'status') {
-    const seat = seats.value.find(s => s.id === id)
+  const [action, id] = command.split(":");
+
+  if (action === "status") {
+    const seat = seats.value.find((s) => s.id === id);
     if (seat) {
-      statusDialog.seatId = id
-      statusDialog.status = seat.status
-      statusDialog.visible = true
+      statusDialog.seatId = id;
+      statusDialog.status = seat.status;
+      statusDialog.visible = true;
     }
-  } else if (action === 'delete') {
-    deleteSeat(id)
+  } else if (action === "delete") {
+    deleteSeat(id);
   }
-}
+};
 
 const updateSeatStatus = async () => {
-  statusDialog.loading = true
+  statusDialog.loading = true;
   try {
-    await seatService.updateSeatStatus(statusDialog.seatId, statusDialog.status)
-    ElMessage.success(t('seats.statusUpdated'))
-    statusDialog.visible = false
-    loadSeats()
+    await seatService.updateSeatStatus(
+      statusDialog.seatId,
+      statusDialog.status
+    );
+    ElMessage.success(t("seats.statusUpdated"));
+    statusDialog.visible = false;
+    loadSeats();
   } catch (error) {
-    console.error('Update seat status error:', error)
-    ElMessage.error(error.response?.data?.message || 'Failed to update seat status')
+    console.error("Update seat status error:", error);
+    ElMessage.error(
+      error.response?.data?.message || "Failed to update seat status"
+    );
   } finally {
-    statusDialog.loading = false
+    statusDialog.loading = false;
   }
-}
+};
 
 const deleteSeat = async (id) => {
   try {
-    await ElMessageBox.confirm(
-      t('seats.confirmDelete'),
-      t('actions.delete'),
-      {
-        confirmButtonText: t('actions.delete'),
-        cancelButtonText: t('actions.cancel'),
-        type: 'warning'
-      }
-    )
-    
-    await seatService.deleteSeat(id)
-    ElMessage.success(t('seats.deleteSuccess'))
-    loadSeats()
+    await ElMessageBox.confirm(t("seats.confirmDelete"), t("actions.delete"), {
+      confirmButtonText: t("actions.delete"),
+      cancelButtonText: t("actions.cancel"),
+      type: "warning",
+    });
+
+    await seatService.deleteSeat(id);
+    ElMessage.success(t("seats.deleteSuccess"));
+    loadSeats();
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('Delete seat error:', error)
-      ElMessage.error(error.response?.data?.message || 'Failed to delete seat')
+    if (error !== "cancel") {
+      console.error("Delete seat error:", error);
+      ElMessage.error(error.response?.data?.message || "Failed to delete seat");
     }
   }
-}
+};
 
 const getSeatTypeColor = (type) => {
   const colors = {
-    regular: '',
-    vip: 'warning',
-    king: 'danger',
-    queen: 'success',
-    recliner: 'info'
-  }
-  return colors[type] || ''
-}
+    regular: "",
+    vip: "warning",
+    king: "danger",
+    queen: "success",
+    recliner: "info",
+  };
+  return colors[type] || "";
+};
 
 const getStatusColor = (status) => {
   const colors = {
-    active: 'success',
-    maintenance: 'warning',
-    out_of_order: 'danger',
-    reserved: 'info'
-  }
-  return colors[status] || ''
-}
+    active: "success",
+    maintenance: "warning",
+    out_of_order: "danger",
+    reserved: "info",
+  };
+  return colors[status] || "";
+};
 
 const formatDate = (dateString) => {
-  if (!dateString) return '-'
-  return new Date(dateString).toLocaleDateString()
-}
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleDateString();
+};
 
 // Watchers
-watch([() => filters.search, () => filters.seat_type, () => filters.status, () => filters.is_available], () => {
-  pagination.current_page = 1
-  loadSeats()
-})
+watch(
+  [
+    () => filters.search,
+    () => filters.seat_type,
+    () => filters.status,
+    () => filters.is_available,
+  ],
+  () => {
+    pagination.current_page = 1;
+    loadSeats();
+  }
+);
 
 // Lifecycle
 onMounted(async () => {
-  await loadSeats()
-  
+  await loadSeats();
+
   appStore.setBreadcrumbs([
-    { title: t('nav.dashboard'), path: '/admin/dashboard' },
-    { title: t('seats.title'), path: '#' }
-  ])
-})
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("seats.title"), path: "/admin/seats" },
+  ]);
+});
 </script>
 
 <style scoped>

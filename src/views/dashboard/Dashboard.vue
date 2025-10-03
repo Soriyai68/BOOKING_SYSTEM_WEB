@@ -1,9 +1,9 @@
 <template>
   <div class="dashboard">
     <!-- Statistics Cards -->
-    <el-row :gutter="24" class="stats-row" >
+    <el-row :gutter="24" class="stats-row">
       <el-col :xs="24" :sm="12" :lg="6">
-        <el-card class="stat-card ">
+        <el-card class="stat-card">
           <div class="stat-content">
             <div class="stat-icon users">
               <el-icon><User /></el-icon>
@@ -16,7 +16,7 @@
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card class="stat-card">
           <div class="stat-content">
@@ -31,7 +31,7 @@
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card class="stat-card">
           <div class="stat-content">
@@ -46,7 +46,7 @@
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card class="stat-card">
           <div class="stat-content">
@@ -70,7 +70,11 @@
           <template #header>
             <div class="card-header">
               <span>Booking Trends</span>
-              <el-select v-model="chartPeriod" size="small" style="width: 120px">
+              <el-select
+                v-model="chartPeriod"
+                size="small"
+                style="width: 120px"
+              >
                 <el-option label="This Week" value="week" />
                 <el-option label="This Month" value="month" />
                 <el-option label="This Year" value="year" />
@@ -82,14 +86,18 @@
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :xs="24" :lg="8">
         <el-card class="activity-card">
           <template #header>
             <span>Recent Activities</span>
           </template>
           <div class="activity-list">
-            <div v-for="activity in recentActivities" :key="activity.id" class="activity-item">
+            <div
+              v-for="activity in recentActivities"
+              :key="activity.id"
+              class="activity-item"
+            >
               <div class="activity-icon">
                 <el-icon><Bell /></el-icon>
               </div>
@@ -108,12 +116,16 @@
       <template #header>
         <div class="card-header">
           <span>Recent Bookings</span>
-          <el-button type="primary" size="small" @click="$router.push('/admin/bookings')">
+          <el-button
+            type="primary"
+            size="small"
+            @click="$router.push('/admin/bookings')"
+          >
             View All
           </el-button>
         </div>
       </template>
-      
+
       <el-table :data="recentBookings" style="width: 100%" v-loading="loading">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="user_name" label="User" />
@@ -121,9 +133,7 @@
         <el-table-column prop="show_date" label="Show Date" />
         <el-table-column prop="seats" label="Seats" width="80" />
         <el-table-column prop="total_amount" label="Amount" width="100">
-          <template #default="{ row }">
-            ${{ row.total_amount }}
-          </template>
+          <template #default="{ row }"> ${{ row.total_amount }} </template>
         </el-table-column>
         <el-table-column prop="status" label="Status" width="120">
           <template #default="{ row }">
@@ -134,9 +144,9 @@
         </el-table-column>
         <el-table-column label="Actions" width="100">
           <template #default="{ row }">
-            <el-button 
-              type="primary" 
-              size="small" 
+            <el-button
+              type="primary"
+              size="small"
               link
               @click="viewBooking(row.id)"
             >
@@ -150,113 +160,123 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAppStore } from '@/stores/app'
-import { User, VideoCamera, Tickets, Money, Bell } from '@element-plus/icons-vue'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAppStore } from "@/stores/app";
+import { useI18n } from "vue-i18n";
+import {
+  User,
+  VideoCamera,
+  Tickets,
+  Money,
+  Bell,
+} from "@element-plus/icons-vue";
 
-const router = useRouter()
-const appStore = useAppStore()
+const router = useRouter();
+const appStore = useAppStore();
 
 // Reactive data
-const loading = ref(false)
-const chartPeriod = ref('month')
+const loading = ref(false);
+const chartPeriod = ref("month");
 
 // Statistics
-const totalUsers = ref(1234)
-const totalMovies = ref(45)
-const totalBookings = ref(5678)
-const totalRevenue = ref('89,420')
+const totalUsers = ref(1234);
+const totalMovies = ref(45);
+const totalBookings = ref(5678);
+const totalRevenue = ref("89,420");
+
+// i18n for translations
+const { t } = useI18n();
 
 // Recent activities
 const recentActivities = ref([
-  { id: 1, text: 'New user registered: John Doe', time: '2 minutes ago' },
-  { id: 2, text: 'Movie "Avatar 3" was added', time: '1 hour ago' },
-  { id: 3, text: 'Booking #1234 was confirmed', time: '3 hours ago' },
-  { id: 4, text: 'User payment processed', time: '5 hours ago' },
-  { id: 5, text: 'System maintenance completed', time: '1 day ago' }
-])
+  { id: 1, text: "New user registered: John Doe", time: "2 minutes ago" },
+  { id: 2, text: 'Movie "Avatar 3" was added', time: "1 hour ago" },
+  { id: 3, text: "Booking #1234 was confirmed", time: "3 hours ago" },
+  { id: 4, text: "User payment processed", time: "5 hours ago" },
+  { id: 5, text: "System maintenance completed", time: "1 day ago" },
+]);
 
 // Recent bookings
 const recentBookings = ref([
   {
     id: 1001,
-    user_name: 'John Doe',
-    movie_title: 'Avatar: The Way of Water',
-    show_date: '2024-03-15',
+    user_name: "John Doe",
+    movie_title: "Avatar: The Way of Water",
+    show_date: "2024-03-15",
     seats: 2,
-    total_amount: 25.50,
-    status: 'confirmed'
+    total_amount: 25.5,
+    status: "confirmed",
   },
   {
     id: 1002,
-    user_name: 'Jane Smith',
-    movie_title: 'Top Gun: Maverick',
-    show_date: '2024-03-16',
+    user_name: "Jane Smith",
+    movie_title: "Top Gun: Maverick",
+    show_date: "2024-03-16",
     seats: 1,
     total_amount: 12.75,
-    status: 'pending'
+    status: "pending",
   },
   {
     id: 1003,
-    user_name: 'Bob Johnson',
-    movie_title: 'Black Panther: Wakanda Forever',
-    show_date: '2024-03-17',
+    user_name: "Bob Johnson",
+    movie_title: "Black Panther: Wakanda Forever",
+    show_date: "2024-03-17",
     seats: 4,
-    total_amount: 51.00,
-    status: 'confirmed'
+    total_amount: 51.0,
+    status: "confirmed",
   },
   {
     id: 1004,
-    user_name: 'Alice Brown',
-    movie_title: 'Thor: Love and Thunder',
-    show_date: '2024-03-18',
+    user_name: "Alice Brown",
+    movie_title: "Thor: Love and Thunder",
+    show_date: "2024-03-18",
     seats: 3,
     total_amount: 38.25,
-    status: 'cancelled'
-  }
-])
+    status: "cancelled",
+  },
+]);
 
 const getStatusType = (status) => {
   switch (status) {
-    case 'confirmed':
-      return 'success'
-    case 'pending':
-      return 'warning'
-    case 'cancelled':
-      return 'danger'
+    case "confirmed":
+      return "success";
+    case "pending":
+      return "warning";
+    case "cancelled":
+      return "danger";
     default:
-      return 'info'
+      return "info";
   }
-}
+};
 
 const viewBooking = (id) => {
-  router.push(`/admin/bookings/${id}`)
-}
+  router.push(`/admin/bookings/${id}`);
+};
 
 const loadDashboardData = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     // TODO: Replace with actual API calls
     // const response = await api.get('/dashboard/stats')
     // Update statistics with response data
     setTimeout(() => {
-      loading.value = false
-    }, 1000)
+      loading.value = false;
+    }, 1000);
   } catch (error) {
-    loading.value = false
-    console.error('Failed to load dashboard data:', error)
+    loading.value = false;
+    console.error("Failed to load dashboard data:", error);
   }
-}
+};
 
 onMounted(() => {
   // Set breadcrumbs
   appStore.setBreadcrumbs([
-    { title: 'Dashboard', path: '/admin/dashboard' }
-  ])
-  
-  loadDashboardData()
-})
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+  ]);
+
+  loadDashboardData();
+});
 </script>
 
 <style scoped>
