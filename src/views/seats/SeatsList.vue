@@ -310,7 +310,6 @@ const loadSeats = async () => {
   loading.value = true;
   try {
     const params = {
-      ...filters.value,
       page: pagination.current_page,
       per_page: pagination.per_page,
     };
