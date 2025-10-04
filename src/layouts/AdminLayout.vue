@@ -4,20 +4,20 @@
     <el-aside :width="sidebarWidth" class="sidebar">
       <AdminSidebar />
     </el-aside>
-    
+
     <!-- Main content -->
     <el-container>
       <!-- Header -->
       <el-header height="60px" class="header">
         <AdminHeader />
       </el-header>
-      
+
       <!-- Content -->
       <el-main class="main-content">
         <div class="breadcrumb-container" v-if="breadcrumbs.length > 0">
           <el-breadcrumb separator="/">
-            <el-breadcrumb-item 
-              v-for="(crumb, index) in breadcrumbs" 
+            <el-breadcrumb-item
+              v-for="(crumb, index) in breadcrumbs"
               :key="index"
               :to="crumb.path"
             >
@@ -25,7 +25,7 @@
             </el-breadcrumb-item>
           </el-breadcrumb>
         </div>
-        
+
         <div class="page-content">
           <router-view />
         </div>
@@ -35,18 +35,19 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useAppStore } from '@/stores/app'
-import AdminSidebar from '@/components/layout/AdminSidebar.vue'
-import AdminHeader from '@/components/layout/AdminHeader.vue'
+import { computed } from "vue";
+import { useAppStore } from "@/stores/app";
+import AdminSidebar from "@/components/layout/AdminSidebar.vue";
+import AdminHeader from "@/components/layout/AdminHeader.vue";
 
-const appStore = useAppStore()
+const appStore = useAppStore();
 
 const sidebarWidth = computed(() => {
-  return appStore.sidebarCollapsed ? '64px' : '240px'
-})
+  return appStore.sidebarCollapsed ? "64px" : "240px";
+});
 
-const breadcrumbs = computed(() => appStore.breadcrumbs)
+const breadcrumbs = computed(() => appStore.breadcrumbs);
+
 </script>
 
 <style scoped>

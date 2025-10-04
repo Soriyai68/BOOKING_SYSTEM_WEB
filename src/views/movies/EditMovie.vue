@@ -10,16 +10,16 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import { useAppStore } from '@/stores/app'
+import { onMounted } from "vue";
+import { useAppStore } from "@/stores/app";
 
-const appStore = useAppStore()
+const appStore = useAppStore();
 
 onMounted(() => {
   appStore.setBreadcrumbs([
-    { title: 'Dashboard', path: '/admin/dashboard' },
-    { title: 'Movies', path: '/admin/movies' },
-    { title: 'Edit Movie', path: '#' }
-  ])
-})
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("movies.title"), path: "/admin/movies" },
+    { title: t("movies.editMovie"), path: "#" },
+  ]);
+});
 </script>

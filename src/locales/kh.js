@@ -1,3 +1,5 @@
+import { More } from "@element-plus/icons-vue";
+
 export default {
   // Navigation and Layout
   nav: {
@@ -6,13 +8,14 @@ export default {
     movies: "ភាពយន្ត",
     bookings: "ការកក់",
     settings: "ការកំណត់",
-    logout: "ចេញ",
+    logout: "ចាកចេញ",
     profile: "ប្រវត្តិរូប",
   },
 
   // Authentication
   auth: {
     login: "ចូលប្រព័ន្ធ",
+    logout: "​ចេញពីប្រព័ន្ធ",
     loginTitle: "គ្រប់គ្រងរោងកុន",
     loginSubtitle: "ចូលក្នុងគណនីរបស់អ្នក",
     phone: "លេខទូរសព្ទ",
@@ -118,10 +121,10 @@ export default {
     filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
     name: "ឈ្មោះ",
     email: "អ៊ីមែល",
-    phone: "ទូរសព្ទ",
+    phone: "ទូរស័ព្ទ",
     role: "តួនាទី",
     status: "ស្ថានភាព",
-    created: "បង្កើត",
+    created: "បានបង្កើត",
     actions: "សកម្មភាព",
     edit: "កែសម្រួល",
     delete: "លុប",
@@ -233,6 +236,7 @@ export default {
     view: "មើល",
     download: "ទាញយក",
     upload: "បញ្ជូន",
+    more: "ផ្សេងៗ",
   },
 
   // Status Messages

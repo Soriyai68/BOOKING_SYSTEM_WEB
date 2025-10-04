@@ -17,7 +17,7 @@
     <div class="header-right">
       <!-- Language switcher -->
       <LanguageSwitcher />
-      
+
       <!-- Theme toggle -->
       <el-tooltip content="Toggle Theme" placement="bottom">
         <el-button
@@ -46,22 +46,22 @@
           <el-avatar :size="32" class="user-avatar">
             <el-icon><User /></el-icon>
           </el-avatar>
-          <span class="username">{{ user?.name || 'Admin' }}</span>
+          <span class="username">{{ user?.name || "Admin" }}</span>
           <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item command="profile">
               <el-icon><User /></el-icon>
-              Profile
+              {{ $t("nav.profile") }}
             </el-dropdown-item>
             <el-dropdown-item command="settings">
               <el-icon><Setting /></el-icon>
-              Settings
+              {{ $t("nav.settings") }}
             </el-dropdown-item>
-            <el-dropdown-item divided command="logout">
+            <el-dropdown-item divided command="logout" style="color: #f56c6c">
               <el-icon><SwitchButton /></el-icon>
-              Log out
+              {{ $t("nav.logout") }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -71,12 +71,13 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { useAppStore } from '@/stores/app'
-import { useAuthStore } from '@/stores/auth'
-import LanguageSwitcher from '@/components/common/LanguageSwitcher.vue'
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { useAppStore } from "@/stores/app";
+import { useAuthStore } from "@/stores/auth";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher.vue";
+import { useI18n } from "vue-i18n";
 import {
   Expand,
   Fold,
@@ -86,81 +87,81 @@ import {
   User,
   ArrowDown,
   Setting,
-  SwitchButton
-} from '@element-plus/icons-vue'
+  SwitchButton,
+} from "@element-plus/icons-vue";
 
-const route = useRoute()
-const router = useRouter()
-const appStore = useAppStore()
-const authStore = useAuthStore()
+const route = useRoute();
+const router = useRouter();
+const appStore = useAppStore();
+const authStore = useAuthStore();
+const { t } = useI18n();
 
-const notificationCount = ref(3) // Mock notification count
+const notificationCount = ref(3); // Mock notification count
 
-const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)
-const theme = computed(() => appStore.theme)
-const user = computed(() => authStore.user)
-const pageTitle = computed(() => route.meta?.title)
+const sidebarCollapsed = computed(() => appStore.sidebarCollapsed);
+const theme = computed(() => appStore.theme);
+const user = computed(() => authStore.user);
+const pageTitle = computed(() => route.meta?.title);
 
 const toggleSidebar = () => {
-  appStore.toggleSidebar()
-}
+  appStore.toggleSidebar();
+};
 
 const toggleTheme = () => {
-  appStore.toggleTheme()
-}
+  appStore.toggleTheme();
+};
 
 const showNotifications = () => {
-  ElMessage.info('Notifications feature coming soon!')
-}
+  ElMessage.info("Notifications feature coming soon!");
+};
 
 const handleUserMenuCommand = async (command) => {
   switch (command) {
-    case 'profile':
-      ElMessage.info('Profile page coming soon!')
-      break
-    case 'settings':
-      router.push('/admin/settings')
-      break
-    case 'logout':
+    case "profile":
+      ElMessage.info("Profile page coming soon!");
+      break;
+    case "settings":
+      router.push("/admin/settings");
+      break;
+    case "logout":
       try {
         await ElMessageBox.confirm(
-          'Are you sure you want to logout?',
-          'Confirm Logout',
+          "Are you sure you want to logout?",
+          "Confirm Logout",
           {
-            confirmButtonText: 'Yes, Log out.',
-            cancelButtonText: 'Cancel',
-            type: 'warning'
+            confirmButtonText: "Yes, Log out.",
+            cancelButtonText: "Cancel",
+            type: "warning",
           }
-        )
-        
+        );
+
         // Show loading message
         const loading = ElMessage({
-          message: 'Logging out...',
-          type: 'info',
-          duration: 1000
-        })
-        
+          message: "Logging out...",
+          type: "info",
+          duration: 1000,
+        });
+
         // Perform logout
-        await authStore.logout()
-        
+        await authStore.logout();
+
         // Clear any remaining messages
-        loading.close()
-        
+        loading.close();
+
         // Show success message briefly
-        ElMessage.success('Logged out successfully')
-        
+        ElMessage.success("Logged out successfully");
+
         // Redirect to login page
-        await router.replace('/login')
-        
+        await router.replace("/login");
       } catch (error) {
-        if (error !== 'cancel') {
-          console.error('Logout error:', error)
-          ElMessage.error('Logout failed. Please try again.')
+        if (error !== "cancel") {
+          console.error("Logout error:", error);
+          ElMessage.error("Logout failed. Please try again.");
         }
       }
-      break
+      break;
   }
-}
+};
 </script>
 
 <style scoped>
@@ -171,7 +172,6 @@ const handleUserMenuCommand = async (command) => {
   padding: 0 24px;
   flex: 1;
   justify-content: space-between;
-  
 }
 
 .header-left {

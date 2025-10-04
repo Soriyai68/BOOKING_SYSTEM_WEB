@@ -31,10 +31,9 @@ onMounted(async () => {
 <style>
 /* Inter for English */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
-/* Noto Sans Khmer */
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap");
+/*Siemreap for Khmer */
+@import url("https://fonts.googleapis.com/css2?family=Siemreap&display=swap");
 #app {
-  font-family: "Inter", "Noto Sans Khmer", "Khmer OS", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -42,6 +41,7 @@ onMounted(async () => {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Inter", "Siemreap", sans-serif;
 }
 body {
   margin: 0;
