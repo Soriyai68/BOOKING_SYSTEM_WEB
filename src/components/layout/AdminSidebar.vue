@@ -39,6 +39,21 @@
         </el-menu-item>
       </el-sub-menu>
 
+      <el-sub-menu index="theaters">
+        <template #title>
+          <el-icon><Odometer /></el-icon>
+          <span>{{ $t("theaters.title") }}</span>
+        </template>
+        <el-menu-item index="/admin/theaters">
+          <el-icon><Odometer /></el-icon>w
+          <template #title>{{ $t("theaters.allTheaters") }}</template>
+        </el-menu-item>
+        <el-menu-item index="/admin/theaters/create">
+          <el-icon><Plus /></el-icon>
+          <template #title>{{ $t("theaters.addTheater") }}</template>
+        </el-menu-item>
+      </el-sub-menu>
+
       <el-sub-menu index="seats">
         <template #title>
           <el-icon><Grid /></el-icon>
@@ -51,6 +66,21 @@
         <el-menu-item index="/admin/seats/create">
           <el-icon><Plus /></el-icon>
           <template #title>{{ $t("seats.addSeat") }}</template>
+        </el-menu-item>
+      </el-sub-menu>
+
+      <el-sub-menu index="screens">
+        <template #title>
+          <el-icon><Grid /></el-icon>
+          <span>{{ $t("screens.title") }}</span>
+        </template>
+        <el-menu-item index="/admin/screens">
+          <el-icon><Postcard /></el-icon>
+          <template #title>{{ $t("screens.allScreens") }}</template>
+        </el-menu-item>
+        <el-menu-item index="/admin/screens/create">
+          <el-icon><Plus /></el-icon>
+          <template #title>{{ $t("screens.addScreen") }}</template>
         </el-menu-item>
       </el-sub-menu>
 

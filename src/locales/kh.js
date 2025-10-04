@@ -65,21 +65,21 @@ export default {
     chartPlaceholder: "តារាងនឹងត្រូវបង្ហាញនៅទីនេះ",
   },
   // Seat Management
-  seats: {
-    indentifier: "អត្តសញ្ញាណកៅអី",
-    title: "គ្រប់គ្រងកៅអី",
-    addSeat: "បន្ថែមកៅអី",
-    createSeat: "បង្កើតកៅអី",
-    editSeat: "កែសម្រួលកៅអី",
-    allSeats: "កៅអីទាំងអស់",
-    row: "ជួរ",
-    type: "ប្រភេទកៅអី",
+
+  // Theater Management
+  theaters: {
+    title: "គ្រប់គ្រងរោងកុន",
+    allTheaters: "រោងកុនទាំងអស់",
+    addTheater: "បន្ថែមរោងកុន",
+    createTheater: "បង្កើតរោងកុន",
+    editTheater: "កែសម្រួលរោងកុន",
+    theaterDetails: "ព័ត៌មានលម្អិតរោងកុន",
+    name: "ឈ្មោះ",
+    address: "អាស័យដ្ឋាន",
+    city: "ទីក្រុង",
+    province: "ខេត្ត/រាជធានី",
     status: "ស្ថានភាព",
     price: "តម្លៃ",
-    searchSeats: "ស្វែងរកកៅអី...",
-    filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
-    filterByType: "ចម្រាញ់តាមប្រភេទ",
-    filterByAvailability: "ចម្រាញ់តាមភាពអាចប្រើបាន",
     available: "អាចប្រើបាន",
     searchSeats: "ស្វែងរកកៅអី...",
     actions: "សកម្មភាព",
@@ -89,7 +89,7 @@ export default {
     seatNumber: "លេខកៅអី",
     seatType: "ប្រភេទកៅអី",
     availability: "ភាពអាចប្រើប្រាស់បាន",
-    unavailable: "មិនអាចប្រើប្រាស់បាន",
+    unvailable: "មិនអាចប្រើប្រាស់បាន",
     available: "អាចប្រើប្រាស់បាន",
     created: "បានបង្កើត",
     preview: "ពិនិត្យមើល",
@@ -105,7 +105,6 @@ export default {
       out_of_order: "មិនអាចប្រើបានជាបណ្តោះអាសន្ន",
       reserved: "បានកក់",
     },
-    originalInfo: "ព័ត៌មានដើម",
   },
   // User Management
   users: {

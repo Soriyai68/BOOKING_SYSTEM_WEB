@@ -8,10 +8,11 @@ const routes = [
     component: () => import('@/views/auth/Login.vue'),
     meta: { requiresGuest: true } // 👈 mark login for guests
   },
+
   {
     path: '/admin',
     component: AdminLayout,
-    meta: { requiresAuth: true, requiresAdmin: true },
+    meta: { requiresAuth: true, requiresAdmin: true , },
     children: [
       {
         path: '',
@@ -42,24 +43,55 @@ const routes = [
         meta: { title: 'Edit User' }
       },
       {
-        path: 'seats',
-        name: 'Seats',
-        component: () => import('@/views/seats/SeatsList.vue'),
-        meta: { title: 'Seats Management' }
+        path: 'theaters',
+        name: 'Theaters',
+        component: () => import('@/views/theaters/TheaterList.vue'),
+        meta: { title: 'Theaters Management' }
       },
       {
-        path: 'seats/create',
-        name: 'CreateSeat',
-        component: () => import('@/views/seats/CreateSeat.vue'),
-        meta: { title: 'Add Seat' }
+        path: 'theaters/create',
+        name: 'CreateTheater',
+        component: () => import('@/views/theaters/CreateTheater.vue'),
+        meta: { title: 'Create Theater' }
       },
       {
-        path: 'seats/:id/edit',
-        name: 'EditSeat',
-        component: () => import('@/views/seats/EditSeat.vue'),
-        meta: { title: 'Edit Seat' }
+        path: 'theaters/:id',
+        name: 'TheaterDetail',
+        component: () => import('@/views/theaters/TheaterDetail.vue'),
+        meta: { title: 'Theater Details' }
       },
-      
+      {
+        path: 'theaters/:id/edit',
+        name: 'EditTheater',
+        component: () => import('@/views/theaters/EditTheater.vue'),
+        meta: { title: 'Edit Theater' }
+      },
+
+      {
+        path: 'screens',
+        name: 'Screens',
+        component: () => import('@/views/screens/ScreenList.vue'),
+        meta: { title: 'Screens Management' }
+      },
+      {
+        path: 'screens/create',
+        name: 'CreateScreen',
+        component: () => import('@/views/screens/CreateScreen.vue'),
+        meta: { title: 'Create Screen' }
+      },
+      {
+        path: 'screens/:id',
+        name: 'ScreenDetail',
+        component: () => import('@/views/screens/ScreenDetail.vue'),
+        meta: { title: 'Screen Details' }
+      },
+      {
+        path: 'screens/:id/edit',
+        name: 'EditScreen',
+        component: () => import('@/views/screens/EditScreen.vue'),
+        meta: { title: 'Edit Screen' }
+      },
+
       {
         path: 'movies',
         name: 'Movies',
@@ -98,12 +130,6 @@ const routes = [
       }
     ]
   },
-  // {
-  //   path: '/test-dashboard',
-  //   name: 'TestDashboard',
-  //   component: () => import('@/views/dashboard/Dashboard.vue'),
-  //   meta: { title: 'Test Dashboard' }
-  // },
   {
     path: '/',
     redirect: '/admin'

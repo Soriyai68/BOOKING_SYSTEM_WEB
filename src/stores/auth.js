@@ -91,7 +91,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
         setUser(userData)
         
-        console.log('🔑 Auth state updated via API:', {
+        console.log('Auth state updated via API:', {
           token: !!accessToken,
           user: userData,
           isAuthenticated: !!accessToken,
@@ -123,48 +123,6 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (error) {
       console.log('API login failed:', error.message)
       console.log('Trying demo login fallback...')
-      
-      // If API fails, try demo login as fallback
-      if (credentials.phone === '+855123456789' && credentials.password === 'password123') {
-        console.log('✅ Demo credentials match!')
-        console.warn('Using demo login - API not available')
-        const mockData = {
-          success: true,
-          data: {
-            accessToken: 'demo-token-123',
-            user: {
-              id: 1,
-              _id: 1,
-              name: 'Demo Admin',
-              phone: '+855123456789',
-              role: 'admin',
-              isActive: true,
-              isVerified: true,
-              createdAt: new Date().toISOString(),
-              permissions: ['users.read', 'users.write', 'movies.read', 'movies.write', 'bookings.read']
-            }
-          }
-        }
-        
-        setToken(mockData.data.accessToken)
-        setUser(mockData.data.user)
-        
-        console.log('Demo auth state updated:', {
-          token: !!mockData.data.accessToken,
-          user: mockData.data.user,
-          isAuthenticated: true,
-          isAdmin: mockData.data.user.role === 'admin'
-        })
-        
-        return mockData
-      } else {
-        console.log('Demo credentials do not match:', {
-          providedPhone: credentials.phone,
-          expectedPhone: '+855123456789',
-          providedPassword: credentials.password ? '[HIDDEN]' : 'MISSING',
-          expectedPassword: 'password123'
-        })
-      }
       
       // If it's a real API error, throw it
       console.log('Throwing login error:', error.message)

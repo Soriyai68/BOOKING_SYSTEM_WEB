@@ -35,26 +35,14 @@
         </el-form-item>
 
         <el-form-item :label="$t('users.role')" prop="role">
-          <el-select
-            v-model="form.role"
-            :placeholder="$t('users.role')"
-            style="width: 100%"
-          >
-            <el-option :label="$t('users.user')" value="user" />
-            <el-option :label="$t('users.admin')" value="admin" />
-            <el-option
-              :label="$t('users.superadmin')"
-              value="superadmin"
-              v-if="authStore.isSuperAdmin"
-            />
+          <el-select v-model="form.role" :placeholder="$t('users.role')" style="width: 100%">
+            <!-- <el-option :label="$t('users.user')" value="user" /> -->
+            <el-option :label="$t('users.admin')" value="admin"/>
+            <el-option :label="$t('users.superadmin')" value="superadmin" v-if="authStore.isSuperAdmin" />
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          :label="$t('auth.password')"
-          prop="password"
-          v-if="form.role === 'admin' || form.role === 'superadmin'"
-        >
+        <el-form-item :label="$t('auth.password')" prop="password" v-if="form.role === 'admin' || form.role === 'superadmin'">
           <el-input
             v-model="form.password"
             type="password"
@@ -197,10 +185,10 @@ const resetForm = () => {
     formRef.value.resetFields();
   }
   Object.assign(form, {
-    name: "",
-    phone: "",
-    role: "user",
-    password: "",
+    name: '',
+    phone: '',
+    role: 'user',
+    password: '',
     isActive: true,
     isVerified: true,
   });
