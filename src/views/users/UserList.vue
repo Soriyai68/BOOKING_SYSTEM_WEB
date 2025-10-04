@@ -270,6 +270,7 @@ onMounted(() => {
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },
     { title: t("users.title"), path: "/admin/users" },
+    { title: t("users.allUsers"), path: "/admin/users" },
   ]);
 
   loadUsers();

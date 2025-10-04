@@ -45,7 +45,7 @@
           <span>{{ $t("theaters.title") }}</span>
         </template>
         <el-menu-item index="/admin/theaters">
-          <el-icon><Odometer /></el-icon>w
+          <el-icon><Odometer /></el-icon>
           <template #title>{{ $t("theaters.allTheaters") }}</template>
         </el-menu-item>
         <el-menu-item index="/admin/theaters/create">

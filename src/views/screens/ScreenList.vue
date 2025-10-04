@@ -1,10 +1,10 @@
 <template>
   <div class="screen-list">
     <div class="page-header">
-      <h2>{{ $t('screens.title') }}</h2>
+      <h2>{{ $t("screens.title") }}</h2>
       <el-button type="primary" @click="$router.push('/admin/screens/create')">
         <el-icon><Plus /></el-icon>
-        {{ $t('screens.addScreen') }}
+        {{ $t("screens.addScreen") }}
       </el-button>
     </div>
 
@@ -19,18 +19,41 @@
           @input="debouncedSearch"
         />
 
-        <el-select v-model="typeFilter" :placeholder="$t('screens.filterByType')" clearable>
+        <el-select
+          v-model="typeFilter"
+          :placeholder="$t('screens.filterByType')"
+          clearable
+        >
           <el-option :label="$t('table.selectAll')" value="" />
-          <el-option v-for="opt in screenService.SCREEN_TYPES" :key="opt.value" :label="opt.label" :value="opt.value" />
+          <el-option
+            v-for="opt in screenService.SCREEN_TYPES"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
         </el-select>
 
-        <el-select v-model="statusFilter" :placeholder="$t('screens.filterByStatus')" clearable>
+        <el-select
+          v-model="statusFilter"
+          :placeholder="$t('screens.filterByStatus')"
+          clearable
+        >
           <el-option :label="$t('table.selectAll')" value="" />
-          <el-option v-for="opt in screenService.SCREEN_STATUSES" :key="opt.value" :label="opt.label" :value="opt.value" />
+          <el-option
+            v-for="opt in screenService.SCREEN_STATUSES"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
         </el-select>
 
         <el-select v-model="sortBy" :placeholder="$t('table.sortBy')">
-          <el-option v-for="opt in screenService.SORT_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
+          <el-option
+            v-for="opt in screenService.SORT_OPTIONS"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
         </el-select>
 
         <el-select v-model="sortOrder" :placeholder="$t('screens.sortOrder')">
@@ -41,28 +64,64 @@
 
       <el-table :data="rows" v-loading="loading" style="width: 100%">
         <el-table-column prop="screen_name" :label="$t('screens.name')" />
-        <el-table-column prop="screen_type" :label="$t('screens.type')" width="120">
+        <el-table-column
+          prop="screen_type"
+          :label="$t('screens.type')"
+          width="120"
+        >
           <template #default="{ row }">
             <el-tag size="small">{{ row.screen_type.toUpperCase() }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="theater_id" :label="$t('screens.theater')" />
-        <el-table-column prop="total_seats" :label="$t('screens.totalSeats')" width="120" />
-        <el-table-column prop="status" :label="$t('screens.status')" width="140">
+        <el-table-column
+          prop="total_seats"
+          :label="$t('screens.totalSeats')"
+          width="120"
+        />
+        <el-table-column
+          prop="status"
+          :label="$t('screens.status')"
+          width="140"
+        >
           <template #default="{ row }">
-            <el-tag :type="statusTagType(row.status)" size="small">{{ row.status_display || row.status }}</el-tag>
+            <el-tag :type="statusTagType(row.status)" size="small">{{
+              row.status_display || row.status
+            }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="created_at" :label="$t('users.created')" width="160">
+        <el-table-column
+          prop="created_at"
+          :label="$t('users.created')"
+          width="160"
+        >
           <template #default="{ row }">
             {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
         <el-table-column :label="$t('users.actions')" width="180">
           <template #default="{ row }">
-            <el-button size="small" link type="primary" @click="viewScreen(row.id)">{{ $t('actions.view') }}</el-button>
-            <el-button size="small" link type="primary" @click="editScreen(row.id)">{{ $t('actions.edit') }}</el-button>
-            <el-button size="small" link type="danger" @click="deleteScreen(row.id)">{{ $t('actions.delete') }}</el-button>
+            <el-button
+              size="small"
+              link
+              type="primary"
+              @click="viewScreen(row.id)"
+              >{{ $t("actions.view") }}</el-button
+            >
+            <el-button
+              size="small"
+              link
+              type="primary"
+              @click="editScreen(row.id)"
+              >{{ $t("actions.edit") }}</el-button
+            >
+            <el-button
+              size="small"
+              link
+              type="danger"
+              @click="deleteScreen(row.id)"
+              >{{ $t("actions.delete") }}</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -83,40 +142,42 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAppStore } from '@/stores/app'
-import { screenService } from '@/services/screenService'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search } from '@element-plus/icons-vue'
-import { debounce } from 'lodash-es'
+import { ref, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useAppStore } from "@/stores/app";
+import { screenService } from "@/services/screenService";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { Plus, Search } from "@element-plus/icons-vue";
+import { debounce } from "lodash-es";
+import { useI18n } from "vue-i18n";
 
-const router = useRouter()
-const appStore = useAppStore()
+const router = useRouter();
+const appStore = useAppStore();
 
-const loading = ref(false)
-const rows = ref([])
-const total = ref(0)
-const currentPage = ref(1)
-const pageSize = ref(10)
-const searchText = ref('')
-const statusFilter = ref('')
-const typeFilter = ref('')
-const sortBy = ref('screen_name')
-const sortOrder = ref('asc')
+const loading = ref(false);
+const rows = ref([]);
+const total = ref(0);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const searchText = ref("");
+const statusFilter = ref("");
+const typeFilter = ref("");
+const sortBy = ref("screen_name");
+const sortOrder = ref("asc");
+const { t } = useI18n();
 
 const debouncedSearch = debounce(() => {
-  currentPage.value = 1
-  load()
-}, 500)
+  currentPage.value = 1;
+  load();
+}, 500);
 
 watch([statusFilter, typeFilter, sortBy, sortOrder], () => {
-  currentPage.value = 1
-  load()
-})
+  currentPage.value = 1;
+  load();
+});
 
 const load = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     const params = {
       page: currentPage.value,
@@ -125,71 +186,81 @@ const load = async () => {
       status: statusFilter.value || undefined,
       screen_type: typeFilter.value || undefined,
       sort_by: sortBy.value,
-      sort_order: sortOrder.value
-    }
-    const res = await screenService.getScreens(params)
+      sort_order: sortOrder.value,
+    };
+    const res = await screenService.getScreens(params);
     // res: { data, total, current_page, per_page }
-    rows.value = res.data
-    total.value = res.total || 0
+    rows.value = res.data;
+    total.value = res.total || 0;
   } catch (e) {
-    console.error(e)
-    ElMessage.error('Failed to load screens')
+    console.error(e);
+    ElMessage.error("Failed to load screens");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const handleSizeChange = (size) => {
-  pageSize.value = size
-  currentPage.value = 1
-  load()
-}
+  pageSize.value = size;
+  currentPage.value = 1;
+  load();
+};
 const handleCurrentChange = (page) => {
-  currentPage.value = page
-  load()
-}
+  currentPage.value = page;
+  load();
+};
 
-const viewScreen = (id) => router.push(`/admin/screens/${id}`)
-const editScreen = (id) => router.push(`/admin/screens/${id}/edit`)
+const viewScreen = (id) => router.push(`/admin/screens/${id}`);
+const editScreen = (id) => router.push(`/admin/screens/${id}/edit`);
 
 const deleteScreen = async (id) => {
   try {
-    await ElMessageBox.confirm('Are you sure you want to delete this screen?', 'Delete Screen', {
-      type: 'warning',
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel'
-    })
-    await screenService.deleteScreen(id)
-    ElMessage.success('Screen deleted')
-    if (rows.value.length === 1 && currentPage.value > 1) currentPage.value--
-    load()
+    await ElMessageBox.confirm(
+      "Are you sure you want to delete this screen?",
+      "Delete Screen",
+      {
+        type: "warning",
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+      }
+    );
+    await screenService.deleteScreen(id);
+    ElMessage.success("Screen deleted");
+    if (rows.value.length === 1 && currentPage.value > 1) currentPage.value--;
+    load();
   } catch (err) {
-    if (err !== 'cancel') {
-      console.error(err)
-      ElMessage.error('Failed to delete screen')
+    if (err !== "cancel") {
+      console.error(err);
+      ElMessage.error("Failed to delete screen");
     }
   }
-}
+};
 
 const statusTagType = (status) => {
   switch (status) {
-    case 'active': return 'success'
-    case 'maintenance': return 'warning'
-    case 'closed': return 'danger'
-    case 'renovation': return 'info'
-    default: return ''
+    case "active":
+      return "success";
+    case "maintenance":
+      return "warning";
+    case "closed":
+      return "danger";
+    case "renovation":
+      return "info";
+    default:
+      return "";
   }
-}
+};
 
-const formatDate = (str) => (str ? new Date(str).toLocaleDateString() : '-')
+const formatDate = (str) => (str ? new Date(str).toLocaleDateString() : "-");
 
 onMounted(() => {
   appStore.setBreadcrumbs([
-    { title: 'Dashboard', path: '/admin/dashboard' },
-    { title: 'Screens', path: '/admin/screens' }
-  ])
-  load()
-})
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("screens.title"), path: "/admin/screens" },
+    { title: t("screens.allScreens"), path: "/admin/screens" },
+  ]);
+  load();
+});
 </script>
 
 <style scoped>
@@ -199,7 +270,17 @@ onMounted(() => {
   align-items: center;
   margin-bottom: 24px;
 }
-.toolbar { display: flex; gap: 12px; margin-bottom: 16px; }
-.search-input { width: 260px; }
-.pagination { margin-top: 16px; display: flex; justify-content: center; }
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.search-input {
+  width: 260px;
+}
+.pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
 </style>

@@ -19,7 +19,7 @@ export default {
     loginTitle: "គ្រប់គ្រងរោងកុន",
     loginSubtitle: "ចូលក្នុងគណនីរបស់អ្នក",
     phone: "លេខទូរស័ព្ទ",
-    phonePlaceholder: "លេខទូរសព្ទ (+855...)",
+    phonePlaceholder: "លេខទូរស័ព្ទ (+855...)",
     password: "លេខសម្ងាត់",
     passwordPlaceholder: "លេខសម្ងាត់",
     rememberMe: "ចងចាំខ្ញុំ",
@@ -65,7 +65,47 @@ export default {
     chartPlaceholder: "តារាងនឹងត្រូវបង្ហាញនៅទីនេះ",
   },
   // Seat Management
-
+  seats: {
+    indentifier: "អត្តសញ្ញាណកៅអី",
+    title: "គ្រប់គ្រងកៅអី",
+    addSeat: "បន្ថែមកៅអី",
+    createSeat: "បង្កើតកៅអី",
+    editSeat: "កែសម្រួលកៅអី",
+    allSeats: "កៅអីទាំងអស់",
+    row: "ជួរ",
+    type: "ប្រភេទកៅអី",
+    status: "ស្ថានភាព",
+    price: "តម្លៃ",
+    searchSeats: "ស្វែងរកកៅអី...",
+    filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
+    filterByType: "ចម្រាញ់តាមប្រភេទកៅអី",
+    filterByAvailability: "ចម្រាញ់តាមភាពអាចប្រើបាន",
+    searchSeats: "ស្វែងរកកៅអី...",
+    actions: "សកម្មភាព",
+    edit: "កែសម្រួល",
+    delete: "លុប",
+    updateStatus: "កែស្ថានភាព",
+    seatNumber: "លេខកៅអី",
+    seatType: "ប្រភេទកៅអី",
+    availability: "ភាពអាចប្រើប្រាស់បាន",
+    unavailable: "មិនអាចប្រើប្រាស់បាន",
+    available: "អាចប្រើប្រាស់បាន",
+    created: "បានបង្កើត",
+    preview: "ពិនិត្យមើល",
+    types: {
+      regular: "Regular",
+      vip: "VIP",
+      couple: "Couple",
+      queen: "Queen",
+    },
+    statuses: {
+      active: "អាចកក់បាន",
+      maintenance: "កំពុងជួសជុល",
+      out_of_order: "មិនអាចប្រើបានជាបណ្តោះអាសន្ន",
+      reserved: "បានកក់",
+    },
+    originalInfo: "ព័ត៌មានដើម",
+  },
   // Theater Management
   theaters: {
     title: "គ្រប់គ្រងរោងកុន",
@@ -141,7 +181,14 @@ export default {
     superadmin: "អ្នកគ្រប់គ្រងខ្ពស់",
     user: "អ្នកប្រើប្រាស់",
   },
-
+  // Screen Management
+  screens: {
+    title: "គ្រប់គ្រងស្ក្រីន",
+    allScreens: "ស្រ្គីនទាំងអស់",
+    addScreen: "បន្ថែមស្ក្រីន",
+    createScreen: "បន្ថែមស្រ្កីន",
+    editScreen: "កែសម្រួលស្ក្រីន",
+  },
   // Movie Management
   movies: {
     title: "គ្រប់គ្រងភាពយន្ត",
@@ -189,7 +236,6 @@ export default {
     unpaid: "មិនទាន់បង់ប្រាក់",
     refunded: "បានសងប្រាក់វិញ",
   },
-
   // Settings
   settings: {
     title: "ការកំណត់",

@@ -66,8 +66,8 @@
             clearable
             style="min-width: 200px"
           >
-            <el-option :label="$t('seats.available')" :value="true" />
-            <el-option :label="$t('seats.unavailable')" :value="false" />
+            <el-option :label="$t('seats.available')" value="true" />
+            <el-option :label="$t('seats.unavailable')" value="false" />
           </el-select>
         </el-form-item>
 
@@ -241,7 +241,7 @@
             @click="updateSeatStatus"
             :loading="statusDialog.loading"
           >
-            {{ $t("actions.update") }}
+            {{ $t("actions.save") }}
           </el-button>
         </span>
       </template>
@@ -373,7 +373,7 @@ const editSeat = (id) => {
 
 const handleCommand = (command) => {
   const [action, id] = command.split(":");
-
+  console.log("command parameter:", command);
   if (action === "status") {
     const seat = seats.value.find((s) => s.id === id);
     if (seat) {
@@ -465,6 +465,20 @@ watch(
   }
 );
 
+// Watchers
+watch(
+  [
+    () => filters.search,
+    () => filters.seat_type,
+    () => filters.status,
+    () => filters.is_available,
+  ],
+  () => {
+    pagination.current_page = 1;
+    loadSeats();
+  }
+);
+
 // Lifecycle
 onMounted(async () => {
   await loadSeats();
@@ -472,6 +486,7 @@ onMounted(async () => {
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },
     { title: t("seats.title"), path: "/admin/seats" },
+    { title: t("seats.allSeats"), path: "/admin/seats" },
   ]);
 });
 </script>
