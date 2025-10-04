@@ -159,8 +159,6 @@ const handleLogin = async () => {
       await router.replace(redirectPath)
       // console.log('Router redirect successful')
     } catch (routerError) {
-      // console.warn('⚠️ Router redirect failed, using window.location:', routerError)
-      // Method 2: Direct browser navigation as fallback
       window.location.href = redirectPath
     }
     

@@ -62,12 +62,50 @@ export default {
     chartPlaceholder: "តារាងនឹងត្រូវបង្ហាញនៅទីនេះ",
   },
   // Seat Management
-  seats: {
-    title: "គ្រប់គ្រងកៅអី",
-    addSeat: "បន្ថែមកៅអី",
-    createSeat: "បង្កើតកៅអី",
-    editSeat: "កែសម្រួលកៅអី",
-    allSeats: "កៅអីទាំងអស់",
+
+  // Theater Management
+  theaters: {
+    title: "គ្រប់គ្រងរោងកុន",
+    allTheaters: "រោងកុនទាំងអស់",
+    addTheater: "បន្ថែមរោងកុន",
+    createTheater: "បង្កើតរោងកុន",
+    editTheater: "កែសម្រួលរោងកុន",
+    theaterDetails: "ព័ត៌មានលម្អិតរោងកុន",
+    name: "ឈ្មោះ",
+    address: "អាស័យដ្ឋាន",
+    city: "ទីក្រុង",
+    province: "ខេត្ត/រាជធានី",
+    status: "ស្ថានភាព",
+    features: "លក្ខណៈពិសេស",
+    totalScreens: "ចំនួនអេក្រង់សរុប",
+    totalCapacity: "សមត្ថភាពសរុប",
+    notes: "កំណត់ចំណាំ",
+    createSuccess: "បង្កើតរោងកុនបានជោគជ័យ",
+    updateTheater: "ធ្វើបច្ចុប្បន្នភាពរោងកុន",
+    updateSuccess: "ធ្វើបច្ចុប្បន្នភាពរោងកុនបានជោគជ័យ"
+  },
+
+  // Screen Management
+  screens: {
+    title: "គ្រប់គ្រងអេក្រង់",
+    allScreens: "អេក្រង់ទាំងអស់",
+    addScreen: "បន្ថែមអេក្រង់",
+    createScreen: "បង្កើតអេក្រង់",
+    editScreen: "កែសម្រួលអេក្រង់",
+    screenDetails: "ព័ត៌មានលម្អិតអេក្រង់",
+    searchScreens: "ស្វែងរកអេក្រង់...",
+    filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
+    filterByType: "ចម្រាញ់តាមប្រភេទ",
+    sortOrder: "លំដាប់តម្រៀប",
+    name: "ឈ្មោះ",
+    type: "ប្រភេទ",
+    theater: "រោងកុន",
+    totalSeats: "ចំនួនកៅអីសរុប",
+    status: "ស្ថានភាព",
+    notes: "កំណត់ចំណាំ",
+    createSuccess: "បង្កើតអេក្រង់បានជោគជ័យ",
+    updateScreen: "ធ្វើបច្ចុប្បន្នភាពអេក្រង់",
+    updateSuccess: "ធ្វើបច្ចុប្បន្នភាពអេក្រង់បានជោគជ័យ"
   },
   // User Management
   users: {
