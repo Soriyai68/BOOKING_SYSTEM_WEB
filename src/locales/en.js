@@ -141,6 +141,7 @@ export default {
       reserved: "Reserved",
     },
     updateStatus: "Update Status",
+    originalInfo: "Orginal Information",
   },
   // Movie Management
   movies: {

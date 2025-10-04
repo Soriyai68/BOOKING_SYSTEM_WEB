@@ -142,8 +142,8 @@
             <el-form-item :label="$t('seats.availability')">
               <el-switch
                 v-model="form.is_available"
-                :active-text="$t('common.available')"
-                :inactive-text="$t('common.unavailable')"
+                :active-text="$t('seats.available')"
+                :inactive-text="$t('seats.unavailable')"
               />
               <div class="form-help">
                 {{ $t("seats.availabilityHelp") }}

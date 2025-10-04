@@ -32,6 +32,7 @@
             v-model="filters.seat_type"
             :placeholder="$t('seats.filterByType')"
             clearable
+            style="min-width: 200px"
           >
             <el-option
               v-for="type in seatTypes"
@@ -47,6 +48,7 @@
             v-model="filters.status"
             :placeholder="$t('seats.filterByStatus')"
             clearable
+            style="min-width: 200px"
           >
             <el-option
               v-for="status in seatStatuses"
@@ -62,9 +64,10 @@
             v-model="filters.is_available"
             :placeholder="$t('seats.filterByAvailability')"
             clearable
+            style="min-width: 200px"
           >
-            <el-option :label="$t('common.available')" value="true" />
-            <el-option :label="$t('common.unavailable')" value="false" />
+            <el-option :label="$t('seats.available')" :value="true" />
+            <el-option :label="$t('seats.unavailable')" :value="false" />
           </el-select>
         </el-form-item>
 
@@ -312,6 +315,12 @@ const loadSeats = async () => {
     const params = {
       page: pagination.current_page,
       per_page: pagination.per_page,
+      sort_by: filters.sort_by,
+      sort_order: filters.sort_order,
+      search: filters.search || undefined,
+      seat_type: filters.seat_type || undefined,
+      status: filters.status || undefined,
+      is_available: filters.is_available || undefined,
     };
 
     const response = await seatService.getSeats(params);
