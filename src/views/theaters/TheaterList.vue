@@ -117,17 +117,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { useAppStore } from "@/stores/app";
-import { theaterService } from "@/services/theaterService";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { Plus, Search } from "@element-plus/icons-vue";
-import { debounce } from "lodash-es";
-import { useI18n } from "vue-i18n";
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { useAppStore } from '@/stores/app'
+import { theaterService } from '@/services/theaterService'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { Plus, Search } from '@element-plus/icons-vue'
+import { debounce } from 'lodash-es'
 
-const router = useRouter();
-const appStore = useAppStore();
+const router = useRouter()
+const appStore = useAppStore()
+const { t } = useI18n()
 
 const loading = ref(false);
 const rows = ref([]);
@@ -139,7 +140,6 @@ const statusFilter = ref("");
 const cityFilter = ref("");
 const provinceFilter = ref("");
 
-const { t } = useI18n();
 
 const debouncedSearch = debounce(() => {
   currentPage.value = 1;
