@@ -164,6 +164,9 @@ export default {
     type: "ប្រភេទ",
     theater: "រោងកុន",
     totalSeats: "ចំនួនកៅអីសរុប",
+    totalSeatsNote: "ចំនួនកៅអីសរុប (គណនាដោយស្វ័យប្រវត្តិ)",
+    totalSeatsAutoCalculated: "ចំនួនកៅអីសរុបនឹងត្រូវបានគណនាដោយស្វ័យប្រវត្តិផ្អែកលើកៅអីពិតប្រាកដដែលបានកំណត់ឲ្យអេក្រង់នេះ។",
+    totalSeatsCalculatedFromSeats: "តម្លៃនេះត្រូវបានគណនាដោយស្វ័យប្រវត្តិពីកៅអីដែលបានកំណត់ឲ្យអេក្រង់នេះ។",
     status: "ស្ថានភាព",
     notes: "កំណត់ចំណាំ",
     belongsToTheater: "ជាកម្មសិទ្ធិរបស់រោងកុន",
@@ -205,14 +208,6 @@ export default {
     admin: "អ្នកគ្រប់គ្រង",
     superadmin: "អ្នកគ្រប់គ្រងខ្ពស់",
     user: "អ្នកប្រើប្រាស់",
-  },
-  // Screen Management
-  screens: {
-    title: "គ្រប់គ្រងស្ក្រីន",
-    allScreens: "ស្រ្គីនទាំងអស់",
-    addScreen: "បន្ថែមស្ក្រីន",
-    createScreen: "បន្ថែមស្រ្កីន",
-    editScreen: "កែសម្រួលស្ក្រីន",
   },
   // Movie Management
   movies: {

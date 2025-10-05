@@ -3,8 +3,9 @@
     <!-- Logo -->
     <div class="logo">
       <div class="logo-content" :class="{ collapsed: sidebarCollapsed }">
-        <el-icon class="logo-icon"><Ticket /></el-icon>
+        <img src="@/assets/ek.jpg" alt="Logo" class="logo-image" />
         <span v-show="!sidebarCollapsed" class="logo-text">Ninja Booking</span>
+        <!-- Optional text if sidebar not collapsed -->
       </div>
     </div>
 
@@ -223,5 +224,24 @@ const sidebarActiveColor = computed(() => {
 
 :deep(.el-sub-menu__title:hover) {
   background-color: #1c2636 !important;
+}
+.logo-image {
+  height: 36px; /* keeps it compact */
+  width: auto;
+  margin-right: 10px;
+  border-radius: 8px; /* smooth rounded corners */
+  object-fit: cover; /* prevents stretching */
+  transition: all 0.3s ease;
+}
+
+/* Center logo when collapsed */
+.logo-content.collapsed .logo-image {
+  margin: 0 auto;
+}
+
+/* Add a hover effect */
+.logo-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 </style>

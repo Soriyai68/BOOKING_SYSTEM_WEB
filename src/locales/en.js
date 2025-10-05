@@ -190,14 +190,6 @@ export default {
       reserved: "Reserved",
     },
   },
-  // Screen Management
-  screens: {
-    title: "Screen Management",
-    allScreens: "All Screens",
-    addScreen: "Add Screen",
-    createScreen: "Create Screen",
-    editScreen: "Edit Screen",
-  },
 
   // Theater Management
   theaters: {
@@ -243,6 +235,9 @@ export default {
     type: "Type",
     theater: "Theater",
     totalSeats: "Total Seats",
+    totalSeatsNote: "Total Seats (Auto-Calculated)",
+    totalSeatsAutoCalculated: "Total seats will be automatically calculated based on the actual seats assigned to this screen.",
+    totalSeatsCalculatedFromSeats: "This value is automatically calculated from the seats assigned to this screen.",
     status: "Status",
     notes: "Notes",
     belongsToTheater: "Belongs to Theater",
