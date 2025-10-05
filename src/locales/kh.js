@@ -20,7 +20,7 @@ export default {
     loginTitle: "គ្រប់គ្រងរោងកុន",
     loginSubtitle: "ចូលក្នុងគណនីរបស់អ្នក",
     phone: "លេខទូរស័ព្ទ",
-    phonePlaceholder: "លេខទូរសព្ទ (+855...)",
+    phonePlaceholder: "លេខទូរស័ព្ទ (+855...)",
     password: "លេខសម្ងាត់",
     passwordPlaceholder: "លេខសម្ងាត់",
     rememberMe: "ចងចាំខ្ញុំ",
@@ -205,7 +205,14 @@ export default {
     superadmin: "អ្នកគ្រប់គ្រងខ្ពស់",
     user: "អ្នកប្រើប្រាស់",
   },
-
+  // Screen Management
+  screens: {
+    title: "គ្រប់គ្រងស្ក្រីន",
+    allScreens: "ស្រ្គីនទាំងអស់",
+    addScreen: "បន្ថែមស្ក្រីន",
+    createScreen: "បន្ថែមស្រ្កីន",
+    editScreen: "កែសម្រួលស្ក្រីន",
+  },
   // Movie Management
   movies: {
     title: "គ្រប់គ្រងភាពយន្ត",
@@ -295,7 +302,6 @@ export default {
     unpaid: "មិនទាន់បង់ប្រាក់",
     refunded: "បានសងប្រាក់វិញ",
   },
-
   // Settings
   settings: {
     title: "ការកំណត់",

@@ -151,6 +151,53 @@ export default {
     updateStatus: "Update Status",
     originalInfo: "Original Information",
   },
+  // Theater Management
+  theaters: {
+    title: "Theater Management",
+    allTheaters: "All Theaters",
+    addTheater: "Add Theater",
+    createTheater: "Create Theater",
+    editTheater: "Edit Theater",
+    theaterDetails: "Theater Details",
+    name: "Name",
+    address: "Address",
+    city: "City",
+    province: "Province",
+    status: "Status",
+    price: "Price",
+    searchSeats: "Search seats...",
+    actions: "Actions",
+    edit: "Edit",
+    delete: "Delete",
+    updateStatus: "Update Status",
+    seatNumber: "Seat Number",
+    seatType: "Seat Type",
+    availability: "Availability",
+    available: "Available",
+    unavailable: "Unavailable",
+    created: "Created",
+    preview: "Preview",
+    types: {
+      regular: "Regular",
+      vip: "VIP",
+      couple: "Couple",
+      queen: "Queen",
+    },
+    statuses: {
+      active: "Active",
+      maintenance: "Under Maintenance",
+      out_of_order: "Out of Order",
+      reserved: "Reserved",
+    },
+  },
+  // Screen Management
+  screens: {
+    title: "Screen Management",
+    allScreens: "All Screens",
+    addScreen: "Add Screen",
+    createScreen: "Create Screen",
+    editScreen: "Edit Screen",
+  },
 
   // Theater Management
   theaters: {

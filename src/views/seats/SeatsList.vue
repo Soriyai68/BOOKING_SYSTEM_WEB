@@ -452,6 +452,7 @@ onMounted(async () => {
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },
     { title: t("seats.title"), path: "/admin/seats" },
+    { title: t("seats.allSeats"), path: "/admin/seats" },
   ]);
 });
 </script>

@@ -8,6 +8,7 @@ export const seatService = {
       page: params.page || 1,
       limit: params.per_page || 10,
       search: params.search,
+      status: params.status,
       seat_type: params.seat_type,
       is_available: params.is_available,
       theater_id: params.theater_id,
@@ -129,7 +130,11 @@ export const seatService = {
     const response = await api.put(`/seats/${id}`, backendData);
     return response.data;
   },
-
+  // update seat status
+  async updateSeatStatus(id, status) {
+    const response = await api.put(`/seats/${id}/status`, { status });
+    return response.data;
+  },
   // Delete seat (soft delete)
   // async deleteSeat(id) {
   //   const response = await api.delete(`/seats/${id}`);

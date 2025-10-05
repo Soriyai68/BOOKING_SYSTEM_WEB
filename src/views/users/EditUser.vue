@@ -78,7 +78,7 @@
             :placeholder="$t('users.role')"
             style="width: 100%"
           >
-            <!-- <el-option :label="$t('users.user')" value="user" /> -->
+            <el-option :label="$t('users.user')" value="user" />
             <el-option :label="$t('users.admin')" value="admin" />
             <el-option
               :label="$t('users.superadmin')"

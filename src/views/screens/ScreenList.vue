@@ -2,8 +2,10 @@
   <div class="screen-list">
     <div class="page-header">
       <h2>{{ $t("screens.title") }}</h2>
+      <h2>{{ $t("screens.title") }}</h2>
       <el-button type="primary" @click="$router.push('/admin/screens/create')">
         <el-icon><Plus /></el-icon>
+        {{ $t("screens.addScreen") }}
         {{ $t("screens.addScreen") }}
       </el-button>
     </div>
@@ -24,7 +26,18 @@
           :placeholder="$t('screens.filterByType')"
           clearable
         >
+        <el-select
+          v-model="typeFilter"
+          :placeholder="$t('screens.filterByType')"
+          clearable
+        >
           <el-option :label="$t('table.selectAll')" value="" />
+          <el-option
+            v-for="opt in screenService.SCREEN_TYPES"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
           <el-option
             v-for="opt in screenService.SCREEN_TYPES"
             :key="opt.value"
@@ -38,7 +51,18 @@
           :placeholder="$t('screens.filterByStatus')"
           clearable
         >
+        <el-select
+          v-model="statusFilter"
+          :placeholder="$t('screens.filterByStatus')"
+          clearable
+        >
           <el-option :label="$t('table.selectAll')" value="" />
+          <el-option
+            v-for="opt in screenService.SCREEN_STATUSES"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
           <el-option
             v-for="opt in screenService.SCREEN_STATUSES"
             :key="opt.value"
@@ -48,6 +72,12 @@
         </el-select>
 
         <el-select v-model="sortBy" :placeholder="$t('table.sortBy')">
+          <el-option
+            v-for="opt in screenService.SORT_OPTIONS"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
           <el-option
             v-for="opt in screenService.SORT_OPTIONS"
             :key="opt.value"
@@ -64,6 +94,11 @@
 
       <el-table :data="rows" v-loading="loading" style="width: 100%">
         <el-table-column prop="screen_name" :label="$t('screens.name')" />
+        <el-table-column
+          prop="screen_type"
+          :label="$t('screens.type')"
+          width="120"
+        >
         <el-table-column
           prop="screen_type"
           :label="$t('screens.type')"
@@ -92,8 +127,16 @@
             <el-tag :type="statusTagType(row.status)" size="small">{{
               row.status_display || row.status
             }}</el-tag>
+            <el-tag :type="statusTagType(row.status)" size="small">{{
+              row.status_display || row.status
+            }}</el-tag>
           </template>
         </el-table-column>
+        <el-table-column
+          prop="created_at"
+          :label="$t('users.created')"
+          width="160"
+        >
         <el-table-column
           prop="created_at"
           :label="$t('users.created')"
@@ -105,6 +148,27 @@
         </el-table-column>
         <el-table-column :label="$t('users.actions')" width="180">
           <template #default="{ row }">
+            <el-button
+              size="small"
+              link
+              type="primary"
+              @click="viewScreen(row.id)"
+              >{{ $t("actions.view") }}</el-button
+            >
+            <el-button
+              size="small"
+              link
+              type="primary"
+              @click="editScreen(row.id)"
+              >{{ $t("actions.edit") }}</el-button
+            >
+            <el-button
+              size="small"
+              link
+              type="danger"
+              @click="deleteScreen(row.id)"
+              >{{ $t("actions.delete") }}</el-button
+            >
             <el-button
               size="small"
               link
@@ -176,6 +240,9 @@ const debouncedSearch = debounce(() => {
   currentPage.value = 1;
   load();
 }, 500);
+  currentPage.value = 1;
+  load();
+}, 500);
 
 watch([statusFilter, typeFilter, sortBy, sortOrder], () => {
   currentPage.value = 1;
@@ -192,6 +259,7 @@ const loadTheaters = async () => {
 };
 
 const load = async () => {
+  loading.value = true;
   loading.value = true;
   try {
     const params = {
@@ -219,12 +287,20 @@ const load = async () => {
   } catch (e) {
     console.error(e);
     ElMessage.error("Failed to load screens");
+    console.error(e);
+    ElMessage.error("Failed to load screens");
   } finally {
+    loading.value = false;
     loading.value = false;
   }
 };
+};
 
 const handleSizeChange = (size) => {
+  pageSize.value = size;
+  currentPage.value = 1;
+  load();
+};
   pageSize.value = size;
   currentPage.value = 1;
   load();
@@ -233,7 +309,12 @@ const handleCurrentChange = (page) => {
   currentPage.value = page;
   load();
 };
+  currentPage.value = page;
+  load();
+};
 
+const viewScreen = (id) => router.push(`/admin/screens/${id}`);
+const editScreen = (id) => router.push(`/admin/screens/${id}/edit`);
 const viewScreen = (id) => router.push(`/admin/screens/${id}`);
 const editScreen = (id) => router.push(`/admin/screens/${id}/edit`);
 
@@ -252,12 +333,29 @@ const deleteScreen = async (id) => {
     ElMessage.success("Screen deleted");
     if (rows.value.length === 1 && currentPage.value > 1) currentPage.value--;
     load();
+    await ElMessageBox.confirm(
+      "Are you sure you want to delete this screen?",
+      "Delete Screen",
+      {
+        type: "warning",
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+      }
+    );
+    await screenService.deleteScreen(id);
+    ElMessage.success("Screen deleted");
+    if (rows.value.length === 1 && currentPage.value > 1) currentPage.value--;
+    load();
   } catch (err) {
+    if (err !== "cancel") {
+      console.error(err);
+      ElMessage.error("Failed to delete screen");
     if (err !== "cancel") {
       console.error(err);
       ElMessage.error("Failed to delete screen");
     }
   }
+};
 };
 
 const statusTagType = (status) => {
@@ -272,9 +370,21 @@ const statusTagType = (status) => {
       return "info";
     default:
       return "";
+    case "active":
+      return "success";
+    case "maintenance":
+      return "warning";
+    case "closed":
+      return "danger";
+    case "renovation":
+      return "info";
+    default:
+      return "";
   }
 };
+};
 
+const formatDate = (str) => (str ? new Date(str).toLocaleDateString() : "-");
 const formatDate = (str) => (str ? new Date(str).toLocaleDateString() : "-");
 
 onMounted(async () => {
