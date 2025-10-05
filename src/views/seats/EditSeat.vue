@@ -25,203 +25,117 @@
     />
 
     <!-- Seat Form -->
-    <el-card v-else shadow="never">
-      <!-- Original Seat Info -->
-      <div v-if="originalSeat" class="original-info">
-        <h4>{{ $t("seats.originalInfo") }}</h4>
-        <el-descriptions :column="3" size="small" border>
-          <el-descriptions-item :label="$t('seats.seatId')">
-            {{ originalSeat.seat_identifier }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="$t('seats.type')">
-            {{ $t(`seats.types.${originalSeat.seat_type}`) }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="$t('common.createdAt')">
-            {{ formatDateTime(originalSeat.created_at) }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="$t('common.updatedAt')">
-            {{ formatDateTime(originalSeat.updated_at) }}
-          </el-descriptions-item>
-        </el-descriptions>
-      </div>
+    <el-card v-else>
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="140px">
+        <el-form-item :label="$t('seats.theater')" prop="theater_id">
+          <el-select
+            v-model="form.theater_id"
+            style="width: 100%"
+            :loading="loadingTheaters"
+            filterable
+            @change="handleTheaterChange"
+          >
+            <el-option
+              v-for="theater in theaters"
+              :key="theater.id"
+              :label="theater.display_name || theater.name"
+              :value="theater.id"
+            />
+          </el-select>
+        </el-form-item>
 
-      <el-divider />
+        <el-form-item :label="$t('seats.screen')" prop="screen_id">
+          <el-select
+            v-model="form.screen_id"
+            :disabled="!form.theater_id"
+            :loading="loadingScreens"
+            style="width: 100%"
+            filterable
+          >
+            <el-option
+              v-for="screen in filteredScreens"
+              :key="screen.id"
+              :label="screen.screen_name"
+              :value="screen.id"
+            />
+          </el-select>
+        </el-form-item>
 
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="150px"
-        class="seat-form"
-      >
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-form-item :label="$t('seats.row')" prop="row">
-              <el-input
-                v-model="form.row"
-                :placeholder="$t('seats.rowPlaceholder')"
-                maxlength="5"
-                show-word-limit
-                @input="form.row = form.row.toUpperCase()"
-              />
-              <div class="form-help">
-                {{ $t("seats.rowHelp") }}
-              </div>
-            </el-form-item>
-          </el-col>
+        <el-form-item :label="$t('seats.row')" prop="row">
+          <el-input
+            v-model="form.row"
+            maxlength="5"
+            show-word-limit
+            @input="form.row = form.row.toUpperCase()"
+          />
+        </el-form-item>
 
-          <el-col :span="12">
-            <el-form-item :label="$t('seats.seatNumber')" prop="seat_number">
-              <el-input
-                v-model="form.seat_number"
-                :placeholder="$t('seats.seatNumberPlaceholder')"
-                maxlength="10"
-                show-word-limit
-                @input="
-                  form.seat_number = form.seat_number.toString().toUpperCase()
-                "
-              />
-              <div class="form-help">
-                {{ $t("seats.seatNumberHelp") }}
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item :label="$t('seats.seatNumber')" prop="seat_number">
+          <el-input
+            v-model="form.seat_number"
+            maxlength="10"
+            show-word-limit
+            @input="form.seat_number = form.seat_number.toString().toUpperCase()"
+          />
+        </el-form-item>
 
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-form-item :label="$t('seats.type')" prop="seat_type">
-              <el-select v-model="form.seat_type" style="width: 100%">
-                <el-option
-                  v-for="type in seatTypes"
-                  :key="type.value"
-                  :label="$t(`seats.types.${type.value}`)"
-                  :value="type.value"
-                />
-              </el-select>
-              <div class="form-help">
-                {{ $t("seats.typeHelp") }}
-              </div>
-            </el-form-item>
-          </el-col>
+        <el-form-item :label="$t('seats.type')" prop="seat_type">
+          <el-select v-model="form.seat_type" style="width: 100%">
+            <el-option
+              v-for="type in seatTypes"
+              :key="type.value"
+              :label="$t(`seats.types.${type.value}`)"
+              :value="type.value"
+            />
+          </el-select>
+        </el-form-item>
 
-          <el-col :span="12">
-            <el-form-item :label="$t('seats.status')" prop="status">
-              <el-select v-model="form.status" style="width: 100%">
-                <el-option
-                  v-for="status in seatStatuses"
-                  :key="status.value"
-                  :label="$t(`seats.statuses.${status.value}`)"
-                  :value="status.value"
-                />
-              </el-select>
-              <div class="form-help">
-                {{ $t("seats.statusHelp") }}
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item :label="$t('seats.status')" prop="status">
+          <el-select v-model="form.status" style="width: 100%">
+            <el-option
+              v-for="status in seatStatuses"
+              :key="status.value"
+              :label="$t(`seats.statuses.${status.value}`)"
+              :value="status.value"
+            />
+          </el-select>
+        </el-form-item>
 
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-form-item :label="$t('seats.price')" prop="price">
-              <el-input-number
-                v-model="form.price"
-                :min="0"
-                :max="9999"
-                :precision="2"
-                style="width: 100%"
-              />
-              <div class="form-help">
-                {{ $t("seats.priceHelp") }}
-              </div>
-            </el-form-item>
-          </el-col>
+        <el-form-item :label="$t('seats.price')" prop="price">
+          <el-input-number
+            v-model="form.price"
+            :min="0"
+            :max="9999"
+            :precision="2"
+            style="width: 100%"
+          />
+        </el-form-item>
 
-          <el-col :span="12">
-            <el-form-item :label="$t('seats.availability')">
-              <el-switch
-                v-model="form.is_available"
-                :active-text="$t('seats.available')"
-                :inactive-text="$t('seats.unavailable')"
-              />
-              <div class="form-help">
-                {{ $t("seats.availabilityHelp") }}
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-form-item :label="$t('seats.theaterId')" prop="theater_id">
-              <el-input
-                v-model="form.theater_id"
-                :placeholder="$t('seats.theaterIdPlaceholder')"
-              />
-              <div class="form-help">
-                {{ $t("seats.theaterIdHelp") }}
-              </div>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="12">
-            <el-form-item :label="$t('seats.screenId')" prop="screen_id">
-              <el-input
-                v-model="form.screen_id"
-                :placeholder="$t('seats.screenIdPlaceholder')"
-              />
-              <div class="form-help">
-                {{ $t("seats.screenIdHelp") }}
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item :label="$t('seats.availability')">
+          <el-switch
+            v-model="form.is_available"
+            :active-text="$t('seats.available')"
+            :inactive-text="$t('seats.unavailable')"
+          />
+        </el-form-item>
 
         <el-form-item :label="$t('seats.notes')" prop="notes">
           <el-input
             v-model="form.notes"
             type="textarea"
             :rows="3"
-            :placeholder="$t('seats.notesPlaceholder')"
             maxlength="500"
             show-word-limit
           />
-          <div class="form-help">
-            {{ $t("seats.notesHelp") }}
-          </div>
         </el-form-item>
-
-        <!-- Preview -->
-        <el-divider>{{ $t("seats.preview") }}</el-divider>
-        <div class="seat-preview">
-          <div class="preview-item">
-            <span class="preview-label">{{ $t("seats.seatIdentifier") }}:</span>
-            <span class="preview-value">{{ seatIdentifier }}</span>
-          </div>
-          <div class="preview-item">
-            <span class="preview-label">{{ $t("seats.displayName") }}:</span>
-            <span class="preview-value">{{ displayName }}</span>
-          </div>
-        </div>
 
         <!-- Form Actions -->
         <el-form-item>
-          <el-button type="primary" @click="handleSubmit" :loading="loading">
-            {{ $t("seats.updateSeat") }}
+          <el-button type="primary" :loading="loading" @click="handleSubmit">
+            {{ $t('seats.updateSeat') }}
           </el-button>
           <el-button @click="resetForm">
-            {{ $t("actions.reset") }}
-          </el-button>
-          <el-button @click="$router.back()">
-            {{ $t("actions.cancel") }}
-          </el-button>
-          <el-button
-            type="danger"
-            @click="handleDelete"
-            v-if="originalSeat && !originalSeat.deleted_at"
-          >
-            {{ $t("seats.deleteSeat") }}
+            {{ $t('actions.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -235,6 +149,8 @@ import { useRouter, useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { seatService } from "@/services/seatService";
+import { theaterService } from "@/services/theaterService";
+import { screenService } from "@/services/screenService";
 import { useAppStore } from "@/stores/app";
 import { ArrowLeft } from "@element-plus/icons-vue";
 
@@ -252,11 +168,23 @@ const originalSeat = ref(null);
 
 // Form data
 const form = reactive({
+  theater_id: "",
+  screen_id: "",
   row: "",
   seat_number: "",
   seat_type: "regular",
+  status: "active",
+  price: 0,
   is_available: true,
+  notes: "",
 });
+
+// Data
+const theaters = ref([]);
+const screens = ref([]);
+const filteredScreens = ref([]);
+const loadingTheaters = ref(false);
+const loadingScreens = ref(false);
 
 // Seat types
 const seatTypes = ref([
@@ -265,6 +193,13 @@ const seatTypes = ref([
   { value: "couple", label: "Couple" },
   { value: "king", label: "King" },
   { value: "queen", label: "Queen" },
+]);
+
+const seatStatuses = ref([
+  { value: "active", label: "Active" },
+  { value: "maintenance", label: "Maintenance" },
+  { value: "out_of_order", label: "Out of Order" },
+  { value: "reserved", label: "Reserved" },
 ]);
 
 // Form validation rules
@@ -342,11 +277,22 @@ const loadSeat = async () => {
 
     // Populate form with seat data
     Object.assign(form, {
+      theater_id: seatData.theater_id || "",
+      screen_id: seatData.screen_id || "",
       row: seatData.row || "",
       seat_number: seatData.seat_number || "",
       seat_type: seatData.seat_type || "regular",
+      status: seatData.status || "active",
+      price: seatData.price || 0,
       is_available: seatData.is_available ?? true,
+      notes: seatData.notes || "",
     });
+
+    // Load theater/screen lists and filter screens
+    await Promise.all([loadTheaters(), loadScreens()]);
+    if (form.theater_id) {
+      handleTheaterChange();
+    }
   } catch (error) {
     console.error("Load seat error:", error);
     loadError.value =
@@ -409,15 +355,68 @@ const handleDelete = async () => {
 const resetForm = () => {
   if (originalSeat.value) {
     Object.assign(form, {
+      theater_id: originalSeat.value.theater_id || "",
+      screen_id: originalSeat.value.screen_id || "",
       row: originalSeat.value.row || "",
       seat_number: originalSeat.value.seat_number || "",
       seat_type: originalSeat.value.seat_type || "regular",
+      status: originalSeat.value.status || "active",
+      price: originalSeat.value.price || 0,
       is_available: originalSeat.value.is_available ?? true,
+      notes: originalSeat.value.notes || "",
     });
+
+    if (form.theater_id) {
+      handleTheaterChange();
+    }
   }
 
   if (formRef.value) {
     formRef.value.clearValidate();
+  }
+};
+
+// Load theaters
+const loadTheaters = async () => {
+  loadingTheaters.value = true;
+  try {
+    const response = await theaterService.getTheaters({ per_page: 100 });
+    theaters.value = response.data || [];
+  } catch (error) {
+    console.error("Load theaters error:", error);
+    ElMessage.error("Failed to load theaters");
+  } finally {
+    loadingTheaters.value = false;
+  }
+};
+
+// Load screens
+const loadScreens = async () => {
+  loadingScreens.value = true;
+  try {
+    const response = await screenService.getScreens({ per_page: 100 });
+    screens.value = response.data || [];
+  } catch (error) {
+    console.error("Load screens error:", error);
+    ElMessage.error("Failed to load screens");
+  } finally {
+    loadingScreens.value = false;
+  }
+};
+
+// Handle theater change
+const handleTheaterChange = () => {
+  // Filter screens by selected theater
+  if (form.theater_id) {
+    filteredScreens.value = screens.value.filter(
+      (screen) => screen.theater_id === form.theater_id
+    );
+  } else {
+    filteredScreens.value = [];
+  }
+  // Reset screen selection if not in filtered list
+  if (form.screen_id && !filteredScreens.value.find(s => s.id === form.screen_id)) {
+    form.screen_id = "";
   }
 };
 
@@ -445,10 +444,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.edit-seat {
-  padding: 20px;
-}
-
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -456,59 +451,16 @@ onMounted(async () => {
   margin-bottom: 24px;
 }
 
-.page-header h2 {
-  margin: 0;
-  color: #303133;
+.el-form {
+  max-width: 640px;
 }
 
 .loading-placeholder {
   padding: 20px;
 }
 
-.original-info {
-  margin-bottom: 20px;
-}
-
-.original-info h4 {
-  margin: 0 0 16px 0;
-  color: #606266;
-}
-
-.seat-form {
-  max-width: 1000px;
-}
-
-.form-help {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 4px;
-  line-height: 1.4;
-}
-
-.seat-preview {
-  background-color: #f8f9fa;
-  padding: 16px;
-  border-radius: 4px;
-  margin-bottom: 20px;
-}
-
-.preview-item {
-  display: flex;
-  margin-bottom: 8px;
-}
-
-.preview-item:last-child {
-  margin-bottom: 0;
-}
-
-.preview-label {
-  font-weight: 500;
-  min-width: 120px;
-  color: #606266;
-}
-
-.preview-value {
-  color: #303133;
-  font-weight: 500;
+.error-state {
+  text-align: center;
+  padding: 40px 20px;
 }
 </style>

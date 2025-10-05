@@ -57,6 +57,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { theaterService } from '@/services/theaterService'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -65,6 +66,7 @@ import { debounce } from 'lodash-es'
 
 const router = useRouter()
 const appStore = useAppStore()
+const { t } = useI18n()
 
 const loading = ref(false)
 const rows = ref([])
@@ -125,8 +127,8 @@ const deleteTheater = async (id) => {
 
 onMounted(() => {
   appStore.setBreadcrumbs([
-    { title: 'Dashboard', path: '/admin/dashboard' },
-    { title: 'Theaters', path: '/admin/theaters' }
+    { title: t('nav.dashboard'), path: '/admin/dashboard' },
+    { title: t('theaters.title'), path: '/admin/theaters' }
   ])
   load()
 })

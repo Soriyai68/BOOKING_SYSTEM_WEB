@@ -117,13 +117,6 @@ export const userService = {
     return response.data
   },
 
-  // Bulk delete users
-  // async bulkDeleteUsers(userIds) {
-  //   // Backend doesn't have bulk delete, so delete one by one
-  //   const deletePromises = userIds.map(id => this.deleteUser(id))
-  //   await Promise.all(deletePromises)
-  // },
-
   // Update user status
   async updateUserStatus(id, isActive) {
     const response = await api.put(`/users/${id}`, { isActive })

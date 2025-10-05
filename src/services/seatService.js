@@ -10,6 +10,9 @@ export const seatService = {
       search: params.search,
       seat_type: params.seat_type,
       is_available: params.is_available,
+      theater_id: params.theater_id,
+      screen_id: params.screen_id,
+      status: params.status,
       sortBy: params.sort_by || "row",
       sortOrder: params.sort_order || "asc",
     };
@@ -34,6 +37,10 @@ export const seatService = {
           seat_type: seat.seat_type,
           is_available: seat.is_available,
           status: seat.status,
+          theater_id: seat.theater_id,
+          screen_id: seat.screen_id,
+          price: seat.price || 0,
+          notes: seat.notes || "",
           created_at: seat.createdAt,
           updated_at: seat.updatedAt,
           seat_identifier: `${seat.row}${seat.seat_number}`,
@@ -64,6 +71,10 @@ export const seatService = {
         seat_type: seat.seat_type,
         is_available: seat.is_available,
         status: seat.status,
+        theater_id: seat.theater_id,
+        screen_id: seat.screen_id,
+        price: seat.price || 0,
+        notes: seat.notes || "",
         created_at: seat.createdAt,
         updated_at: seat.updatedAt,
         seat_identifier: `${seat.row}${seat.seat_number}`,
@@ -82,6 +93,11 @@ export const seatService = {
       seat_number: seatData.seat_number?.toString().toUpperCase(),
       seat_type: seatData.seat_type || "regular",
       is_available: seatData.is_available ?? true,
+      status: seatData.status || "active",
+      theater_id: seatData.theater_id || null,
+      screen_id: seatData.screen_id || null,
+      price: seatData.price || 0,
+      notes: seatData.notes || "",
     };
 
     const response = await api.post("/seats", backendData);
@@ -96,6 +112,11 @@ export const seatService = {
       seat_number: seatData.seat_number?.toString().toUpperCase(),
       seat_type: seatData.seat_type,
       is_available: seatData.is_available,
+      status: seatData.status,
+      theater_id: seatData.theater_id,
+      screen_id: seatData.screen_id,
+      price: seatData.price,
+      notes: seatData.notes,
     };
 
     // Remove undefined values
@@ -110,8 +131,13 @@ export const seatService = {
   },
 
   // Delete seat (soft delete)
-  async deleteSeat(id) {
-    const response = await api.delete(`/seats/${id}`);
+  // async deleteSeat(id) {
+  //   const response = await api.delete(`/seats/${id}`);
+  //   return response.data;
+  // },
+  //delete seat (force delete)
+    async deleteSeat(id) {
+    const response = await api.delete(`/seats/${id}/force-delete`);
     return response.data;
   },
 
@@ -131,5 +157,35 @@ export const seatService = {
   async getSeatsByType(type, params = {}) {
     const response = await api.get(`/seats/type/${type}`, { params });
     return response.data;
+  },
+
+  // Get seats by theater
+  async getSeatsByTheater(theaterId, params = {}) {
+    const allParams = {
+      ...params,
+      theater_id: theaterId,
+    };
+    return await this.getSeats(allParams);
+  },
+
+  // Get seats by screen
+  async getSeatsByScreen(screenId, params = {}) {
+    const allParams = {
+      ...params,
+      screen_id: screenId,
+    };
+    return await this.getSeats(allParams);
+  },
+
+  // Update seat status
+  async updateSeatStatus(seatId, status) {
+    const response = await api.put(`/seats/${seatId}/status`, { status });
+    return response.data;
+  },
+
+  // Bulk create seats
+  async bulkCreateSeats(seatsArray) {
+    const promises = seatsArray.map((seat) => this.createSeat(seat));
+    return await Promise.all(promises);
   },
 };

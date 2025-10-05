@@ -21,7 +21,9 @@
         </el-form-item>
 
         <el-form-item :label="$t('screens.theater')" prop="theater_id">
-          <el-input v-model="form.theater_id" />
+          <el-select v-model="form.theater_id" style="width:100%" :loading="theatersLoading" filterable>
+            <el-option v-for="opt in theaters" :key="opt.id" :label="opt.display_name || opt.name" :value="opt.id" />
+          </el-select>
         </el-form-item>
 
         <el-form-item :label="$t('screens.type')" prop="screen_type">
@@ -59,6 +61,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useI18n } from 'vue-i18n'
 import { screenService } from '@/services/screenService'
+import { theaterService } from '@/services/theaterService'
 import { ElMessage } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
 
@@ -73,6 +76,8 @@ const pageLoading = ref(false)
 const loadError = ref('')
 
 const original = ref(null)
+const theaters = ref([])
+const theatersLoading = ref(false)
 
 const form = reactive({
   screen_name: '',
@@ -85,7 +90,21 @@ const form = reactive({
 
 const rules = {
   screen_name: [{ required: true, message: t('validation.required'), trigger: 'blur' }],
+  theater_id: [{ required: true, message: t('validation.required'), trigger: 'change' }],
   total_seats: [{ required: true, message: t('validation.required'), trigger: 'change' }]
+}
+
+const loadTheaters = async () => {
+  theatersLoading.value = true
+  try {
+    const res = await theaterService.getTheaters({ status: 'active', per_page: 100 })
+    theaters.value = res.data || []
+  } catch (e) {
+    console.error(e)
+    ElMessage.error('Failed to load theaters')
+  } finally {
+    theatersLoading.value = false
+  }
 }
 
 const load = async () => {
@@ -141,7 +160,7 @@ const resetForm = () => {
 }
 
 onMounted(async () => {
-  await load()
+  await Promise.all([load(), loadTheaters()])
   appStore.setBreadcrumbs([
     { title: t('nav.dashboard'), path: '/admin/dashboard' },
     { title: t('screens.title'), path: '/admin/screens' },

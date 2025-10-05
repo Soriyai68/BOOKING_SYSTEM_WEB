@@ -28,27 +28,30 @@ export const theaterService = {
     if (data?.success && data?.data) {
       const { theaters, pagination } = data.data
       return {
-        data: theaters.map((t) => ({
-          id: t._id,
-          name: t.name,
-          address: t.address,
-          city: t.city,
-          province: t.province,
-          status: t.status,
-          features: t.features || [],
-          total_screens: t.total_screens || 0,
-          total_capacity: t.total_capacity || 0,
-          screens_id: t.screens_id || [],
-          contact_info: t.contact_info || {},
-          operating_hours: t.operating_hours || {},
-          location: t.location || null,
-          notes: t.notes || '',
-          created_at: t.createdAt,
-          updated_at: t.updatedAt,
-          deleted_at: t.deletedAt,
-          display_name: `${t.name} - ${t.city}, ${t.province}`,
-          status_display: t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1).replace('_', ' ') : 'Active',
-        })),
+        data: theaters.map((t) => {
+          const screens_id = t.screens_id || [];
+          return {
+            id: t._id,
+            name: t.name,
+            address: t.address,
+            city: t.city,
+            province: t.province,
+            status: t.status,
+            features: t.features || [],
+            total_screens: screens_id.length || t.total_screens || 0,
+            total_capacity: t.total_capacity || 0,
+            screens_id: screens_id,
+            contact_info: t.contact_info || {},
+            operating_hours: t.operating_hours || {},
+            location: t.location || null,
+            notes: t.notes || '',
+            created_at: t.createdAt,
+            updated_at: t.updatedAt,
+            deleted_at: t.deletedAt,
+            display_name: `${t.name} - ${t.city}, ${t.province}`,
+            status_display: t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1).replace('_', ' ') : 'Active',
+          };
+        }),
         total: pagination.totalCount,
         current_page: pagination.currentPage,
         per_page: pagination.limit,
@@ -63,6 +66,7 @@ export const theaterService = {
     const { data } = await api.get(`/theaters/${id}`)
     if (data?.success && data?.data?.theater) {
       const t = data.data.theater
+      const screens_id = t.screens_id || []
       return {
         id: t._id,
         name: t.name,
@@ -71,9 +75,9 @@ export const theaterService = {
         province: t.province,
         status: t.status,
         features: t.features || [],
-        total_screens: t.total_screens || 0,
+        total_screens: screens_id.length || t.total_screens || 0,
         total_capacity: t.total_capacity || 0,
-        screens_id: t.screens_id || [],
+        screens_id: screens_id,
         contact_info: t.contact_info || {},
         operating_hours: t.operating_hours || {},
         location: t.location || null,
@@ -82,6 +86,7 @@ export const theaterService = {
         updated_at: t.updatedAt,
         deleted_at: t.deletedAt,
         display_name: `${t.name} - ${t.city}, ${t.province}`,
+        status_display: t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1).replace('_', ' ') : 'Active',
       }
     }
     return data
@@ -122,7 +127,7 @@ export const theaterService = {
   },
 
   async deleteTheater(id) {
-    const { data } = await api.delete(`/theaters/${id}`)
+    const { data } = await api.delete(`/theaters/${id}/force-delete`)
     return data
   },
 

@@ -12,7 +12,7 @@ const routes = [
   {
     path: '/admin',
     component: AdminLayout,
-    meta: { requiresAuth: true, requiresAdmin: true , },
+    meta: { requiresAuth: true, requiresAdmin: true, },
     children: [
       {
         path: '',
@@ -42,6 +42,33 @@ const routes = [
         component: () => import('@/views/users/EditUser.vue'),
         meta: { title: 'Edit User' }
       },
+      //seats
+
+      {
+        path: 'seats',
+        name: 'Seats',
+        component: () => import('@/views/seats/SeatsList.vue'),
+        meta: { title: 'Seats Management' }
+      },
+      {
+        path: 'seats/create',
+        name: 'CreateSeat',
+        component: () => import('@/views/seats/CreateSeat.vue'),
+        meta: { title: 'Create Seat' }
+      },
+        {
+          path: 'seats/:id',
+          name: 'SeatDetail',
+          component: () => import('@/views/seats/SeatDetail.vue'),
+          meta: { title: 'Seat Details' }
+        },
+      {
+        path: 'seats/:id/edit',
+        name: 'EditSeat',
+        component: () => import('@/views/seats/EditSeat.vue'),
+        meta: { title: 'Edit Seat' }
+      },
+
       {
         path: 'theaters',
         name: 'Theaters',
@@ -103,6 +130,12 @@ const routes = [
         name: 'CreateMovie',
         component: () => import('@/views/movies/CreateMovie.vue'),
         meta: { title: 'Add Movie' }
+      },
+      {
+        path: 'movies/:id',
+        name: 'MovieDetail',
+        component: () => import('@/views/movies/MovieDetail.vue'),
+        meta: { title: 'Movie Details' }
       },
       {
         path: 'movies/:id/edit',

@@ -13,7 +13,7 @@
       </el-button>
     </div>
 
-    <!-- Filters and Search -->
+    <!-- Filters -->
     <el-card class="filter-card" shadow="never">
       <el-form :model="filters" :inline="true" class="filter-form">
         <el-form-item>
@@ -61,23 +61,38 @@
 
         <el-form-item>
           <el-select
-            v-model="filters.is_available"
-            :placeholder="$t('seats.filterByAvailability')"
+            v-model="filters.theater_id"
+            :placeholder="$t('seats.filterByTheater')"
             clearable
+            filterable
             style="min-width: 200px"
+            @change="handleTheaterFilterChange"
           >
-            <el-option :label="$t('seats.available')" :value="true" />
-            <el-option :label="$t('seats.unavailable')" :value="false" />
+            <el-option
+              v-for="theater in theaters"
+              :key="theater.id"
+              :label="theater.name"
+              :value="theater.id"
+            />
           </el-select>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="loadSeats" :loading="loading">
-            {{ $t("actions.search") }}
-          </el-button>
-          <el-button @click="resetFilters">
-            {{ $t("actions.reset") }}
-          </el-button>
+          <el-select
+            v-model="filters.screen_id"
+            :placeholder="$t('seats.filterByScreen')"
+            :disabled="!filters.theater_id"
+            clearable
+            filterable
+            style="min-width: 200px"
+          >
+            <el-option
+              v-for="screen in filteredScreens"
+              :key="screen.id"
+              :label="screen.screen_name"
+              :value="screen.id"
+            />
+          </el-select>
         </el-form-item>
       </el-form>
     </el-card>
@@ -104,6 +119,24 @@
           :label="$t('seats.seatNumber')"
           width="120"
         />
+
+        <el-table-column prop="theater" :label="$t('seats.theater')" width="150">
+          <template #default="{ row }">
+            <span v-if="row.theater_name">
+              {{ row.theater_name }}
+            </span>
+            <span v-else class="text-muted">-</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="screen" :label="$t('seats.screen')" width="150">
+          <template #default="{ row }">
+            <span v-if="row.screen_name">
+              {{ row.screen_name }}
+            </span>
+            <span v-else class="text-muted">-</span>
+          </template>
+        </el-table-column>
 
         <el-table-column prop="seat_type" :label="$t('seats.type')" width="120">
           <template #default="{ row }">
@@ -143,16 +176,6 @@
           </template>
         </el-table-column>
 
-        <!-- <el-table-column
-          prop="theater_id"
-          :label="$t('seats.theaterId')"
-          width="120"
-        >
-          <template #default="{ row }">
-            {{ row.theater_id || "-" }}
-          </template>
-        </el-table-column> -->
-
         <el-table-column
           prop="created_at"
           :label="$t('seats.created')"
@@ -165,34 +188,22 @@
 
         <el-table-column
           :label="$t('seats.actions')"
-          width="250"
+          width="280"
           fixed="right"
           v-if="authStore.isAdmin"
         >
           <template #default="{ row }">
             <div class="flex gap-1">
-              <el-button type="primary" size="small" @click="editSeat(row.id)">
+              <el-button size="small" link type="primary" @click="viewSeat(row.id)">
+                {{ $t("actions.view") }}
+              </el-button>
+              <el-button size="small" link type="primary" @click="editSeat(row.id)">
                 {{ $t("actions.edit") }}
               </el-button>
 
-              <el-dropdown @command="handleCommand" trigger="click">
-                <el-button type="info" size="small">
-                  {{ $t("actions.more") }}
-                  <el-icon class="el-icon--right"><arrow-down /></el-icon>
-                </el-button>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item :command="`status:${row.id}`">
-                      {{ $t("seats.updateStatus") }}
-                    </el-dropdown-item>
-                    <el-dropdown-item :command="`delete:${row.id}`" divided>
-                      <span style="color: #f56c6c">{{
-                        $t("actions.delete")
-                      }}</span>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+              <el-button size="small" link type="danger" @click="deleteSeat(row.id)">
+                {{ $t("actions.delete") }}
+              </el-button>
             </div>
           </template>
         </el-table-column>
@@ -211,41 +222,6 @@
         />
       </div>
     </el-card>
-
-    <!-- Status Update Dialog -->
-    <el-dialog
-      v-model="statusDialog.visible"
-      :title="$t('seats.updateStatus')"
-      width="400px"
-    >
-      <el-form :model="statusDialog" label-width="100px">
-        <el-form-item :label="$t('seats.status')">
-          <el-select v-model="statusDialog.status" style="width: 100%">
-            <el-option
-              v-for="status in seatStatuses"
-              :key="status.value"
-              :label="$t(`seats.statuses.${status.value}`)"
-              :value="status.value"
-            />
-          </el-select>
-        </el-form-item>
-      </el-form>
-
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="statusDialog.visible = false">
-            {{ $t("actions.cancel") }}
-          </el-button>
-          <el-button
-            type="primary"
-            @click="updateSeatStatus"
-            :loading="statusDialog.loading"
-          >
-            {{ $t("actions.update") }}
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -254,8 +230,10 @@ import { ref, reactive, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Plus, Search, ArrowDown } from "@element-plus/icons-vue";
+import { Plus, Search } from "@element-plus/icons-vue";
 import { seatService } from "@/services/seatService";
+import { theaterService } from "@/services/theaterService";
+import { screenService } from "@/services/screenService";
 import { useAuthStore } from "@/stores/auth";
 import { useAppStore } from "@/stores/app";
 
@@ -273,9 +251,16 @@ const filters = reactive({
   seat_type: "",
   status: "",
   is_available: "",
+  theater_id: "",
+  screen_id: "",
   sort_by: "row",
   sort_order: "asc",
 });
+
+// Theater and screen data
+const theaters = ref([]);
+const screens = ref([]);
+const filteredScreens = ref([]);
 
 const pagination = reactive({
   current_page: 1,
@@ -284,13 +269,6 @@ const pagination = reactive({
   total_pages: 0,
   has_next_page: false,
   has_prev_page: false,
-});
-
-const statusDialog = reactive({
-  visible: false,
-  loading: false,
-  seatId: null,
-  status: "",
 });
 
 // Seat types and statuses
@@ -321,11 +299,23 @@ const loadSeats = async () => {
       seat_type: filters.seat_type || undefined,
       status: filters.status || undefined,
       is_available: filters.is_available || undefined,
+      theater_id: filters.theater_id || undefined,
+      screen_id: filters.screen_id || undefined,
     };
 
     const response = await seatService.getSeats(params);
 
-    seats.value = response.data || [];
+    const enrichedSeats = (response.data || []).map((seat) => {
+      const theater = theaters.value.find((t) => t.id === seat.theater_id);
+      const screen = screens.value.find((s) => s.id === seat.screen_id);
+      return {
+        ...seat,
+        theater_name: theater?.name || null,
+        screen_name: screen?.screen_name || null,
+      };
+    });
+
+    seats.value = enrichedSeats;
     Object.assign(pagination, {
       current_page: response.current_page || 1,
       per_page: response.per_page || 20,
@@ -334,7 +324,6 @@ const loadSeats = async () => {
       has_next_page: response.has_next_page || false,
       has_prev_page: response.has_prev_page || false,
     });
-    console.log("Seats loaded:", seats.value);
   } catch (error) {
     console.error("Load seats error:", error);
     ElMessage.error(error.response?.data?.message || "Failed to load seats");
@@ -343,17 +332,36 @@ const loadSeats = async () => {
   }
 };
 
-const resetFilters = () => {
-  Object.assign(filters, {
-    search: "",
-    seat_type: "",
-    status: "",
-    is_available: "",
-    sort_by: "row",
-    sort_order: "asc",
-  });
-  pagination.current_page = 1;
-  loadSeats();
+// Load theaters
+const loadTheaters = async () => {
+  try {
+    const response = await theaterService.getTheaters({ per_page: 100 });
+    theaters.value = response.data || [];
+  } catch (error) {
+    console.error("Load theaters error:", error);
+  }
+};
+
+// Load screens
+const loadScreens = async () => {
+  try {
+    const response = await screenService.getScreens({ per_page: 100 });
+    screens.value = response.data || [];
+  } catch (error) {
+    console.error("Load screens error:", error);
+  }
+};
+
+// Handle theater filter change
+const handleTheaterFilterChange = () => {
+  if (filters.theater_id) {
+    filteredScreens.value = screens.value.filter(
+      (screen) => screen.theater_id === filters.theater_id
+    );
+  } else {
+    filteredScreens.value = [];
+  }
+  filters.screen_id = "";
 };
 
 const handleSizeChange = (val) => {
@@ -367,43 +375,12 @@ const handleCurrentChange = (val) => {
   loadSeats();
 };
 
+const viewSeat = (id) => {
+  router.push(`/admin/seats/${id}`);
+};
+
 const editSeat = (id) => {
   router.push(`/admin/seats/${id}/edit`);
-};
-
-const handleCommand = (command) => {
-  const [action, id] = command.split(":");
-
-  if (action === "status") {
-    const seat = seats.value.find((s) => s.id === id);
-    if (seat) {
-      statusDialog.seatId = id;
-      statusDialog.status = seat.status;
-      statusDialog.visible = true;
-    }
-  } else if (action === "delete") {
-    deleteSeat(id);
-  }
-};
-
-const updateSeatStatus = async () => {
-  statusDialog.loading = true;
-  try {
-    await seatService.updateSeatStatus(
-      statusDialog.seatId,
-      statusDialog.status
-    );
-    ElMessage.success(t("seats.statusUpdated"));
-    statusDialog.visible = false;
-    loadSeats();
-  } catch (error) {
-    console.error("Update seat status error:", error);
-    ElMessage.error(
-      error.response?.data?.message || "Failed to update seat status"
-    );
-  } finally {
-    statusDialog.loading = false;
-  }
 };
 
 const deleteSeat = async (id) => {
@@ -451,13 +428,15 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString();
 };
 
-// Watchers
+// Watchers (auto load when filters change)
 watch(
   [
     () => filters.search,
     () => filters.seat_type,
     () => filters.status,
     () => filters.is_available,
+    () => filters.theater_id,
+    () => filters.screen_id,
   ],
   () => {
     pagination.current_page = 1;
@@ -467,6 +446,7 @@ watch(
 
 // Lifecycle
 onMounted(async () => {
+  await Promise.all([loadTheaters(), loadScreens()]);
   await loadSeats();
 
   appStore.setBreadcrumbs([
@@ -477,39 +457,39 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.seats-list {
-  padding: 20px;
-}
-
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-}
-
-.page-header h2 {
-  margin: 0;
-  color: #303133;
+  margin-bottom: 24px;
 }
 
 .filter-card {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .filter-form {
+  display: flex;
+  gap: 8px;
+  /* flex-wrap: wrap; */
   margin-bottom: 0;
 }
 
 .pagination-wrapper {
+  margin-top: 16px;
   display: flex;
   justify-content: center;
-  margin-top: 20px;
 }
 
-.dialog-footer {
+.text-muted {
+  color: #909399;
+}
+
+.flex {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+}
+
+.gap-1 {
+  gap: 8px;
 }
 </style>

@@ -12,7 +12,9 @@
         </el-form-item>
 
         <el-form-item :label="$t('screens.theater')" prop="theater_id">
-          <el-input v-model="form.theater_id" />
+          <el-select v-model="form.theater_id" style="width:100%" :loading="theatersLoading" filterable>
+            <el-option v-for="opt in theaters" :key="opt.id" :label="opt.display_name || opt.name" :value="opt.id" />
+          </el-select>
         </el-form-item>
 
         <el-form-item :label="$t('screens.type')" prop="screen_type">
@@ -46,23 +48,27 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useI18n } from 'vue-i18n'
 import { screenService } from '@/services/screenService'
+import { theaterService } from '@/services/theaterService'
 import { ElMessage } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
 
 const router = useRouter()
+const route = useRoute()
 const appStore = useAppStore()
 const { t } = useI18n()
 
 const formRef = ref()
 const loading = ref(false)
+const theaters = ref([])
+const theatersLoading = ref(false)
 
 const form = reactive({
   screen_name: '',
-  theater_id: '',
+  theater_id: route.query.theater_id || '',
   screen_type: 'standard',
   total_seats: 1,
   status: 'active',
@@ -71,6 +77,7 @@ const form = reactive({
 
 const rules = {
   screen_name: [{ required: true, message: t('validation.required'), trigger: 'blur' }],
+  theater_id: [{ required: true, message: t('validation.required'), trigger: 'change' }],
   total_seats: [{ required: true, message: t('validation.required'), trigger: 'change' }]
 }
 
@@ -94,12 +101,26 @@ const handleSubmit = async () => {
   }
 }
 
-const resetForm = () => {
-  if (formRef.value) formRef.value.resetFields()
-  Object.assign(form, { screen_name: '', theater_id: '', screen_type: 'standard', total_seats: 1, status: 'active', notes: '' })
+const loadTheaters = async () => {
+  theatersLoading.value = true
+  try {
+    const res = await theaterService.getTheaters({ status: 'active', per_page: 100 })
+    theaters.value = res.data || []
+  } catch (e) {
+    console.error(e)
+    ElMessage.error('Failed to load theaters')
+  } finally {
+    theatersLoading.value = false
+  }
 }
 
-onMounted(() => {
+const resetForm = () => {
+  if (formRef.value) formRef.value.resetFields()
+  Object.assign(form, { screen_name: '', theater_id: route.query.theater_id || '', screen_type: 'standard', total_seats: 1, status: 'active', notes: '' })
+}
+
+onMounted(async () => {
+  await loadTheaters()
   appStore.setBreadcrumbs([
     { title: t('nav.dashboard'), path: '/admin/dashboard' },
     { title: t('screens.title'), path: '/admin/screens' },

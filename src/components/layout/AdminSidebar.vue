@@ -24,36 +24,6 @@
         <template #title>{{ $t("nav.dashboard") }}</template>
       </el-menu-item>
 
-      <el-sub-menu index="users">
-        <template #title>
-          <el-icon><User /></el-icon>
-          <span>{{ $t("users.title") }}</span>
-        </template>
-        <el-menu-item index="/admin/users">
-          <el-icon><UserFilled /></el-icon>
-          <template #title>{{ $t("users.allUsers") }}</template>
-        </el-menu-item>
-        <el-menu-item index="/admin/users/create">
-          <el-icon><Plus /></el-icon>
-          <template #title>{{ $t("users.addUser") }}</template>
-        </el-menu-item>
-      </el-sub-menu>
-
-      <el-sub-menu index="theaters">
-        <template #title>
-          <el-icon><Odometer /></el-icon>
-          <span>{{ $t("theaters.title") }}</span>
-        </template>
-        <el-menu-item index="/admin/theaters">
-          <el-icon><Odometer /></el-icon>w
-          <template #title>{{ $t("theaters.allTheaters") }}</template>
-        </el-menu-item>
-        <el-menu-item index="/admin/theaters/create">
-          <el-icon><Plus /></el-icon>
-          <template #title>{{ $t("theaters.addTheater") }}</template>
-        </el-menu-item>
-      </el-sub-menu>
-
       <el-sub-menu index="seats">
         <template #title>
           <el-icon><Grid /></el-icon>
@@ -84,6 +54,21 @@
         </el-menu-item>
       </el-sub-menu>
 
+      <el-sub-menu index="theaters">
+        <template #title>
+          <el-icon><Odometer /></el-icon>
+          <span>{{ $t("theaters.title") }}</span>
+        </template>
+        <el-menu-item index="/admin/theaters">
+          <el-icon><Odometer /></el-icon>w
+          <template #title>{{ $t("theaters.allTheaters") }}</template>
+        </el-menu-item>
+        <el-menu-item index="/admin/theaters/create">
+          <el-icon><Plus /></el-icon>
+          <template #title>{{ $t("theaters.addTheater") }}</template>
+        </el-menu-item>
+      </el-sub-menu>  
+
       <el-sub-menu index="movies">
         <template #title>
           <el-icon><Film /></el-icon>
@@ -99,11 +84,20 @@
         </el-menu-item>
       </el-sub-menu>
 
-      <el-menu-item index="/admin/bookings">
-        <el-icon><Tickets /></el-icon>
-        <template #title>{{ $t("nav.bookings") }}</template>
-      </el-menu-item>
-
+      <el-sub-menu index="users">
+        <template #title>
+          <el-icon><User /></el-icon>
+          <span>{{ $t("users.title") }}</span>
+        </template>
+        <el-menu-item index="/admin/users">
+          <el-icon><UserFilled /></el-icon>
+          <template #title>{{ $t("users.allUsers") }}</template>
+        </el-menu-item>
+        <el-menu-item index="/admin/users/create">
+          <el-icon><Plus /></el-icon>
+          <template #title>{{ $t("users.addUser") }}</template>
+        </el-menu-item>
+      </el-sub-menu>
       <el-menu-item index="/admin/settings">
         <el-icon><Setting /></el-icon>
         <template #title>{{ $t("nav.settings") }}</template>
@@ -148,9 +142,7 @@ const sidebarTextColor = computed(() => {
 });
 
 const sidebarActiveColor = computed(() => {
-  return theme.value === "dark"
-    ? "#3B82F9"
-    : "#1E40AF"
+  return theme.value === "dark" ? "#3B82F9" : "#1E40AF";
 });
 </script>
 

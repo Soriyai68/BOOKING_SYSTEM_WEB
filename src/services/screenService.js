@@ -201,8 +201,14 @@ export const screenService = {
   },
 
   // Delete screen (soft delete)
+  // async deleteScreen(id) {
+  //   const response = await api.delete(`/screens/${id}`)
+  //   return response.data
+  // },
+  
+  //delete screen (force delete)
   async deleteScreen(id) {
-    const response = await api.delete(`/screens/${id}`)
+    const response = await api.delete(`/screens/${id}/force-delete`)
     return response.data
   },
 
