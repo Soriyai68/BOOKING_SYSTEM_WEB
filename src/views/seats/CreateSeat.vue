@@ -60,7 +60,11 @@
             v-model="form.seat_number"
             maxlength="10"
             show-word-limit
-            @input="form.seat_number = form.seat_number.toString().toUpperCase()"
+            @input="
+              form.seat_number = form.seat_number.toString().toUpperCase()
+            "
+            type="number"
+            min="1"
           />
         </el-form-item>
 
@@ -117,10 +121,10 @@
         <!-- Form Actions -->
         <el-form-item>
           <el-button type="primary" :loading="loading" @click="handleSubmit">
-            {{ $t('actions.submit') }}
+            {{ $t("actions.submit") }}
           </el-button>
           <el-button @click="resetForm">
-            {{ $t('actions.reset') }}
+            {{ $t("actions.reset") }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -191,6 +195,12 @@ const rules = {
       message: "Row must be between 1 and 5 characters",
       trigger: "blur",
     },
+  ],
+  theater_id: [
+    { required: true, message: t("validation.required"), trigger: "blur" },
+  ],
+  screen_id: [
+    { required: true, message: t("validation.required"), trigger: "blur" },
   ],
   seat_number: [
     { required: true, message: t("validation.required"), trigger: "blur" },

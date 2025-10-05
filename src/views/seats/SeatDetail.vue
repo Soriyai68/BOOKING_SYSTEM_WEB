@@ -67,9 +67,9 @@
         <span>{{ $t('seats.actions') }}</span>
       </template>
       <el-space wrap>
-        <el-button type="warning" @click="toggleAvailability" :loading="actionLoading">
+        <!-- <el-button type="warning" @click="toggleAvailability" :loading="actionLoading">
           {{ seat?.is_available ? $t('seats.markUnavailable') : $t('seats.markAvailable') }}
-        </el-button>
+        </el-button> -->
         <el-button type="info" @click="showUpdateStatusDialog = true">
           {{ $t('seats.updateStatus') }}
         </el-button>

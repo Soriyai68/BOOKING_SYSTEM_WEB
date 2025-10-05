@@ -219,6 +219,12 @@ const rules = {
       trigger: "blur",
     },
   ],
+    theater_id: [
+    { required: true, message: t("validation.required"), trigger: "blur" },
+  ],
+  screen_id: [
+    { required: true, message: t("validation.required"), trigger: "blur" },
+  ],
   seat_number: [
     { required: true, message: t("validation.required"), trigger: "blur" },
     {
