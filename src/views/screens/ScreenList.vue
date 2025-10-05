@@ -17,6 +17,7 @@
           :prefix-icon="Search"
           clearable
           @input="debouncedSearch"
+          style="min-width: 200px"
         />
         <el-select
           v-model="typeFilter"
