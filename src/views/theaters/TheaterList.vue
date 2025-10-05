@@ -122,7 +122,7 @@ import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import { theaterService } from "@/services/theaterService";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Plus, Search } from "@element-plus/icons-vue";
+import { Plus, Search, ToiletPaper } from "@element-plus/icons-vue";
 import { debounce } from "lodash-es";
 import { useI18n } from "vue-i18n";
 
@@ -202,7 +202,8 @@ const deleteTheater = async (id) => {
 onMounted(() => {
   appStore.setBreadcrumbs([
     { title: t('nav.dashboard'), path: '/admin/dashboard' },
-    { title: t('theaters.title'), path: '/admin/theaters' }
+    { title: t('theaters.title'), path: '/admin/theaters' },
+    { title: t('theaters.allTheaters'), path: '/admin/theaters' }
   ])
   load()
 })

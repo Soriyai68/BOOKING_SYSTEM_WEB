@@ -73,7 +73,7 @@
           <template #default="{ row }">
             <el-button
               type="primary"
-              size="medium"
+              size="small"
               link
               @click="editUser(row.id)"
             >
@@ -81,7 +81,7 @@
             </el-button>
             <el-button
               type="danger"
-              size="medium"
+              size="small"
               link
               @click="deleteUser(row.id)"
             >

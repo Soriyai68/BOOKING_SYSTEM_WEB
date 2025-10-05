@@ -3,7 +3,7 @@
     <!-- Logo -->
     <div class="logo">
       <div class="logo-content" :class="{ collapsed: sidebarCollapsed }">
-        <el-icon class="logo-icon"><Film /></el-icon>
+        <el-icon class="logo-icon"><Ticket /></el-icon>
         <span v-show="!sidebarCollapsed" class="logo-text">Ninja Booking</span>
       </div>
     </div>
@@ -20,17 +20,17 @@
       :active-text-color="sidebarActiveColor"
     >
       <el-menu-item index="/admin/dashboard">
-        <el-icon><Odometer /></el-icon>
+        <el-icon><LayoutDashboard /></el-icon>
         <template #title>{{ $t("nav.dashboard") }}</template>
       </el-menu-item>
 
       <el-sub-menu index="seats">
         <template #title>
-          <el-icon><Grid /></el-icon>
+          <el-icon><Armchair /></el-icon>
           <span>{{ $t("seats.title") }}</span>
         </template>
         <el-menu-item index="/admin/seats">
-          <el-icon><Postcard /></el-icon>
+          <el-icon><Armchair /></el-icon>
           <template #title>{{ $t("seats.allSeats") }}</template>
         </el-menu-item>
         <el-menu-item index="/admin/seats/create">
@@ -41,11 +41,11 @@
 
       <el-sub-menu index="screens">
         <template #title>
-          <el-icon><Grid /></el-icon>
+          <el-icon><Monitor /></el-icon>
           <span>{{ $t("screens.title") }}</span>
         </template>
         <el-menu-item index="/admin/screens">
-          <el-icon><Postcard /></el-icon>
+          <el-icon><Monitor /></el-icon>
           <template #title>{{ $t("screens.allScreens") }}</template>
         </el-menu-item>
         <el-menu-item index="/admin/screens/create">
@@ -56,18 +56,18 @@
 
       <el-sub-menu index="theaters">
         <template #title>
-          <el-icon><Odometer /></el-icon>
+          <el-icon><Projector /></el-icon>
           <span>{{ $t("theaters.title") }}</span>
         </template>
         <el-menu-item index="/admin/theaters">
-          <el-icon><Odometer /></el-icon>w
+          <el-icon><Projector /></el-icon>
           <template #title>{{ $t("theaters.allTheaters") }}</template>
         </el-menu-item>
         <el-menu-item index="/admin/theaters/create">
           <el-icon><Plus /></el-icon>
           <template #title>{{ $t("theaters.addTheater") }}</template>
         </el-menu-item>
-      </el-sub-menu>  
+      </el-sub-menu>
 
       <el-sub-menu index="movies">
         <template #title>
@@ -75,7 +75,7 @@
           <span>{{ $t("movies.title") }}</span>
         </template>
         <el-menu-item index="/admin/movies">
-          <el-icon><VideoCamera /></el-icon>
+          <el-icon><Clapperboard /></el-icon>
           <template #title>{{ $t("movies.allMovies") }}</template>
         </el-menu-item>
         <el-menu-item index="/admin/movies/create">
@@ -86,20 +86,20 @@
 
       <el-sub-menu index="users">
         <template #title>
-          <el-icon><User /></el-icon>
+          <el-icon><Users /></el-icon>
           <span>{{ $t("users.title") }}</span>
         </template>
         <el-menu-item index="/admin/users">
-          <el-icon><UserFilled /></el-icon>
+          <el-icon><Users /></el-icon>
           <template #title>{{ $t("users.allUsers") }}</template>
         </el-menu-item>
         <el-menu-item index="/admin/users/create">
-          <el-icon><Plus /></el-icon>
+          <el-icon><UserPlus /></el-icon>
           <template #title>{{ $t("users.addUser") }}</template>
         </el-menu-item>
       </el-sub-menu>
       <el-menu-item index="/admin/settings">
-        <el-icon><Setting /></el-icon>
+        <el-icon><Settings /></el-icon>
         <template #title>{{ $t("nav.settings") }}</template>
       </el-menu-item>
     </el-menu>
@@ -112,16 +112,17 @@ import { useRoute } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import {
   Film,
-  Odometer,
-  User,
-  UserFilled,
+  LayoutDashboard,
+  Users,
+  UserPlus,
   Plus,
-  VideoCamera,
-  Tickets,
-  Setting,
-  Grid,
-  Postcard,
-} from "@element-plus/icons-vue";
+  Clapperboard,
+  Ticket,
+  Settings,
+  Armchair,
+  Monitor,
+  Projector,
+} from "lucide-vue-next";
 
 const route = useRoute();
 const appStore = useAppStore();

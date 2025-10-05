@@ -229,7 +229,8 @@ const getStatusTagType = (status) => {
 onMounted(() => {
   appStore.setBreadcrumbs([
     { title: t('nav.dashboard'), path: '/admin/dashboard' },
-    { title: t('movies.title'), path: '/admin/movies' }
+    { title: t('movies.title'), path: '/admin/movies' },
+    { title: t('movies.allMovies'), path: '/admin/movies' }
   ])
   load()
 })

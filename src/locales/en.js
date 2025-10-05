@@ -102,7 +102,7 @@ export default {
   },
   //Seat Managment
   seats: {
-    indentifier: "Indentifier",
+    indentifier: "Seat Indentifier",
     title: "Seat Management",
     addSeat: "Add Seat",
     createSeat: "Create Seat",
@@ -219,11 +219,12 @@ export default {
     screens: "Screens",
     noScreens: "No screens found for this theater",
     removeScreen: "Remove Screen",
-    confirmRemoveScreen: "Are you sure you want to remove this screen from the theater?",
+    confirmRemoveScreen:
+      "Are you sure you want to remove this screen from the theater?",
     screenRemoved: "Screen removed from theater successfully",
     createSuccess: "Theater created successfully",
     updateTheater: "Update Theater",
-    updateSuccess: "Theater updated successfully", 
+    updateSuccess: "Theater updated successfully",
   },
 
   // Screen Management
@@ -294,7 +295,7 @@ export default {
     statuses: {
       now_showing: "Now Showing",
       coming_soon: "Coming Soon",
-      ended: "Ended"
+      ended: "Ended",
     },
     genreTypes: {
       action: "Action",
@@ -312,8 +313,8 @@ export default {
       "sci-fi": "Sci-Fi",
       thriller: "Thriller",
       war: "War",
-      western: "Western"
-    }
+      western: "Western",
+    },
   },
 
   // Booking Management
@@ -439,7 +440,8 @@ export default {
     createdAt: "Created At",
     updatedAt: "Updated At",
     deletedAt: "Deleted At",
-    actions: "Actions"
+    actions: "Actions",
+    loading: "Loading",
   },
 
   // Upload
@@ -456,6 +458,6 @@ export default {
     uploadFailed: "Upload failed",
     invalidFileType: "Invalid file type",
     fileTooLarge: "File too large. Maximum {size}MB",
-    invalidUrl: "Invalid URL format"
-  }
+    invalidUrl: "Invalid URL format",
+  },
 };

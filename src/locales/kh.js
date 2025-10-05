@@ -10,7 +10,6 @@ export default {
     settings: "ការកំណត់",
     logout: "ចាកចេញ",
     profile: "ប្រវត្តិរូប",
-
   },
 
   // Authentication
@@ -88,6 +87,7 @@ export default {
     number: "លេខកៅអី",
     seatNumber: "លេខកៅអី",
     type: "ប្រភេទ",
+    actions: "ស​កម្មភាព",
     availability: "ភាពអាចប្រើបាន",
     available: "អាចប្រើបាន",
     price: "តម្លៃ",
@@ -105,6 +105,7 @@ export default {
     filterByType: "ចម្រាញ់តាមប្រភេទ",
     filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
     filterByAvailability: "ចម្រាញ់តាមភាពអាចប្រើបាន",
+    filterByTheater: "ចម្រាញ់តាមរោងកុង",
     updateSeat: "ធ្វើបច្ចុប្បន្នភាពកៅអី",
     updateStatus: "ធ្វើបច្ចុប្បន្នភាពស្ថានភាព",
     createSuccess: "បង្កើតកៅអីបានជោគជ័យ",
@@ -258,7 +259,7 @@ export default {
     statuses: {
       now_showing: "កំពុងបញ្ចាំង",
       coming_soon: "នឹងមកដល់",
-      ended: "បានចប់"
+      ended: "បានចប់",
     },
     genreTypes: {
       action: "សកម្មភាព",
@@ -276,8 +277,8 @@ export default {
       "sci-fi": "បែបវិទ្យាសាស្ត្រ",
       thriller: "រំភើប",
       war: "សង្គ្រាម",
-      western: "សេកដូនែស"
-    }
+      western: "សេកដូនែស",
+    },
   },
 
   // Booking Management
@@ -402,7 +403,8 @@ export default {
     createdAt: "បានបង្កើតនៅ",
     updatedAt: "បានធ្វើបច្ចុប្បន្នភាពនៅ",
     deletedAt: "បានលុបនៅ",
-    actions: "សកម្មភាព"
+    actions: "សកម្មភាព",
+    loading: "កំពុងដំណើរការ",
   },
 
   // Upload
@@ -419,6 +421,6 @@ export default {
     uploadFailed: "បញ្ជូនមិនបានជោគជ័យ",
     invalidFileType: "ប្រភេទឯកសារមិនត្រឹមត្រូវ",
     fileTooLarge: "ឯកសារធំពេក។ អតិបរមា {size}MB",
-    invalidUrl: "ទម្រង់តំណមិនត្រឹមត្រូវ"
-  }
+    invalidUrl: "ទម្រង់តំណមិនត្រឹមត្រូវ",
+  },
 };

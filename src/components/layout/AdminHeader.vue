@@ -3,7 +3,7 @@
     <!-- Left side -->
     <div class="header-left">
       <el-button
-        :icon="sidebarCollapsed ? Expand : Fold"
+        :icon="sidebarCollapsed ? PanelRightClose : PanelLeftClose"
         text
         @click="toggleSidebar"
         class="toggle-btn"
@@ -21,7 +21,7 @@
       <!-- Theme toggle -->
       <el-tooltip content="Toggle Theme" placement="bottom">
         <el-button
-          :icon="theme === 'dark' ? Sunny : Moon"
+          :icon="theme === 'dark' ? Sun : Moon"
           text
           @click="toggleTheme"
           class="header-btn"
@@ -47,7 +47,7 @@
             <el-icon><User /></el-icon>
           </el-avatar>
           <span class="username">{{ user?.name || "Admin" }}</span>
-          <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
+          <el-icon class="dropdown-icon"><ChevronDown /></el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
@@ -56,11 +56,11 @@
               {{ $t("nav.profile") }}
             </el-dropdown-item>
             <el-dropdown-item command="settings">
-              <el-icon><Setting /></el-icon>
+              <el-icon><Settings /></el-icon>
               {{ $t("nav.settings") }}
             </el-dropdown-item>
             <el-dropdown-item divided command="logout" style="color: #f56c6c">
-              <el-icon><SwitchButton /></el-icon>
+              <el-icon><LogOut /></el-icon>
               {{ $t("nav.logout") }}
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -79,16 +79,16 @@ import { useAuthStore } from "@/stores/auth";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher.vue";
 import { useI18n } from "vue-i18n";
 import {
-  Expand,
-  Fold,
-  Sunny,
+  PanelLeftClose,
+  PanelRightClose,
+  Sun,
   Moon,
   Bell,
   User,
-  ArrowDown,
-  Setting,
-  SwitchButton,
-} from "@element-plus/icons-vue";
+  ChevronDown,
+  Settings,
+  LogOut,
+} from "lucide-vue-next";
 
 const route = useRoute();
 const router = useRouter();

@@ -120,7 +120,11 @@
           width="120"
         />
 
-        <el-table-column prop="theater" :label="$t('seats.theater')" width="150">
+        <el-table-column
+          prop="theater"
+          :label="$t('seats.theater')"
+          width="150"
+        >
           <template #default="{ row }">
             <span v-if="row.theater_name">
               {{ row.theater_name }}
@@ -178,7 +182,7 @@
 
         <el-table-column
           prop="created_at"
-          :label="$t('seats.created')"
+          :label="$t('common.createdAt')"
           width="150"
         >
           <template #default="{ row }">
@@ -187,21 +191,36 @@
         </el-table-column>
 
         <el-table-column
-          :label="$t('seats.actions')"
+          :label="$t('common.actions')"
           width="280"
           fixed="right"
           v-if="authStore.isAdmin"
         >
           <template #default="{ row }">
             <div class="flex gap-1">
-              <el-button size="small" link type="primary" @click="viewSeat(row.id)">
+              <el-button
+                size="small"
+                link
+                type="primary"
+                @click="viewSeat(row.id)"
+              >
                 {{ $t("actions.view") }}
               </el-button>
-              <el-button size="small" link type="primary" @click="editSeat(row.id)">
+              <el-button
+                size="small"
+                link
+                type="primary"
+                @click="editSeat(row.id)"
+              >
                 {{ $t("actions.edit") }}
               </el-button>
 
-              <el-button size="small" link type="danger" @click="deleteSeat(row.id)">
+              <el-button
+                size="small"
+                link
+                type="danger"
+                @click="deleteSeat(row.id)"
+              >
                 {{ $t("actions.delete") }}
               </el-button>
             </div>

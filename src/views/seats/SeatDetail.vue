@@ -10,7 +10,7 @@
 
     <el-card v-loading="loading">
       <el-descriptions :title="seat?.display_name" :column="2" border>
-        <el-descriptions-item :label="$t('seats.identifier')">
+        <el-descriptions-item :label="$t('seats.indentifier')">
           {{ seat?.seat_identifier }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('seats.row')">
