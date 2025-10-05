@@ -32,9 +32,9 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="$t('screens.totalSeats')" prop="total_seats">
+        <!-- <el-form-item :label="$t('screens.totalSeats')" prop="total_seats">
           <el-input-number v-model="form.total_seats" :min="1" :max="1000" />
-        </el-form-item>
+        </el-form-item> -->
 
         <el-form-item :label="$t('screens.status')" prop="status">
           <el-select v-model="form.status" style="width:100%">
@@ -83,7 +83,7 @@ const form = reactive({
   screen_name: '',
   theater_id: '',
   screen_type: 'standard',
-  total_seats: 1,
+  // total_seats: 1,
   status: 'active',
   notes: ''
 })
@@ -91,7 +91,7 @@ const form = reactive({
 const rules = {
   screen_name: [{ required: true, message: t('validation.required'), trigger: 'blur' }],
   theater_id: [{ required: true, message: t('validation.required'), trigger: 'change' }],
-  total_seats: [{ required: true, message: t('validation.required'), trigger: 'change' }]
+  // total_seats: [{ required: true, message: t('validation.required'), trigger: 'change' }]
 }
 
 const loadTheaters = async () => {
@@ -117,7 +117,7 @@ const load = async () => {
       screen_name: data.screen_name,
       theater_id: data.theater_id || '',
       screen_type: data.screen_type || 'standard',
-      total_seats: data.total_seats || 1,
+      // total_seats: data.total_seats || 1,
       status: data.status || 'active',
       notes: data.notes || ''
     })
@@ -152,7 +152,7 @@ const resetForm = () => {
     screen_name: original.value.screen_name,
     theater_id: original.value.theater_id || '',
     screen_type: original.value.screen_type || 'standard',
-    total_seats: original.value.total_seats || 1,
+    // total_seats: original.value.total_seats || 1,
     status: original.value.status || 'active',
     notes: original.value.notes || ''
   })

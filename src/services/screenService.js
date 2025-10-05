@@ -29,7 +29,7 @@ export const screenService = {
     })
 
     const response = await api.get('/screens', { params: backendParams })
-    
+
     // Backend returns: { success: true, data: { screens, pagination } }
     if (response.data?.success && response.data?.data) {
       const { screens, pagination } = response.data.data
@@ -61,7 +61,7 @@ export const screenService = {
           restored_at: screen.restoredAt,
           restored_by: screen.restoredBy,
           is_deleted: !!screen.deletedAt,
-          display_name: screen.theater_id 
+          display_name: screen.theater_id
             ? `${screen.theater_id} - ${screen.screen_name}`
             : screen.screen_name,
           status_display: (() => {
@@ -90,14 +90,14 @@ export const screenService = {
         has_prev_page: pagination.hasPrevPage
       }
     }
-    
+
     return response.data
   },
 
   // Get single screen by ID
   async getScreen(id) {
     const response = await api.get(`/screens/${id}`)
-    
+
     if (response.data?.success && response.data?.data?.screen) {
       const screen = response.data.data.screen
       return {
@@ -127,7 +127,7 @@ export const screenService = {
         restored_at: screen.restoredAt,
         restored_by: screen.restoredBy,
         is_deleted: !!screen.deletedAt,
-        display_name: screen.theater_id 
+        display_name: screen.theater_id
           ? `${screen.theater_id} - ${screen.screen_name}`
           : screen.screen_name,
         status_display: (() => {
@@ -136,7 +136,7 @@ export const screenService = {
         })()
       }
     }
-    
+
     return response.data
   },
 
@@ -161,14 +161,14 @@ export const screenService = {
       features: screenData.features || [],
       notes: screenData.notes || ''
     }
-    
+
     // Remove null/undefined values
     Object.keys(backendData).forEach(key => {
       if (backendData[key] === null || backendData[key] === undefined) {
         delete backendData[key]
       }
     })
-    
+
     const response = await api.post('/screens', backendData)
     return response.data
   },
@@ -188,14 +188,14 @@ export const screenService = {
       features: screenData.features,
       notes: screenData.notes
     }
-    
+
     // Remove undefined values
     Object.keys(backendData).forEach(key => {
       if (backendData[key] === undefined) {
         delete backendData[key]
       }
     })
-    
+
     const response = await api.put(`/screens/${id}`, backendData)
     return response.data
   },
@@ -205,7 +205,7 @@ export const screenService = {
   //   const response = await api.delete(`/screens/${id}`)
   //   return response.data
   // },
-  
+
   //delete screen (force delete)
   async deleteScreen(id) {
     const response = await api.delete(`/screens/${id}/force-delete`)
@@ -252,7 +252,7 @@ export const screenService = {
     }
 
     const response = await api.get('/screens/deleted', { params: backendParams })
-    
+
     if (response.data?.success && response.data?.data) {
       const { screens, pagination } = response.data.data
       return {
@@ -273,7 +273,7 @@ export const screenService = {
           restored_at: screen.restoredAt,
           restored_by: screen.restoredBy,
           is_deleted: true,
-          display_name: screen.theater_id 
+          display_name: screen.theater_id
             ? `${screen.theater_id} - ${screen.screen_name}`
             : screen.screen_name,
           delete_info: screen.deleteInfo,
@@ -287,7 +287,7 @@ export const screenService = {
         has_prev_page: pagination.hasPrevPage
       }
     }
-    
+
     return response.data
   },
 
@@ -319,7 +319,7 @@ export const screenService = {
     })
 
     const response = await api.get('/screens/with-seat-counts', { params: queryParams })
-    
+
     if (response.data?.success && response.data?.data) {
       return {
         screens: response.data.data.screens.map(screen => ({
@@ -332,10 +332,10 @@ export const screenService = {
           capacity: screen.capacity,
           actual_capacity: screen.actualCapacity || {},
           actual_total_seats: screen.actualTotalSeats || 0,
-          display_name: screen.theater_id 
+          display_name: screen.theater_id
             ? `${screen.theater_id} - ${screen.screen_name}`
             : screen.screen_name,
-          utilization: screen.actualTotalSeats && screen.total_seats 
+          utilization: screen.actualTotalSeats && screen.total_seats
             ? Math.round((screen.actualTotalSeats / screen.total_seats) * 100)
             : 0
         })),
@@ -343,7 +343,7 @@ export const screenService = {
         filters: response.data.data.filters
       }
     }
-    
+
     return response.data
   },
 
@@ -351,6 +351,7 @@ export const screenService = {
   SCREEN_TYPES: [
     { value: 'standard', label: 'Standard', color: '#409EFF' },
     { value: 'imax', label: 'IMAX', color: '#E6A23C' },
+    { value: '2d', label: '2D', color: '#909399' },
     { value: '3d', label: '3D', color: '#67C23A' },
     { value: '4dx', label: '4DX', color: '#F56C6C' },
     { value: 'vip', label: 'VIP', color: '#909399' }
