@@ -40,18 +40,18 @@
         </el-menu-item>
       </el-sub-menu>
 
-      <el-sub-menu index="screens">
+      <el-sub-menu index="halls">
         <template #title>
           <el-icon><Monitor /></el-icon>
-          <span>{{ $t("screens.title") }}</span>
+          <span>{{ $t("halls.title") }}</span>
         </template>
-        <el-menu-item index="/admin/screens">
+        <el-menu-item index="/admin/halls">
           <el-icon><Monitor /></el-icon>
-          <template #title>{{ $t("screens.allScreens") }}</template>
+          <template #title>{{ $t("halls.allHalls") }}</template>
         </el-menu-item>
-        <el-menu-item index="/admin/screens/create">
+        <el-menu-item index="/admin/halls/create">
           <el-icon><Plus /></el-icon>
-          <template #title>{{ $t("screens.addScreen") }}</template>
+          <template #title>{{ $t("halls.addHall") }}</template>
         </el-menu-item>
       </el-sub-menu>
 

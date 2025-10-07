@@ -1,10 +1,10 @@
 <template>
-  <div class="screen-list">
+  <div class="hall-list">
     <div class="page-header">
-      <h2>{{ $t("screens.title") }}</h2>
-      <el-button type="primary" @click="$router.push('/admin/screens/create')">
+      <h2>{{ $t("halls.title") }}</h2>
+      <el-button type="primary" @click="$router.push('/admin/halls/create')">
         <el-icon><Plus /></el-icon>
-        {{ $t("screens.addScreen") }}
+        {{ $t("halls.addHall") }}
       </el-button>
     </div>
 
@@ -12,7 +12,7 @@
       <div class="toolbar">
         <el-input
           v-model="searchText"
-          :placeholder="$t('screens.searchScreens')"
+          :placeholder="$t('halls.searchHalls')"
           class="search-input"
           :prefix-icon="Search"
           clearable
@@ -21,12 +21,12 @@
         />
         <el-select
           v-model="typeFilter"
-          :placeholder="$t('screens.filterByType')"
+          :placeholder="$t('halls.filterByType')"
           clearable
         >
           <el-option :label="$t('table.selectAll')" value="" />
           <el-option
-            v-for="opt in screenService.SCREEN_TYPES"
+            v-for="opt in hallService.SCREEN_TYPES"
             :key="opt.value"
             :label="opt.label"
             :value="opt.value"
@@ -34,12 +34,12 @@
         </el-select>
         <el-select
           v-model="statusFilter"
-          :placeholder="$t('screens.filterByStatus')"
+          :placeholder="$t('halls.filterByStatus')"
           clearable
         >
           <el-option :label="$t('table.selectAll')" value="" />
           <el-option
-            v-for="opt in screenService.SCREEN_STATUSES"
+            v-for="opt in hallService.HALL_STATUSES"
             :key="opt.value"
             :label="opt.label"
             :value="opt.value"
@@ -48,45 +48,41 @@
 
         <el-select v-model="sortBy" :placeholder="$t('table.sortBy')">
           <el-option
-            v-for="opt in screenService.SORT_OPTIONS"
+            v-for="opt in hallService.SORT_OPTIONS"
             :key="opt.value"
             :label="opt.label"
             :value="opt.value"
           />
         </el-select>
 
-        <el-select v-model="sortOrder" :placeholder="$t('screens.sortOrder')">
+        <el-select v-model="sortOrder" :placeholder="$t('halls.sortOrder')">
           <el-option label="ASC" value="asc" />
           <el-option label="DESC" value="desc" />
         </el-select>
       </div>
 
       <el-table :data="rows" v-loading="loading" style="width: 100%">
-        <el-table-column prop="screen_name" :label="$t('screens.name')" />
+        <el-table-column prop="hall_name" :label="$t('halls.name')" />
         <el-table-column
           prop="screen_type"
-          :label="$t('screens.type')"
+          :label="$t('halls.screenType')"
           width="120"
         >
           <template #default="{ row }">
-            <el-tag size="small">{{ row.screen_type.toUpperCase() }}</el-tag>
+            <el-tag size="small">{{ row.screen_type?.toUpperCase() }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="theater_name" :label="$t('screens.theater')">
+        <el-table-column prop="theater_name" :label="$t('halls.theater')">
           <template #default="{ row }">
             {{ row.theater_name || row.theater_id || "-" }}
           </template>
         </el-table-column>
         <el-table-column
           prop="total_seats"
-          :label="$t('screens.totalSeats')"
+          :label="$t('halls.totalSeats')"
           width="120"
         />
-        <el-table-column
-          prop="status"
-          :label="$t('screens.status')"
-          width="140"
-        >
+        <el-table-column prop="status" :label="$t('halls.status')" width="140">
           <template #default="{ row }">
             <el-tag :type="statusTagType(row.status)" size="small">{{
               row.status_display || row.status
@@ -108,21 +104,21 @@
               size="small"
               link
               type="primary"
-              @click="viewScreen(row.id)"
+              @click="viewHall(row.id)"
               >{{ $t("actions.view") }}</el-button
             >
             <el-button
               size="small"
               link
               type="primary"
-              @click="editScreen(row.id)"
+              @click="editHall(row.id)"
               >{{ $t("actions.edit") }}</el-button
             >
             <el-button
               size="small"
               link
               type="danger"
-              @click="deleteScreen(row.id)"
+              @click="deleteHall(row.id)"
               >{{ $t("actions.delete") }}</el-button
             >
           </template>
@@ -149,7 +145,7 @@ import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/stores/app";
-import { screenService } from "@/services/screenService";
+import { hallService } from "@/services/hallService";
 import { theaterService } from "@/services/theaterService";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Search } from "@element-plus/icons-vue";
@@ -167,7 +163,7 @@ const pageSize = ref(10);
 const searchText = ref("");
 const statusFilter = ref("");
 const typeFilter = ref("");
-const sortBy = ref("screen_name");
+const sortBy = ref("hall_name");
 const sortOrder = ref("asc");
 const theaters = ref([]);
 
@@ -198,17 +194,17 @@ const load = async () => {
       per_page: pageSize.value,
       search: searchText.value || undefined,
       status: statusFilter.value || undefined,
-      screen_type: typeFilter.value || undefined,
+      screen_type: typeFilter.value || undefined, // keep screen_type
       sort_by: sortBy.value,
       sort_order: sortOrder.value,
     };
-    const res = await screenService.getScreens(params);
+    const res = await hallService.getHalls(params);
 
-    // Enrich screen data with theater names
-    const enrichedData = (res.data || []).map((screen) => {
-      const theater = theaters.value.find((t) => t.id === screen.theater_id);
+    // Enrich hall data with theater names
+    const enrichedData = (res.data || []).map((hall) => {
+      const theater = theaters.value.find((t) => t.id === hall.theater_id);
       return {
-        ...screen,
+        ...hall,
         theater_name: theater?.name || null,
       };
     });
@@ -217,7 +213,7 @@ const load = async () => {
     total.value = res.total || 0;
   } catch (e) {
     console.error(e);
-    ElMessage.error("Failed to load screens");
+    ElMessage.error("Failed to load halls");
   } finally {
     loading.value = false;
   }
@@ -233,28 +229,28 @@ const handleCurrentChange = (page) => {
   load();
 };
 
-const viewScreen = (id) => router.push(`/admin/screens/${id}`);
-const editScreen = (id) => router.push(`/admin/screens/${id}/edit`);
+const viewHall = (id) => router.push(`/admin/halls/${id}`);
+const editHall = (id) => router.push(`/admin/halls/${id}/edit`);
 
-const deleteScreen = async (id) => {
+const deleteHall = async (id) => {
   try {
     await ElMessageBox.confirm(
-      "Are you sure you want to delete this screen?",
-      "Delete Screen",
+      "Are you sure you want to delete this hall?",
+      "Delete Hall",
       {
         type: "warning",
         confirmButtonText: "Delete",
         cancelButtonText: "Cancel",
       }
     );
-    await screenService.deleteScreen(id);
-    ElMessage.success("Screen deleted");
+    await hallService.deleteHall(id);
+    ElMessage.success("Hall deleted");
     if (rows.value.length === 1 && currentPage.value > 1) currentPage.value--;
     load();
   } catch (err) {
     if (err !== "cancel") {
       console.error(err);
-      ElMessage.error("Failed to delete screen");
+      ElMessage.error("Failed to delete hall");
     }
   }
 };
@@ -279,8 +275,8 @@ const formatDate = (str) => (str ? new Date(str).toLocaleDateString() : "-");
 onMounted(async () => {
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("screens.title"), path: "/admin/screens" },
-    { title: t("screens.allScreens"), path: "/admin/screens" },
+    { title: t("halls.title"), path: "/admin/halls" },
+    { title: t("halls.allHalls"), path: "/admin/halls" },
   ]);
   await loadTheaters();
   load();
@@ -297,7 +293,6 @@ onMounted(async () => {
 .toolbar {
   display: flex;
   gap: 12px;
-
   margin-bottom: 16px;
 }
 .search-input {

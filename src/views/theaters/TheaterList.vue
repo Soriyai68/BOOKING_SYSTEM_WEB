@@ -56,8 +56,8 @@
           width="140"
         />
         <el-table-column
-          prop="total_screens"
-          :label="$t('theaters.totalScreens')"
+          prop="total_halls"
+          :label="$t('theaters.totalHalls')"
           width="140"
         />
         <el-table-column
@@ -117,18 +117,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useAppStore } from '@/stores/app'
-import { theaterService } from '@/services/theaterService'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search } from '@element-plus/icons-vue'
-import { debounce } from 'lodash-es'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useAppStore } from "@/stores/app";
+import { theaterService } from "@/services/theaterService";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { Plus, Search } from "@element-plus/icons-vue";
+import { debounce } from "lodash-es";
 
-const router = useRouter()
-const appStore = useAppStore()
-const { t } = useI18n()
+const router = useRouter();
+const appStore = useAppStore();
+const { t } = useI18n();
 
 const loading = ref(false);
 const rows = ref([]);
@@ -139,7 +139,6 @@ const searchText = ref("");
 const statusFilter = ref("");
 const cityFilter = ref("");
 const provinceFilter = ref("");
-
 
 const debouncedSearch = debounce(() => {
   currentPage.value = 1;
@@ -201,12 +200,12 @@ const deleteTheater = async (id) => {
 
 onMounted(() => {
   appStore.setBreadcrumbs([
-    { title: t('nav.dashboard'), path: '/admin/dashboard' },
-    { title: t('theaters.title'), path: '/admin/theaters' },
-    { title: t('theaters.allTheaters'), path: '/admin/theaters' }
-  ])
-  load()
-})
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("theaters.title"), path: "/admin/theaters" },
+    { title: t("theaters.allTheaters"), path: "/admin/theaters" },
+  ]);
+  load();
+});
 </script>
 
 <style scoped>

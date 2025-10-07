@@ -12,7 +12,7 @@ export const seatService = {
       seat_type: params.seat_type,
       is_available: params.is_available,
       theater_id: params.theater_id,
-      screen_id: params.screen_id,
+      hall_id: params.hall_id,
       status: params.status,
       sortBy: params.sort_by || "row",
       sortOrder: params.sort_order || "asc",
@@ -39,7 +39,7 @@ export const seatService = {
           is_available: seat.is_available,
           status: seat.status,
           theater_id: seat.theater_id,
-          screen_id: seat.screen_id,
+          hall_id: seat.hall_id,
           price: seat.price || 0,
           notes: seat.notes || "",
           created_at: seat.createdAt,
@@ -73,7 +73,7 @@ export const seatService = {
         is_available: seat.is_available,
         status: seat.status,
         theater_id: seat.theater_id,
-        screen_id: seat.screen_id,
+        hall_id: seat.hall_id,
         price: seat.price || 0,
         notes: seat.notes || "",
         created_at: seat.createdAt,
@@ -96,7 +96,7 @@ export const seatService = {
       is_available: seatData.is_available ?? true,
       status: seatData.status || "active",
       theater_id: seatData.theater_id || null,
-      screen_id: seatData.screen_id || null,
+      hall_id: seatData.hall_id || null,
       price: seatData.price || 0,
       notes: seatData.notes || "",
     };
@@ -115,7 +115,7 @@ export const seatService = {
       is_available: seatData.is_available,
       status: seatData.status,
       theater_id: seatData.theater_id,
-      screen_id: seatData.screen_id,
+      hall_id: seatData.hall_id,
       price: seatData.price,
       notes: seatData.notes,
     };
@@ -173,11 +173,11 @@ export const seatService = {
     return await this.getSeats(allParams);
   },
 
-  // Get seats by screen
-  async getSeatsByScreen(screenId, params = {}) {
+  // Get seats by hall
+  async getSeatsByHall(hallId, params = {}) {
     const allParams = {
       ...params,
-      screen_id: screenId,
+      hall_id: hallId,
     };
     return await this.getSeats(allParams);
   },

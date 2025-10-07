@@ -43,9 +43,9 @@
           </span>
           <span v-else class="text-muted">-</span>
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('seats.screen')">
-          <span v-if="screen">
-            <el-link type="primary" @click="goToScreen">{{ screen.screen_name }}</el-link>
+        <el-descriptions-item :label="$t('seats.hall')">
+          <span v-if="hall">
+            <el-link type="primary" @click="goToHall">{{ hall.hall_name }}</el-link>
           </span>
           <span v-else class="text-muted">-</span>
         </el-descriptions-item>
@@ -122,7 +122,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
 import { seatService } from '@/services/seatService'
 import { theaterService } from '@/services/theaterService'
-import { screenService } from '@/services/screenService'
+import { hallService } from '@/services/hallService'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const route = useRoute()
@@ -135,7 +135,7 @@ const loading = ref(false)
 const actionLoading = ref(false)
 const seat = ref(null)
 const theater = ref(null)
-const screen = ref(null)
+const hall = ref(null)
 const showUpdateStatusDialog = ref(false)
 const newStatus = ref('active')
 
@@ -153,7 +153,7 @@ const load = async () => {
     seat.value = data
     newStatus.value = data.status
 
-    // Load theater and screen info
+    // Load theater and hall info
     if (data.theater_id) {
       try {
         theater.value = await theaterService.getTheater(data.theater_id)
@@ -162,11 +162,11 @@ const load = async () => {
       }
     }
 
-    if (data.screen_id) {
+    if (data.hall_id) {
       try {
-        screen.value = await screenService.getScreen(data.screen_id)
+        hall.value = await hallService.getHall(data.hall_id)
       } catch (e) {
-        console.error('Failed to load screen:', e)
+        console.error('Failed to load hall:', e)
       }
     }
   } catch (e) {
@@ -179,7 +179,7 @@ const load = async () => {
 
 const goEdit = () => router.push(`/admin/seats/${route.params.id}/edit`)
 const goToTheater = () => router.push(`/admin/theaters/${seat.value.theater_id}`)
-const goToScreen = () => router.push(`/admin/screens/${seat.value.screen_id}`)
+const goToHall = () => router.push(`/admin/halls/${seat.value.hall_id}`)
 
 const toggleAvailability = async () => {
   actionLoading.value = true

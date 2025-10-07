@@ -29,19 +29,19 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="$t('seats.screen')" prop="screen_id">
+        <el-form-item :label="$t('seats.hall')" prop="hall_id">
           <el-select
-            v-model="form.screen_id"
+            v-model="form.hall_id"
             :disabled="!form.theater_id"
-            :loading="loadingScreens"
+            :loading="loadingHalls"
             style="width: 100%"
             filterable
           >
             <el-option
-              v-for="screen in filteredScreens"
-              :key="screen.id"
-              :label="screen.screen_name"
-              :value="screen.id"
+              v-for="hall in filteredHalls"
+              :key="hall.id"
+              :label="hall.hall_name"
+              :value="hall.id"
             />
           </el-select>
         </el-form-item>
@@ -139,7 +139,7 @@ import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import { seatService } from "@/services/seatService";
 import { theaterService } from "@/services/theaterService";
-import { screenService } from "@/services/screenService";
+import { hallService } from "@/services/hallService";
 import { useAppStore } from "@/stores/app";
 
 const { t } = useI18n();
@@ -153,7 +153,7 @@ const loading = ref(false);
 // Form data
 const form = reactive({
   theater_id: "",
-  screen_id: "",
+  hall_id: "",
   row: "",
   seat_number: "",
   seat_type: "regular",
@@ -165,10 +165,10 @@ const form = reactive({
 
 // Data
 const theaters = ref([]);
-const screens = ref([]);
-const filteredScreens = ref([]);
+const halls = ref([]);
+const filteredHalls = ref([]);
 const loadingTheaters = ref(false);
-const loadingScreens = ref(false);
+const loadingHalls = ref(false);
 
 // Seat types and statuses
 const seatTypes = ref([
@@ -199,7 +199,7 @@ const rules = {
   theater_id: [
     { required: true, message: t("validation.required"), trigger: "blur" },
   ],
-  screen_id: [
+  hall_id: [
     { required: true, message: t("validation.required"), trigger: "blur" },
   ],
   seat_number: [
@@ -212,6 +212,9 @@ const rules = {
     },
   ],
   seat_type: [
+    { required: true, message: t("validation.required"), trigger: "change" },
+  ],
+  status: [
     { required: true, message: t("validation.required"), trigger: "change" },
   ],
 };
@@ -259,7 +262,7 @@ const resetForm = () => {
 
   Object.assign(form, {
     theater_id: "",
-    screen_id: "",
+    hall_id: "",
     row: "",
     seat_number: "",
     seat_type: "regular",
@@ -284,36 +287,37 @@ const loadTheaters = async () => {
   }
 };
 
-// Load screens
-const loadScreens = async () => {
-  loadingScreens.value = true;
+// Load halls
+const loadHalls = async () => {
+  loadingHalls.value = true;
   try {
-    const response = await screenService.getScreens({ per_page: 100 });
-    screens.value = response.data || [];
+    const response = await hallService.getHalls({ per_page: 100 });
+    halls.value = response.data || [];
   } catch (error) {
-    console.error("Load screens error:", error);
-    ElMessage.error("Failed to load screens");
+    console.error("Load halls error:", error);
+    ElMessage.error("Failed to load halls");
   } finally {
-    loadingScreens.value = false;
+    loadingHalls.value = false;
   }
 };
 
 // Handle theater change
 const handleTheaterChange = () => {
-  // Filter screens by selected theater
+  // Filter halls by selected theater
   if (form.theater_id) {
-    filteredScreens.value = screens.value.filter(
-      (screen) => screen.theater_id === form.theater_id
+    filteredHalls.value = halls.value.filter(
+      (hall) => hall.theater_id === form.theater_id
     );
-  } else {
-    filteredScreens.value = [];
   }
-  // Reset screen selection
-  form.screen_id = "";
+  else {
+    filteredHalls.value = [];
+  }
+  // Reset hall selection
+  form.hall_id = "";
 };
 
 onMounted(async () => {
-  await Promise.all([loadTheaters(), loadScreens()]);
+  await Promise.all([loadTheaters(), loadHalls()]);
 
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },

@@ -79,18 +79,18 @@
 
         <el-form-item>
           <el-select
-            v-model="filters.screen_id"
-            :placeholder="$t('seats.filterByScreen')"
+            v-model="filters.hall_id"
+            :placeholder="$t('seats.filterByHall')"
             :disabled="!filters.theater_id"
             clearable
             filterable
             style="min-width: 200px"
           >
             <el-option
-              v-for="screen in filteredScreens"
-              :key="screen.id"
-              :label="screen.screen_name"
-              :value="screen.id"
+              v-for="hall in filteredHalls"
+              :key="hall.id"
+              :label="hall.hall_name"
+              :value="hall.id"
             />
           </el-select>
         </el-form-item>
@@ -133,10 +133,10 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="screen" :label="$t('seats.screen')" width="150">
+        <el-table-column prop="hall" :label="$t('seats.hall')" width="150">
           <template #default="{ row }">
-            <span v-if="row.screen_name">
-              {{ row.screen_name }}
+            <span v-if="row.hall_name">
+              {{ row.hall_name }}
             </span>
             <span v-else class="text-muted">-</span>
           </template>
@@ -252,9 +252,10 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Search } from "@element-plus/icons-vue";
 import { seatService } from "@/services/seatService";
 import { theaterService } from "@/services/theaterService";
-import { screenService } from "@/services/screenService";
+import { hallService } from "@/services/hallService";
 import { useAuthStore } from "@/stores/auth";
 import { useAppStore } from "@/stores/app";
+import { debounce } from "lodash-es"; // You may need to install lodash-es
 
 const { t } = useI18n();
 const router = useRouter();
@@ -271,15 +272,15 @@ const filters = reactive({
   status: "",
   is_available: "",
   theater_id: "",
-  screen_id: "",
+  hall_id: "",
   sort_by: "row",
   sort_order: "asc",
 });
 
-// Theater and screen data
+// Theater and hall data
 const theaters = ref([]);
-const screens = ref([]);
-const filteredScreens = ref([]);
+const halls = ref([]);
+const filteredHalls = ref([]);
 
 const pagination = reactive({
   current_page: 1,
@@ -319,18 +320,18 @@ const loadSeats = async () => {
       status: filters.status || undefined,
       is_available: filters.is_available || undefined,
       theater_id: filters.theater_id || undefined,
-      screen_id: filters.screen_id || undefined,
+      hall_id: filters.hall_id || undefined,
     };
 
     const response = await seatService.getSeats(params);
 
     const enrichedSeats = (response.data || []).map((seat) => {
       const theater = theaters.value.find((t) => t.id === seat.theater_id);
-      const screen = screens.value.find((s) => s.id === seat.screen_id);
+      const hall = halls.value.find((h) => h.id === seat.hall_id);
       return {
         ...seat,
         theater_name: theater?.name || null,
-        screen_name: screen?.screen_name || null,
+        hall_name: hall?.hall_name || null,
       };
     });
 
@@ -361,26 +362,27 @@ const loadTheaters = async () => {
   }
 };
 
-// Load screens
-const loadScreens = async () => {
+// Load halls
+const loadHalls = async () => {
   try {
-    const response = await screenService.getScreens({ per_page: 100 });
-    screens.value = response.data || [];
+    const response = await hallService.getHalls({ per_page: 100 });
+    halls.value = response.data || [];
   } catch (error) {
-    console.error("Load screens error:", error);
+    console.error("Load halls error:", error);
   }
 };
 
 // Handle theater filter change
 const handleTheaterFilterChange = () => {
   if (filters.theater_id) {
-    filteredScreens.value = screens.value.filter(
-      (screen) => screen.theater_id === filters.theater_id
+    filteredHalls.value = halls.value.filter(
+      (hall) => hall.theater_id === filters.theater_id
     );
-  } else {
-    filteredScreens.value = [];
   }
-  filters.screen_id = "";
+  else {
+    filteredHalls.value = [];
+  }
+  filters.hall_id = "";
 };
 
 const handleSizeChange = (val) => {
@@ -455,7 +457,7 @@ watch(
     () => filters.status,
     () => filters.is_available,
     () => filters.theater_id,
-    () => filters.screen_id,
+    () => filters.hall_id,
   ],
   () => {
     pagination.current_page = 1;
@@ -465,7 +467,7 @@ watch(
 
 // Lifecycle
 onMounted(async () => {
-  await Promise.all([loadTheaters(), loadScreens()]);
+  await Promise.all([loadTheaters(), loadHalls()]);
   await loadSeats();
 
   appStore.setBreadcrumbs([

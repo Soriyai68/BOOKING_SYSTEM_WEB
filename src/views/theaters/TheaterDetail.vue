@@ -30,8 +30,8 @@
         <el-descriptions-item :label="$t('theaters.province')">{{
           theater?.province
         }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('theaters.totalScreens')">{{
-          theater?.total_screens
+        <el-descriptions-item :label="$t('theaters.totalHalls')">{{
+          theater?.total_halls
         }}</el-descriptions-item>
         <el-descriptions-item :label="$t('theaters.totalCapacity')">{{
           theater?.total_capacity
@@ -48,41 +48,41 @@
       </el-descriptions>
     </el-card>
 
-    <!-- Screens Management -->
-    <el-card class="screens-section">
+    <!-- Halls Management -->
+    <el-card class="halls-section">
       <template #header>
         <div class="section-header">
-          <span>{{ $t('theaters.screens') }} ({{ screens.length }})</span>
-          <el-button type="primary" size="small" @click="goToCreateScreen">
+          <span>{{ $t('theaters.halls') }} ({{ halls.length }})</span>
+          <el-button type="primary" size="small" @click="goToCreateHall">
             <el-icon><Plus /></el-icon>
-            {{ $t('screens.addScreen') }}
+            {{ $t('halls.addHall') }}
           </el-button>
         </div>
       </template>
       
-      <div v-if="screensLoading" v-loading="screensLoading" style="height: 100px;"></div>
-      <div v-else-if="screens.length === 0" class="empty-state">
-        <el-empty :description="$t('theaters.noScreens')" />
+      <div v-if="hallsLoading" v-loading="hallsLoading" style="height: 100px;"></div>
+      <div v-else-if="halls.length === 0" class="empty-state">
+        <el-empty :description="$t('theaters.noHalls')" />
       </div>
       <div v-else>
-        <el-table :data="screens" style="width: 100%">
-          <el-table-column prop="screen_name" :label="$t('screens.name')" />
-          <el-table-column prop="screen_type" :label="$t('screens.type')" width="120">
+        <el-table :data="halls" style="width: 100%">
+          <el-table-column prop="hall_name" :label="$t('halls.name')" />
+          <el-table-column prop="hall_type" :label="$t('halls.type')" width="120">
             <template #default="{ row }">
-              <el-tag size="small">{{ row.screen_type?.toUpperCase() }}</el-tag>
+              <el-tag size="small">{{ row.hall_type?.toUpperCase() }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="total_seats" :label="$t('screens.totalSeats')" width="120" />
-          <el-table-column prop="status" :label="$t('screens.status')" width="120">
+          <el-table-column prop="total_seats" :label="$t('halls.totalSeats')" width="120" />
+          <el-table-column prop="status" :label="$t('halls.status')" width="120">
             <template #default="{ row }">
               <el-tag :type="statusTagType(row.status)" size="small">{{ row.status_display || row.status }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column :label="$t('users.actions')" width="180">
             <template #default="{ row }">
-              <el-button size="small" link type="primary" @click="viewScreen(row.id)">{{ $t('actions.view') }}</el-button>
-              <el-button size="small" link type="primary" @click="editScreen(row.id)">{{ $t('actions.edit') }}</el-button>
-              <el-button size="small" link type="danger" @click="removeScreen(row.id)">{{ $t('actions.remove') }}</el-button>
+              <el-button size="small" link type="primary" @click="viewHall(row.id)">{{ $t('actions.view') }}</el-button>
+              <el-button size="small" link type="primary" @click="editHall(row.id)">{{ $t('actions.edit') }}</el-button>
+              <el-button size="small" link type="danger" @click="removeHall(row.id)">{{ $t('actions.remove') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -97,7 +97,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useI18n } from 'vue-i18n'
 import { theaterService } from '@/services/theaterService'
-import { screenService } from '@/services/screenService'
+import { hallService } from '@/services/hallService'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 
@@ -108,53 +108,53 @@ const { t } = useI18n();
 
 const loading = ref(false)
 const theater = ref(null)
-const screens = ref([])
-const screensLoading = ref(false)
+const halls = ref([])
+const hallsLoading = ref(false)
 
 const load = async () => {
   loading.value = true;
   try {
     const data = await theaterService.getTheater(route.params.id)
     theater.value = data
-    await loadScreens()
+    await loadHalls()
   } finally {
     loading.value = false
   }
 }
 
-const loadScreens = async () => {
-  screensLoading.value = true
+const loadHalls = async () => {
+  hallsLoading.value = true
   try {
-    const response = await screenService.getScreensByTheater(route.params.id)
-    screens.value = response.data || response.screens || []
+    const response = await hallService.getHallsByTheater(route.params.id)
+    halls.value = response.data || response.halls || []
   } catch (e) {
-    console.error('Failed to load screens:', e)
-    ElMessage.error('Failed to load theater screens')
+    console.error('Failed to load halls:', e)
+    ElMessage.error('Failed to load theater halls')
   } finally {
-    screensLoading.value = false
+    hallsLoading.value = false
   }
 }
 
 const goEdit = () => router.push(`/admin/theaters/${route.params.id}/edit`)
-const goToCreateScreen = () => router.push(`/admin/screens/create?theater_id=${route.params.id}`)
-const viewScreen = (id) => router.push(`/admin/screens/${id}`)
-const editScreen = (id) => router.push(`/admin/screens/${id}/edit`)
+const goToCreateHall = () => router.push(`/admin/halls/create?theater_id=${route.params.id}`)
+const viewHall = (id) => router.push(`/admin/halls/${id}`)
+const editHall = (id) => router.push(`/admin/halls/${id}/edit`)
 
-const removeScreen = async (screenId) => {
+const removeHall = async (hallId) => {
   try {
     await ElMessageBox.confirm(
-      t('theaters.confirmRemoveScreen'),
-      t('theaters.removeScreen'),
+      t('theaters.confirmRemoveHall'),
+      t('theaters.removeHall'),
       { type: 'warning', confirmButtonText: t('actions.remove'), cancelButtonText: t('actions.cancel') }
     )
-    await theaterService.removeScreen(route.params.id, screenId)
-    ElMessage.success(t('theaters.screenRemoved'))
-    // Reload both theater data and screens to update total_screens count
+    await theaterService.removeHall(route.params.id, hallId)
+    ElMessage.success(t('theaters.hallRemoved'))
+    // Reload both theater data and halls to update total_halls count
     await load()
   } catch (err) {
     if (err !== 'cancel') {
       console.error(err)
-      ElMessage.error('Failed to remove screen from theater')
+      ElMessage.error('Failed to remove hall from theater')
     }
   }
 }
@@ -183,7 +183,7 @@ onMounted(async () => {
 
 <style scoped>
 .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
-.screens-section { margin-top: 24px; }
+.halls-section { margin-top: 24px; }
 .section-header { display:flex; justify-content:space-between; align-items:center; }
 .empty-state { padding: 40px 0; }
 </style>

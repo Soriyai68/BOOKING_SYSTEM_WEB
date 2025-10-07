@@ -1,4 +1,4 @@
-import api from '@/utils/api'
+import api from "@/utils/api";
 
 export const theaterService = {
   // List theaters with pagination and filters
@@ -10,26 +10,28 @@ export const theaterService = {
       status: params.status,
       city: params.city,
       province: params.province,
-      minScreens: params.min_screens,
-      maxScreens: params.max_screens,
+      minHalls: params.min_halls,
+      maxHalls: params.max_halls,
       minCapacity: params.min_capacity,
       maxCapacity: params.max_capacity,
       hasFeatures: params.has_features,
       dateFrom: params.date_from,
       dateTo: params.date_to,
       includeDeleted: params.include_deleted || false,
-      sortBy: params.sort_by || 'name',
-      sortOrder: params.sort_order || 'asc',
-    }
+      sortBy: params.sort_by || "name",
+      sortOrder: params.sort_order || "asc",
+    };
 
-    Object.keys(backendParams).forEach((k) => backendParams[k] === undefined && delete backendParams[k])
+    Object.keys(backendParams).forEach(
+      (k) => backendParams[k] === undefined && delete backendParams[k]
+    );
 
-    const { data } = await api.get('/theaters', { params: backendParams })
+    const { data } = await api.get("/theaters", { params: backendParams });
     if (data?.success && data?.data) {
-      const { theaters, pagination } = data.data
+      const { theaters, pagination } = data.data;
       return {
         data: theaters.map((t) => {
-          const screens_id = t.screens_id || [];
+          const halls_id = t.halls_id || [];
           return {
             id: t._id,
             name: t.name,
@@ -38,35 +40,38 @@ export const theaterService = {
             province: t.province,
             status: t.status,
             features: t.features || [],
-            total_screens: screens_id.length || t.total_screens || 0,
+            total_halls: halls_id.length || t.total_halls || 0,
             total_capacity: t.total_capacity || 0,
-            screens_id: screens_id,
+            halls_id: halls_id,
             contact_info: t.contact_info || {},
             operating_hours: t.operating_hours || {},
             location: t.location || null,
-            notes: t.notes || '',
+            notes: t.notes || "",
             created_at: t.createdAt,
             updated_at: t.updatedAt,
             deleted_at: t.deletedAt,
             display_name: `${t.name} - ${t.city}, ${t.province}`,
-            status_display: t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1).replace('_', ' ') : 'Active',
+            status_display: t.status
+              ? t.status.charAt(0).toUpperCase() +
+                t.status.slice(1).replace("_", " ")
+              : "Active",
           };
         }),
         total: pagination.totalCount,
         current_page: pagination.currentPage,
         per_page: pagination.limit,
         total_pages: pagination.totalPages,
-      }
+      };
     }
-    return data
+    return data;
   },
 
   // Get a single theater by ID
   async getTheater(id) {
-    const { data } = await api.get(`/theaters/${id}`)
+    const { data } = await api.get(`/theaters/${id}`);
     if (data?.success && data?.data?.theater) {
-      const t = data.data.theater
-      const screens_id = t.screens_id || []
+      const t = data.data.theater;
+      const halls_id = t.halls_id || [];
       return {
         id: t._id,
         name: t.name,
@@ -75,21 +80,24 @@ export const theaterService = {
         province: t.province,
         status: t.status,
         features: t.features || [],
-        total_screens: screens_id.length || t.total_screens || 0,
+        total_halls: halls_id.length || t.total_halls || 0,
         total_capacity: t.total_capacity || 0,
-        screens_id: screens_id,
+        halls_id: halls_id,
         contact_info: t.contact_info || {},
         operating_hours: t.operating_hours || {},
         location: t.location || null,
-        notes: t.notes || '',
+        notes: t.notes || "",
         created_at: t.createdAt,
         updated_at: t.updatedAt,
         deleted_at: t.deletedAt,
         display_name: `${t.name} - ${t.city}, ${t.province}`,
-        status_display: t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1).replace('_', ' ') : 'Active',
-      }
+        status_display: t.status
+          ? t.status.charAt(0).toUpperCase() +
+            t.status.slice(1).replace("_", " ")
+          : "Active",
+      };
     }
-    return data
+    return data;
   },
 
   // Create a theater
@@ -99,14 +107,16 @@ export const theaterService = {
       address: payload.address?.trim(),
       city: payload.city?.trim(),
       province: payload.province?.trim(),
-      status: payload.status || 'active',
+      status: payload.status || "active",
       features: payload.features || [],
       total_capacity: payload.total_capacity || 0,
-      notes: payload.notes || '',
-    }
-    Object.keys(backendData).forEach((k) => backendData[k] === undefined && delete backendData[k])
-    const { data } = await api.post('/theaters', backendData)
-    return data
+      notes: payload.notes || "",
+    };
+    Object.keys(backendData).forEach(
+      (k) => backendData[k] === undefined && delete backendData[k]
+    );
+    const { data } = await api.post("/theaters", backendData);
+    return data;
   },
 
   // Update a theater
@@ -120,46 +130,55 @@ export const theaterService = {
       features: payload.features,
       total_capacity: payload.total_capacity,
       notes: payload.notes,
-    }
-    Object.keys(backendData).forEach((k) => backendData[k] === undefined && delete backendData[k])
-    const { data } = await api.put(`/theaters/${id}`, backendData)
-    return data
+    };
+    Object.keys(backendData).forEach(
+      (k) => backendData[k] === undefined && delete backendData[k]
+    );
+    const { data } = await api.put(`/theaters/${id}`, backendData);
+    return data;
   },
 
   async deleteTheater(id) {
-    const { data } = await api.delete(`/theaters/${id}/force-delete`)
-    return data
+    const { data } = await api.delete(`/theaters/${id}/force-delete`);
+    return data;
   },
 
   async updateStatus(id, status) {
-    const { data } = await api.put(`/theaters/${id}/status`, { status })
-    return data
+    const { data } = await api.put(`/theaters/${id}/status`, { status });
+    return data;
   },
 
-  async addScreen(theaterId, screen_id) {
-    const { data } = await api.post(`/theaters/${theaterId}/screens`, { screen_id })
-    return data
+  async addHall(theaterId, hall_id) {
+    const { data } = await api.post(`/theaters/${theaterId}/halls`, {
+      hall_id,
+    });
+    return data;
   },
 
-  async removeScreen(theaterId, screen_id) {
-    const { data } = await api.delete(`/theaters/${theaterId}/screens`, { data: { screen_id } })
-    return data
+  async removeHall(theaterId, hall_id) {
+    const { data } = await api.delete(`/theaters/${theaterId}/halls`, {
+      data: { hall_id },
+    });
+    return data;
   },
 
   async updateLocation(id, longitude, latitude) {
-    const { data } = await api.put(`/theaters/${id}/location`, { longitude, latitude })
-    return data
+    const { data } = await api.put(`/theaters/${id}/location`, {
+      longitude,
+      latitude,
+    });
+    return data;
   },
 
   async getAnalytics(params = {}) {
-    const { data } = await api.get('/theaters/analytics', { params })
-    return data
+    const { data } = await api.get("/theaters/analytics", { params });
+    return data;
   },
 
   STATUS_OPTIONS: [
-    { value: 'active', label: 'Active' },
-    { value: 'maintenance', label: 'Maintenance' },
-    { value: 'closed', label: 'Closed' },
-    { value: 'renovation', label: 'Renovation' },
+    { value: "active", label: "Active" },
+    { value: "maintenance", label: "Maintenance" },
+    { value: "closed", label: "Closed" },
+    { value: "renovation", label: "Renovation" },
   ],
-}
+};
