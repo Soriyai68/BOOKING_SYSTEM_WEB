@@ -1,6 +1,3 @@
-
-import { More } from "@element-plus/icons-vue";
-
 export default {
   // Navigation and Layout
   nav: {
@@ -280,6 +277,50 @@ export default {
     },
   },
 
+  // Showtime Management
+  showtimes: {
+    title: "គ្រប់គ្រងម៉ោងបញ្ចាំង",
+    allShowtimes: "ម៉ោងបញ្ចាំងទាំងអស់",
+    addShowtime: "បន្ថែមម៉ោងបញ្ចាំង",
+    editShowtime: "កែសម្រួលម៉ោងបញ្ចាំង",
+    showtimeDetails: "ព័ត៌មានលម្អិតម៉ោងបញ្ចាំង",
+    searchShowtimes: "ស្វែងរកម៉ោងបញ្ចាំង...",
+    filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
+    movie: "ភាពយន្ត",
+    theater: "រោងកុន",
+    hall: "សាល",
+    startTime: "ម៉ោងចាប់ផ្តើម",
+    endTime: "ម៉ោងបញ្ចប់",
+    status: "ស្ថានភាព",
+    actions: "សកម្មភាព",
+    view: "មើល",
+    edit: "កែសម្រួល",
+    delete: "លុប",
+    deleteConfirm: "តើអ្នកប្រាកដថាចង់លុបម៉ោងបញ្ចាំងនេះមែនទេ?",
+    deleteTitle: "លុបម៉ោងបញ្ចាំង",
+    deleteSuccess: "លុបម៉ោងបញ្ចាំងបានជោគជ័យ",
+    deleteFailed: "ការលុបម៉ោងបញ្ចាំងបានបរាជ័យ",
+    loadFailed: "ការផ្ទុកម៉ោងបញ្ចាំងបានបរាជ័យ",
+    createSuccess: "បង្កើតម៉ោងបញ្ចាំងបានជោគជ័យ",
+    createFailed: "ការបង្កើតម៉ោងបញ្ចាំងបានបរាជ័យ",
+    updateSuccess: "ធ្វើបច្ចុប្បន្នភាពម៉ោងបញ្ចាំងបានជោគជ័យ",
+    updateFailed: "ការធ្វើបច្ចុប្បន្នភាពម៉ោងបញ្ចាំងបានបរាជ័យ",
+    created_at: "បានបង្កើតនៅ",
+    updated_at: "បានធ្វើបច្ចុប្បន្នភាពនៅ",
+    screen_type: "ប្រភេទស្រ្គីន",
+    theater_city: "ទីក្រុង",
+    theater_province: "ខេត្ត/រាជធានី",
+    language: "ភាសា",
+    subtitle: "ចំណងជើងរង",
+    created_by: "បង្កើត​ឡើង​ដោយ",
+    updated_by: "បានធ្វើបច្ចុប្បន្នភាពដោយ",
+    statuses: {
+      scheduled: "កំណត់ពេលវេលា",
+      completed: "បានបញ្ចប់",
+      cancelled: "បានលុបចោល",
+    },
+  },
+
   // Booking Management
   bookings: {
     title: "គ្រប់គ្រងការកក់",
@@ -324,6 +365,7 @@ export default {
 
   // Common Actions
   actions: {
+    create: "បង្កើត",
     add: "បន្ថែម",
     edit: "កែសម្រួល",
     delete: "លុប",

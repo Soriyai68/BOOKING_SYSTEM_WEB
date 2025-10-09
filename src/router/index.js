@@ -25,6 +25,7 @@ const routes = [
         component: () => import("@/views/dashboard/Dashboard.vue"),
         meta: { title: "Dashboard" },
       },
+      //users
       {
         path: "users",
         name: "Users",
@@ -44,7 +45,6 @@ const routes = [
         meta: { title: 'Edit User' }
       },
       //seats
-
       {
         path: 'seats',
         name: 'Seats',
@@ -69,7 +69,7 @@ const routes = [
         component: () => import('@/views/seats/EditSeat.vue'),
         meta: { title: 'Edit Seat' }
       },
-
+      //theaters
       {
         path: 'theaters',
         name: 'Theaters',
@@ -94,7 +94,7 @@ const routes = [
         component: () => import("@/views/theaters/EditTheater.vue"),
         meta: { title: "Edit Theater" },
       },
-
+      //halls
       {
         path: "halls",
         name: "Halls",
@@ -119,7 +119,7 @@ const routes = [
         component: () => import("@/views/halls/EditHall.vue"),
         meta: { title: "Edit Hall" },
       },
-
+      //movies
       {
         path: "movies",
         name: "Movies",
@@ -144,6 +144,32 @@ const routes = [
         component: () => import('@/views/movies/EditMovie.vue'),
         meta: { title: 'Edit Movie' }
       },
+      //showtime
+      {
+        path: "showtimes",
+        name: "Showtimes",
+        component: () => import("@/views/showtime/ShowtimeList.vue"),
+        meta: { title: "Showtimes Management" },
+      },
+      {
+        path: "showtimes/create",
+        name: "CreateShowtime",
+        component: () => import("@/views/showtime/CreateShowtime.vue"),
+        meta: { title: "Create Showtime" },
+      },
+      {
+        path: "showtimes/:id",
+        name: "ShowtimeDetail",
+        component: () => import("@/views/showtime/ShowtimeDetail.vue"),
+        meta: { title: "Showtime Details" },
+      },
+      {
+        path: "showtimes/:id/edit",
+        name: "EditShowtime",
+        component: () => import("@/views/showtime/EditShowtime.vue"),
+        meta: { title: "Edit Showtime" },
+      },
+      //booking
       {
         path: "bookings",
         name: "Bookings",

@@ -317,6 +317,51 @@ export default {
     },
   },
 
+  // Showtime Management
+  showtimes: {
+    title: "Showtime Management",
+    addShowtime: "Add Showtime",
+    editShowtime: "Edit Showtime",
+    showtimeDetails: "Showtime Details",
+    searchShowtimes: "Search showtimes...",
+    filterByStatus: "Filter by status",
+    movie: "Movie",
+    theater: "Theater",
+    hall: "Hall",
+    startTime: "Start Time",
+    endTime: "End Time",
+    status: "Status",
+    actions: "Actions",
+    view: "View",
+    edit: "Edit",
+    delete: "Delete",
+    deleteConfirm: "Are you sure you want to delete this showtime?",
+    deleteTitle: "Delete Showtime",
+    deleteSuccess: "Showtime deleted successfully",
+    deleteFailed: "Failed to delete showtime",
+    loadFailed: "Failed to load showtimes",
+    createSuccess: "Showtime created successfully",
+    createFailed: "Failed to create showtime",
+    updateSuccess: "Showtime updated successfully",
+    updateFailed: "Failed to update showtime",
+    created_at: "Created At",
+    updated_at: "Updated At",
+    allShowtimes: "All Showtimes",
+    screen_type: "Screen Type",
+    theater_city: "City",
+    theater_province: "Province",
+    language: "Language",
+    subtitle: "Subtitle",
+    created_by: "Created By",
+    updated_by: "Updated By",
+    statuses: {
+      statuses: {
+        scheduled: "Scheduled",
+        completed: "Completed",
+        cancelled: "Cancelled",
+      },
+    },
+  },
   // Booking Management
   bookings: {
     title: "Booking Management",
@@ -362,6 +407,7 @@ export default {
 
   // Common Actions
   actions: {
+    create: "Create",
     add: "Add",
     edit: "Edit",
     delete: "Delete",

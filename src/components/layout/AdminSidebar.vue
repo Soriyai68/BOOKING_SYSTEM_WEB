@@ -85,6 +85,21 @@
         </el-menu-item>
       </el-sub-menu>
 
+      <el-sub-menu index="showtimes">
+        <template #title>
+          <el-icon><Ticket /></el-icon>
+          <span>{{ $t("showtimes.title") }}</span>
+        </template>
+        <el-menu-item index="/admin/showtimes">
+          <el-icon><Ticket /></el-icon>
+          <template #title>{{ $t("showtimes.allShowtimes") }}</template>
+        </el-menu-item>
+        <el-menu-item index="/admin/showtimes/create">
+          <el-icon><Plus /></el-icon>
+          <template #title>{{ $t("showtimes.addShowtime") }}</template>
+        </el-menu-item>
+      </el-sub-menu>
+
       <el-sub-menu index="users">
         <template #title>
           <el-icon><Users /></el-icon>
