@@ -218,13 +218,15 @@ const loadHalls = async () => {
         per_page: 100,
       });
       if (response.data) {
-        halls.value = response.data;
+        halls.value = response.data; // mapped halls array from service
       }
-      showtime.hall_id = ""; // Reset hall selection
+      showtime.hall_id = ""; // reset hall selection when theater changes
     } catch (error) {
       console.error("Failed to load halls:", error);
       ElMessage.error(t("halls.loadFailed"));
     }
+  } else {
+    halls.value = []; // reset if no theater
   }
 };
 

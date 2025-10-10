@@ -45,6 +45,19 @@
             :value="opt.value"
           />
         </el-select>
+        <el-select
+          v-model="theaterFilter"
+          :placeholder="$t('halls.filterByTheater')"
+          clearable
+          filterable
+        >
+          <el-option
+            v-for="theater in theaters"
+            :key="theater.id"
+            :label="theater.name"
+            :value="theater.id"
+          />
+        </el-select>
 
         <el-select v-model="sortBy" :placeholder="$t('table.sortBy')">
           <el-option
@@ -163,6 +176,7 @@ const pageSize = ref(10);
 const searchText = ref("");
 const statusFilter = ref("");
 const typeFilter = ref("");
+const theaterFilter = ref("");
 const sortBy = ref("hall_name");
 const sortOrder = ref("asc");
 const theaters = ref([]);
@@ -172,7 +186,7 @@ const debouncedSearch = debounce(() => {
   load();
 }, 500);
 
-watch([statusFilter, typeFilter, sortBy, sortOrder], () => {
+watch([statusFilter, typeFilter, theaterFilter, sortBy, sortOrder], () => {
   currentPage.value = 1;
   load();
 });
@@ -192,6 +206,7 @@ const load = async () => {
     const params = {
       page: currentPage.value,
       per_page: pageSize.value,
+      theater_id: theaterFilter.value || undefined,
       search: searchText.value || undefined,
       status: statusFilter.value || undefined,
       screen_type: typeFilter.value || undefined, // keep screen_type

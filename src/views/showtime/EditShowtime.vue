@@ -179,6 +179,7 @@ const loadShowtime = async () => {
   try {
     const response = await showtimeService.getShowtime(route.params.id);
     Object.assign(showtime, response);
+    console.log("showtime data:", showtime);
     await Promise.all([loadMovies(), loadTheaters()]);
     await loadHalls(); // Load halls after getting theater_id
   } catch (error) {
@@ -224,12 +225,14 @@ const loadHalls = async () => {
         per_page: 100,
       });
       if (response.data) {
-        halls.value = response.data;
+        halls.value = response.data; // mapped halls array from service
       }
     } catch (error) {
       console.error("Failed to load halls:", error);
       ElMessage.error(t("halls.loadFailed"));
     }
+  } else {
+    halls.value = []; // reset if no theater
   }
 };
 

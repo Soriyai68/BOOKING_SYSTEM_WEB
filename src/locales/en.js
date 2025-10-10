@@ -233,6 +233,7 @@ export default {
     searchHalls: "Search halls...",
     filterByStatus: "Filter by status",
     filterByType: "Filter by screen type",
+    filterByTheater: "Filter by Theater",
     sortOrder: "Sort Order",
     name: "Name",
     screenType: "Screen Type",
@@ -325,6 +326,8 @@ export default {
     showtimeDetails: "Showtime Details",
     searchShowtimes: "Search showtimes...",
     filterByStatus: "Filter by status",
+    filterByTheater: "Filter by theater",
+    filterByHall: "Filter by hall",
     movie: "Movie",
     theater: "Theater",
     hall: "Hall",
@@ -355,11 +358,9 @@ export default {
     created_by: "Created By",
     updated_by: "Updated By",
     statuses: {
-      statuses: {
-        scheduled: "Scheduled",
-        completed: "Completed",
-        cancelled: "Cancelled",
-      },
+      scheduled: "Scheduled",
+      completed: "Completed",
+      cancelled: "Cancelled",
     },
   },
   // Booking Management

@@ -12,30 +12,85 @@
     </div>
 
     <el-card>
+      <!-- Filters Toolbar -->
       <div class="toolbar">
+        <!-- Search -->
         <el-input
-          v-model="searchText"
+          v-model="filters.search"
           :placeholder="$t('showtimes.searchShowtimes')"
           class="search-input"
           :prefix-icon="Search"
           clearable
           @input="debouncedSearch"
         />
+
+        <!-- Status -->
         <el-select
-          v-model="statusFilter"
+          v-model="filters.status"
           :placeholder="$t('showtimes.filterByStatus')"
           clearable
+          style="width: 200px"
         >
-          <el-option :label="$t('table.selectAll')" value="" />
           <el-option
             v-for="status in showtimeService.STATUS_OPTIONS"
             :key="status.value"
-            :label="status.label"
+            :label="$t(`showtimes.statuses.${status.value}`)"
             :value="status.value"
           />
         </el-select>
+
+        <!-- Theater -->
+        <el-select
+          v-model="filters.theater_id"
+          :placeholder="$t('showtimes.filterByTheater')"
+          clearable
+          style="width: 200px"
+          filterable
+          @change="handleTheaterFilterChange"
+        >
+          <el-option
+            v-for="theater in theaters"
+            :key="theater.id"
+            :label="theater.name"
+            :value="theater.id"
+          />
+        </el-select>
+
+        <!-- Hall -->
+        <el-select
+          v-model="filters.hall_id"
+          :placeholder="$t('showtimes.filterByHall')"
+          :disabled="!filters.theater_id"
+          clearable
+          filterable
+          style="width: 200px"
+        >
+          <el-option
+            v-for="hall in filteredHalls"
+            :key="hall.id"
+            :label="hall.hall_name"
+            :value="hall.id"
+          />
+        </el-select>
+
+        <!-- Date Range -->
+        <!-- <el-date-picker
+          v-model="filters.dateFrom"
+          type="date"
+          placeholder="From"
+          clearable
+          style="width: 140px"
+        />
+        <el-date-picker
+          v-model="filters.dateTo"
+          type="date"
+          placeholder="To"
+          clearable
+          style="width: 140px"
+        /> -->
       </div>
 
+      <!-- Showtime Table -->
       <el-table
         :data="showtimesWithTime"
         v-loading="loading"
@@ -61,39 +116,13 @@
         </el-table-column>
         <el-table-column :label="$t('showtimes.theater')" prop="theater_name" />
         <el-table-column :label="$t('showtimes.hall')" prop="hall_name" />
-        <el-table-column
-          prop="start_time"
-          :label="$t('showtimes.startTime')"
-          width="180"
-        >
-          <template #default="{ row }">
-            {{
-              new Date(row.start_time).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            }}
-          </template>
+        <el-table-column :label="$t('showtimes.startTime')" width="180">
+          <template #default="{ row }">{{ row.start_time_only }}</template>
         </el-table-column>
-        <el-table-column
-          prop="end_time"
-          :label="$t('showtimes.endTime')"
-          width="180"
-        >
-          <template #default="{ row }">
-            {{
-              new Date(row.end_time).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            }}
-          </template>
+        <el-table-column :label="$t('showtimes.endTime')" width="180">
+          <template #default="{ row }">{{ row.end_time_only }}</template>
         </el-table-column>
-        <el-table-column
-          prop="status"
-          :label="$t('showtimes.status')"
-          width="140"
-        >
+        <el-table-column :label="$t('showtimes.status')" width="140">
           <template #default="{ row }">
             <el-tag :type="getStatusTagType(row.status)">
               {{ $t(`showtimes.statuses.${row.status}`) }}
@@ -130,13 +159,13 @@
         </el-table-column>
       </el-table>
 
+      <!-- Pagination -->
       <div class="pagination">
         <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
+          v-model:current-page="pagination.current_page"
+          v-model:page-size="pagination.per_page"
           :page-sizes="[10, 20, 50, 100]"
-          :small="false"
-          :total="total"
+          :total="pagination.total"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -147,10 +176,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from "vue";
+import { ref, onMounted, watch, computed, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import { showtimeService } from "@/services/showtimeService";
+import { theaterService } from "@/services/theaterService";
+import { hallService } from "@/services/hallService";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Search } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
@@ -161,38 +192,76 @@ const appStore = useAppStore();
 const { t } = useI18n();
 
 const loading = ref(false);
-const searchText = ref("");
-const statusFilter = ref("");
-const currentPage = ref(1);
-const pageSize = ref(10);
-const total = ref(0);
 const showtimes = ref([]);
+const theaters = ref([]);
+const halls = ref([]);
+const filteredHalls = ref([]);
 
+// Filters
+const filters = reactive({
+  search: "",
+  status: "",
+  theater_id: "",
+  hall_id: "",
+  dateTo: "",
+  dateFrom: "",
+  sort_by: "start_time",
+  sort_order: "asc",
+});
+
+// Pagination
+const pagination = reactive({
+  current_page: 1,
+  per_page: 10,
+  total: 0,
+  total_pages: 0,
+  has_next_page: false,
+  has_prev_page: false,
+});
+
+// Debounced search
 const debouncedSearch = debounce(() => {
-  currentPage.value = 1;
+  pagination.current_page = 1;
   loadShowtimes();
 }, 500);
 
-watch([statusFilter], () => {
-  currentPage.value = 1;
-  loadShowtimes();
-});
+// Watchers for filters
+watch(
+  [
+    () => filters.dateFrom,
+    () => filters.dateTo,
+    () => filters.search,
+    () => filters.status,
+    () => filters.theater_id,
+    () => filters.hall_id,
+  ],
+  () => {
+    pagination.current_page = 1;
+    loadShowtimes();
+  }
+);
 
+// API Calls
 const loadShowtimes = async () => {
   loading.value = true;
   try {
     const params = {
-      page: currentPage.value,
-      per_page: pageSize.value,
-      search: searchText.value || undefined,
-      status: statusFilter.value || undefined,
+      page: pagination.current_page,
+      per_page: pagination.per_page,
+      sort_by: filters.sort_by,
+      sort_order: filters.sort_order,
+      search: filters.search || undefined,
+      status: filters.status || undefined,
+      theater_id: filters.theater_id || undefined,
+      hall_id: filters.hall_id || undefined,
+      dateFrom: filters.dateFrom || undefined,
+      dateTo: filters.dateTo || undefined,
     };
     const response = await showtimeService.getShowtimes(params);
     if (response.data) {
       showtimes.value = response.data;
-      total.value = response.total;
+      pagination.total = response.total;
     }
-    console.log("showtime data:", showtimes.value);
   } catch (error) {
     console.error("Failed to load showtimes:", error);
     ElMessage.error(t("showtimes.loadFailed"));
@@ -201,24 +270,51 @@ const loadShowtimes = async () => {
   }
 };
 
+const loadTheaters = async () => {
+  try {
+    const response = await theaterService.getTheaters({ per_page: 100 });
+    if (response && response.data) {
+      theaters.value = response.data;
+    }
+  } catch (error) {
+    console.error("Load theaters error:", error);
+  }
+};
+
+const loadHalls = async () => {
+  try {
+    const response = await hallService.getHalls({ per_page: 100 });
+    if (response && response.data) {
+      halls.value = response.data;
+    }
+  } catch (error) {
+    console.error("Load halls error:", error);
+  }
+};
+
+// Handle theater filter change
+const handleTheaterFilterChange = () => {
+  filters.hall_id = "";
+  filteredHalls.value = filters.theater_id
+    ? halls.value.filter((hall) => hall.theater_id === filters.theater_id)
+    : [];
+};
+
+// Pagination handlers
 const handleSizeChange = (newSize) => {
-  pageSize.value = newSize;
-  currentPage.value = 1;
+  pagination.per_page = newSize;
+  pagination.current_page = 1;
   loadShowtimes();
 };
 
 const handleCurrentChange = (newPage) => {
-  currentPage.value = newPage;
+  pagination.current_page = newPage;
   loadShowtimes();
 };
 
-const viewShowtime = (id) => {
-  router.push(`/admin/showtimes/${id}`);
-};
-
-const editShowtime = (id) => {
-  router.push(`/admin/showtimes/${id}/edit`);
-};
+// Actions
+const viewShowtime = (id) => router.push(`/admin/showtimes/${id}`);
+const editShowtime = (id) => router.push(`/admin/showtimes/${id}/edit`);
 
 const deleteShowtime = async (id) => {
   try {
@@ -242,11 +338,7 @@ const deleteShowtime = async (id) => {
   }
 };
 
-const formatDateTime = (dateTimeString) => {
-  if (!dateTimeString) return "-";
-  return new Date(dateTimeString).toLocaleString();
-};
-
+// Helpers
 const getStatusTagType = (status) => {
   switch (status) {
     case "scheduled":
@@ -260,8 +352,8 @@ const getStatusTagType = (status) => {
   }
 };
 
-const showtimesWithTime = computed(() => {
-  return showtimes.value.map((s) => ({
+const showtimesWithTime = computed(() =>
+  showtimes.value.map((s) => ({
     ...s,
     start_time_only: s.start_time
       ? new Date(s.start_time).toLocaleTimeString([], {
@@ -275,14 +367,21 @@ const showtimesWithTime = computed(() => {
           minute: "2-digit",
         })
       : "",
-  }));
-});
-onMounted(() => {
+  }))
+);
+
+// Init
+onMounted(async () => {
+  await Promise.all([loadTheaters(), loadHalls()]);
+
+  if (filters.theater_id) handleTheaterFilterChange();
+
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },
     { title: t("showtimes.title"), path: "/admin/showtimes" },
   ]);
-  loadShowtimes();
+
+  await loadShowtimes();
 });
 </script>
 
@@ -297,6 +396,7 @@ onMounted(() => {
   display: flex;
   gap: 16px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 .search-input {
   width: 300px;
