@@ -12,40 +12,6 @@
     <!-- Seat Form -->
     <el-card>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="140px">
-        <el-form-item :label="$t('seats.theater')" prop="theater_id">
-          <el-select
-            v-model="form.theater_id"
-            style="width: 100%"
-            :loading="loadingTheaters"
-            filterable
-            @change="handleTheaterChange"
-          >
-            <el-option
-              v-for="theater in theaters"
-              :key="theater.id"
-              :label="theater.display_name || theater.name"
-              :value="theater.id"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item :label="$t('seats.hall')" prop="hall_id">
-          <el-select
-            v-model="form.hall_id"
-            :disabled="!form.theater_id"
-            :loading="loadingHalls"
-            style="width: 100%"
-            filterable
-          >
-            <el-option
-              v-for="hall in filteredHalls"
-              :key="hall.id"
-              :label="hall.hall_name"
-              :value="hall.id"
-            />
-          </el-select>
-        </el-form-item>
-
         <el-form-item :label="$t('seats.row')" prop="row">
           <el-input
             v-model="form.row"
@@ -99,15 +65,6 @@
             style="width: 100%"
           />
         </el-form-item>
-
-        <el-form-item :label="$t('seats.availability')">
-          <el-switch
-            v-model="form.is_available"
-            :active-text="$t('seats.available')"
-            :inactive-text="$t('seats.unavailable')"
-          />
-        </el-form-item>
-
         <el-form-item :label="$t('seats.notes')" prop="notes">
           <el-input
             v-model="form.notes"
@@ -138,8 +95,6 @@ import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import { seatService } from "@/services/seatService";
-import { theaterService } from "@/services/theaterService";
-import { hallService } from "@/services/hallService";
 import { useAppStore } from "@/stores/app";
 
 const { t } = useI18n();
@@ -152,14 +107,11 @@ const loading = ref(false);
 
 // Form data
 const form = reactive({
-  theater_id: "",
-  hall_id: "",
   row: "",
   seat_number: "",
   seat_type: "regular",
   status: "active",
   price: 0,
-  is_available: true,
   notes: "",
 });
 
@@ -195,12 +147,6 @@ const rules = {
       message: "Row must be between 1 and 5 characters",
       trigger: "blur",
     },
-  ],
-  theater_id: [
-    { required: true, message: t("validation.required"), trigger: "blur" },
-  ],
-  hall_id: [
-    { required: true, message: t("validation.required"), trigger: "blur" },
   ],
   seat_number: [
     { required: true, message: t("validation.required"), trigger: "blur" },
@@ -261,59 +207,13 @@ const resetForm = () => {
   }
 
   Object.assign(form, {
-    theater_id: "",
-    hall_id: "",
     row: "",
     seat_number: "",
     seat_type: "regular",
     status: "active",
     price: 0,
-    is_available: true,
     notes: "",
   });
-};
-
-// Load theaters
-const loadTheaters = async () => {
-  loadingTheaters.value = true;
-  try {
-    const response = await theaterService.getTheaters({ per_page: 100 });
-    theaters.value = response.data || [];
-  } catch (error) {
-    console.error("Load theaters error:", error);
-    ElMessage.error("Failed to load theaters");
-  } finally {
-    loadingTheaters.value = false;
-  }
-};
-
-// Load halls
-const loadHalls = async () => {
-  loadingHalls.value = true;
-  try {
-    const response = await hallService.getHalls({ per_page: 100 });
-    halls.value = response.data || [];
-  } catch (error) {
-    console.error("Load halls error:", error);
-    ElMessage.error("Failed to load halls");
-  } finally {
-    loadingHalls.value = false;
-  }
-};
-
-// Handle theater change
-const handleTheaterChange = () => {
-  // Filter halls by selected theater
-  if (form.theater_id) {
-    filteredHalls.value = halls.value.filter(
-      (hall) => hall.theater_id === form.theater_id
-    );
-  }
-  else {
-    filteredHalls.value = [];
-  }
-  // Reset hall selection
-  form.hall_id = "";
 };
 
 onMounted(async () => {

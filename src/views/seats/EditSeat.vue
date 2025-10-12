@@ -27,40 +27,6 @@
     <!-- Seat Form -->
     <el-card v-else>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="140px">
-        <el-form-item :label="$t('seats.theater')" prop="theater_id">
-          <el-select
-            v-model="form.theater_id"
-            style="width: 100%"
-            :loading="loadingTheaters"
-            filterable
-            @change="handleTheaterChange"
-          >
-            <el-option
-              v-for="theater in theaters"
-              :key="theater.id"
-              :label="theater.display_name || theater.name"
-              :value="theater.id"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item :label="$t('seats.hall')" prop="hall_id">
-          <el-select
-            v-model="form.hall_id"
-            :disabled="!form.theater_id"
-            :loading="loadingHalls"
-            style="width: 100%"
-            filterable
-          >
-            <el-option
-              v-for="hall in filteredHalls"
-              :key="hall.id"
-              :label="hall.hall_name"
-              :value="hall.id"
-            />
-          </el-select>
-        </el-form-item>
-
         <el-form-item :label="$t('seats.row')" prop="row">
           <el-input
             v-model="form.row"
@@ -112,15 +78,6 @@
             style="width: 100%"
           />
         </el-form-item>
-
-        <el-form-item :label="$t('seats.availability')">
-          <el-switch
-            v-model="form.is_available"
-            :active-text="$t('seats.available')"
-            :inactive-text="$t('seats.unavailable')"
-          />
-        </el-form-item>
-
         <el-form-item :label="$t('seats.notes')" prop="notes">
           <el-input
             v-model="form.notes"
@@ -154,8 +111,6 @@ import { useRouter, useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { seatService } from "@/services/seatService";
-import { theaterService } from "@/services/theaterService";
-import { hallService } from "@/services/hallService";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "../../stores/auth";
 import { ArrowLeft } from "@element-plus/icons-vue";
@@ -185,13 +140,6 @@ const form = reactive({
   is_available: true,
   notes: "",
 });
-
-// Data
-const theaters = ref([]);
-const halls = ref([]);
-const filteredHalls = ref([]);
-const loadingTheaters = ref(false);
-const loadingHalls = ref(false);
 
 // Seat types
 const seatTypes = ref([
@@ -225,12 +173,6 @@ const rules = {
         "Row must start with a letter and contain only letters and numbers",
       trigger: "blur",
     },
-  ],
-  theater_id: [
-    { required: true, message: t("validation.required"), trigger: "blur" },
-  ],
-  hall_id: [
-    { required: true, message: t("validation.required"), trigger: "blur" },
   ],
   seat_number: [
     { required: true, message: t("validation.required"), trigger: "blur" },
@@ -297,22 +239,13 @@ const loadSeat = async () => {
 
     // Populate form with seat data
     Object.assign(form, {
-      theater_id: seatData.theater_id || "",
-      hall_id: seatData.hall_id || "",
       row: seatData.row || "",
       seat_number: seatData.seat_number || "",
       seat_type: seatData.seat_type || "regular",
       status: seatData.status || "active",
       price: seatData.price || 0,
-      is_available: seatData.is_available ?? true,
       notes: seatData.notes || "",
     });
-
-    // Load theater/hall lists and filter halls
-    await Promise.all([loadTheaters(), loadHalls()]);
-    if (form.theater_id) {
-      handleTheaterChange();
-    }
   } catch (error) {
     console.error("Load seat error:", error);
     loadError.value =
@@ -375,68 +308,17 @@ const handleDelete = async () => {
 const resetForm = () => {
   if (originalSeat.value) {
     Object.assign(form, {
-      theater_id: originalSeat.value.theater_id || "",
-      hall_id: originalSeat.value.hall_id || "",
       row: originalSeat.value.row || "",
       seat_number: originalSeat.value.seat_number || "",
       seat_type: originalSeat.value.seat_type || "regular",
       status: originalSeat.value.status || "active",
       price: originalSeat.value.price || 0,
-      is_available: originalSeat.value.is_available ?? true,
       notes: originalSeat.value.notes || "",
     });
-
-    if (form.theater_id) {
-      handleTheaterChange();
-    }
   }
 
   if (formRef.value) {
     formRef.value.clearValidate();
-  }
-};
-
-// Load theaters
-const loadTheaters = async () => {
-  loadingTheaters.value = true;
-  try {
-    const response = await theaterService.getTheaters({ per_page: 100 });
-    theaters.value = response.data || [];
-  } catch (error) {
-    console.error("Load theaters error:", error);
-    ElMessage.error("Failed to load theaters");
-  } finally {
-    loadingTheaters.value = false;
-  }
-};
-
-// Load halls
-const loadHalls = async () => {
-  loadingHalls.value = true;
-  try {
-    const response = await hallService.getHalls({ per_page: 100 });
-    halls.value = response.data || [];
-  } catch (error) {
-    console.error("Load halls error:", error);
-    ElMessage.error("Failed to load halls");
-  } finally {
-    loadingHalls.value = false;
-  }
-};
-
-// Handle theater change
-const handleTheaterChange = () => {
-  // Filter halls by selected theater
-  if (form.theater_id) {
-    filteredHalls.value = halls.value.filter(
-      (hall) => hall.theater_id === form.theater_id
-    );
-  } else {
-    filteredHalls.value = [];
-  }
-  // Reset hall selection if not in filtered list
-  if (form.hall_id && !filteredHalls.value.find((s) => s.id === form.hall_id)) {
-    form.hall_id = "";
   }
 };
 

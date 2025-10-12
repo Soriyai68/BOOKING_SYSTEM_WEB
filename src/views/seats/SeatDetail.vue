@@ -1,10 +1,12 @@
 <template>
   <div>
     <div class="page-header">
-      <h2>{{ $t('seats.seatDetails') }}</h2>
+      <h2>{{ $t("seats.seatDetails") }}</h2>
       <div>
-        <el-button @click="$router.back()">{{ $t('actions.back') }}</el-button>
-        <el-button type="primary" @click="goEdit" v-if="authStore.isAdmin">{{ $t('actions.edit') }}</el-button>
+        <el-button @click="$router.back()">{{ $t("actions.back") }}</el-button>
+        <el-button type="primary" @click="goEdit" v-if="authStore.isAdmin">{{
+          $t("actions.edit")
+        }}</el-button>
       </div>
     </div>
 
@@ -29,25 +31,8 @@
             {{ $t(`seats.statuses.${seat?.status}`) }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('seats.availability')">
-          <el-tag :type="seat?.is_available ? 'success' : 'danger'" size="small">
-            {{ seat?.is_available ? $t('seats.available') : $t('seats.unavailable') }}
-          </el-tag>
-        </el-descriptions-item>
         <el-descriptions-item :label="$t('seats.price')">
-          ${{ seat?.price?.toFixed(2) || '0.00' }}
-        </el-descriptions-item>
-        <el-descriptions-item :label="$t('seats.theater')">
-          <span v-if="theater">
-            <el-link type="primary" @click="goToTheater">{{ theater.name }}</el-link>
-          </span>
-          <span v-else class="text-muted">-</span>
-        </el-descriptions-item>
-        <el-descriptions-item :label="$t('seats.hall')">
-          <span v-if="hall">
-            <el-link type="primary" @click="goToHall">{{ hall.hall_name }}</el-link>
-          </span>
-          <span v-else class="text-muted">-</span>
+          ${{ seat?.price?.toFixed(2) || "0.00" }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('users.created')">
           {{ formatDateTime(seat?.created_at) }}
@@ -56,7 +41,7 @@
           {{ formatDateTime(seat?.updated_at) }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('seats.notes')" :span="2">
-          {{ seat?.notes || '-' }}
+          {{ seat?.notes || "-" }}
         </el-descriptions-item>
       </el-descriptions>
     </el-card>
@@ -64,17 +49,14 @@
     <!-- Actions Section -->
     <el-card class="actions-section" v-if="authStore.isAdmin">
       <template #header>
-        <span>{{ $t('seats.actions') }}</span>
+        <span>{{ $t("seats.actions") }}</span>
       </template>
       <el-space wrap>
-        <!-- <el-button type="warning" @click="toggleAvailability" :loading="actionLoading">
-          {{ seat?.is_available ? $t('seats.markUnavailable') : $t('seats.markAvailable') }}
-        </el-button> -->
         <el-button type="info" @click="showUpdateStatusDialog = true">
-          {{ $t('seats.updateStatus') }}
+          {{ $t("seats.updateStatus") }}
         </el-button>
         <el-button type="danger" @click="handleDelete">
-          {{ $t('seats.deleteSeat') }}
+          {{ $t("seats.deleteSeat") }}
         </el-button>
       </el-space>
     </el-card>
@@ -100,14 +82,14 @@
 
       <template #footer>
         <el-button @click="showUpdateStatusDialog = false">
-          {{ $t('actions.cancel') }}
+          {{ $t("actions.cancel") }}
         </el-button>
         <el-button
           type="primary"
           @click="updateStatus"
           :loading="actionLoading"
         >
-          {{ $t('actions.update') }}
+          {{ $t("actions.update") }}
         </el-button>
       </template>
     </el-dialog>
@@ -115,154 +97,117 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useAppStore } from '@/stores/app'
-import { useAuthStore } from '@/stores/auth'
-import { useI18n } from 'vue-i18n'
-import { seatService } from '@/services/seatService'
-import { theaterService } from '@/services/theaterService'
-import { hallService } from '@/services/hallService'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useAppStore } from "@/stores/app";
+import { useAuthStore } from "@/stores/auth";
+import { useI18n } from "vue-i18n";
+import { seatService } from "@/services/seatService";
+import { ElMessage, ElMessageBox } from "element-plus";
 
-const route = useRoute()
-const router = useRouter()
-const appStore = useAppStore()
-const authStore = useAuthStore()
-const { t } = useI18n()
+const route = useRoute();
+const router = useRouter();
+const appStore = useAppStore();
+const authStore = useAuthStore();
+const { t } = useI18n();
 
-const loading = ref(false)
-const actionLoading = ref(false)
-const seat = ref(null)
-const theater = ref(null)
-const hall = ref(null)
-const showUpdateStatusDialog = ref(false)
-const newStatus = ref('active')
+const loading = ref(false);
+const actionLoading = ref(false);
+const seat = ref(null);
+const showUpdateStatusDialog = ref(false);
+const newStatus = ref("active");
 
 const seatStatuses = ref([
-  { value: t('active'), label: 'Active' },
-  { value: 'maintenance', label: 'Maintenance' },
-  { value: 'out_of_order', label: 'Out of Order' },
-  { value: 'reserved', label: 'Reserved' },
-])
+  { value: t("active"), label: "Active" },
+  { value: "maintenance", label: "Maintenance" },
+  { value: "out_of_order", label: "Out of Order" },
+  { value: "reserved", label: "Reserved" },
+]);
 
 const load = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    const data = await seatService.getSeat(route.params.id)
-    seat.value = data
-    newStatus.value = data.status
-
-    // Load theater and hall info
-    if (data.theater_id) {
-      try {
-        theater.value = await theaterService.getTheater(data.theater_id)
-      } catch (e) {
-        console.error('Failed to load theater:', e)
-      }
-    }
-
-    if (data.hall_id) {
-      try {
-        hall.value = await hallService.getHall(data.hall_id)
-      } catch (e) {
-        console.error('Failed to load hall:', e)
-      }
-    }
+    const data = await seatService.getSeat(route.params.id);
+    seat.value = data;
+    newStatus.value = data.status;
   } catch (e) {
-    console.error('Failed to load seat:', e)
-    ElMessage.error(t('seats.loadError'))
+    console.error("Failed to load seat:", e);
+    ElMessage.error(t("seats.loadError"));
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
-const goEdit = () => router.push(`/admin/seats/${route.params.id}/edit`)
-const goToTheater = () => router.push(`/admin/theaters/${seat.value.theater_id}`)
-const goToHall = () => router.push(`/admin/halls/${seat.value.hall_id}`)
-
-const toggleAvailability = async () => {
-  actionLoading.value = true
-  try {
-    await seatService.toggleSeatAvailability(route.params.id)
-    ElMessage.success(t('seats.availabilityUpdated'))
-    await load()
-  } catch (e) {
-    console.error('Toggle availability error:', e)
-    ElMessage.error(t('seats.updateError'))
-  } finally {
-    actionLoading.value = false
-  }
-}
+const goEdit = () => router.push(`/admin/seats/${route.params.id}/edit`);
 
 const updateStatus = async () => {
-  actionLoading.value = true
+  actionLoading.value = true;
   try {
-    await seatService.updateSeatStatus(route.params.id, newStatus.value)
-    ElMessage.success(t('seats.statusUpdated'))
-    showUpdateStatusDialog.value = false
-    await load()
+    await seatService.updateSeatStatus(route.params.id, newStatus.value);
+    ElMessage.success(t("seats.statusUpdated"));
+    showUpdateStatusDialog.value = false;
+    await load();
   } catch (e) {
-    console.error('Update status error:', e)
-    ElMessage.error(t('seats.updateError'))
+    console.error("Update status error:", e);
+    ElMessage.error(t("seats.updateError"));
   } finally {
-    actionLoading.value = false
+    actionLoading.value = false;
   }
-}
+};
 
 const handleDelete = async () => {
   try {
     await ElMessageBox.confirm(
-      t('seats.confirmDelete'),
-      t('seats.deleteSeat'),
+      t("seats.confirmDelete"),
+      t("seats.deleteSeat"),
       {
-        type: 'warning',
-        confirmButtonText: t('actions.delete'),
-        cancelButtonText: t('actions.cancel')
+        type: "warning",
+        confirmButtonText: t("actions.delete"),
+        cancelButtonText: t("actions.cancel"),
       }
-    )
+    );
 
-    await seatService.deleteSeat(route.params.id)
-    ElMessage.success(t('seats.deleteSuccess'))
-    router.push('/admin/seats')
+    await seatService.deleteSeat(route.params.id);
+    ElMessage.success(t("seats.deleteSuccess"));
+    router.push("/admin/seats");
   } catch (err) {
-    if (err !== 'cancel') {
-      console.error('Delete error:', err)
-      ElMessage.error(t('seats.deleteError'))
+    if (err !== "cancel") {
+      console.error("Delete error:", err);
+      ElMessage.error(t("seats.deleteError"));
     }
   }
-}
+};
 
 const getSeatTypeColor = (type) => {
   const colors = {
-    regular: '',
-    vip: 'warning',
-    couple: 'success',
-    queen: 'danger',
-  }
-  return colors[type] || ''
-}
+    regular: "",
+    vip: "warning",
+    couple: "success",
+    queen: "danger",
+  };
+  return colors[type] || "";
+};
 
 const getStatusColor = (status) => {
   const colors = {
-    active: 'success',
-    maintenance: 'warning',
-    out_of_order: 'danger',
-    reserved: 'info',
-  }
-  return colors[status] || ''
-}
+    active: "success",
+    maintenance: "warning",
+    out_of_order: "danger",
+    reserved: "info",
+  };
+  return colors[status] || "";
+};
 
-const formatDateTime = (str) => (str ? new Date(str).toLocaleString() : '-')
+const formatDateTime = (str) => (str ? new Date(str).toLocaleString() : "-");
 
 onMounted(async () => {
-  await load()
+  await load();
   appStore.setBreadcrumbs([
-    { title: t('nav.dashboard'), path: '/admin/dashboard' },
-    { title: t('seats.title'), path: '/admin/seats' },
-    { title: t('seats.seatDetails'), path: '#' }
-  ])
-})
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("seats.title"), path: "/admin/seats" },
+    { title: t("seats.seatDetails"), path: "#" },
+  ]);
+});
 </script>
 
 <style scoped>

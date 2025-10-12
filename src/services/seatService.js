@@ -10,10 +10,8 @@ export const seatService = {
       search: params.search,
       status: params.status,
       seat_type: params.seat_type,
-      is_available: params.is_available,
-      theater_id: params.theater_id,
-      hall_id: params.hall_id,
       status: params.status,
+      row: params.row,
       sortBy: params.sort_by || "row",
       sortOrder: params.sort_order || "asc",
     };
@@ -36,10 +34,7 @@ export const seatService = {
           row: seat.row,
           seat_number: seat.seat_number,
           seat_type: seat.seat_type,
-          is_available: seat.is_available,
           status: seat.status,
-          theater_id: seat.theater_id,
-          hall_id: seat.hall_id,
           price: seat.price || 0,
           notes: seat.notes || "",
           created_at: seat.createdAt,
@@ -70,10 +65,7 @@ export const seatService = {
         row: seat.row,
         seat_number: seat.seat_number,
         seat_type: seat.seat_type,
-        is_available: seat.is_available,
         status: seat.status,
-        theater_id: seat.theater_id,
-        hall_id: seat.hall_id,
         price: seat.price || 0,
         notes: seat.notes || "",
         created_at: seat.createdAt,
@@ -93,10 +85,7 @@ export const seatService = {
       row: seatData.row?.toUpperCase(),
       seat_number: seatData.seat_number?.toString().toUpperCase(),
       seat_type: seatData.seat_type || "regular",
-      is_available: seatData.is_available ?? true,
       status: seatData.status || "active",
-      theater_id: seatData.theater_id || null,
-      hall_id: seatData.hall_id || null,
       price: seatData.price || 0,
       notes: seatData.notes || "",
     };
@@ -112,10 +101,7 @@ export const seatService = {
       row: seatData.row?.toUpperCase(),
       seat_number: seatData.seat_number?.toString().toUpperCase(),
       seat_type: seatData.seat_type,
-      is_available: seatData.is_available,
       status: seatData.status,
-      theater_id: seatData.theater_id,
-      hall_id: seatData.hall_id,
       price: seatData.price,
       notes: seatData.notes,
     };
@@ -141,7 +127,7 @@ export const seatService = {
   //   return response.data;
   // },
   //delete seat (force delete)
-    async deleteSeat(id) {
+  async deleteSeat(id) {
     const response = await api.delete(`/seats/${id}/force-delete`);
     return response.data;
   },
@@ -165,22 +151,22 @@ export const seatService = {
   },
 
   // Get seats by theater
-  async getSeatsByTheater(theaterId, params = {}) {
-    const allParams = {
-      ...params,
-      theater_id: theaterId,
-    };
-    return await this.getSeats(allParams);
-  },
+  // async getSeatsByTheater(theaterId, params = {}) {
+  //   const allParams = {
+  //     ...params,
+  //     theater_id: theaterId,
+  //   };
+  //   return await this.getSeats(allParams);
+  // },
 
   // Get seats by hall
-  async getSeatsByHall(hallId, params = {}) {
-    const allParams = {
-      ...params,
-      hall_id: hallId,
-    };
-    return await this.getSeats(allParams);
-  },
+  // async getSeatsByHall(hallId, params = {}) {
+  //   const allParams = {
+  //     ...params,
+  //     hall_id: hallId,
+  //   };
+  //   return await this.getSeats(allParams);
+  // },
 
   // Update seat status
   async updateSeatStatus(seatId, status) {
