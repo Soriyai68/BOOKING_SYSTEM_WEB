@@ -2,32 +2,50 @@
   <div class="edit-seat">
     <!-- Page Header -->
     <div class="page-header">
-      <h2>{{ $t("seats.editSeat") }}</h2>
+      <h2>{{ t("seats.editSeat") }}</h2>
       <el-button @click="$router.back()">
         <el-icon><ArrowLeft /></el-icon>
-        {{ $t("actions.back") }}
+        {{ t("actions.back") }}
       </el-button>
     </div>
 
-    <!-- Loading State -->
+    <!-- Loading Skeleton -->
     <div v-if="pageLoading" class="loading-placeholder">
       <el-skeleton :rows="8" animated />
     </div>
 
-    <!-- Error State -->
+    <!-- Error Message -->
     <el-alert
       v-else-if="loadError"
-      :title="$t('common.error')"
+      :title="t('common.error')"
       :description="loadError"
       type="error"
       show-icon
       :closable="false"
     />
 
-    <!-- Seat Form -->
+    <!-- Form -->
     <el-card v-else>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="140px">
-        <el-form-item :label="$t('seats.row')" prop="row">
+        <!-- Single Select: Theater & Hall -->
+        <el-form-item :label="t('seats.theaterAndHall')" prop="hall_id">
+          <el-select
+            v-model="form.hall_id"
+            clearable
+            filterable
+            :loading="loadingHalls || loadingTheaters"
+            placeholder="Select Theater & Hall"
+          >
+            <el-option
+              v-for="option in hallOptions"
+              :key="option.id"
+              :label="option.label"
+              :value="option.id"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item :label="t('seats.row')" prop="row">
           <el-input
             v-model="form.row"
             maxlength="5"
@@ -36,40 +54,38 @@
           />
         </el-form-item>
 
-        <el-form-item :label="$t('seats.seatNumber')" prop="seat_number">
+        <el-form-item :label="t('seats.seatNumber')" prop="seat_number">
           <el-input
             v-model="form.seat_number"
             maxlength="10"
             show-word-limit
-            @input="
-              form.seat_number = form.seat_number.toString().toUpperCase()
-            "
+            @input="form.seat_number = form.seat_number.toUpperCase()"
           />
         </el-form-item>
 
-        <el-form-item :label="$t('seats.type')" prop="seat_type">
+        <el-form-item :label="t('seats.type')" prop="seat_type">
           <el-select v-model="form.seat_type" style="width: 100%">
             <el-option
               v-for="type in seatTypes"
               :key="type.value"
-              :label="$t(`seats.types.${type.value}`)"
+              :label="t(`seats.types.${type.value}`)"
               :value="type.value"
             />
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="$t('seats.status')" prop="status">
+        <el-form-item :label="t('seats.status')" prop="status">
           <el-select v-model="form.status" style="width: 100%">
             <el-option
               v-for="status in seatStatuses"
               :key="status.value"
-              :label="$t(`seats.statuses.${status.value}`)"
+              :label="t(`seats.statuses.${status.value}`)"
               :value="status.value"
             />
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="$t('seats.price')" prop="price">
+        <el-form-item :label="t('seats.price')" prop="price">
           <el-input-number
             v-model="form.price"
             :min="0"
@@ -78,7 +94,8 @@
             style="width: 100%"
           />
         </el-form-item>
-        <el-form-item :label="$t('seats.notes')" prop="notes">
+
+        <el-form-item :label="t('seats.notes')" prop="notes">
           <el-input
             v-model="form.notes"
             type="textarea"
@@ -88,16 +105,14 @@
           />
         </el-form-item>
 
-        <!-- Form Actions -->
+        <!-- Actions -->
         <el-form-item>
           <el-button type="primary" :loading="loading" @click="handleSubmit">
-            {{ $t("seats.updateSeat") }}
+            {{ t("seats.updateSeat") }}
           </el-button>
-          <el-button @click="resetForm">
-            {{ $t("actions.reset") }}
-          </el-button>
+          <el-button @click="resetForm">{{ t("actions.reset") }}</el-button>
           <el-button type="danger" @click="handleDelete" v-if="canDelete">
-            {{ $t("seats.deleteSeat") }}
+            {{ t("seats.deleteSeat") }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -111,8 +126,10 @@ import { useRouter, useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { seatService } from "@/services/seatService";
+import { hallService } from "@/services/hallService";
+import { theaterService } from "@/services/theaterService";
 import { useAppStore } from "@/stores/app";
-import { useAuthStore } from "../../stores/auth";
+import { useAuthStore } from "@/stores/auth";
 import { ArrowLeft } from "@element-plus/icons-vue";
 
 const { t } = useI18n();
@@ -121,44 +138,49 @@ const route = useRoute();
 const appStore = useAppStore();
 const authStore = useAuthStore();
 
-// Form reference
 const formRef = ref();
 const loading = ref(false);
 const pageLoading = ref(false);
 const loadError = ref("");
 const originalSeat = ref(null);
 
+const halls = ref([]);
+const theaters = ref([]);
+const loadingHalls = ref(false);
+const loadingTheaters = ref(false);
+
 // Form data
 const form = reactive({
-  theater_id: "",
   hall_id: "",
   row: "",
   seat_number: "",
   seat_type: "regular",
   status: "active",
   price: 0,
-  is_available: true,
   notes: "",
 });
 
-// Seat types
+// Seat types and statuses
 const seatTypes = ref([
-  { value: "regular", label: "Regular" },
-  { value: "vip", label: "VIP" },
-  { value: "couple", label: "Couple" },
-  { value: "king", label: "King" },
-  { value: "queen", label: "Queen" },
+  { value: "regular" },
+  { value: "vip" },
+  { value: "couple" },
+  { value: "king" },
+  { value: "queen" },
 ]);
 
 const seatStatuses = ref([
-  { value: "active", label: "Active" },
-  { value: "maintenance", label: "Maintenance" },
-  { value: "out_of_order", label: "Out of Order" },
-  { value: "reserved", label: "Reserved" },
+  { value: "active" },
+  { value: "maintenance" },
+  { value: "out_of_order" },
+  { value: "reserved" },
 ]);
 
-// Form validation rules
+// Validation rules
 const rules = {
+  hall_id: [
+    { required: true, message: t("validation.required"), trigger: "change" },
+  ],
   row: [
     { required: true, message: t("validation.required"), trigger: "blur" },
     {
@@ -195,32 +217,47 @@ const rules = {
     { required: true, message: t("validation.required"), trigger: "change" },
   ],
   price: [
-    {
-      type: "number",
-      min: 0,
-      message: "Price must be greater than or equal to 0",
-      trigger: "blur",
-    },
+    { type: "number", min: 0, message: "Price must be >= 0", trigger: "blur" },
   ],
 };
 
-// Computed properties
-const seatIdentifier = computed(() => {
-  return form.row && form.seat_number ? `${form.row}${form.seat_number}` : "-";
+// Combine hall + theater name for single select
+const hallOptions = computed(() => {
+  return halls.value.map((hall) => {
+    const theater = theaters.value.find((t) => t.id === hall.theater_id);
+    return {
+      id: hall.id,
+      label: `${theater?.name || "Unknown Theater"} - ${hall.hall_name}`,
+    };
+  });
 });
 
-const displayName = computed(() => {
-  return form.row && form.seat_number && form.seat_type
-    ? `Seat ${form.row}${form.seat_number} (${form.seat_type})`
-    : "-";
-});
+// Load theaters & halls
+const loadHalls = async () => {
+  loadingHalls.value = true;
+  try {
+    const response = await hallService.getHalls({ per_page: 100 });
+    halls.value = response.data;
+  } catch (error) {
+    console.error("Failed to load halls:", error);
+    ElMessage.error(t("halls.loadError"));
+  } finally {
+    loadingHalls.value = false;
+  }
+};
 
-// Check if current user can delete this user
-const canDelete = computed(() => {
-  // Add logic to determine if the current user can delete this seat
-  // For now, assuming admin can delete any seat
-  return authStore.isAdmin;
-});
+const loadTheaters = async () => {
+  loadingTheaters.value = true;
+  try {
+    const response = await theaterService.getTheaters({ per_page: 100 });
+    theaters.value = response.data;
+  } catch (error) {
+    console.error("Failed to load theaters:", error);
+    ElMessage.error(t("theaters.loadError"));
+  } finally {
+    loadingTheaters.value = false;
+  }
+};
 
 // Load seat data
 const loadSeat = async () => {
@@ -236,18 +273,10 @@ const loadSeat = async () => {
   try {
     const seatData = await seatService.getSeat(seatId);
     originalSeat.value = seatData;
-
-    // Populate form with seat data
-    Object.assign(form, {
-      row: seatData.row || "",
-      seat_number: seatData.seat_number || "",
-      seat_type: seatData.seat_type || "regular",
-      status: seatData.status || "active",
-      price: seatData.price || 0,
-      notes: seatData.notes || "",
-    });
+    console.log("Original Seat:", originalSeat.value);
+    Object.assign(form, seatData);
   } catch (error) {
-    console.error("Load seat error:", error);
+    console.error(error);
     loadError.value =
       error.response?.data?.message || "Failed to load seat data";
   } finally {
@@ -255,32 +284,28 @@ const loadSeat = async () => {
   }
 };
 
-// Submit form
+// Can delete
+const canDelete = computed(() => authStore.isAdmin);
+
+// Handle submit
 const handleSubmit = async () => {
   if (!formRef.value) return;
-
   try {
     await formRef.value.validate();
     loading.value = true;
 
     await seatService.updateSeat(route.params.id, form);
-
-    ElMessage.success(t("seats.updateSuccess") || "Seat updated successfully");
+    ElMessage.success(t("messages.success"));
     router.push("/admin/seats");
   } catch (error) {
-    console.error("Update seat error:", error);
-
-    if (error.response?.data?.message) {
-      ElMessage.error(error.response.data.message);
-    } else {
-      ElMessage.error("Failed to update seat");
-    }
+    console.error(error);
+    ElMessage.error(error.response?.data?.message || "Failed to update seat");
   } finally {
     loading.value = false;
   }
 };
 
-// Delete seat
+// Handle delete
 const handleDelete = async () => {
   try {
     await ElMessageBox.confirm(
@@ -292,22 +317,22 @@ const handleDelete = async () => {
         type: "warning",
       }
     );
-
     await seatService.deleteSeat(route.params.id);
     ElMessage.success(t("seats.deleteSuccess"));
     router.push("/admin/seats");
   } catch (error) {
     if (error !== "cancel") {
-      console.error("Delete seat error:", error);
+      console.error(error);
       ElMessage.error("Failed to delete seat");
     }
   }
 };
 
-// Reset form to original data
+// Reset form
 const resetForm = () => {
   if (originalSeat.value) {
     Object.assign(form, {
+      hall_id: originalSeat.value.hall_id || "",
       row: originalSeat.value.row || "",
       seat_number: originalSeat.value.seat_number || "",
       seat_type: originalSeat.value.seat_type || "regular",
@@ -316,25 +341,11 @@ const resetForm = () => {
       notes: originalSeat.value.notes || "",
     });
   }
-
-  if (formRef.value) {
-    formRef.value.clearValidate();
-  }
-};
-
-// Format date utility
-const formatDate = (dateString) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleDateString();
-};
-
-// Format date and time
-const formatDateTime = (dateString) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleString();
+  if (formRef.value) formRef.value.clearValidate();
 };
 
 onMounted(async () => {
+  await Promise.all([loadTheaters(), loadHalls()]);
   await loadSeat();
 
   appStore.setBreadcrumbs([
@@ -359,10 +370,5 @@ onMounted(async () => {
 
 .loading-placeholder {
   padding: 20px;
-}
-
-.error-state {
-  text-align: center;
-  padding: 40px 20px;
 }
 </style>

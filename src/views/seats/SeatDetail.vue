@@ -21,6 +21,12 @@
         <el-descriptions-item :label="$t('seats.seatNumber')">
           {{ seat?.seat_number }}
         </el-descriptions-item>
+        <el-descriptions-item :label="$t('seats.hallName')">
+          {{ seat?.hall?.hall_name || "-" }}
+        </el-descriptions-item>
+        <el-descriptions-item :label="$t('seats.theaterName')">
+          {{ seat?.theater?.name || "-" }}
+        </el-descriptions-item>
         <el-descriptions-item :label="$t('seats.type')">
           <el-tag :type="getSeatTypeColor(seat?.seat_type)" size="small">
             {{ $t(`seats.types.${seat?.seat_type}`) }}
@@ -118,10 +124,11 @@ const showUpdateStatusDialog = ref(false);
 const newStatus = ref("active");
 
 const seatStatuses = ref([
-  { value: t("active"), label: "Active" },
+  { value: "active", label: "Active" },
   { value: "maintenance", label: "Maintenance" },
   { value: "out_of_order", label: "Out of Order" },
   { value: "reserved", label: "Reserved" },
+  { value: "closed", label: "Closed" },
 ]);
 
 const load = async () => {

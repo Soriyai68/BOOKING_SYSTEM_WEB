@@ -12,20 +12,31 @@
     <!-- Seat Form -->
     <el-card>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="140px">
-        <!-- Single Select: Theater & Hall -->
-        <el-form-item :label="$t('seats.theaterAndHall')" prop="hall_id">
+        <!-- Theater (Display Only) -->
+        <el-form-item :label="$t('theaters.title')">
+          <el-input
+            v-model="selectedTheaterName"
+            placeholder="Theater will auto-show based on Hall"
+            readonly
+          />
+        </el-form-item>
+
+        <!-- Hall -->
+        <el-form-item :label="$t('halls.title')" prop="hall_id">
           <el-select
             v-model="form.hall_id"
+            placeholder="Select Hall"
             clearable
             filterable
-            placeholder=""
-            :loading="loadingHalls || loadingTheaters"
+            :disabled="halls.length === 0"
+            :loading="loadingHalls"
+            @change="handleHallChange"
           >
             <el-option
-              v-for="option in hallOptions"
-              :key="option.id"
-              :label="option.label"
-              :value="option.id"
+              v-for="hall in halls"
+              :key="hall.id"
+              :label="hall.hall_name"
+              :value="hall.id"
             />
           </el-select>
         </el-form-item>
@@ -46,7 +57,9 @@
             v-model="form.seat_number"
             maxlength="10"
             show-word-limit
-            @input="form.seat_number = form.seat_number.toUpperCase()"
+            @input="
+              form.seat_number = form.seat_number.toString().toUpperCase()
+            "
           />
         </el-form-item>
 
@@ -111,7 +124,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
@@ -138,6 +151,9 @@ const form = reactive({
   notes: "",
 });
 
+// To show theater name based on selected hall
+const selectedTheaterName = ref("");
+
 const halls = ref([]);
 const theaters = ref([]);
 const loadingHalls = ref(false);
@@ -163,16 +179,10 @@ const rules = {
   ],
   row: [
     { required: true, message: t("validation.required"), trigger: "blur" },
-    {
-      min: 1,
-      max: 5,
-      message: "Row must be between 1 and 5 characters",
-      trigger: "blur",
-    },
+    { min: 1, max: 5, message: "Row must be 1-5 chars", trigger: "blur" },
     {
       pattern: /^[A-Z][A-Z0-9]*$/,
-      message:
-        "Row must start with a letter and contain only letters and numbers",
+      message: "Row must start with a letter",
       trigger: "blur",
     },
   ],
@@ -181,12 +191,12 @@ const rules = {
     {
       min: 1,
       max: 10,
-      message: "Seat number must be between 1 and 10 characters",
+      message: "Seat number must be 1-10 chars",
       trigger: "blur",
     },
     {
       pattern: /^[A-Z0-9]+$/,
-      message: "Seat number must contain only letters and numbers",
+      message: "Seat number must contain only letters/numbers",
       trigger: "blur",
     },
   ],
@@ -197,26 +207,11 @@ const rules = {
     { required: true, message: t("validation.required"), trigger: "change" },
   ],
   price: [
-    {
-      type: "number",
-      min: 0,
-      message: "Price must be greater than or equal to 0",
-      trigger: "blur",
-    },
+    { type: "number", min: 0, message: "Price must >= 0", trigger: "blur" },
   ],
 };
 
-// Combine hall + theater name for single select
-const hallOptions = computed(() => {
-  return halls.value.map((hall) => {
-    const theater = theaters.value.find((t) => t.id === hall.theater_id);
-    return {
-      id: hall.id,
-      label: `${theater?.name || "Unknown Theater"} - ${hall.hall_name}`,
-    };
-  });
-});
-
+// Load halls with theater info
 const loadHalls = async () => {
   loadingHalls.value = true;
   try {
@@ -229,7 +224,7 @@ const loadHalls = async () => {
     loadingHalls.value = false;
   }
 };
-
+// Load theaters
 const loadTheaters = async () => {
   loadingTheaters.value = true;
   try {
@@ -242,7 +237,18 @@ const loadTheaters = async () => {
     loadingTheaters.value = false;
   }
 };
+// Update theater name based on selected hall
+const handleHallChange = (hallId) => {
+  const hall = halls.value.find((h) => h.id === hallId);
+  if (hall) {
+    const theater = theaters.value.find((t) => t.id === hall.theater_id);
+    selectedTheaterName.value = theater?.name || "";
+  } else {
+    selectedTheaterName.value = "";
+  }
+};
 
+// Submit seat
 const handleSubmit = async () => {
   if (!formRef.value) return;
 
@@ -250,7 +256,8 @@ const handleSubmit = async () => {
     await formRef.value.validate();
     loading.value = true;
 
-    await seatService.createSeat(form);
+    const payload = { ...form }; // only send hall_id + seat info
+    await seatService.createSeat(payload);
 
     ElMessage.success(t("seats.createSuccess"));
     router.push("/admin/seats");
@@ -262,10 +269,9 @@ const handleSubmit = async () => {
   }
 };
 
+// Reset form
 const resetForm = () => {
-  if (formRef.value) {
-    formRef.value.resetFields();
-  }
+  if (formRef.value) formRef.value.resetFields();
   Object.assign(form, {
     hall_id: "",
     row: "",
@@ -275,10 +281,12 @@ const resetForm = () => {
     price: 0,
     notes: "",
   });
+  selectedTheaterName.value = "";
 };
 
 onMounted(async () => {
-  await Promise.all([loadTheaters(), loadHalls()]);
+  await loadHalls();
+  await loadTheaters();
 
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },

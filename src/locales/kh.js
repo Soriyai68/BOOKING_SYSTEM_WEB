@@ -65,6 +65,10 @@ export default {
   // Seat Management
   seats: {
     title: "គ្រប់គ្រងកៅអី",
+    allSeats: "កៅអីទាំងអស់",
+    theaterAndHall: "រោងកុន និង សាល",
+    hallName: "សាល",
+    theaterName: "រោងកុន",
     active: "សកម្ម",
     addSeat: "បន្ថែមកៅអី",
     notes: "កំណត់ចំណាំ",
@@ -92,6 +96,8 @@ export default {
     searchSeats: "ស្វែងរកកៅអី...",
     filterByType: "ចម្រាញ់តាមប្រភេទ",
     filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
+    filterByHall: "ចម្រាញ់តាមសាល",
+    filterByTheater: "ចម្រាញ់តាមរោងកុន",
     filterByRow: "ចម្រាញ់តាមជួរ",
     updateSeat: "ធ្វើបច្ចុប្បន្នភាពកៅអី",
     updateStatus: "ធ្វើបច្ចុប្បន្នភាពស្ថានភាព",

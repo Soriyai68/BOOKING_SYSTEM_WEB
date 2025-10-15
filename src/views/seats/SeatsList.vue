@@ -45,6 +45,40 @@
 
         <el-form-item>
           <el-select
+            v-model="filters.theater_id"
+            :placeholder="$t('seats.filterByTheater')"
+            clearable
+            style="min-width: 250px"
+            @change="handleTheaterChange"
+          >
+            <el-option
+              v-for="theater in theaters"
+              :key="theater.id"
+              :label="theater.name"
+              :value="theater.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-select
+            v-model="filters.hall_id"
+            :placeholder="$t('seats.filterByHall')"
+            clearable
+            style="min-width: 200px"
+            :disabled="!filters.theater_id"
+          >
+            <el-option
+              v-for="hall in filterHallBytheater.length
+                ? filterHallBytheater
+                : halls"
+              :key="hall.id"
+              :label="hall.hall_name"
+              :value="hall.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-select
             v-model="filters.seat_type"
             :placeholder="$t('seats.filterByType')"
             clearable
@@ -99,6 +133,24 @@
           :label="$t('seats.seatNumber')"
           width="120"
         />
+        <el-table-column
+          prop="hall_name"
+          :label="$t('seats.hallName')"
+          width="120"
+        >
+          <template #default="{ row }">
+            {{ row.hall?.hall_name || "-" }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="theater.name"
+          :label="$t('seats.theaterName')"
+          width="250"
+        >
+          <template #default="{ row }">
+            {{ row.theater?.name || "-" }}
+          </template>
+        </el-table-column>
         <el-table-column prop="seat_type" :label="$t('seats.type')" width="120">
           <template #default="{ row }">
             <el-tag :type="getSeatTypeColor(row.seat_type)">
@@ -191,6 +243,8 @@ import { useI18n } from "vue-i18n";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Search } from "@element-plus/icons-vue";
 import { seatService } from "@/services/seatService";
+import { hallService } from "@/services/hallService";
+import { theaterService } from "@/services/theaterService";
 import { useAuthStore } from "@/stores/auth";
 import { useAppStore } from "@/stores/app";
 
@@ -202,7 +256,10 @@ const appStore = useAppStore();
 // Reactive data
 const loading = ref(false);
 const seats = ref([]);
+const halls = ref([]);
+const theaters = ref([]);
 const availableRows = ref([]);
+const filterHallBytheater = ref([]);
 
 const filters = reactive({
   search: "",
@@ -214,6 +271,8 @@ const filters = reactive({
   sort_by: "row",
   sort_order: "asc",
   row: "",
+  hall_id: "",
+  theater_id: "",
 });
 
 const pagination = reactive({
@@ -253,10 +312,13 @@ const loadSeats = async () => {
       seat_type: filters.seat_type || undefined,
       status: filters.status || undefined,
       row: filters.row || undefined,
+      theater_id: filters.theater_id || undefined,
+      hall_id: filters.hall_id || undefined,
     };
 
     const response = await seatService.getSeats(params);
     seats.value = response.data || [];
+    console.log("Seats data:", seats.value);
     // Extract unique rows for dropdown
     availableRows.value = [
       ...new Set(seats.value.map((seat) => seat.row)),
@@ -276,6 +338,30 @@ const loadSeats = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const loadHalls = async () => {
+  try {
+    const response = await hallService.getHalls({ per_page: 100 });
+    halls.value = response.data || [];
+  } catch (error) {
+    console.error("Load halls error:", error);
+  }
+};
+const loadTheaters = async () => {
+  try {
+    const response = await theaterService.getTheaters({ per_page: 100 });
+    theaters.value = response.data || [];
+  } catch (error) {
+    console.error("Load theaters error:", error);
+  }
+};
+
+const handleTheaterChange = () => {
+  filters.hall_id = "";
+  filterHallBytheater.value = halls.value.filter(
+    (hall) => hall.theater_id === filters.theater_id
+  );
 };
 
 const handleSizeChange = (val) => {
@@ -349,6 +435,8 @@ watch(
     () => filters.seat_type,
     () => filters.status,
     () => filters.row,
+    () => filters.theater_id,
+    () => filters.hall_id,
   ],
   () => {
     pagination.current_page = 1;
@@ -358,10 +446,10 @@ watch(
 
 // Lifecycle
 onMounted(async () => {
-  await loadSeats();
+  await Promise.all([loadSeats(), loadHalls(), loadTheaters()]);
 
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard",), path: "/admin/dashboard" },
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
     { title: t("seats.title"), path: "/admin/seats" },
     { title: t("seats.allSeats"), path: "/admin/seats" },
   ]);

@@ -14,6 +14,8 @@ export const seatService = {
       row: params.row,
       sortBy: params.sort_by || "row",
       sortOrder: params.sort_order || "asc",
+      hall_id: params.hall_id,
+      theater_id: params.theater_id,
     };
 
     // Remove undefined values
@@ -41,6 +43,15 @@ export const seatService = {
           updated_at: seat.updatedAt,
           seat_identifier: `${seat.row}${seat.seat_number}`,
           display_name: `Seat ${seat.row}${seat.seat_number} (${seat.seat_type})`,
+          hall: seat.hall_id
+            ? { id: seat.hall_id._id, hall_name: seat.hall_id.hall_name }
+            : null,
+          theater: seat.hall_id?.theater_id
+            ? {
+                id: seat.hall_id.theater_id._id,
+                name: seat.hall_id.theater_id.name,
+              }
+            : null,
         })),
         total: pagination.totalCount,
         current_page: pagination.currentPage,
@@ -72,6 +83,16 @@ export const seatService = {
         updated_at: seat.updatedAt,
         seat_identifier: `${seat.row}${seat.seat_number}`,
         display_name: `Seat ${seat.row}${seat.seat_number} (${seat.seat_type})`,
+        hall_id: seat.hall_id?._id,
+        hall: seat.hall_id
+          ? { id: seat.hall_id._id, hall_name: seat.hall_id.hall_name }
+          : null,
+        theater: seat.hall_id?.theater_id
+          ? {
+              id: seat.hall_id.theater_id._id,
+              name: seat.hall_id.theater_id.name,
+            }
+          : null,
       };
     }
 
@@ -82,6 +103,7 @@ export const seatService = {
   async createSeat(seatData) {
     // Convert frontend format to backend format
     const backendData = {
+      hall_id: seatData.hall_id,
       row: seatData.row?.toUpperCase(),
       seat_number: seatData.seat_number?.toString().toUpperCase(),
       seat_type: seatData.seat_type || "regular",
@@ -98,6 +120,7 @@ export const seatService = {
   async updateSeat(id, seatData) {
     // Convert frontend format to backend format
     const backendData = {
+      hall_id: seatData.hall_id,
       row: seatData.row?.toUpperCase(),
       seat_number: seatData.seat_number?.toString().toUpperCase(),
       seat_type: seatData.seat_type,
@@ -151,22 +174,22 @@ export const seatService = {
   },
 
   // Get seats by theater
-  // async getSeatsByTheater(theaterId, params = {}) {
-  //   const allParams = {
-  //     ...params,
-  //     theater_id: theaterId,
-  //   };
-  //   return await this.getSeats(allParams);
-  // },
+  async getSeatsByTheater(theaterId, params = {}) {
+    const allParams = {
+      ...params,
+      theater_id: theaterId,
+    };
+    return await this.getSeats(allParams);
+  },
 
   // Get seats by hall
-  // async getSeatsByHall(hallId, params = {}) {
-  //   const allParams = {
-  //     ...params,
-  //     hall_id: hallId,
-  //   };
-  //   return await this.getSeats(allParams);
-  // },
+  async getSeatsByHall(hallId, params = {}) {
+    const allParams = {
+      ...params,
+      hall_id: hallId,
+    };
+    return await this.getSeats(allParams);
+  },
 
   // Update seat status
   async updateSeatStatus(seatId, status) {
