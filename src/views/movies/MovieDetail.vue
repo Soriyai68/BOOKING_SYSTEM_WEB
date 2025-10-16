@@ -61,16 +61,6 @@
           <el-descriptions-item :label="$t('movies.description')" :span="2">
             {{ movie.description || '-' }}
           </el-descriptions-item>
-
-          <el-descriptions-item :label="$t('movies.cast')" :span="2">
-            <div v-if="movie.cast && movie.cast.length > 0" class="cast-list">
-              <el-tag v-for="actor in movie.cast" :key="actor" size="small" style="margin: 2px">
-                {{ actor }}
-              </el-tag>
-            </div>
-            <span v-else>-</span>
-          </el-descriptions-item>
-
           <el-descriptions-item :label="$t('movies.producers')" :span="2">
             <div v-if="movie.producers && movie.producers.length > 0">
               {{ movie.producers.join(', ') }}

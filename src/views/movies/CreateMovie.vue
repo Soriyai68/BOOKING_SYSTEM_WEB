@@ -92,17 +92,6 @@
           />
         </el-form-item>
 
-        <!-- End Date -->
-        <el-form-item :label="$t('movies.endDate')">
-          <el-date-picker
-            v-model="form.end_date"
-            type="date"
-            style="width: 100%"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-          />
-        </el-form-item>
-
         <!-- Rating -->
         <el-form-item :label="$t('movies.rating')" prop="rating">
           <el-rate v-model="form.rating" :max="10" show-score />
@@ -129,24 +118,6 @@
         <el-form-item :label="$t('movies.trailerUrl')">
           <el-input v-model="form.trailer_url" maxlength="500" />
         </el-form-item>
-
-        <!-- Cast -->
-        <el-form-item :label="$t('movies.cast')">
-          <el-select
-            v-model="form.cast"
-            multiple
-            filterable
-            allow-create
-            default-first-option
-            style="width: 100%"
-            :placeholder="$t('movies.cast')"
-          >
-          </el-select>
-          <div style="margin-top: 4px; color: #909399; font-size: 12px">
-            Type actor name and press Enter to add
-          </div>
-        </el-form-item>
-
         <!-- Producers -->
         <el-form-item :label="$t('movies.producers')">
           <el-select
