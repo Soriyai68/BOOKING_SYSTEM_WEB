@@ -190,6 +190,8 @@ export default {
       out_of_order: "Out of Order",
       reserved: "Reserved",
     },
+    totalHalls: "Total Halls",
+    totalCapacity: "Total Capacity",
   },
 
   // Theater Management
