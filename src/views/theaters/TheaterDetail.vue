@@ -7,7 +7,7 @@
           <el-icon><ArrowLeft /></el-icon>
           {{ $t("actions.back") }}
         </el-button>
-        <el-button type="primary" @click="goEdit">{{
+        <el-button v-permission="'theaters.edit'" type="primary" @click="goEdit">{{
           $t("actions.edit")
         }}</el-button>
       </div>
@@ -53,7 +53,7 @@
       <template #header>
         <div class="section-header">
           <span>{{ $t('theaters.halls') }} ({{ halls.length }})</span>
-          <el-button type="primary" size="small" @click="goToCreateHall">
+          <el-button v-permission="'halls.create'" type="primary" size="small" @click="goToCreateHall">
             <el-icon><Plus /></el-icon>
             {{ $t('halls.addHall') }}
           </el-button>
@@ -80,9 +80,9 @@
           </el-table-column>
           <el-table-column :label="$t('users.actions')" width="180">
             <template #default="{ row }">
-              <el-button size="small" link type="primary" @click="viewHall(row.id)">{{ $t('actions.view') }}</el-button>
-              <el-button size="small" link type="primary" @click="editHall(row.id)">{{ $t('actions.edit') }}</el-button>
-              <el-button size="small" link type="danger" @click="removeHall(row.id)">{{ $t('actions.remove') }}</el-button>
+              <el-button v-permission="'halls.view'" size="small" link type="primary" @click="viewHall(row.id)">{{ $t('actions.view') }}</el-button>
+              <el-button v-permission="'halls.edit'" size="small" link type="primary" @click="editHall(row.id)">{{ $t('actions.edit') }}</el-button>
+              <el-button v-permission="'halls.delete'" size="small" link type="danger" @click="removeHall(row.id)">{{ $t('actions.remove') }}</el-button>
             </template>
           </el-table-column>
         </el-table>

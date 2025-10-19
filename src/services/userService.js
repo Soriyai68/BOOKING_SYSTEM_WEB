@@ -1,5 +1,12 @@
 import api from '@/utils/api'
 
+const ALLOWED_ROLES = ['superadmin', 'admin', 'cashier', 'user']
+const sanitizeRole = (role, fallback = 'user') => {
+  if (!role) return fallback
+  const r = String(role).toLowerCase()
+  return ALLOWED_ROLES.includes(r) ? r : fallback
+}
+
 export const userService = {
   // Get all users with pagination and filters
   async getUsers(params = {}) {
@@ -81,7 +88,7 @@ export const userService = {
     const backendData = {
       name: userData.name,
       phone: userData.phone,
-      role: userData.role || 'user',
+      role: sanitizeRole(userData.role, 'user'),
       password: userData.password,
       isVerified: userData.isVerified ?? true,
       isActive: userData.isActive ?? true
@@ -97,7 +104,7 @@ export const userService = {
     const backendData = {
       name: userData.name,
       phone: userData.phone,
-      role: userData.role,
+      role: userData.role ? sanitizeRole(userData.role) : undefined,
       isActive: userData.status === 'active',
       isVerified: userData.isVerified
     }

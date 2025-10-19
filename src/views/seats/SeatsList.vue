@@ -7,7 +7,7 @@
         type="primary"
         :icon="Plus"
         @click="$router.push('/admin/seats/create')"
-        v-if="authStore.isAdmin"
+        v-permission="'seats.create'"
       >
         {{ $t("seats.addSeat") }}
       </el-button>
@@ -186,11 +186,11 @@
           :label="$t('common.actions')"
           width="280"
           fixed="right"
-          v-if="authStore.isAdmin"
         >
           <template #default="{ row }">
             <div class="flex gap-1">
               <el-button
+                v-permission="'seats.view'"
                 size="small"
                 link
                 type="primary"
@@ -199,6 +199,7 @@
                 {{ $t("actions.view") }}
               </el-button>
               <el-button
+                v-permission="'seats.edit'"
                 size="small"
                 link
                 type="primary"
@@ -208,6 +209,7 @@
               </el-button>
 
               <el-button
+                v-permission="'seats.delete'"
                 size="small"
                 link
                 type="danger"

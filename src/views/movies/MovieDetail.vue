@@ -89,10 +89,10 @@
 
         <!-- Actions -->
         <div class="actions-section">
-          <el-button type="primary" @click="goEdit">
+          <el-button v-permission="'movies.edit'" type="primary" @click="goEdit">
             {{ $t('actions.edit') }}
           </el-button>
-          <el-button type="danger" @click="handleDelete">
+          <el-button v-permission="'movies.delete'" type="danger" @click="handleDelete">
             {{ $t('actions.delete') }}
           </el-button>
         </div>

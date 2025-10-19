@@ -2,7 +2,7 @@
   <div class="movie-list">
     <div class="page-header">
       <h2>{{ $t('movies.title') }}</h2>
-      <el-button type="primary" @click="$router.push('/admin/movies/create')">
+      <el-button v-permission="'movies.create'" type="primary" @click="$router.push('/admin/movies/create')">
         <el-icon><Plus /></el-icon>
         {{ $t('movies.addMovie') }}
       </el-button>
@@ -102,13 +102,13 @@
         </el-table-column>
         <el-table-column :label="$t('common.actions')" width="220" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" link type="primary" @click="viewMovie(row.id)">
+            <el-button v-permission="'movies.view'" size="small" link type="primary" @click="viewMovie(row.id)">
               {{ $t('actions.view') }}
             </el-button>
-            <el-button size="small" link type="primary" @click="editMovie(row.id)">
+            <el-button v-permission="'movies.edit'" size="small" link type="primary" @click="editMovie(row.id)">
               {{ $t('actions.edit') }}
             </el-button>
-            <el-button size="small" link type="danger" @click="deleteMovie(row.id)">
+            <el-button v-permission="'movies.delete'" size="small" link type="danger" @click="deleteMovie(row.id)">
               {{ $t('actions.delete') }}
             </el-button>
           </template>

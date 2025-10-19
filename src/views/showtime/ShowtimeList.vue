@@ -3,6 +3,7 @@
     <div class="page-header">
       <h2>{{ $t("showtimes.title") }}</h2>
       <el-button
+        v-permission="'showtimes.create'"
         type="primary"
         @click="$router.push('/admin/showtimes/create')"
       >
@@ -132,6 +133,7 @@
         <el-table-column :label="$t('showtimes.actions')" width="200">
           <template #default="{ row }">
             <el-button
+              v-permission="'showtimes.view'"
               type="primary"
               size="small"
               link
@@ -140,6 +142,7 @@
               {{ $t("showtimes.view") }}
             </el-button>
             <el-button
+              v-permission="'showtimes.edit'"
               type="primary"
               size="small"
               link
@@ -148,6 +151,7 @@
               {{ $t("showtimes.edit") }}
             </el-button>
             <el-button
+              v-permission="'showtimes.delete'"
               type="danger"
               size="small"
               link

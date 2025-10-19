@@ -72,7 +72,7 @@
         }}</el-descriptions-item>
       </el-descriptions>
       <div class="actions">
-        <el-button type="primary" @click="editShowtime">{{
+        <el-button v-permission="'showtimes.edit'" type="primary" @click="editShowtime">{{
           $t("actions.edit")
         }}</el-button>
         <el-button @click="$router.back()">{{ $t("actions.back") }}</el-button>

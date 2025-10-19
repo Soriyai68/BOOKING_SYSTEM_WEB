@@ -91,7 +91,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" :loading="loading" @click="handleSubmit">{{
+          <el-button v-permission="'theaters.edit'" type="primary" :loading="loading" @click="handleSubmit">{{
             $t("theaters.updateTheater")
           }}</el-button>
           <el-button @click="resetForm">{{ $t("actions.reset") }}</el-button>

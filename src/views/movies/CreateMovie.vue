@@ -148,7 +148,7 @@
 
         <!-- Actions -->
         <el-form-item>
-          <el-button type="primary" :loading="loading" @click="handleSubmit">
+          <el-button v-permission="'movies.create'" type="primary" :loading="loading" @click="handleSubmit">
             {{ $t("actions.submit") }}
           </el-button>
           <el-button @click="resetForm">

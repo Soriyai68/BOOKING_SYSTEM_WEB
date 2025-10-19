@@ -108,7 +108,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm">{{
+          <el-button v-permission="'showtimes.create'" type="primary" @click="submitForm">{{
             $t("actions.create")
           }}</el-button>
           <el-button @click="$router.back()">{{

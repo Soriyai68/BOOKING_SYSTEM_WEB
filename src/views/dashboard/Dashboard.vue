@@ -117,6 +117,7 @@
         <div class="card-header">
           <span>Recent Bookings</span>
           <el-button
+            v-permission="'bookings.view'"
             type="primary"
             size="small"
             @click="$router.push('/admin/bookings')"

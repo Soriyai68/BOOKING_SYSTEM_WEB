@@ -4,7 +4,7 @@
       <h2>{{ $t("seats.seatDetails") }}</h2>
       <div>
         <el-button @click="$router.back()">{{ $t("actions.back") }}</el-button>
-        <el-button type="primary" @click="goEdit" v-if="authStore.isAdmin">{{
+        <el-button v-permission="'seats.edit'" type="primary" @click="goEdit">{{
           $t("actions.edit")
         }}</el-button>
       </div>
@@ -53,15 +53,15 @@
     </el-card>
 
     <!-- Actions Section -->
-    <el-card class="actions-section" v-if="authStore.isAdmin">
+    <el-card class="actions-section">
       <template #header>
         <span>{{ $t("seats.actions") }}</span>
       </template>
       <el-space wrap>
-        <el-button type="info" @click="showUpdateStatusDialog = true">
+        <el-button v-permission="'seats.edit'" type="info" @click="showUpdateStatusDialog = true">
           {{ $t("seats.updateStatus") }}
         </el-button>
-        <el-button type="danger" @click="handleDelete">
+        <el-button v-permission="'seats.delete'" type="danger" @click="handleDelete">
           {{ $t("seats.deleteSeat") }}
         </el-button>
       </el-space>

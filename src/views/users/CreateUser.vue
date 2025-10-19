@@ -39,13 +39,14 @@
             v-model="form.role"
             :placeholder="$t('users.role')"
             style="width: 100%"
+            filterable
           >
-            <el-option :label="$t('users.user')" value="user" />
-            <el-option :label="$t('users.admin')" value="admin" />
             <el-option
-              :label="$t('users.superadmin')"
-              value="superadmin"
-              v-if="authStore.isSuperAdmin"
+              v-for="r in roleOptions"
+              :key="r.name"
+              :label="r.displayName || r.name"
+              :value="r.name"
+              :disabled="r.name === 'superadmin' && !authStore.isSuperAdmin"
             />
           </el-select>
         </el-form-item>
@@ -53,7 +54,7 @@
         <el-form-item
           :label="$t('auth.password')"
           prop="password"
-          v-if="form.role === 'admin' || form.role === 'superadmin'"
+          v-if="form.role && form.role !== 'user'"
         >
           <el-input
             v-model="form.password"
@@ -72,7 +73,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" :loading="loading" @click="handleSubmit">
+          <el-button v-permission="'users.create'" type="primary" :loading="loading" @click="handleSubmit">
             {{ $t("users.createUser") }}
           </el-button>
           <el-button @click="resetForm">
@@ -102,6 +103,14 @@ const { t } = useI18n();
 const formRef = ref();
 const loading = ref(false);
 
+// Static roles (backend roles model removed)
+const roleOptions = ref([
+  { name: 'superadmin', displayName: 'Super Admin', isSystem: true },
+  { name: 'admin', displayName: 'Admin', isSystem: true },
+  { name: 'cashier', displayName: 'Cashier', isSystem: true },
+  { name: 'user', displayName: 'User', isSystem: true },
+]);
+
 const form = reactive({
   name: "",
   phone: "",
@@ -124,7 +133,7 @@ const validatePhone = (rule, value, callback) => {
 
 // Password validation for admin roles
 const validatePassword = (rule, value, callback) => {
-  if ((form.role === "admin" || form.role === "superadmin") && !value) {
+  if ((form.role && form.role !== "user") && !value) {
     callback(new Error(t("validation.passwordRequired")));
   } else if (value && value.length < 6) {
     callback(new Error(t("validation.passwordMin")));
@@ -166,6 +175,8 @@ const formatPhoneNumber = (value) => {
   form.phone = cleaned;
 };
 
+// Roles are static; default already set to 'user'
+
 // Submit form
 const handleSubmit = async () => {
   if (!formRef.value) return;
@@ -206,7 +217,7 @@ const resetForm = () => {
   });
 };
 
-onMounted(() => {
+onMounted(async () => {
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },
     { title: t("users.title"), path: "/admin/users" },

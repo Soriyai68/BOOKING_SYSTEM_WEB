@@ -77,25 +77,30 @@
             v-model="form.role"
             :placeholder="$t('users.role')"
             style="width: 100%"
+            filterable
           >
-            <el-option :label="$t('users.user')" value="user" />
-            <el-option :label="$t('users.admin')" value="admin" />
             <el-option
-              :label="$t('users.superadmin')"
-              value="superadmin"
-              v-if="authStore.isSuperAdmin || form.role === 'superadmin'"
+              v-for="r in roleOptions"
+              :key="r.name"
+              :label="r.displayName || r.name"
+              :value="r.name"
+              :disabled="r.name === 'superadmin' && !authStore.isSuperAdmin"
             />
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="$t('auth.password')" prop="password">
+        <el-form-item
+          :label="$t('auth.password')"
+          prop="password"
+          v-if="form.role && form.role !== 'user'"
+        >
           <el-input
             v-model="form.password"
             type="password"
-            :placeholder="$t('settings.changePassword')"
+            :placeholder="passwordRequired ? $t('auth.password') : $t('settings.changePassword')"
             show-password
           />
-          <div class="form-tip">
+          <div class="form-tip" v-if="!passwordRequired">
             {{ $t("users.passwordOptional") }}
           </div>
         </el-form-item>
@@ -127,13 +132,13 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" :loading="loading" @click="handleSubmit">
+          <el-button v-permission="'users.edit'" type="primary" :loading="loading" @click="handleSubmit">
             {{ $t("users.updateUser") }}
           </el-button>
           <el-button @click="resetForm">
             {{ $t("actions.reset") }}
           </el-button>
-          <el-button type="danger" @click="handleDelete" v-if="canDelete">
+          <el-button v-permission="'users.delete'" type="danger" @click="handleDelete" v-if="canDelete">
             {{ $t("users.delete") }}
           </el-button>
         </el-form-item>
@@ -143,7 +148,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from "vue";
+import { ref, reactive, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -164,6 +169,14 @@ const pageLoading = ref(false);
 const loadError = ref("");
 const originalUser = ref(null);
 
+// Static roles (backend roles model removed)
+const roleOptions = ref([
+  { name: 'superadmin', displayName: 'Super Admin', isSystem: true },
+  { name: 'admin', displayName: 'Admin', isSystem: true },
+  { name: 'cashier', displayName: 'Cashier', isSystem: true },
+  { name: 'user', displayName: 'User', isSystem: true },
+]);
+
 const form = reactive({
   name: "",
   phone: "",
@@ -171,6 +184,12 @@ const form = reactive({
   password: "",
   isActive: true,
   isVerified: true,
+});
+
+// Require password only when promoting from user -> non-user
+const passwordRequired = computed(() => {
+  if (!originalUser.value) return false;
+  return originalUser.value.role === 'user' && form.role !== 'user';
 });
 
 // Check if current user can delete this user
@@ -198,13 +217,19 @@ const validatePhone = (rule, value, callback) => {
   }
 };
 
-// Password validation (optional for edit)
+// Password validation (conditional)
 const validatePassword = (rule, value, callback) => {
-  if (value && value.length < 6) {
-    callback(new Error(t("validation.passwordMin")));
-  } else {
-    callback();
+  if (form.role && form.role !== 'user') {
+    if (passwordRequired.value && !value) {
+      return callback(new Error(t("validation.passwordRequired")));
+    }
+    if (value && value.length < 6) {
+      return callback(new Error(t("validation.passwordMin")));
+    }
+  } else if (value && value.length < 6) {
+    return callback(new Error(t("validation.passwordMin")));
   }
+  callback();
 };
 
 const rules = {
@@ -223,6 +248,8 @@ const rules = {
   ],
   password: [{ validator: validatePassword, trigger: "blur" }],
 };
+
+// Roles are static; no fetch required
 
 // Load user data
 const loadUser = async () => {
@@ -257,6 +284,11 @@ const loadUser = async () => {
   }
 };
 
+// Re-validate password when role changes
+watch(() => form.role, () => {
+  if (formRef.value) formRef.value.validateField('password');
+});
+
 // Format phone number
 const formatPhoneNumber = (value) => {
   let cleaned = value.replace(/[^+\d]/g, "");
@@ -289,7 +321,7 @@ const handleSubmit = async () => {
       isVerified: form.isVerified,
     };
 
-    // Only include password if provided
+    // Only include password if provided (or required)
     if (form.password) {
       updateData.password = form.password;
     }

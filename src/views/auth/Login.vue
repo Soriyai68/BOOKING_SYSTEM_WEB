@@ -59,17 +59,7 @@
           </el-button>
         </el-form-item>
       </el-form>
-      
-      <!-- API Status & Demo credentials -->
-      <!-- <div class="demo-info">
-        <el-alert
-          :title="apiStatus.title"
-          :type="apiStatus.type"
-          :description="apiStatus.description"
-          show-icon
-          :closable="false"
-        />
-      </div> -->
+
     </div>
   </div>
 </template>

@@ -2,7 +2,7 @@
   <div class="theater-list">
     <div class="page-header">
       <h2>{{ $t("theaters.title") }}</h2>
-      <el-button type="primary" @click="$router.push('/admin/theaters/create')">
+      <el-button v-permission="'theaters.create'" type="primary" @click="$router.push('/admin/theaters/create')">
         <el-icon><Plus /></el-icon>
         {{ $t("theaters.addTheater") }}
       </el-button>
@@ -76,21 +76,21 @@
         </el-table-column>
         <el-table-column :label="$t('users.actions')" width="220">
           <template #default="{ row }">
-            <el-button
+            <el-button v-permission="'theaters.view'"
               size="small"
               link
               type="primary"
               @click="viewTheater(row.id)"
               >{{ $t("actions.view") }}</el-button
             >
-            <el-button
+            <el-button v-permission="'theaters.edit'"
               size="small"
               link
               type="primary"
               @click="editTheater(row.id)"
               >{{ $t("actions.edit") }}</el-button
             >
-            <el-button
+            <el-button v-permission="'theaters.delete'"
               size="small"
               link
               type="danger"

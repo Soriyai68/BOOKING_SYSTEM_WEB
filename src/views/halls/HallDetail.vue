@@ -4,7 +4,7 @@
       <h2>{{ $t("halls.hallDetails") }}</h2>
       <div>
         <el-button @click="$router.back()">{{ $t("actions.back") }}</el-button>
-        <el-button type="primary" @click="goEdit">{{
+        <el-button v-permission="'halls.edit'" type="primary" @click="goEdit">{{
           $t("actions.edit")
         }}</el-button>
       </div>
@@ -15,7 +15,7 @@
       <template #header>
         <div class="context-header">
           <span>{{ $t("halls.belongsToTheater") }}</span>
-          <el-button size="small" @click="goToTheater">
+          <el-button v-permission="'theaters.view'" size="small" @click="goToTheater">
             <el-icon><ArrowRight /></el-icon>
             {{ $t("actions.view") }} {{ $t("theaters.title") }}
           </el-button>

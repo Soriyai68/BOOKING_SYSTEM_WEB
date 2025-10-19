@@ -47,7 +47,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" :loading="loading" @click="handleSubmit">{{ $t('screens.updateScreen') }}</el-button>
+          <el-button v-permission="'screens.edit'" type="primary" :loading="loading" @click="handleSubmit">{{ $t('screens.updateScreen') }}</el-button>
           <el-button @click="resetForm">{{ $t('actions.reset') }}</el-button>
         </el-form-item>
       </el-form>

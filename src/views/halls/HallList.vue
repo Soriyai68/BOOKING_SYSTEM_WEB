@@ -2,7 +2,7 @@
   <div class="hall-list">
     <div class="page-header">
       <h2>{{ $t("halls.title") }}</h2>
-      <el-button type="primary" @click="$router.push('/admin/halls/create')">
+      <el-button v-permission="'halls.create'" type="primary" @click="$router.push('/admin/halls/create')">
         <el-icon><Plus /></el-icon>
         {{ $t("halls.addHall") }}
       </el-button>
@@ -113,21 +113,21 @@
         </el-table-column>
         <el-table-column :label="$t('users.actions')" width="180">
           <template #default="{ row }">
-            <el-button
+            <el-button v-permission="'halls.view'"
               size="small"
               link
               type="primary"
               @click="viewHall(row.id)"
               >{{ $t("actions.view") }}</el-button
             >
-            <el-button
+            <el-button v-permission="'halls.edit'"
               size="small"
               link
               type="primary"
               @click="editHall(row.id)"
               >{{ $t("actions.edit") }}</el-button
             >
-            <el-button
+            <el-button v-permission="'halls.delete'"
               size="small"
               link
               type="danger"

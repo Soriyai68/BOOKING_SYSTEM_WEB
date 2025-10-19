@@ -2,7 +2,7 @@
   <div class="user-list">
     <div class="page-header">
       <h2>{{ $t("users.title") }}</h2>
-      <el-button type="primary" @click="$router.push('/admin/users/create')">
+      <el-button v-permission="'users.create'" type="primary" @click="$router.push('/admin/users/create')">
         <el-icon><Plus /></el-icon>
         {{ $t("users.addUser") }}
       </el-button>
@@ -72,6 +72,7 @@
         <el-table-column :label="$t('users.actions')" width="140">
           <template #default="{ row }">
             <el-button
+              v-permission="'users.edit'"
               type="primary"
               size="small"
               link
@@ -80,6 +81,7 @@
               {{ $t("users.edit") }}
             </el-button>
             <el-button
+              v-permission="'users.delete'"
               type="danger"
               size="small"
               link

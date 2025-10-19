@@ -89,7 +89,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" :loading="loading" @click="handleSubmit">{{
+          <el-button v-permission="'halls.edit'" type="primary" :loading="loading" @click="handleSubmit">{{
             $t("halls.updateHall")
           }}</el-button>
           <el-button @click="resetForm">{{ $t("actions.reset") }}</el-button>

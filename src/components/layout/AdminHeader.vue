@@ -101,7 +101,10 @@ const notificationCount = ref(3); // Mock notification count
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed);
 const theme = computed(() => appStore.theme);
 const user = computed(() => authStore.user);
-const pageTitle = computed(() => route.meta?.title);
+const pageTitle = computed(() => {
+  const meta = route.meta || {};
+  return meta.titleKey ? t(meta.titleKey) : meta.title;
+});
 
 const toggleSidebar = () => {
   appStore.toggleSidebar();
@@ -134,14 +137,6 @@ const handleUserMenuCommand = async (command) => {
             type: "warning",
           }
         );
-
-        // Show loading message
-        const loading = ElMessage({
-          message: "Logging out...",
-          type: "info",
-          duration: 1000,
-        });
-
         // Perform logout
         await authStore.logout();
 
@@ -156,7 +151,6 @@ const handleUserMenuCommand = async (command) => {
       } catch (error) {
         if (error !== "cancel") {
           console.error("Logout error:", error);
-          ElMessage.error("Logout failed. Please try again.");
         }
       }
       break;

@@ -2,18 +2,26 @@
 import { RouterView } from "vue-router";
 import { computed, onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
+import { usePermissionStore } from "@/stores/permission";
 import AppLoading from "@/components/common/AppLoading.vue";
 
 const authStore = useAuthStore();
+const permissionStore = usePermissionStore();
 
 // Show loading while auth is initializing
 const showLoading = computed(() => !authStore.isInitialized);
 
-// Initialize auth on app start if not already initialized
+// Initialize auth and permissions on app start
 onMounted(async () => {
   if (!authStore.isInitialized) {
     console.log("🏠 App mounted, initializing auth...");
     await authStore.initializeAuth();
+    
+    // Initialize permissions after auth is initialized
+    if (authStore.isAuthenticated) {
+      console.log("🔐 Initializing permissions...");
+      await permissionStore.initializePermissions();
+    }
   }
 });
 </script>

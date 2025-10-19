@@ -30,7 +30,7 @@ export const useAuthStore = defineStore("auth", () => {
   const isAuthenticated = computed(() => !!token.value);
   const userRole = computed(() => user.value?.role || "user");
   const isAdmin = computed(
-    () => userRole.value === "admin" || userRole.value === "superadmin"
+    () => ["admin", "superadmin", "cashier"].includes(userRole.value)
   );
   const isSuperAdmin = computed(() => userRole.value === "superadmin");
   const isRegularAdmin = computed(() => userRole.value === "admin");
@@ -121,7 +121,6 @@ export const useAuthStore = defineStore("auth", () => {
         if (refToken) {
           setRefreshToken(refToken);
         }
-        setUser(userData);
 
         console.log("Auth state updated via API (fallback):", {
           token: !!accessToken,

@@ -20,12 +20,12 @@
       :text-color="sidebarTextColor"
       :active-text-color="sidebarActiveColor"
     >
-      <el-menu-item index="/admin/dashboard">
+      <el-menu-item v-if="isSuperAdmin || canViewDashboard" index="/admin/dashboard">
         <el-icon><LayoutDashboard /></el-icon>
         <template #title>{{ $t("nav.dashboard") }}</template>
       </el-menu-item>
 
-      <el-sub-menu index="seats">
+      <el-sub-menu v-if="isSuperAdmin || canViewSeats" index="seats">
         <template #title>
           <el-icon><Armchair /></el-icon>
           <span>{{ $t("seats.title") }}</span>
@@ -34,13 +34,13 @@
           <el-icon><Armchair /></el-icon>
           <template #title>{{ $t("seats.allSeats") }}</template>
         </el-menu-item>
-        <el-menu-item index="/admin/seats/create">
+        <el-menu-item v-if="isSuperAdmin || canCreateSeats" index="/admin/seats/create">
           <el-icon><Plus /></el-icon>
           <template #title>{{ $t("seats.addSeat") }}</template>
         </el-menu-item>
       </el-sub-menu>
 
-      <el-sub-menu index="halls">
+      <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="halls">
         <template #title>
           <el-icon><Monitor /></el-icon>
           <span>{{ $t("halls.title") }}</span>
@@ -49,13 +49,13 @@
           <el-icon><Monitor /></el-icon>
           <template #title>{{ $t("halls.allHalls") }}</template>
         </el-menu-item>
-        <el-menu-item index="/admin/halls/create">
+        <el-menu-item v-if="isSuperAdmin || canCreateHalls" index="/admin/halls/create">
           <el-icon><Plus /></el-icon>
           <template #title>{{ $t("halls.addHall") }}</template>
         </el-menu-item>
       </el-sub-menu>
 
-      <el-sub-menu index="theaters">
+      <el-sub-menu v-if="isSuperAdmin || canViewTheaters" index="theaters">
         <template #title>
           <el-icon><Projector /></el-icon>
           <span>{{ $t("theaters.title") }}</span>
@@ -64,13 +64,13 @@
           <el-icon><Projector /></el-icon>
           <template #title>{{ $t("theaters.allTheaters") }}</template>
         </el-menu-item>
-        <el-menu-item index="/admin/theaters/create">
+        <el-menu-item v-if="isSuperAdmin || canCreateTheaters" index="/admin/theaters/create">
           <el-icon><Plus /></el-icon>
           <template #title>{{ $t("theaters.addTheater") }}</template>
         </el-menu-item>
       </el-sub-menu>
 
-      <el-sub-menu index="movies">
+      <el-sub-menu v-if="isSuperAdmin || canViewMovies" index="movies">
         <template #title>
           <el-icon><Film /></el-icon>
           <span>{{ $t("movies.title") }}</span>
@@ -79,13 +79,13 @@
           <el-icon><Clapperboard /></el-icon>
           <template #title>{{ $t("movies.allMovies") }}</template>
         </el-menu-item>
-        <el-menu-item index="/admin/movies/create">
+        <el-menu-item v-if="isSuperAdmin || canCreateMovies" index="/admin/movies/create">
           <el-icon><Plus /></el-icon>
           <template #title>{{ $t("movies.addMovie") }}</template>
         </el-menu-item>
       </el-sub-menu>
 
-      <el-sub-menu index="showtimes">
+      <el-sub-menu v-if="isSuperAdmin || canViewShowtimes" index="showtimes">
         <template #title>
           <el-icon><Ticket /></el-icon>
           <span>{{ $t("showtimes.title") }}</span>
@@ -94,13 +94,13 @@
           <el-icon><Ticket /></el-icon>
           <template #title>{{ $t("showtimes.allShowtimes") }}</template>
         </el-menu-item>
-        <el-menu-item index="/admin/showtimes/create">
+        <el-menu-item v-if="isSuperAdmin || canCreateShowtimes" index="/admin/showtimes/create">
           <el-icon><Plus /></el-icon>
           <template #title>{{ $t("showtimes.addShowtime") }}</template>
         </el-menu-item>
       </el-sub-menu>
 
-      <el-sub-menu index="users">
+      <el-sub-menu v-if="isSuperAdmin || canViewUsers" index="users">
         <template #title>
           <el-icon><Users /></el-icon>
           <span>{{ $t("users.title") }}</span>
@@ -109,12 +109,33 @@
           <el-icon><Users /></el-icon>
           <template #title>{{ $t("users.allUsers") }}</template>
         </el-menu-item>
-        <el-menu-item index="/admin/users/create">
+        <el-menu-item v-if="isSuperAdmin || canCreateUsers" index="/admin/users/create">
           <el-icon><UserPlus /></el-icon>
           <template #title>{{ $t("users.addUser") }}</template>
         </el-menu-item>
+        <!-- <el-menu-item index="/admin/users/roles" @click="navigateToRoles">
+          <el-icon><UserCog /></el-icon>
+          <template #title>Assign Roles</template>
+        </el-menu-item> -->
       </el-sub-menu>
-      <el-menu-item index="/admin/settings">
+      
+      <!-- System Management (SuperAdmin Only) -->
+      <el-sub-menu v-if="isSuperAdmin" index="system">
+        <template #title>
+          <el-icon><Shield /></el-icon>
+          <span>{{ $t("system.title") }}</span>
+        </template>
+        <el-menu-item index="/admin/system/permissions">
+          <el-icon><Shield /></el-icon>
+          <template #title>{{ $t("system.permissions") }}</template>
+        </el-menu-item>
+        <el-menu-item index="/admin/system/role-permissions">
+          <el-icon><UserCog /></el-icon>
+          <template #title>{{ $t("system.rolePermissions") }}</template>
+        </el-menu-item>
+      </el-sub-menu>
+      
+      <el-menu-item v-if="isSuperAdmin || canViewSettings" index="/admin/settings">
         <el-icon><Settings /></el-icon>
         <template #title>{{ $t("nav.settings") }}</template>
       </el-menu-item>
@@ -124,8 +145,9 @@
 
 <script setup>
 import { computed } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
+import { usePermissions } from "@/composables/usePermissions";
 import {
   Film,
   LayoutDashboard,
@@ -138,10 +160,35 @@ import {
   Armchair,
   Monitor,
   Projector,
+  UserCog,
+  Shield,
 } from "lucide-vue-next";
 
 const route = useRoute();
+const router = useRouter();
 const appStore = useAppStore();
+const {
+  canViewUsers,
+  canCreateUsers,
+  canManageUsers,
+  canViewDashboard,
+  canViewSettings,
+  canManageSettings,
+  canViewTheaters,
+  canCreateTheaters,
+  canViewHalls,
+  canCreateHalls,
+  canViewSeats,
+  canCreateSeats,
+  canViewMovies,
+  canCreateMovies,
+  canViewShowtimes,
+  canCreateShowtimes,
+  canViewBookings,
+  isSuperAdmin
+} = usePermissions();
+
+// Remove debug after fixing
 
 const activeMenu = computed(() => route.path);
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed);
@@ -161,6 +208,12 @@ const sidebarTextColor = computed(() => {
 const sidebarActiveColor = computed(() => {
   return theme.value === "dark" ? "#3B82F9" : "#1E40AF";
 });
+
+// Navigation method
+const navigateToRoles = () => {
+  console.log('Navigating to roles page...');
+  router.push('/admin/users/roles');
+};
 </script>
 
 <style scoped>
