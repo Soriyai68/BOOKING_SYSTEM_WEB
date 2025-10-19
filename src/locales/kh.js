@@ -31,6 +31,11 @@ export default {
     apiCredentials: "ភ្ជាប់ទៅ API ជោគជ័យ។ ប្រើលេខសម្ងាត់ពិតរបស់អ្នក។",
     checkingApi: "កំពុងពិនិត្យ API...",
     testingConnection: "កំពុងធ្វើតេស្តការភ្ជាប់ទៅ API",
+    logoutConfirm: {
+      title: "បញ្ជាក់ការចាកចេញ",
+      message: "តើអ្នកប្រាកដថាចង់ចាកចេញមែនទេ?",
+      confirmButton: "បាទ/ចាស, ចាកចេញ",
+    },
   },
 
   // Validation Messages
@@ -183,6 +188,7 @@ export default {
   users: {
     title: "គ្រប់គ្រងអ្នកប្រើប្រាស់",
     addUser: "បន្ថែមអ្នកប្រើប្រាស់",
+    cashier: "អ្នកលក់",
     createUser: "បង្កើតអ្នកប្រើប្រាស់",
     editUser: "កែសម្រួលអ្នកប្រើប្រាស់",
     allUsers: "អ្នកប្រើប្រាស់ទាំងអស់",

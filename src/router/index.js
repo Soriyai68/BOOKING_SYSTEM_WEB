@@ -25,7 +25,7 @@ const routes = [
         path: "dashboard",
         name: "AdminDashboard",
         component: () => import("@/views/dashboard/Dashboard.vue"),
-        meta: { 
+        meta: {
           title: "Dashboard",
           ...createPermissionMeta(PERMISSIONS.DASHBOARD_VIEW)
         },
@@ -35,7 +35,7 @@ const routes = [
         path: "users",
         name: "Users",
         component: () => import("@/views/users/UserList.vue"),
-        meta: { 
+        meta: {
           title: "Users Management",
           ...createPermissionMeta(PERMISSIONS.USERS_VIEW)
         },
@@ -44,7 +44,7 @@ const routes = [
         path: "users/create",
         name: "CreateUser",
         component: () => import("@/views/users/CreateUser.vue"),
-        meta: { 
+        meta: {
           title: "Create User",
           ...createPermissionMeta(PERMISSIONS.USERS_CREATE)
         },
@@ -53,7 +53,7 @@ const routes = [
         path: 'users/:id/edit',
         name: 'EditUser',
         component: () => import('@/views/users/EditUser.vue'),
-        meta: { 
+        meta: {
           title: 'Edit User',
           ...createPermissionMeta(PERMISSIONS.USERS_EDIT)
         }
@@ -72,7 +72,7 @@ const routes = [
         path: 'seats',
         name: 'Seats',
         component: () => import('@/views/seats/SeatsList.vue'),
-        meta: { 
+        meta: {
           title: 'Seats Management',
           ...createPermissionMeta(PERMISSIONS.SEATS_VIEW)
         }
@@ -81,25 +81,25 @@ const routes = [
         path: 'seats/create',
         name: 'CreateSeat',
         component: () => import('@/views/seats/CreateSeat.vue'),
-        meta: { 
+        meta: {
           title: 'Create Seat',
           ...createPermissionMeta(PERMISSIONS.SEATS_CREATE)
         }
       },
-        {
-          path: 'seats/:id',
-          name: 'SeatDetail',
-          component: () => import('@/views/seats/SeatDetail.vue'),
-          meta: { 
-            title: 'Seat Details',
-            ...createPermissionMeta(PERMISSIONS.SEATS_VIEW)
-          }
-        },
+      {
+        path: 'seats/:id',
+        name: 'SeatDetail',
+        component: () => import('@/views/seats/SeatDetail.vue'),
+        meta: {
+          title: 'Seat Details',
+          ...createPermissionMeta(PERMISSIONS.SEATS_VIEW)
+        }
+      },
       {
         path: 'seats/:id/edit',
         name: 'EditSeat',
         component: () => import('@/views/seats/EditSeat.vue'),
-        meta: { 
+        meta: {
           title: 'Edit Seat',
           ...createPermissionMeta(PERMISSIONS.SEATS_EDIT)
         }
@@ -229,7 +229,7 @@ const routes = [
       },
       {
         path: "system/role-permissions",
-        name: "SystemRolePermissions", 
+        name: "SystemRolePermissions",
         component: () => import("@/views/system/RolePermissions.vue"),
         meta: {
           title: "Role Permissions",
@@ -240,7 +240,7 @@ const routes = [
         path: "settings",
         name: "Settings",
         component: () => import("@/views/settings/Settings.vue"),
-        meta: { 
+        meta: {
           title: "Settings",
           ...createPermissionMeta(PERMISSIONS.SETTINGS_VIEW)
         },

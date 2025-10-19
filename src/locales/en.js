@@ -33,6 +33,11 @@ export default {
     apiCredentials: "Connected to backend API. Use your real credentials.",
     checkingApi: "Checking API...",
     testingConnection: "Testing connection to backend API",
+    logoutConfirm: {
+      title: "Confirm Logout",
+      message: "Are you sure you want to logout?",
+      confirmButton: "Yes, Log out",
+    },
   },
 
   // Validation Messages
@@ -74,7 +79,7 @@ export default {
     allUsers: "All Users",
     searchUsers: "Search users...",
     filterByStatus: "Filter by status",
-    // cashier:"Cashier",
+    cashier:"Cashier",
     name: "Name",
     email: "Email",
     phone: "Phone",
@@ -206,35 +211,6 @@ export default {
     totalHalls: "Total Halls",
     totalCapacity: "Total Capacity",
   },
-
-  // Theater Management
-  // theaters: {
-  //   title: "Theater Management",
-  //   allTheaters: "All Theaters",
-  //   addTheater: "Add Theater",
-  //   createTheater: "Create Theater",
-  //   editTheater: "Edit Theater",
-  //   theaterDetails: "Theater Details",
-  //   name: "Name",
-  //   address: "Address",
-  //   city: "City",
-  //   province: "Province",
-  //   status: "Status",
-  //   features: "Features",
-  //   totalHalls: "Total Halls",
-  //   totalCapacity: "Total Capacity",
-  //   notes: "Notes",
-  //   halls: "Halls",
-  //   noHalls: "No halls found for this theater",
-  //   removeHall: "Remove Hall",
-  //   confirmRemoveHall:
-  //     "Are you sure you want to remove this hall from the theater?",
-  //   hallRemoved: "Hall removed from theater successfully",
-  //   createSuccess: "Theater created successfully",
-  //   updateTheater: "Update Theater",
-  //   updateSuccess: "Theater updated successfully",
-  // },
-
   // Hall Management
   halls: {
     title: "Hall Management",

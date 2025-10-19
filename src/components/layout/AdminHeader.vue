@@ -129,11 +129,11 @@ const handleUserMenuCommand = async (command) => {
     case "logout":
       try {
         await ElMessageBox.confirm(
-          "Are you sure you want to logout?",
-          "Confirm Logout",
+          t("auth.logoutConfirm.message"),
+          t("auth.logoutConfirm.title"),
           {
-            confirmButtonText: "Yes, Log out.",
-            cancelButtonText: "Cancel",
+            confirmButtonText: t("auth.logoutConfirm.confirmButton"),
+            cancelButtonText: t("actions.cancel"),
             type: "warning",
           }
         );
