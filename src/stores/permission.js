@@ -23,7 +23,7 @@ export const usePermissionStore = defineStore("permission", () => {
     
     // SuperAdmin has ALL permissions
     if (isSuperAdmin.value) {
-      console.log('SuperAdmin bypass for permission:', permission);
+      // console.log('SuperAdmin bypass for permission:', permission);
       return true;
     }
     
@@ -146,11 +146,11 @@ export const usePermissionStore = defineStore("permission", () => {
         lastFetched.value = Date.now();
         isInitialized.value = true;
         
-        console.log('User permissions loaded:', {
-          role: data.role,
-          isSuperAdmin: data.isSuperAdmin,
-          permissionCount: permissions.value.length
-        });
+        // console.log('User permissions loaded:', {
+        //   role: data.role,
+        //   isSuperAdmin: data.isSuperAdmin,
+        //   permissionCount: permissions.value.length
+        // });
       }
     } catch (error) {
       console.error('Error fetching user permissions:', error);

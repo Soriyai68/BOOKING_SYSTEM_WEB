@@ -141,7 +141,7 @@ const handleUserMenuCommand = async (command) => {
         await authStore.logout();
 
         // Clear any remaining messages
-        loading.close();
+        ElMessage.closeAll();
 
         // Show success message briefly
         ElMessage.success("Logged out successfully");

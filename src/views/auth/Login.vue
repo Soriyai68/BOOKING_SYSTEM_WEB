@@ -132,17 +132,17 @@ const handleLogin = async () => {
     // Log successful login for debugging
     if (import.meta.env.VITE_APP_ENV === 'development') {
       console.log('Login successful, redirecting to dashboard...')
-      console.log('User data:', result.user || result)
-      console.log('Auth state after login:', {
-        isAuthenticated: authStore.isAuthenticated,
-        isAdmin: authStore.isAdmin,
-        token: !!authStore.token
-      })
+      // console.log('User data:', result.user || result)
+      // console.log('Auth state after login:', {
+      //   isAuthenticated: authStore.isAuthenticated,
+      //   isAdmin: authStore.isAdmin,
+      //   token: !!authStore.token
+      // })
     }
     
     // Force immediate redirect using multiple methods to ensure it works
     const redirectPath = router.currentRoute.value.query.redirect || '/admin/dashboard'
-    console.log('Attempting redirect to:', redirectPath)
+    // console.log('Attempting redirect to:', redirectPath)
     
     try {
       // Method 1: Vue Router replace
