@@ -1,4 +1,3 @@
-import { PriceTag } from "@element-plus/icons-vue";
 
 export default {
   // Navigation and Layout
@@ -77,7 +76,7 @@ export default {
     // cashier:"Cashier",
     name: "Name",
     email: "Email",
-    phone: "Phone",
+    phone: "Phone Number",
     role: "Role",
     status: "Status",
     created: "Created",
@@ -100,6 +99,7 @@ export default {
     admin: "Admin",
     superadmin: "Super Admin",
     user: "User",
+    cashier: "Cashier",
     updated: "Updated",
   },
   //Seat Managment
@@ -206,34 +206,6 @@ export default {
     totalHalls: "Total Halls",
     totalCapacity: "Total Capacity",
   },
-
-  // Theater Management
-  // theaters: {
-  //   title: "Theater Management",
-  //   allTheaters: "All Theaters",
-  //   addTheater: "Add Theater",
-  //   createTheater: "Create Theater",
-  //   editTheater: "Edit Theater",
-  //   theaterDetails: "Theater Details",
-  //   name: "Name",
-  //   address: "Address",
-  //   city: "City",
-  //   province: "Province",
-  //   status: "Status",
-  //   features: "Features",
-  //   totalHalls: "Total Halls",
-  //   totalCapacity: "Total Capacity",
-  //   notes: "Notes",
-  //   halls: "Halls",
-  //   noHalls: "No halls found for this theater",
-  //   removeHall: "Remove Hall",
-  //   confirmRemoveHall:
-  //     "Are you sure you want to remove this hall from the theater?",
-  //   hallRemoved: "Hall removed from theater successfully",
-  //   createSuccess: "Theater created successfully",
-  //   updateTheater: "Update Theater",
-  //   updateSuccess: "Theater updated successfully",
-  // },
 
   // Hall Management
   halls: {

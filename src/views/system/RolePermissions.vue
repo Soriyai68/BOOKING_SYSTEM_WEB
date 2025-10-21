@@ -3,15 +3,20 @@
     <!-- <el-page-header :content="$t('system.rolePermissions')" /> -->
 
     <!-- Summary by role -->
-   
+
     <!-- Manage role-permission assignments -->
     <el-card class="mt-3" shadow="never">
       <template #header>
         <div class="card-header">
-          <span>{{ $t('system.manageRoleAssignments') }}</span>
+          <span>{{ $t("system.manageRoleAssignments") }}</span>
           <div class="header-actions">
             <!-- <el-button v-if="isSuperAdmin" type="success" size="small" @click="openCreateDialog">{{ $t('system.createPermission') }}</el-button> -->
-            <el-button :loading="loadingAssignments" size="small" @click="refreshAll">{{ $t('actions.refresh') }}</el-button>
+            <el-button
+              :loading="loadingAssignments"
+              size="small"
+              @click="refreshAll"
+              >{{ $t("actions.refresh") }}</el-button
+            >
           </div>
         </div>
       </template>
@@ -19,8 +24,16 @@
       <el-skeleton v-if="loadingAssignments" rows="6" animated />
 
       <div v-else>
-        <el-empty v-if="allPermissions.length === 0" :description="$t('system.noPermissions')" />
-        <el-table v-else :data="allPermissions" style="width: 100%" size="small">
+        <el-empty
+          v-if="allPermissions.length === 0"
+          :description="$t('system.noPermissions')"
+        />
+        <el-table
+          v-else
+          :data="allPermissions"
+          style="width: 100%"
+          size="small"
+        >
           <el-table-column :label="$t('system.module')" width="140">
             <template #default="{ row }">{{ row.module }}</template>
           </el-table-column>
@@ -32,7 +45,7 @@
               </div>
             </template>
           </el-table-column>
-          
+
           <el-table-column
             v-for="r in rolesForAssignments"
             :key="r.name"
@@ -45,7 +58,7 @@
                 :model-value="isAssigned(row.name, r.name)"
                 :loading="isToggling(row.name, r.name)"
                 :disabled="!isSuperAdmin"
-                @change="val => onToggle(row, r.name, val)"
+                @change="(val) => onToggle(row, r.name, val)"
               />
             </template>
           </el-table-column>
@@ -54,46 +67,93 @@
     </el-card>
 
     <!-- Create permission dialog -->
-    <el-dialog v-model="createDialogVisible" :title="$t('system.createPermission')" width="520px">
+    <el-dialog
+      v-model="createDialogVisible"
+      :title="$t('system.createPermission')"
+      width="520px"
+    >
       <el-form :model="createForm" label-width="120px">
         <el-form-item :label="$t('system.displayName')">
-          <el-input v-model="createForm.displayName" :placeholder="$t('system.exampleEditUsers')" />
+          <el-input
+            v-model="createForm.displayName"
+            :placeholder="$t('system.exampleEditUsers')"
+          />
         </el-form-item>
         <el-form-item :label="$t('system.name')">
-          <el-input v-model="createForm.name" :placeholder="$t('system.exampleUsersEdit')" />
+          <el-input
+            v-model="createForm.name"
+            :placeholder="$t('system.exampleUsersEdit')"
+          />
         </el-form-item>
         <el-form-item :label="$t('system.module')">
-          <el-input v-model="createForm.module" :placeholder="$t('system.exampleUsers')" />
+          <el-input
+            v-model="createForm.module"
+            :placeholder="$t('system.exampleUsers')"
+          />
         </el-form-item>
         <el-form-item :label="$t('system.description')">
-          <el-input v-model="createForm.description" type="textarea" :rows="3" :placeholder="$t('system.optionalDescription')" />
+          <el-input
+            v-model="createForm.description"
+            type="textarea"
+            :rows="3"
+            :placeholder="$t('system.optionalDescription')"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="createDialogVisible = false">{{ $t('actions.cancel') }}</el-button>
-          <el-button type="primary" :loading="creating" @click="createPermission">{{ $t('actions.create') }}</el-button>
+          <el-button @click="createDialogVisible = false">{{
+            $t("actions.cancel")
+          }}</el-button>
+          <el-button
+            type="primary"
+            :loading="creating"
+            @click="createPermission"
+            >{{ $t("actions.create") }}</el-button
+          >
         </div>
       </template>
     </el-dialog>
 
     <!-- Create role dialog -->
-    <el-dialog v-model="createRoleDialogVisible" :title="$t('system.createRole')" width="480px">
+    <el-dialog
+      v-model="createRoleDialogVisible"
+      :title="$t('system.createRole')"
+      width="480px"
+    >
       <el-form :model="createRoleForm" label-width="120px">
         <el-form-item :label="$t('system.displayName')">
-          <el-input v-model="createRoleForm.displayName" :placeholder="$t('system.exampleManager')" />
+          <el-input
+            v-model="createRoleForm.displayName"
+            :placeholder="$t('system.exampleManager')"
+          />
         </el-form-item>
         <el-form-item :label="$t('system.name')">
-          <el-input v-model="createRoleForm.name" :placeholder="$t('system.exampleManagerKey')" />
+          <el-input
+            v-model="createRoleForm.name"
+            :placeholder="$t('system.exampleManagerKey')"
+          />
         </el-form-item>
         <el-form-item :label="$t('system.description')">
-          <el-input v-model="createRoleForm.description" type="textarea" :rows="3" :placeholder="$t('system.optionalDescription')" />
+          <el-input
+            v-model="createRoleForm.description"
+            type="textarea"
+            :rows="3"
+            :placeholder="$t('system.optionalDescription')"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="createRoleDialogVisible = false">{{ $t('actions.cancel') }}</el-button>
-          <el-button type="primary" :loading="creatingRole" @click="createRole">{{ $t('system.createRole') }}</el-button>
+          <el-button @click="createRoleDialogVisible = false">{{
+            $t("actions.cancel")
+          }}</el-button>
+          <el-button
+            type="primary"
+            :loading="creatingRole"
+            @click="createRole"
+            >{{ $t("system.createRole") }}</el-button
+          >
         </div>
       </template>
     </el-dialog>
@@ -101,10 +161,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import api from '@/utils/api';
-import { usePermissions } from '@/composables/usePermissions';
-import { useI18n } from 'vue-i18n';
+import { ref, onMounted, computed } from "vue";
+import api from "@/utils/api";
+import { usePermissions } from "@/composables/usePermissions";
+import { useI18n } from "vue-i18n";
+import { useAppStore } from "@/stores/app";
 
 const { isSuperAdmin } = usePermissions();
 const { t } = useI18n();
@@ -112,6 +173,7 @@ const { t } = useI18n();
 // Summary state
 const loading = ref(false);
 const rolePermissions = ref({});
+const appStore = useAppStore();
 
 // Assignment state
 const loadingAssignments = ref(false);
@@ -120,26 +182,31 @@ const permissionMap = ref({}); // name -> permission object (with _id)
 const assignments = ref({}); // permissionName -> { [roleName]: boolean }
 const toggling = ref({}); // key permission:role -> boolean
 const roles = ref([
-  { name: 'superadmin', displayName: 'Super Admin' },
-  { name: 'admin', displayName: 'Admin' },
-  { name: 'cashier', displayName: 'Cashier' },
-  { name: 'user', displayName: 'User' }
+  { name: "superadmin", displayName: "Super Admin" },
+  { name: "admin", displayName: "Admin" },
+  { name: "cashier", displayName: "Cashier" },
+  { name: "user", displayName: "User" },
 ]); // fixed roles list
 
 const rolesForAssignments = computed(() => {
   // Exclude superadmin (implicit all)
-  return roles.value.filter(r => r.name !== 'superadmin');
+  return roles.value.filter((r) => r.name !== "superadmin");
 });
 
 // Create dialog state
 const createDialogVisible = ref(false);
 const creating = ref(false);
-const createForm = ref({ displayName: '', name: '', module: '', description: '' });
+const createForm = ref({
+  displayName: "",
+  name: "",
+  module: "",
+  description: "",
+});
 
 // Create role dialog state
 const createRoleDialogVisible = ref(false);
 const creatingRole = ref(false);
-const createRoleForm = ref({ displayName: '', name: '', description: '' });
+const createRoleForm = ref({ displayName: "", name: "", description: "" });
 
 const refreshAll = async () => {
   await Promise.all([fetchRolePermissions(), fetchAllPermissions()]);
@@ -149,15 +216,18 @@ const refreshAll = async () => {
 const fetchRolePermissions = async () => {
   loading.value = true;
   try {
-    const res = await api.get('/permissions/roles');
+    const res = await api.get("/permissions/roles");
     if (res.data?.success) {
       rolePermissions.value = res.data.data || {};
     }
   } catch (error) {
-    console.error('Failed to fetch role permissions:', error);
-    const msg = error?.response?.data?.message || error.message || t('system.failedToLoadRolePermissions');
+    console.error("Failed to fetch role permissions:", error);
+    const msg =
+      error?.response?.data?.message ||
+      error.message ||
+      t("system.failedToLoadRolePermissions");
     if (error?.response?.status === 403) {
-      window?.ElMessage?.error?.(t('system.accessDeniedAdmin'));
+      window?.ElMessage?.error?.(t("system.accessDeniedAdmin"));
     } else {
       window?.ElMessage?.error?.(msg);
     }
@@ -169,7 +239,7 @@ const fetchRolePermissions = async () => {
 const fetchAllPermissions = async () => {
   loadingAssignments.value = true;
   try {
-    const res = await api.get('/permissions/all');
+    const res = await api.get("/permissions/all");
     if (res.data?.success) {
       allPermissions.value = res.data.data.permissions || [];
       const map = {};
@@ -177,7 +247,7 @@ const fetchAllPermissions = async () => {
       permissionMap.value = map;
     }
   } catch (error) {
-    console.error('Failed to fetch permissions:', error);
+    console.error("Failed to fetch permissions:", error);
   } finally {
     loadingAssignments.value = false;
   }
@@ -185,18 +255,18 @@ const fetchAllPermissions = async () => {
 
 const fetchAllRoles = async () => {
   try {
-    const res = await api.get('/roles');
+    const res = await api.get("/roles");
     if (res.data?.success) {
       roles.value = res.data.data || [];
     }
   } catch (error) {
-    console.error('Failed to fetch roles:', error);
+    console.error("Failed to fetch roles:", error);
   }
 };
 
 const buildAssignments = () => {
   const result = {};
-  const roleNames = roles.value.map(r => r.name);
+  const roleNames = roles.value.map((r) => r.name);
 
   for (const perm of allPermissions.value) {
     const defaults = {};
@@ -219,9 +289,11 @@ const buildAssignments = () => {
   assignments.value = result;
 };
 
-const isAssigned = (permName, roleName) => assignments.value?.[permName]?.[roleName] || false;
+const isAssigned = (permName, roleName) =>
+  assignments.value?.[permName]?.[roleName] || false;
 const toggleKey = (permName, roleName) => `${permName}:${roleName}`;
-const isToggling = (permName, roleName) => !!toggling.value[toggleKey(permName, roleName)];
+const isToggling = (permName, roleName) =>
+  !!toggling.value[toggleKey(permName, roleName)];
 
 const onToggle = async (perm, roleName, val) => {
   const key = toggleKey(perm.name, roleName);
@@ -231,15 +303,23 @@ const onToggle = async (perm, roleName, val) => {
     try {
       toggling.value[key] = true;
       if (val) {
-        await api.post('/permissions/assign', { role: roleName, permission: perm.name });
+        await api.post("/permissions/assign", {
+          role: roleName,
+          permission: perm.name,
+        });
       } else {
-        await api.post('/permissions/remove', { role: roleName, permission: perm.name });
+        await api.post("/permissions/remove", {
+          role: roleName,
+          permission: perm.name,
+        });
       }
       assignments.value[perm.name][roleName] = val;
-      window?.ElMessage?.success?.(t('system.updated'));
+      window?.ElMessage?.success?.(t("system.updated"));
     } catch (error) {
-      console.error('Update assignment failed:', error);
-      window?.ElMessage?.error?.(error?.response?.data?.message || t('system.updateFailed'));
+      console.error("Update assignment failed:", error);
+      window?.ElMessage?.error?.(
+        error?.response?.data?.message || t("system.updateFailed")
+      );
     } finally {
       toggling.value[key] = false;
     }
@@ -249,50 +329,75 @@ const onToggle = async (perm, roleName, val) => {
     toggling.value[key] = true;
     if (val) {
       try {
-        await api.post('/permissions/assign', { role: roleName, permissionId: p._id });
+        await api.post("/permissions/assign", {
+          role: roleName,
+          permissionId: p._id,
+        });
       } catch (err) {
         if (err?.response?.status === 400 || err?.response?.status === 422) {
-          await api.post('/permissions/assign', { role: roleName, permission: perm.name });
+          await api.post("/permissions/assign", {
+            role: roleName,
+            permission: perm.name,
+          });
         } else {
           throw err;
         }
       }
     } else {
       try {
-        await api.post('/permissions/remove', { role: roleName, permissionId: p._id });
+        await api.post("/permissions/remove", {
+          role: roleName,
+          permissionId: p._id,
+        });
       } catch (err) {
         if (err?.response?.status === 400 || err?.response?.status === 422) {
-          await api.post('/permissions/remove', { role: roleName, permission: perm.name });
+          await api.post("/permissions/remove", {
+            role: roleName,
+            permission: perm.name,
+          });
         } else {
           throw err;
         }
       }
     }
     assignments.value[perm.name][roleName] = val;
-    window?.ElMessage?.success?.('Updated');
+    window?.ElMessage?.success?.("Updated");
   } catch (error) {
-    console.error('Update assignment failed:', error);
-    window?.ElMessage?.error?.(error?.response?.data?.message || 'Update failed');
+    console.error("Update assignment failed:", error);
+    window?.ElMessage?.error?.(
+      error?.response?.data?.message || "Update failed"
+    );
   } finally {
     toggling.value[key] = false;
   }
 };
 
 const createPermission = async () => {
-  if (!createForm.value.displayName || !createForm.value.name || !createForm.value.module) {
-    window?.ElMessage?.warning?.('Display name, name and module are required');
+  if (
+    !createForm.value.displayName ||
+    !createForm.value.name ||
+    !createForm.value.module
+  ) {
+    window?.ElMessage?.warning?.("Display name, name and module are required");
     return;
   }
   creating.value = true;
   try {
-    await api.post('/permissions', createForm.value);
-    window?.ElMessage?.success?.('Permission created');
+    await api.post("/permissions", createForm.value);
+    window?.ElMessage?.success?.("Permission created");
     createDialogVisible.value = false;
-    createForm.value = { displayName: '', name: '', module: '', description: '' };
+    createForm.value = {
+      displayName: "",
+      name: "",
+      module: "",
+      description: "",
+    };
     await refreshAll();
   } catch (error) {
-    console.error('Create permission failed:', error);
-    window?.ElMessage?.error?.(error?.response?.data?.message || 'Create failed');
+    console.error("Create permission failed:", error);
+    window?.ElMessage?.error?.(
+      error?.response?.data?.message || "Create failed"
+    );
   } finally {
     creating.value = false;
   }
@@ -308,44 +413,85 @@ const openCreateRoleDialog = () => {
 
 const createRole = async () => {
   if (!createRoleForm.value.displayName || !createRoleForm.value.name) {
-    window?.ElMessage?.warning?.('Display name and name are required');
+    window?.ElMessage?.warning?.("Display name and name are required");
     return;
   }
   creatingRole.value = true;
   try {
-    await api.post('/roles', createRoleForm.value);
-    window?.ElMessage?.success?.('Role created');
+    await api.post("/roles", createRoleForm.value);
+    window?.ElMessage?.success?.("Role created");
     createRoleDialogVisible.value = false;
-    createRoleForm.value = { displayName: '', name: '', description: '' };
+    createRoleForm.value = { displayName: "", name: "", description: "" };
     await refreshAll();
   } catch (error) {
-    console.error('Create role failed:', error);
-    window?.ElMessage?.error?.(error?.response?.data?.message || 'Create role failed');
+    console.error("Create role failed:", error);
+    window?.ElMessage?.error?.(
+      error?.response?.data?.message || "Create role failed"
+    );
   } finally {
     creatingRole.value = false;
   }
 };
 
-onMounted(refreshAll);
+onMounted(async () => {
+  await refreshAll();
+  appStore.setBreadcrumbs([
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("system.rolePermissions"), path: "system/role-permissions" },
+  ]);
+});
 </script>
 
 <style scoped>
-.mt-3 { margin-top: 12px; }
-.card-header { display: flex; justify-content: space-between; align-items: center; }
-.role-info { padding: 16px 0; }
-.permissions-by-module { margin-top: 16px; }
-.module-section { margin-bottom: 24px; }
+.mt-3 {
+  margin-top: 12px;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.role-info {
+  padding: 16px 0;
+}
+.permissions-by-module {
+  margin-top: 16px;
+}
+.module-section {
+  margin-bottom: 24px;
+}
 .module-title {
   font-size: 16px;
   font-weight: 500;
   margin: 0 0 12px 0;
   color: var(--el-text-color-primary);
 }
-.permission-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-.permission-tag { margin: 2px; }
-.no-permissions { text-align: center; padding: 40px 0; }
-.header-actions { display:flex; gap:8px; }
-.perm-name .display { font-weight: 500; }
-.perm-name .internal { font-size: 12px; color: var(--el-text-color-secondary); }
-.dialog-footer { display: flex; justify-content: flex-end; gap: 8px; }
+.permission-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.permission-tag {
+  margin: 2px;
+}
+.no-permissions {
+  text-align: center;
+  padding: 40px 0;
+}
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+.perm-name .display {
+  font-weight: 500;
+}
+.perm-name .internal {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
 </style>

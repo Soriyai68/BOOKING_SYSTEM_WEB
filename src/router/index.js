@@ -1,6 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AdminLayout from "@/layouts/AdminLayout.vue";
-import { createPermissionMeta, checkRoutePermissions, PERMISSIONS } from "@/composables/usePermissions";
+import {
+  createPermissionMeta,
+  checkRoutePermissions,
+  PERMISSIONS,
+} from "@/composables/usePermissions";
 
 const routes = [
   {
@@ -14,7 +18,7 @@ const routes = [
   {
     path: "/admin",
     component: AdminLayout,
-    meta: { requiresAuth: true, requiresAdmin: true, },
+    meta: { requiresAuth: true, requiresAdmin: true },
     meta: { requiresAuth: true, requiresAdmin: true },
     children: [
       {
@@ -25,9 +29,10 @@ const routes = [
         path: "dashboard",
         name: "AdminDashboard",
         component: () => import("@/views/dashboard/Dashboard.vue"),
-        meta: { 
+        meta: {
           title: "Dashboard",
-          ...createPermissionMeta(PERMISSIONS.DASHBOARD_VIEW)
+          titleKey: "dashboard.title",
+          ...createPermissionMeta(PERMISSIONS.DASHBOARD_VIEW),
         },
       },
       //users
@@ -35,187 +40,255 @@ const routes = [
         path: "users",
         name: "Users",
         component: () => import("@/views/users/UserList.vue"),
-        meta: { 
+        meta: {
           title: "Users Management",
-          ...createPermissionMeta(PERMISSIONS.USERS_VIEW)
+          titleKey: "users.title",
+          ...createPermissionMeta(PERMISSIONS.USERS_VIEW),
         },
       },
       {
         path: "users/create",
         name: "CreateUser",
         component: () => import("@/views/users/CreateUser.vue"),
-        meta: { 
+        meta: {
           title: "Create User",
-          ...createPermissionMeta(PERMISSIONS.USERS_CREATE)
+          titleKey: "users.createUser",
+          ...createPermissionMeta(PERMISSIONS.USERS_CREATE),
         },
       },
       {
-        path: 'users/:id/edit',
-        name: 'EditUser',
-        component: () => import('@/views/users/EditUser.vue'),
-        meta: { 
-          title: 'Edit User',
-          ...createPermissionMeta(PERMISSIONS.USERS_EDIT)
-        }
+        path: "users/:id/edit",
+        name: "EditUser",
+        component: () => import("@/views/users/EditUser.vue"),
+        meta: {
+          title: "Edit User",
+          titleKey: "users.editUser",
+          ...createPermissionMeta(PERMISSIONS.USERS_EDIT),
+        },
       },
       {
-        path: 'users/roles',
-        name: 'UserRoles',
-        component: () => import('@/views/users/UserRoles.vue'),
+        path: "users/roles",
+        name: "UserRoles",
+        component: () => import("@/views/users/UserRoles.vue"),
         meta: {
-          title: 'User Roles',
-          ...createPermissionMeta(PERMISSIONS.USERS_MANAGE)
-        }
+          title: "User Roles",
+          titleKey: "users.userRoles",
+          ...createPermissionMeta(PERMISSIONS.USERS_MANAGE),
+        },
       },
       //seats
       {
-        path: 'seats',
-        name: 'Seats',
-        component: () => import('@/views/seats/SeatsList.vue'),
-        meta: { 
-          title: 'Seats Management',
-          ...createPermissionMeta(PERMISSIONS.SEATS_VIEW)
-        }
-      },
-      {
-        path: 'seats/create',
-        name: 'CreateSeat',
-        component: () => import('@/views/seats/CreateSeat.vue'),
-        meta: { 
-          title: 'Create Seat',
-          ...createPermissionMeta(PERMISSIONS.SEATS_CREATE)
-        }
-      },
-        {
-          path: 'seats/:id',
-          name: 'SeatDetail',
-          component: () => import('@/views/seats/SeatDetail.vue'),
-          meta: { 
-            title: 'Seat Details',
-            ...createPermissionMeta(PERMISSIONS.SEATS_VIEW)
-          }
+        path: "seats",
+        name: "Seats",
+        component: () => import("@/views/seats/SeatsList.vue"),
+        meta: {
+          title: "Seats Management",
+          titleKey: "seats.title",
+          ...createPermissionMeta(PERMISSIONS.SEATS_VIEW),
         },
+      },
       {
-        path: 'seats/:id/edit',
-        name: 'EditSeat',
-        component: () => import('@/views/seats/EditSeat.vue'),
-        meta: { 
-          title: 'Edit Seat',
-          ...createPermissionMeta(PERMISSIONS.SEATS_EDIT)
-        }
+        path: "seats/create",
+        name: "CreateSeat",
+        component: () => import("@/views/seats/CreateSeat.vue"),
+        meta: {
+          title: "Create Seat",
+          titleKey: "seats.createSeat",
+          ...createPermissionMeta(PERMISSIONS.SEATS_CREATE),
+        },
+      },
+      {
+        path: "seats/:id",
+        name: "SeatDetail",
+        component: () => import("@/views/seats/SeatDetail.vue"),
+        meta: {
+          title: "Seat Details",
+          titleKey: "seats.seatDetails",
+          ...createPermissionMeta(PERMISSIONS.SEATS_VIEW),
+        },
+      },
+      {
+        path: "seats/:id/edit",
+        name: "EditSeat",
+        component: () => import("@/views/seats/EditSeat.vue"),
+        meta: {
+          title: "Edit Seat",
+          titleKey: "seats.editSeat",
+          ...createPermissionMeta(PERMISSIONS.SEATS_EDIT),
+        },
       },
       //theaters
       {
-        path: 'theaters',
-        name: 'Theaters',
-        component: () => import('@/views/theaters/TheaterList.vue'),
-        meta: { title: 'Theaters Management', ...createPermissionMeta(PERMISSIONS.THEATERS_VIEW) }
+        path: "theaters",
+        name: "Theaters",
+        component: () => import("@/views/theaters/TheaterList.vue"),
+        meta: {
+          title: "Theaters Management",
+          titleKey: "theaters.title",
+          ...createPermissionMeta(PERMISSIONS.THEATERS_VIEW),
+        },
       },
       {
         path: "theaters/create",
         name: "CreateTheater",
         component: () => import("@/views/theaters/CreateTheater.vue"),
-        meta: { title: "Create Theater", ...createPermissionMeta(PERMISSIONS.THEATERS_CREATE) },
+        meta: {
+          title: "Create Theater",
+          titleKey: "theaters.createTheater",
+          ...createPermissionMeta(PERMISSIONS.THEATERS_CREATE),
+        },
       },
       {
         path: "theaters/:id",
         name: "TheaterDetail",
         component: () => import("@/views/theaters/TheaterDetail.vue"),
-        meta: { title: "Theater Details", ...createPermissionMeta(PERMISSIONS.THEATERS_VIEW) },
+        meta: {
+          title: "Theater Details",
+          titleKey: "theaters.theaterDetails",
+          ...createPermissionMeta(PERMISSIONS.THEATERS_VIEW),
+        },
       },
       {
         path: "theaters/:id/edit",
         name: "EditTheater",
         component: () => import("@/views/theaters/EditTheater.vue"),
-        meta: { title: "Edit Theater", ...createPermissionMeta(PERMISSIONS.THEATERS_EDIT) },
+        meta: {
+          title: "Edit Theater",
+          titleKey: "theaters.editTheater",
+          ...createPermissionMeta(PERMISSIONS.THEATERS_EDIT),
+        },
       },
       //halls
       {
         path: "halls",
         name: "Halls",
         component: () => import("@/views/halls/HallList.vue"),
-        meta: { title: "Halls Management", ...createPermissionMeta(PERMISSIONS.HALLS_VIEW) },
+        meta: {
+          title: "Halls Management",
+          titleKey: "halls.title",
+          ...createPermissionMeta(PERMISSIONS.HALLS_VIEW),
+        },
       },
       {
         path: "halls/create",
         name: "CreateHall",
         component: () => import("@/views/halls/CreateHall.vue"),
-        meta: { title: "Create Hall", ...createPermissionMeta(PERMISSIONS.HALLS_CREATE) },
+        meta: {
+          title: "Create Hall",
+          titleKey: "halls.createHall",
+          ...createPermissionMeta(PERMISSIONS.HALLS_CREATE),
+        },
       },
       {
         path: "halls/:id",
         name: "HallDetail",
         component: () => import("@/views/halls/HallDetail.vue"),
-        meta: { title: "Hall Details", ...createPermissionMeta(PERMISSIONS.HALLS_VIEW) },
+        meta: {
+          title: "Hall Details",
+          titleKey: "halls.hallDetails",
+          ...createPermissionMeta(PERMISSIONS.HALLS_VIEW),
+        },
       },
       {
         path: "halls/:id/edit",
         name: "EditHall",
         component: () => import("@/views/halls/EditHall.vue"),
-        meta: { title: "Edit Hall", ...createPermissionMeta(PERMISSIONS.HALLS_EDIT) },
+        meta: {
+          title: "Edit Hall",
+          titleKey: "halls.editHall",
+          ...createPermissionMeta(PERMISSIONS.HALLS_EDIT),
+        },
       },
       //movies
       {
         path: "movies",
         name: "Movies",
         component: () => import("@/views/movies/MovieList.vue"),
-        meta: { title: "Movies Management", ...createPermissionMeta(PERMISSIONS.MOVIES_VIEW) },
+        meta: {
+          title: "Movies Management",
+          titleKey: "movies.title",
+          ...createPermissionMeta(PERMISSIONS.MOVIES_VIEW),
+        },
       },
       {
-        path: 'movies/create',
-        name: 'CreateMovie',
-        component: () => import('@/views/movies/CreateMovie.vue'),
-        meta: { title: 'Add Movie', ...createPermissionMeta(PERMISSIONS.MOVIES_CREATE) }
+        path: "movies/create",
+        name: "CreateMovie",
+        component: () => import("@/views/movies/CreateMovie.vue"),
+        meta: {
+          title: "Add Movie",
+          titleKey: "movies.createMovie",
+          ...createPermissionMeta(PERMISSIONS.MOVIES_CREATE),
+        },
       },
       {
-        path: 'movies/:id',
-        name: 'MovieDetail',
-        component: () => import('@/views/movies/MovieDetail.vue'),
-        meta: { title: 'Movie Details', ...createPermissionMeta(PERMISSIONS.MOVIES_VIEW) }
+        path: "movies/:id",
+        name: "MovieDetail",
+        component: () => import("@/views/movies/MovieDetail.vue"),
+        meta: {
+          title: "Movie Details",
+          titleKey: "movies.movieDetails",
+          ...createPermissionMeta(PERMISSIONS.MOVIES_VIEW),
+        },
       },
       {
-        path: 'movies/:id/edit',
-        name: 'EditMovie',
-        component: () => import('@/views/movies/EditMovie.vue'),
-        meta: { title: 'Edit Movie', ...createPermissionMeta(PERMISSIONS.MOVIES_EDIT) }
+        path: "movies/:id/edit",
+        name: "EditMovie",
+        component: () => import("@/views/movies/EditMovie.vue"),
+        meta: {
+          title: "Edit Movie",
+          titleKey: "movies.editMovie",
+          ...createPermissionMeta(PERMISSIONS.MOVIES_EDIT),
+        },
       },
       //showtime
       {
         path: "showtimes",
         name: "Showtimes",
         component: () => import("@/views/showtime/ShowtimeList.vue"),
-        meta: { title: "Showtimes Management", ...createPermissionMeta(PERMISSIONS.SHOWTIMES_VIEW) },
+        meta: {
+          title: "Showtimes Management",
+          titleKey: "showtimes.title",
+          ...createPermissionMeta(PERMISSIONS.SHOWTIMES_VIEW),
+        },
       },
       {
         path: "showtimes/create",
         name: "CreateShowtime",
         component: () => import("@/views/showtime/CreateShowtime.vue"),
-        meta: { title: "Create Showtime", ...createPermissionMeta(PERMISSIONS.SHOWTIMES_CREATE) },
+        meta: {
+          title: "Create Showtime",
+          titleKey: "showtimes.createShowtime",
+          ...createPermissionMeta(PERMISSIONS.SHOWTIMES_CREATE),
+        },
       },
       {
         path: "showtimes/:id",
         name: "ShowtimeDetail",
         component: () => import("@/views/showtime/ShowtimeDetail.vue"),
-        meta: { title: "Showtime Details", ...createPermissionMeta(PERMISSIONS.SHOWTIMES_VIEW) },
+        meta: {
+          title: "Showtime Details",
+          titleKey: "showtimes.showtimeDetails",
+          ...createPermissionMeta(PERMISSIONS.SHOWTIMES_VIEW),
+        },
       },
       {
         path: "showtimes/:id/edit",
         name: "EditShowtime",
         component: () => import("@/views/showtime/EditShowtime.vue"),
-        meta: { title: "Edit Showtime" },
+        meta: { title: "Edit Showtime", titleKey: "showtimes.editShowtime" },
       },
       //booking
       {
         path: "bookings",
         name: "Bookings",
         component: () => import("@/views/bookings/BookingList.vue"),
-        meta: { title: "Bookings Management" },
+        meta: { title: "Bookings Management", titleKey: "bookings.title" },
       },
       {
         path: "bookings/:id",
         name: "BookingDetail",
         component: () => import("@/views/bookings/BookingDetail.vue"),
-        meta: { title: "Booking Details" },
+        meta: { title: "Booking Details", titleKey: "bookings.bookingDetails" },
       },
       // System Management (SuperAdmin only)
       {
@@ -224,25 +297,25 @@ const routes = [
         component: () => import("@/views/system/Permissions.vue"),
         meta: {
           title: "System Permissions",
-          titleKey: "system.permissions"
-        }
+          titleKey: "system.permissions",
+        },
       },
       {
         path: "system/role-permissions",
-        name: "SystemRolePermissions", 
+        name: "SystemRolePermissions",
         component: () => import("@/views/system/RolePermissions.vue"),
         meta: {
           title: "Role Permissions",
-          titleKey: "system.rolePermissions"
-        }
+          titleKey: "system.rolePermissions",
+        },
       },
       {
         path: "settings",
         name: "Settings",
         component: () => import("@/views/settings/Settings.vue"),
-        meta: { 
+        meta: {
           title: "Settings",
-          ...createPermissionMeta(PERMISSIONS.SETTINGS_VIEW)
+          ...createPermissionMeta(PERMISSIONS.SETTINGS_VIEW),
         },
       },
     ],
@@ -285,7 +358,9 @@ router.beforeEach(async (to, from, next) => {
     requiresAuth: to.matched.some((record) => record.meta.requiresAuth),
     requiresAdmin: to.matched.some((record) => record.meta.requiresAdmin),
     requiresGuest: to.matched.some((record) => record.meta.requiresGuest),
-    requiresPermission: to.matched.some((record) => record.meta.requiresPermission),
+    requiresPermission: to.matched.some(
+      (record) => record.meta.requiresPermission
+    ),
     isAuthenticated: authStore.isAuthenticated,
     isAdmin: authStore.isAdmin,
     userRole: authStore.userRole,

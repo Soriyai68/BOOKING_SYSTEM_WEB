@@ -73,7 +73,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage, ElMessageBox, ElLoading } from "element-plus";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher.vue";
@@ -127,6 +127,7 @@ const handleUserMenuCommand = async (command) => {
       router.push("/admin/settings");
       break;
     case "logout":
+      let loadingInstance = null; // Declare loadingInstance here
       try {
         await ElMessageBox.confirm(
           "Are you sure you want to logout?",
@@ -137,11 +138,11 @@ const handleUserMenuCommand = async (command) => {
             type: "warning",
           }
         );
+        // Show loading indicator
+        loadingInstance = ElLoading.service({ fullscreen: true });
+
         // Perform logout
         await authStore.logout();
-
-        // Clear any remaining messages
-        loading.close();
 
         // Show success message briefly
         ElMessage.success("Logged out successfully");
@@ -151,6 +152,10 @@ const handleUserMenuCommand = async (command) => {
       } catch (error) {
         if (error !== "cancel") {
           console.error("Logout error:", error);
+        }
+      } finally {
+        if (loadingInstance) {
+          loadingInstance.close();
         }
       }
       break;

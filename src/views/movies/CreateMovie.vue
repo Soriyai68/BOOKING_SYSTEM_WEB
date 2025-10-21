@@ -59,7 +59,6 @@
           >
             <el-option label="English" value="English" />
             <el-option label="Khmer" value="Khmer" />
-            <el-option label="Thai" value="Thai" />
             <el-option label="Chinese" value="Chinese" />
             <el-option label="Korean" value="Korean" />
             <el-option label="Japanese" value="Japanese" />
@@ -83,6 +82,17 @@
 
         <!-- Release Date -->
         <el-form-item :label="$t('movies.releaseDate')" prop="release_date">
+          <el-date-picker
+            v-model="form.release_date"
+            type="date"
+            style="width: 100%"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+          />
+        </el-form-item>
+
+        <!-- End Date -->
+        <el-form-item :label="$t('movies.endDate')" prop="end_date">
           <el-date-picker
             v-model="form.release_date"
             type="date"
@@ -148,7 +158,12 @@
 
         <!-- Actions -->
         <el-form-item>
-          <el-button v-permission="'movies.create'" type="primary" :loading="loading" @click="handleSubmit">
+          <el-button
+            v-permission="'movies.create'"
+            type="primary"
+            :loading="loading"
+            @click="handleSubmit"
+          >
             {{ $t("actions.submit") }}
           </el-button>
           <el-button @click="resetForm">

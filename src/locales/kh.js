@@ -190,7 +190,7 @@ export default {
     filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
     name: "ឈ្មោះ",
     email: "អ៊ីមែល",
-    phone: "ទូរស័ព្ទ",
+    phone: "លេខទូរស័ព្ទ",
     role: "តួនាទី",
     status: "ស្ថានភាព",
     created: "បានបង្កើត",
@@ -213,6 +213,7 @@ export default {
     admin: "អ្នកគ្រប់គ្រង",
     superadmin: "អ្នកគ្រប់គ្រងខ្ពស់",
     user: "អ្នកប្រើប្រាស់",
+    cashier: "អ្នកគិតលុយ",
     updated: "បានកែ",
   },
   // Movie Management
