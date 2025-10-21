@@ -275,20 +275,32 @@ const routes = [
         path: "showtimes/:id/edit",
         name: "EditShowtime",
         component: () => import("@/views/showtime/EditShowtime.vue"),
-        meta: { title: "Edit Showtime", titleKey: "showtimes.editShowtime" },
+        meta: {
+          title: "Edit Showtime",
+          titleKey: "showtimes.editShowtime",
+          ...createPermissionMeta(PERMISSIONS.SHOWTIMES_EDIT),
+        },
       },
       //booking
       {
         path: "bookings",
         name: "Bookings",
         component: () => import("@/views/bookings/BookingList.vue"),
-        meta: { title: "Bookings Management", titleKey: "bookings.title" },
+        meta: {
+          title: "Bookings Management",
+          titleKey: "bookings.title",
+          ...createPermissionMeta(PERMISSIONS.BOOKINGS_VIEW),
+        },
       },
       {
         path: "bookings/:id",
         name: "BookingDetail",
         component: () => import("@/views/bookings/BookingDetail.vue"),
-        meta: { title: "Booking Details", titleKey: "bookings.bookingDetails" },
+        meta: {
+          title: "Booking Details",
+          titleKey: "bookings.bookingDetails",
+          ...createPermissionMeta(PERMISSIONS.BOOKINGS_VIEW),
+        },
       },
       // System Management (SuperAdmin only)
       {
