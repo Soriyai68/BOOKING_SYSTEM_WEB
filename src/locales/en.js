@@ -32,6 +32,11 @@ export default {
     apiCredentials: "Connected to backend API. Use your real credentials.",
     checkingApi: "Checking API...",
     testingConnection: "Testing connection to backend API",
+    logoutConfirm: {
+      title: "Confirm Logout",
+      message: "Are you sure you want to logout?",
+      confirmButton: "Yes, Log out",
+    },
   },
 
   // Validation Messages
@@ -73,7 +78,7 @@ export default {
     allUsers: "All Users",
     searchUsers: "Search users...",
     filterByStatus: "Filter by status",
-    // cashier:"Cashier",
+    cashier:"Cashier",
     name: "Name",
     email: "Email",
     phone: "Phone Number",
@@ -206,7 +211,6 @@ export default {
     totalHalls: "Total Halls",
     totalCapacity: "Total Capacity",
   },
-
   // Hall Management
   halls: {
     title: "Hall Management",

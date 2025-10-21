@@ -353,18 +353,16 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  console.log("Route guard check:", {
-    to: to.path,
-    requiresAuth: to.matched.some((record) => record.meta.requiresAuth),
-    requiresAdmin: to.matched.some((record) => record.meta.requiresAdmin),
-    requiresGuest: to.matched.some((record) => record.meta.requiresGuest),
-    requiresPermission: to.matched.some(
-      (record) => record.meta.requiresPermission
-    ),
-    isAuthenticated: authStore.isAuthenticated,
-    isAdmin: authStore.isAdmin,
-    userRole: authStore.userRole,
-  });
+  // console.log("Route guard check:", {
+  //   to: to.path,
+  //   requiresAuth: to.matched.some((record) => record.meta.requiresAuth),
+  //   requiresAdmin: to.matched.some((record) => record.meta.requiresAdmin),
+  //   requiresGuest: to.matched.some((record) => record.meta.requiresGuest),
+  //   requiresPermission: to.matched.some((record) => record.meta.requiresPermission),
+  //   isAuthenticated: authStore.isAuthenticated,
+  //   isAdmin: authStore.isAdmin,
+  //   userRole: authStore.userRole,
+  // });
 
   // Auth required?
   if (to.matched.some((record) => record.meta.requiresAuth)) {
@@ -392,7 +390,7 @@ router.beforeEach(async (to, from, next) => {
       to.matched.some((record) => record.meta.requiresAdmin) &&
       !authStore.isAdmin
     ) {
-      console.log("Access denied: Not admin");
+      // console.log("Access denied: Not admin");
       // Avoid redirecting to the same route to prevent infinite loops
       return next({ name: "NotFound" });
     }
@@ -410,7 +408,7 @@ router.beforeEach(async (to, from, next) => {
   // Guest routes (like login)
   if (to.matched.some((record) => record.meta.requiresGuest)) {
     if (authStore.isAuthenticated) {
-      console.log("Already authenticated, redirecting to dashboard");
+      // console.log("Already authenticated, redirecting to dashboard");
       return next("/admin/dashboard");
     }
   }

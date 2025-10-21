@@ -258,15 +258,15 @@ export const useAuthStore = defineStore("auth", () => {
     } finally {
       isInitialized.value = true;
 
-      // Log current auth state for debugging
-      console.log("Final auth state:", {
-        isAuthenticated: isAuthenticated.value,
-        isAdmin: isAdmin.value,
-        hasToken: !!token.value,
-        hasUser: !!user.value,
-        userRole: user.value?.role,
-        isInitialized: isInitialized.value,
-      });
+      // // Log current auth state for debugging
+      // console.log("Final auth state:", {
+      //   isAuthenticated: isAuthenticated.value,
+      //   isAdmin: isAdmin.value,
+      //   hasToken: !!token.value,
+      //   hasUser: !!user.value,
+      //   userRole: user.value?.role,
+      //   isInitialized: isInitialized.value,
+      // });
     }
   };
 

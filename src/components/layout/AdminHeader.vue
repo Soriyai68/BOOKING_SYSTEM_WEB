@@ -130,11 +130,11 @@ const handleUserMenuCommand = async (command) => {
       let loadingInstance = null; // Declare loadingInstance here
       try {
         await ElMessageBox.confirm(
-          "Are you sure you want to logout?",
-          "Confirm Logout",
+          t("auth.logoutConfirm.message"),
+          t("auth.logoutConfirm.title"),
           {
-            confirmButtonText: "Yes, Log out.",
-            cancelButtonText: "Cancel",
+            confirmButtonText: t("auth.logoutConfirm.confirmButton"),
+            cancelButtonText: t("actions.cancel"),
             type: "warning",
           }
         );
@@ -143,6 +143,9 @@ const handleUserMenuCommand = async (command) => {
 
         // Perform logout
         await authStore.logout();
+
+        // Clear any remaining messages
+        ElMessage.closeAll();
 
         // Show success message briefly
         ElMessage.success("Logged out successfully");

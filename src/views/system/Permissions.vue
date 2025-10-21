@@ -9,7 +9,9 @@
           <el-button
             :loading="loading"
             @click="fetchPermissions"
-            type="primary"
+            type="info"
+            plain
+            round
             size="small"
           >
             {{ $t("actions.refresh") }}
@@ -73,7 +75,7 @@ const fetchPermissions = async () => {
       groupedPermissions.value = res.data.data.groupedPermissions || {};
       modules.value =
         res.data.data.modules || Object.keys(groupedPermissions.value);
-      activeModules.value = modules.value.slice(0, 3);
+      activeModules.value = modules.value.slice(0, 0);
     }
   } finally {
     loading.value = false;
