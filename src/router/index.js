@@ -315,6 +315,7 @@ const routes = [
         component: () => import("@/views/settings/Settings.vue"),
         meta: {
           title: "Settings",
+          titleKey: "settings.title",
           ...createPermissionMeta(PERMISSIONS.SETTINGS_VIEW),
         },
       },
