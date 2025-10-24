@@ -238,7 +238,8 @@ const filters = reactive({
   status: "",
   theater_id: "",
   hall_id: "",
-  show_date: new Date().toISOString().split("T")[0], // Default to today
+  // show_date: new Date().toISOString().split("T")[0], // Default to today
+  show_date:"",
   sort_by: "start_time",
   sort_order: "asc",
 });
