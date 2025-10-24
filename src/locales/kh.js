@@ -293,7 +293,7 @@ export default {
   showtimes: {
     title: "គ្រប់គ្រងម៉ោងបញ្ចាំង",
     allShowtimes: "ម៉ោងបញ្ចាំងទាំងអស់",
-    addShowtime: "បន្ថែមម៉ោងបញ្ចាំង",
+    addShowtime: "បង្កើតម៉ោងបញ្ចាំង",
     editShowtime: "កែសម្រួលម៉ោងបញ្ចាំង",
     showtimeDetails: "ព័ត៌មានលម្អិតម៉ោងបញ្ចាំង",
     searchShowtimes: "ស្វែងរកម៉ោងបញ្ចាំង...",
@@ -304,6 +304,7 @@ export default {
     movie: "ភាពយន្ត",
     theater: "រោងកុន",
     hall: "សាល",
+    showDate: "កាលបរិច្ឆេទបញ្ចាំង",
     startTime: "ម៉ោងចាប់ផ្តើម",
     endTime: "ម៉ោងបញ្ចប់",
     status: "ស្ថានភាព",
@@ -334,6 +335,18 @@ export default {
       completed: "បានបញ្ចប់",
       cancelled: "បានលុបចោល",
     },
+    createSingle: "បង្កើតតែមួយ",
+    createMultiple: "បង្កើតច្រើន",
+    selectMovie: "ជ្រើសរើសភាពយន្ត",
+    selectTheater: "ជ្រើសរើសរោងភាពយន្ត",
+    selectHall: "ជ្រើសរើសសាលភាពយន្ត",
+    selectShowDate: "ជ្រើសរើសកាលបរិច្ឆេទបញ្ចាំង",
+    selectStartTime: "ជ្រើសរើសម៉ោងចាប់ផ្តើម",
+    selectEndTime: "ជ្រើសរើសម៉ោងបញ្ចប់",
+    selectStatus: "ជ្រើសរើសស្ថានភាព",
+    selectTheaterForAll: "ជ្រើសរើសរោងភាពយន្តសម្រាប់ជួរទាំងអស់",
+    addRows: "បន្ថែមជួរ",
+    limitError: "អ្នកអាចបន្ថែមត្រឹមតែ {max} ​ជួរក្នុងមួយដងប៉ុណ្ណោះ។",
   },
 
   // Booking Management
@@ -380,10 +393,11 @@ export default {
     exampleUsers: "ឧ. users",
     exampleManager: "ឧ. អ្នកគ្រប់គ្រង",
     exampleManagerKey: "ឧ. manager",
-    accessDeniedAdmin: "មិនអនុញ្ញាត៖ ត្រូវការអ្នកគ្រប់គ្រង ឬ អ្នកគ្រប់គ្រងខ្ពស់",
+    accessDeniedAdmin:
+      "មិនអនុញ្ញាត៖ ត្រូវការអ្នកគ្រប់គ្រង ឬ អ្នកគ្រប់គ្រងខ្ពស់",
     updated: "បានធ្វើបច្ចុប្បន្នភាព",
     updateFailed: "បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាព",
-    failedToLoadRolePermissions: "មិនអាចផ្ទុកសិទ្ធិតាមតួនាទីបាន"
+    failedToLoadRolePermissions: "មិនអាចផ្ទុកសិទ្ធិតាមតួនាទីបាន",
   },
 
   // Settings
@@ -433,6 +447,7 @@ export default {
     more: "ផ្សេងៗ",
     remove: "យកចេញ",
     update: "ធ្វើបច្ចុប្បន្នភាព",
+    addRow: "បន្ថែមជួរ",
   },
 
   // Status Messages

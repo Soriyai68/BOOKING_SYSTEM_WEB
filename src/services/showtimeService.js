@@ -11,6 +11,7 @@ export const showtimeService = {
       movie_id: params.movie_id,
       hall_id: params.hall_id,
       theater_id: params.theater_id,
+      show_date: params.show_date,
       dateFrom: params.date_from,
       dateTo: params.date_to,
       includeDeleted: params.include_deleted || false,
@@ -31,6 +32,7 @@ export const showtimeService = {
           movie_id: s.movie?._id,
           movie_title: s.movie?.title,
           movie_poster: s.movie?.poster_url,
+          duration_minutes: s.movie?.duration_minutes,
           hall_id: s.hall?._id,
           hall_name: s.hall?.hall_name,
           screen_type: s.hall?.screen_type,
@@ -39,10 +41,9 @@ export const showtimeService = {
           theater_city: s.theater?.city,
           theater_province: s.theater?.province,
           start_time: s.start_time,
+          show_date: new Date(s.show_date).toLocaleDateString(),
           end_time: s.end_time,
           status: s.status,
-          language: s.language,
-          subtitle: s.subtitle,
           created_at: s.createdAt,
           updated_at: s.updatedAt,
         })),
@@ -66,6 +67,7 @@ export const showtimeService = {
         movie_id: s.movie?._id,
         movie_title: s.movie?.title,
         movie_poster: s.movie?.poster_url,
+        duration_minutes: s.movie?.duration_minutes,
         hall_id: s.hall?._id,
         hall_name: s.hall?.hall_name,
         screen_type: s.hall?.screen_type,
@@ -75,6 +77,7 @@ export const showtimeService = {
         theater_province: s.theater?.province,
         start_time: s.start_time,
         end_time: s.end_time,
+        show_date: new Date(s.show_date).toLocaleDateString(),
         status: s.status,
         language: s.language,
         subtitle: s.subtitle,
@@ -94,16 +97,39 @@ export const showtimeService = {
       movie_id: payload.movie_id,
       hall_id: payload.hall_id,
       theater_id: payload.theater_id,
+      show_date: payload.show_date,
       start_time: payload.start_time,
       end_time: payload.end_time,
       status: payload.status || "scheduled",
-      language: payload.language,
-      subtitle: payload.subtitle,
     };
     Object.keys(backendData).forEach(
       (k) => backendData[k] === undefined && delete backendData[k]
     );
     const { data } = await api.post("/showtimes", backendData);
+    return data;
+  },
+  // showtimeService.js
+  async createBulkShowtimes(payload) {
+    // payload: { showtimes: [ { movie_id, hall_id, theater_id, show_date, start_time, end_time, status } ] }
+    const backendData = {
+      showtimes: payload.showtimes.map((s) => {
+        const data = {
+          movie_id: s.movie_id,
+          hall_id: s.hall_id,
+          theater_id: s.theater_id,
+          show_date: s.show_date,
+          start_time: s.start_time,
+          end_time: s.end_time,
+          status: s.status || "scheduled",
+        };
+        // Remove undefined fields
+        Object.keys(data).forEach(
+          (k) => data[k] === undefined && delete data[k]
+        );
+        return data;
+      }),
+    };
+    const { data } = await api.post("/showtimes/bulk", backendData);
     return data;
   },
 
@@ -112,12 +138,11 @@ export const showtimeService = {
     const backendData = {
       movie_id: payload.movie_id,
       hall_id: payload.hall_id,
+      show_date: payload.show_date,
       theater_id: payload.theater_id,
       start_time: payload.start_time,
       end_time: payload.end_time,
       status: payload.status,
-      language: payload.language,
-      subtitle: payload.subtitle,
     };
     Object.keys(backendData).forEach(
       (k) => backendData[k] === undefined && delete backendData[k]
@@ -129,6 +154,23 @@ export const showtimeService = {
   // Soft delete a showtime
   async deleteShowtime(id) {
     const { data } = await api.delete(`/showtimes/${id}`);
+    return data;
+  },
+
+  // Bulk delete showtimes
+  async deleteBulkShowtimes(ids) {
+    const { data } = await api.delete("/showtimes/bulk", {
+      data: { showtimeIds: ids },
+    });
+    return data;
+  },
+
+  // Bulk duplicate showtimes
+  async duplicateBulk(sourceShowtimeIds, newShowDate) {
+    const { data } = await api.post("/showtimes/bulk/duplicate", {
+      sourceShowtimeIds,
+      newShowDate,
+    });
     return data;
   },
 

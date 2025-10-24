@@ -2,14 +2,16 @@
   <div class="showtime-list">
     <div class="page-header">
       <h2>{{ $t("showtimes.title") }}</h2>
-      <el-button
-        v-permission="'showtimes.create'"
-        type="primary"
-        @click="$router.push('/admin/showtimes/create')"
-      >
-        <el-icon><Plus /></el-icon>
-        {{ $t("showtimes.addShowtime") }}
-      </el-button>
+      <div>
+        <el-button
+          v-permission="'showtimes.create'"
+          type="primary"
+          @click="$router.push('/admin/showtimes/create')"
+        >
+          <el-icon><Plus /></el-icon>
+          {{ $t("showtimes.addShowtime") }}
+        </el-button>
+      </div>
     </div>
 
     <el-card>
@@ -74,30 +76,27 @@
           />
         </el-select>
 
-        <!-- Date Range -->
-        <!-- <el-date-picker
-          v-model="filters.dateFrom"
-          type="date"
-          placeholder="From"
-          clearable
-          style="width: 140px"
-        />
+        <!-- Show Date -->
         <el-date-picker
-          v-model="filters.dateTo"
+          v-model="filters.show_date"
           type="date"
-          placeholder="To"
+          :placeholder="$t('showtimes.showDate')"
           clearable
-          style="width: 140px"
-        /> -->
+          style="width: 200px"
+          value-format="YYYY-MM-DD"
+        />
       </div>
 
       <!-- Showtime Table -->
       <el-table
-        :data="showtimesWithTime"
+        :data="showtimes"
+        ref="showtimeTable"
         v-loading="loading"
         style="width: 100%"
         :empty-text="$t('messages.noData')"
+        @selection-change="handleSelectionChange"
       >
+        <el-table-column type="selection" width="55" />
         <el-table-column :label="$t('showtimes.movie')" width="250">
           <template #default="{ row }">
             <div style="display: flex; align-items: center">
@@ -116,12 +115,21 @@
           </template>
         </el-table-column>
         <el-table-column :label="$t('showtimes.theater')" prop="theater_name" />
-        <el-table-column :label="$t('showtimes.hall')" prop="hall_name" />
+        <el-table-column
+          :label="$t('showtimes.hall')"
+          prop="hall_name"
+          width="120"
+        />
+        <el-table-column
+          :label="$t('showtimes.showDate')"
+          prop="show_date"
+          width="180"
+        />
         <el-table-column :label="$t('showtimes.startTime')" width="180">
-          <template #default="{ row }">{{ row.start_time_only }}</template>
+          <template #default="{ row }">{{ row.start_time }}</template>
         </el-table-column>
         <el-table-column :label="$t('showtimes.endTime')" width="180">
-          <template #default="{ row }">{{ row.end_time_only }}</template>
+          <template #default="{ row }">{{ row.end_time }}</template>
         </el-table-column>
         <el-table-column :label="$t('showtimes.status')" width="140">
           <template #default="{ row }">
@@ -163,6 +171,23 @@
         </el-table-column>
       </el-table>
 
+      <!-- Bulk Actions -->
+      <div class="bulk-actions" v-if="selectedShowtimes.length > 0">
+        <!-- Delete Selected -->
+        <el-button
+          type="danger"
+          @click="deleteSelectedShowtimes"
+          v-permission="'showtimes.delete'"
+        >
+          {{ $t("actions.deleteSelected") }} ({{ selectedShowtimes.length }})
+        </el-button>
+
+        <!-- Cancel Selection -->
+        <el-button type="default" @click="cancelSelection">
+          {{ $t("actions.cancel") }}
+        </el-button>
+      </div>
+
       <!-- Pagination -->
       <div class="pagination">
         <el-pagination
@@ -198,8 +223,14 @@ const { t } = useI18n();
 const loading = ref(false);
 const showtimes = ref([]);
 const theaters = ref([]);
+const showtimeTable = ref(null);
 const halls = ref([]);
 const filteredHalls = ref([]);
+const selectedShowtimes = ref([]);
+
+const handleSelectionChange = (val) => {
+  selectedShowtimes.value = val;
+};
 
 // Filters
 const filters = reactive({
@@ -207,8 +238,7 @@ const filters = reactive({
   status: "",
   theater_id: "",
   hall_id: "",
-  dateTo: "",
-  dateFrom: "",
+  show_date: new Date().toISOString().split("T")[0], // Default to today
   sort_by: "start_time",
   sort_order: "asc",
 });
@@ -232,8 +262,7 @@ const debouncedSearch = debounce(() => {
 // Watchers for filters
 watch(
   [
-    () => filters.dateFrom,
-    () => filters.dateTo,
+    () => filters.show_date,
     () => filters.search,
     () => filters.status,
     () => filters.theater_id,
@@ -258,13 +287,15 @@ const loadShowtimes = async () => {
       status: filters.status || undefined,
       theater_id: filters.theater_id || undefined,
       hall_id: filters.hall_id || undefined,
-      dateFrom: filters.dateFrom || undefined,
-      dateTo: filters.dateTo || undefined,
+      show_date: filters.show_date || undefined,
     };
     const response = await showtimeService.getShowtimes(params);
     if (response.data) {
       showtimes.value = response.data;
       pagination.total = response.total;
+      pagination.current_page = response.current_page;
+      pagination.per_page = response.per_page;
+      pagination.total_pages = response.total_pages;
     }
   } catch (error) {
     console.error("Failed to load showtimes:", error);
@@ -342,6 +373,37 @@ const deleteShowtime = async (id) => {
   }
 };
 
+const deleteSelectedShowtimes = async () => {
+  try {
+    await ElMessageBox.confirm(
+      t("showtimes.deleteSelectedConfirm", {
+        count: selectedShowtimes.value.length,
+      }),
+      t("showtimes.deleteTitle"),
+      {
+        confirmButtonText: t("actions.delete"),
+        cancelButtonText: t("actions.cancel"),
+        type: "warning",
+      }
+    );
+    const ids = selectedShowtimes.value.map((s) => s.id);
+    console.log("Deleted showtime IDs:", ids);
+    await showtimeService.deleteBulkShowtimes(ids);
+    ElMessage.success(t("showtimes.deleteSuccess"));
+    loadShowtimes();
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("Failed to delete selected showtimes:", error);
+      ElMessage.error(t("showtimes.deleteFailed"));
+    }
+  }
+};
+const cancelSelection = () => {
+  selectedShowtimes.value = [];
+  if (selectedShowtimes.value) {
+    showtimeTable.value.clearSelection();
+  }
+};
 // Helpers
 const getStatusTagType = (status) => {
   switch (status) {
@@ -355,24 +417,6 @@ const getStatusTagType = (status) => {
       return "info";
   }
 };
-
-const showtimesWithTime = computed(() =>
-  showtimes.value.map((s) => ({
-    ...s,
-    start_time_only: s.start_time
-      ? new Date(s.start_time).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      : "",
-    end_time_only: s.end_time
-      ? new Date(s.end_time).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      : "",
-  }))
-);
 
 // Init
 onMounted(async () => {
@@ -409,5 +453,12 @@ onMounted(async () => {
   margin-top: 16px;
   display: flex;
   justify-content: center;
+}
+
+.bulk-actions {
+  margin: 16px 0;
+  padding: 12px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
 }
 </style>

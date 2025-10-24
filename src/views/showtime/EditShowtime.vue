@@ -8,29 +8,30 @@
         ref="showtimeForm"
         :model="showtime"
         :rules="rules"
-        label-width="120px"
+        label-width="140px"
         @submit.prevent="submitForm"
+        class="single-showtime-form"
       >
         <el-form-item :label="$t('showtimes.movie')" prop="movie_id">
           <el-select
             v-model="showtime.movie_id"
-            placeholder="Select movie"
+            :placeholder="$t('showtimes.selectMovie')"
             filterable
           >
             <el-option
               v-for="movie in movies"
-              :key="movie?.id"
+              :key="movie.id"
               :label="movie.title"
-              :value="movie?.id"
+              :value="movie.id"
             ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('showtimes.theater')" prop="theater_id">
           <el-select
             v-model="showtime.theater_id"
-            placeholder="Select theater"
+            :placeholder="$t('showtimes.selectTheater')"
             filterable
-            @change="loadHalls"
+            @change="handleTheaterChange"
           >
             <el-option
               v-for="theater in theaters"
@@ -43,7 +44,7 @@
         <el-form-item :label="$t('showtimes.hall')" prop="hall_id">
           <el-select
             v-model="showtime.hall_id"
-            placeholder="Select hall"
+            :placeholder="$t('showtimes.selectHall')"
             filterable
             :disabled="!showtime.theater_id"
           >
@@ -55,62 +56,51 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('showtimes.startTime')" prop="start_time">
+        <el-form-item :label="$t('showtimes.showDate')" prop="show_date">
           <el-date-picker
+            v-model="showtime.show_date"
+            type="date"
+            :placeholder="$t('showtimes.selectShowDate')"
+            value-format="YYYY-MM-DD"
+          />
+        </el-form-item>
+        <el-form-item :label="$t('showtimes.startTime')" prop="start_time">
+          <el-time-picker
             v-model="showtime.start_time"
-            type="datetime"
-            placeholder="Select date and time"
+            :placeholder="$t('showtimes.selectStartTime')"
+            format="HH:mm"
+            value-format="HH:mm"
           />
         </el-form-item>
         <el-form-item :label="$t('showtimes.endTime')" prop="end_time">
-          <el-date-picker
+          <el-time-picker
             v-model="showtime.end_time"
-            type="datetime"
-            placeholder="Select date and time"
+            :placeholder="$t('showtimes.selectEndTime')"
+            format="HH:mm"
+            value-format="HH:mm"
+            readonly
           />
         </el-form-item>
-        <el-form-item :label="$t('showtimes.language')" prop="language">
-          <el-select
-            v-model="showtime.language"
-            placeholder="Select language"
-            filterable
-          >
-            <el-option
-              v-for="language in showtimeService.LANGUAGE_OPTIONS"
-              :key="language.value"
-              :label="language.label"
-              :value="language.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('showtimes.subtitle')" prop="subtitle">
-          <el-select
-            v-model="showtime.subtitle"
-            placeholder="Select subtitle"
-            filterable
-          >
-            <el-option
-              v-for="subtitle in showtimeService.SUBTITLE_OPTIONS"
-              :key="subtitle.value"
-              :label="subtitle.label"
-              :value="subtitle.value"
-            />
-          </el-select>
-        </el-form-item>
         <el-form-item :label="$t('showtimes.status')" prop="status">
-          <el-select v-model="showtime.status" placeholder="Select status">
+          <el-select
+            v-model="showtime.status"
+            :placeholder="$t('showtimes.selectStatus')"
+          >
             <el-option
               v-for="status in showtimeService.STATUS_OPTIONS"
               :key="status.value"
-              :label="status.label"
+              :label="$t(`showtimes.statuses.${status.value}`)"
               :value="status.value"
             />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button v-permission="'showtimes.edit'" type="primary" @click="submitForm">{{
-            $t("actions.update")
-          }}</el-button>
+          <el-button
+            v-permission="'showtimes.edit'"
+            type="primary"
+            @click="submitForm"
+            >{{ $t("actions.update") }}</el-button
+          >
           <el-button @click="$router.back()">{{
             $t("actions.cancel")
           }}</el-button>
@@ -122,7 +112,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import { showtimeService } from "@/services/showtimeService";
@@ -140,10 +130,11 @@ const showtimeForm = ref(null);
 const loading = ref(true);
 
 const showtime = reactive({
-  id: null,
+  id: route.params.id,
   movie_id: "",
   theater_id: "",
   hall_id: "",
+  show_date: "",
   start_time: "",
   end_time: "",
   status: "",
@@ -153,35 +144,61 @@ const movies = ref([]);
 const theaters = ref([]);
 const halls = ref([]);
 
-const rules = reactive({
+const rules = computed(() => ({
   movie_id: [
-    { required: true, message: "Please select a movie", trigger: "change" },
+    {
+      required: true,
+      message: t("validations.movieRequired"),
+      trigger: "change",
+    },
   ],
   theater_id: [
-    { required: true, message: "Please select a theater", trigger: "change" },
+    {
+      required: true,
+      message: t("validations.theaterRequired"),
+      trigger: "change",
+    },
   ],
   hall_id: [
-    { required: true, message: "Please select a hall", trigger: "change" },
+    {
+      required: true,
+      message: t("validations.hallRequired"),
+      trigger: "change",
+    },
+  ],
+  show_date: [
+    {
+      required: true,
+      message: t("validations.showDateRequired"),
+      trigger: "change",
+    },
   ],
   start_time: [
-    { required: true, message: "Please select a start time", trigger: "blur" },
-  ],
-  end_time: [
-    { required: true, message: "Please select an end time", trigger: "blur" },
+    {
+      required: true,
+      message: t("validations.startTimeRequired"),
+      trigger: "blur",
+    },
   ],
   status: [
-    { required: true, message: "Please select a status", trigger: "change" },
+    {
+      required: true,
+      message: t("validations.statusRequired"),
+      trigger: "change",
+    },
   ],
-});
+}));
 
 const loadShowtime = async () => {
   loading.value = true;
   try {
     const response = await showtimeService.getShowtime(route.params.id);
-    Object.assign(showtime, response);
-    console.log("showtime data:", showtime);
-    await Promise.all([loadMovies(), loadTheaters()]);
-    await loadHalls(); // Load halls after getting theater_id
+    const date = new Date(response.show_date);
+    const formattedDate = date.toLocaleDateString("en-CA");
+
+    Object.assign(showtime, { ...response, show_date: formattedDate });
+
+    await Promise.all([loadMovies(), loadTheaters(), loadHalls()]);
   } catch (error) {
     console.error("Failed to load showtime:", error);
     ElMessage.error(t("showtimes.loadFailed"));
@@ -192,13 +209,8 @@ const loadShowtime = async () => {
 
 const loadMovies = async () => {
   try {
-    const response = await movieService.getMovies({
-      status: "now_showing",
-      per_page: 100,
-    }); // Fetch all movies
-    if (response.data) {
-      movies.value = response.data;
-    }
+    const response = await movieService.getMovies({ per_page: 100 });
+    movies.value = response.data || [];
   } catch (error) {
     console.error("Failed to load movies:", error);
     ElMessage.error(t("movies.loadFailed"));
@@ -207,10 +219,8 @@ const loadMovies = async () => {
 
 const loadTheaters = async () => {
   try {
-    const response = await theaterService.getTheaters({ per_page: 100 }); // Fetch all theaters
-    if (response.data) {
-      theaters.value = response.data;
-    }
+    const response = await theaterService.getTheaters({ per_page: 100 });
+    theaters.value = response.data || [];
   } catch (error) {
     console.error("Failed to load theaters:", error);
     ElMessage.error(t("theaters.loadFailed"));
@@ -224,21 +234,26 @@ const loadHalls = async () => {
         theater_id: showtime.theater_id,
         per_page: 100,
       });
-      if (response.data) {
-        halls.value = response.data; // mapped halls array from service
-      }
+      halls.value = response.data || [];
     } catch (error) {
       console.error("Failed to load halls:", error);
+      halls.value = [];
       ElMessage.error(t("halls.loadFailed"));
     }
   } else {
-    halls.value = []; // reset if no theater
+    halls.value = [];
   }
+};
+
+const handleTheaterChange = async () => {
+  showtime.hall_id = "";
+  await loadHalls();
 };
 
 const submitForm = () => {
   showtimeForm.value.validate(async (valid) => {
     if (valid) {
+      appStore.setLoading(true);
       try {
         await showtimeService.updateShowtime(showtime.id, showtime);
         ElMessage.success(t("showtimes.updateSuccess"));
@@ -246,12 +261,51 @@ const submitForm = () => {
       } catch (error) {
         console.error("Failed to update showtime:", error);
         ElMessage.error(t("showtimes.updateFailed"));
+      } finally {
+        appStore.setLoading(false);
       }
-    } else {
-      return false;
     }
   });
 };
+
+const calculateEndTime = (startTime, durationMinutes) => {
+  if (!startTime || !durationMinutes) return "";
+  const [hours, minutes] = startTime.split(":").map(Number);
+  const startDate = new Date();
+  startDate.setHours(hours, minutes, 0, 0);
+  startDate.setMinutes(startDate.getMinutes() + durationMinutes);
+  const hh = String(startDate.getHours()).padStart(2, "0");
+  const mm = String(startDate.getMinutes()).padStart(2, "0");
+  return `${hh}:${mm}`;
+};
+
+watch(
+  () => showtime.movie_id,
+  async (newMovieId) => {
+    if (!newMovieId) return;
+    const movie = movies.value.find((m) => m.id === newMovieId);
+    if (movie && showtime.start_time) {
+      showtime.end_time = calculateEndTime(
+        showtime.start_time,
+        movie.duration_minutes
+      );
+    }
+  }
+);
+
+watch(
+  () => showtime.start_time,
+  (newStartTime) => {
+    if (!newStartTime || !showtime.movie_id) return;
+    const movie = movies.value.find((m) => m.id === showtime.movie_id);
+    if (movie) {
+      showtime.end_time = calculateEndTime(
+        newStartTime,
+        movie.duration_minutes
+      );
+    }
+  }
+);
 
 onMounted(() => {
   appStore.setBreadcrumbs([
@@ -269,5 +323,8 @@ onMounted(() => {
 <style scoped>
 .page-header {
   margin-bottom: 24px;
+}
+.single-showtime-form {
+  max-width: 600px;
 }
 </style>

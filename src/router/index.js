@@ -257,8 +257,18 @@ const routes = [
         component: () => import("@/views/showtime/CreateShowtime.vue"),
         meta: {
           title: "Create Showtime",
-          titleKey: "showtimes.createShowtime",
+          titleKey: "showtimes.addShowtime",
           ...createPermissionMeta(PERMISSIONS.SHOWTIMES_CREATE),
+        },
+      },
+      {
+        path: "showtimes/multiple-create", // New route
+        name: "MultipleShowtimeCreator", // New name
+        component: () => import("@/components/showtimes/MultipleShowtimeCreator.vue"), // Component path
+        meta: {
+          title: "Duplicate Showtimes", // New title
+          titleKey: "showtimes.duplicateShowtimes", // New title key
+          ...createPermissionMeta(PERMISSIONS.SHOWTIMES_CREATE), // Assuming same permission
         },
       },
       {

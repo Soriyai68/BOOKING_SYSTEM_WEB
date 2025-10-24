@@ -17,7 +17,7 @@
       <div v-if="movie" class="movie-content">
         <!-- Poster -->
         <div v-if="movie.poster_url" class="poster-section">
-          <img
+          <el-image
             :src="movie.poster_url"
             :alt="movie.title"
             class="poster-image"
@@ -39,7 +39,7 @@
           </el-descriptions-item>
 
           <el-descriptions-item :label="$t('movies.releaseDate')">
-            {{ movie.end_date}}
+            {{ movie.end_date }}
           </el-descriptions-item>
 
           <el-descriptions-item :label="$t('movies.rating')">
@@ -238,7 +238,7 @@ onMounted(async () => {
 }
 
 .poster-section {
-  text-align: center;
+  text-align: left;
   margin-bottom: 20px;
 }
 

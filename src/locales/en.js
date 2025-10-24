@@ -1,4 +1,3 @@
-
 export default {
   // Navigation and Layout
   nav: {
@@ -78,7 +77,7 @@ export default {
     allUsers: "All Users",
     searchUsers: "Search users...",
     filterByStatus: "Filter by status",
-    cashier:"Cashier",
+    cashier: "Cashier",
     name: "Name",
     email: "Email",
     phone: "Phone Number",
@@ -112,8 +111,8 @@ export default {
     indentifier: "Seat Indentifier",
     title: "Seat Management",
     theaterAndHall: "Theater & Hall",
-    hallName : "Hall Name",
-    theaterName : "Theater Name",
+    hallName: "Hall Name",
+    theaterName: "Theater Name",
     addSeat: "Add Seat",
     createSeat: "Create Seat",
     deleteSeat: "Delete Seat",
@@ -193,7 +192,7 @@ export default {
     unavailable: "Unavailable",
     created: "Created",
     preview: "Preview",
-    totalCapacity:"TotalCapacity",
+    totalCapacity: "TotalCapacity",
     features: "Features",
     notes: "Notes",
     types: {
@@ -321,6 +320,7 @@ export default {
     movie: "Movie",
     theater: "Theater",
     hall: "Hall",
+    showDate: "Show Date",
     startTime: "Start Time",
     endTime: "End Time",
     status: "Status",
@@ -333,8 +333,8 @@ export default {
     deleteSuccess: "Showtime deleted successfully",
     deleteFailed: "Failed to delete showtime",
     loadFailed: "Failed to load showtimes",
-    createSuccess: "Showtime created successfully",
-    createFailed: "Failed to create showtime",
+    createSuccess: "Showtime created successfully.",
+    createFailed: "Failed to create showtime.",
     updateSuccess: "Showtime updated successfully",
     updateFailed: "Failed to update showtime",
     created_at: "Created At",
@@ -352,6 +352,32 @@ export default {
       completed: "Completed",
       cancelled: "Cancelled",
     },
+    createSingle: "Create Single",
+    createMultiple: "Create Multiple",
+    selectMovie: "Select movie",
+    selectTheater: "Select theater",
+    selectHall: "Select hall",
+    selectShowDate: "Select show date",
+    selectStartTime: "Select start time",
+    selectEndTime: "Select end time",
+    selectStatus: "Select status",
+    selectTheaterForAll: "Select theater for all rows",
+    limitError: "You can only add up to {max} rows at once.",
+  },
+  validations: {
+    movieRequired: "Please select a movie",
+    theaterRequired: "Please select a theater",
+    hallRequired: "Please select a hall",
+    showDateRequired: "Please select a show date",
+    startTimeRequired: "Please select a start time",
+    endTimeRequired: "Please select an end time",
+    statusRequired: "Please select a status",
+    movieRequiredShort: "Movie is required",
+    hallRequiredShort: "Hall is required",
+    dateRequiredShort: "Date is required",
+    startTimeRequiredShort: "Start time is required",
+    endTimeRequiredShort: "End time is required",
+    statusRequiredShort: "Status is required",
   },
   // Booking Management
   bookings: {
@@ -401,7 +427,7 @@ export default {
     accessDeniedAdmin: "Access denied: admin or superadmin required",
     updated: "Updated",
     updateFailed: "Update failed",
-    failedToLoadRolePermissions: "Failed to load role permissions"
+    failedToLoadRolePermissions: "Failed to load role permissions",
   },
 
   // Settings
@@ -451,6 +477,7 @@ export default {
     more: "More",
     remove: "Remove",
     update: "Update",
+    addRow: "Add row",
   },
 
   // Status Messages
