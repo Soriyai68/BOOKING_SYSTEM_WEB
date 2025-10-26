@@ -160,9 +160,9 @@
             {{ t("seats.updateSeat") }}
           </el-button>
           <el-button @click="resetForm">{{ t("actions.reset") }}</el-button>
-          <el-button type="danger" @click="handleDelete" v-permission="'seats.delete'">
+          <!-- <el-button type="danger" @click="handleDelete" v-permission="'seats.delete'">
             {{ t("seats.deleteSeat") }}
-          </el-button>
+          </el-button> -->
         </el-form-item>
       </el-form>
     </el-card>

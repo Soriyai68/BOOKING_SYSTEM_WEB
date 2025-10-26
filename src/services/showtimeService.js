@@ -129,7 +129,7 @@ export const showtimeService = {
         return data;
       }),
     };
-    const { data } = await api.post("/showtimes/bulk", backendData);
+    const { data } = await api.post("/showtimes/bulk/create", backendData);
     return data;
   },
 
@@ -151,6 +151,13 @@ export const showtimeService = {
     return data;
   },
 
+  // Fetch selected showtimes by IDs
+  async bulkShowTimesByIds(showtimeIds) {
+    const { data } = await api.post("/showtimes/bulk/get-by-ids", {
+      showtimeIds,
+    });
+    return data;
+  },
   // Soft delete a showtime
   async deleteShowtime(id) {
     const { data } = await api.delete(`/showtimes/${id}`);
@@ -158,18 +165,9 @@ export const showtimeService = {
   },
 
   // Bulk delete showtimes
-  async deleteBulkShowtimes(ids) {
-    const { data } = await api.delete("/showtimes/bulk", {
-      data: { showtimeIds: ids },
-    });
-    return data;
-  },
-
-  // Bulk duplicate showtimes
-  async duplicateBulk(sourceShowtimeIds, newShowDate) {
-    const { data } = await api.post("/showtimes/bulk/duplicate", {
-      sourceShowtimeIds,
-      newShowDate,
+  async deleteBulkShowtimes(showtimeIds) {
+    const { data } = await api.delete("/showtimes/bulk/delete", {
+      data: { showtimeIds },
     });
     return data;
   },
