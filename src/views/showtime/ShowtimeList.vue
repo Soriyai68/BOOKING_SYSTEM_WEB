@@ -172,14 +172,38 @@
       </el-table>
 
       <!-- Bulk Actions -->
-      <div class="bulk-actions" v-if="selectedShowtimes.length > 0">
+      <div
+        class="bulk-actions flex items-center gap-1 mb-4 align-center"
+        v-if="selectedShowtimes.length > 0"
+      >
         <!-- Delete Selected -->
         <el-button
           type="danger"
           @click="deleteSelectedShowtimes"
           v-permission="'showtimes.delete'"
+          class="flex items-center gap-1"
         >
-          {{ $t("actions.deleteSelected") }} ({{ selectedShowtimes.length }})
+          <!-- <Trash2 size="16" /> -->
+          <span
+            >{{ $t("actions.deleteSelected") }} ({{
+              selectedShowtimes.length
+            }})</span
+          >
+        </el-button>
+
+        <!-- Duplicate Selected -->
+        <el-button
+          type="primary"
+          @click="duplicateSelectedShowtimes"
+          v-permission="'showtimes.create'"
+          class="flex items-center gap-1"
+        >
+          <!-- <Copy size="16" /> -->
+          <span
+            >{{ $t("actions.duplicateSelected") }} ({{
+              selectedShowtimes.length
+            }})</span
+          >
         </el-button>
 
         <!-- Cancel Selection -->
@@ -215,6 +239,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Search } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
 import { debounce } from "lodash-es";
+import { Copy, Trash2 } from "lucide-vue-next";
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -239,7 +264,7 @@ const filters = reactive({
   theater_id: "",
   hall_id: "",
   // show_date: new Date().toISOString().split("T")[0], // Default to today
-  show_date:"",
+  show_date: "",
   sort_by: "start_time",
   sort_order: "asc",
 });
@@ -404,6 +429,13 @@ const cancelSelection = () => {
   if (selectedShowtimes.value) {
     showtimeTable.value.clearSelection();
   }
+};
+const duplicateSelectedShowtimes = () => {
+  const ids = selectedShowtimes.value.map((s) => s.id);
+  router.push({
+    name: "DuplicateShowtime",
+    params: { ids: ids.join(",") },
+  });
 };
 // Helpers
 const getStatusTagType = (status) => {

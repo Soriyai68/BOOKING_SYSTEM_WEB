@@ -151,11 +151,25 @@ export const showtimeService = {
     return data;
   },
 
-  // Fetch selected showtimes by IDs
-  async bulkShowTimesByIds(showtimeIds) {
-    const { data } = await api.post("/showtimes/bulk/get-by-ids", {
-      showtimeIds,
-    });
+  // duplicate bluk showtimes
+  async duplicateBulkShowtimes(payload) {
+    if (!payload?.showtimes?.length) {
+      throw new Error("No showtimes provided for duplication");
+    }
+
+    const backendData = {
+      showtimes: payload.showtimes.map((s) => ({
+        _id: s._id,
+        movie_id: s.movie_id,
+        hall_id: s.hall_id,
+        theater_id: s.theater_id,
+        show_date: s.show_date,
+        start_time: s.start_time,
+        end_time: s.end_time,
+        status: s.status,
+      })),
+    };
+    const { data } = await api.post("/showtimes/bulk/duplicate", backendData);
     return data;
   },
   // Soft delete a showtime

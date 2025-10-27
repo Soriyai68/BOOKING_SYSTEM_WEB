@@ -347,6 +347,7 @@ export default {
     selectTheaterForAll: "ជ្រើសរើសរោងភាពយន្តសម្រាប់ជួរទាំងអស់",
     addRows: "បន្ថែមជួរ",
     limitError: "អ្នកអាចបន្ថែមត្រឹមតែ {max} ​ជួរក្នុងមួយដងប៉ុណ្ណោះ។",
+    duplicateShowtime: "ចម្លងម៉ោងបញ្ចាំង",
   },
 
   // Booking Management
@@ -448,6 +449,9 @@ export default {
     remove: "យកចេញ",
     update: "ធ្វើបច្ចុប្បន្នភាព",
     addRow: "បន្ថែមជួរ",
+    deleteSelected: "លុបជួរដែលបានជ្រើសរើស",
+    duplicateSelected: "ចម្លងជួរដែលបានជ្រើសរើស",
+    duplicate: "ចម្លង",
   },
 
   // Status Messages

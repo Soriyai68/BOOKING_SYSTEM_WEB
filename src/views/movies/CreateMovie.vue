@@ -94,7 +94,7 @@
         <!-- End Date -->
         <el-form-item :label="$t('movies.endDate')" prop="end_date">
           <el-date-picker
-            v-model="form.release_date"
+            v-model="form.end_date"
             type="date"
             style="width: 100%"
             format="YYYY-MM-DD"

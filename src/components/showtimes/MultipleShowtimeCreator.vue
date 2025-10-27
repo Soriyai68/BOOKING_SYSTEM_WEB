@@ -37,7 +37,7 @@
 
     <div
       v-for="(item, index) in multipleShowtimeData.showtimes"
-      :key="item.key"
+      :key="item.key || item.id"
       class="showtime-row"
     >
       <el-form-item
@@ -89,6 +89,7 @@
           type="date"
           :placeholder="$t('showtimes.selectShowDate')"
           style="width: 100%"
+          value-format="YYYY-MM-DD"
         />
       </el-form-item>
 
@@ -161,7 +162,7 @@
         type="primary"
         @click="submitMultipleForm"
       >
-        {{ $t("actions.create") }}
+        {{ isDuplicateMode ? $t("actions.duplicate") : $t("actions.create") }}
       </el-button>
       <el-button @click="$router.back()">{{ $t("actions.cancel") }}</el-button>
     </el-form-item>
@@ -182,9 +183,11 @@ const props = defineProps({
   theaters: { type: Array, required: true },
   halls: { type: Array, required: true },
   initialTheaterId: { type: String, default: "" },
+  initialData: { type: Array, default: null },
+  isDuplicateMode: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["theater-changed", "created"]);
+const emit = defineEmits(["theater-changed", "submitted"]);
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -193,18 +196,37 @@ const multipleShowtimeForm = ref(null);
 
 const multipleShowtimeData = reactive({
   theater_id: props.initialTheaterId,
-  showtimes: [
-    {
-      key: Date.now(),
-      movie_id: "",
-      hall_id: "",
-      show_date: "",
-      start_time: "",
-      end_time: "",
-      status: "scheduled",
-    },
-  ],
+  showtimes: [],
 });
+
+watch(
+  () => props.initialData,
+  (newData) => {
+    if (newData && newData.length > 0) {
+      multipleShowtimeData.showtimes = JSON.parse(JSON.stringify(newData));
+    } else {
+      multipleShowtimeData.showtimes = [
+        {
+          key: Date.now(),
+          movie_id: "",
+          hall_id: "",
+          show_date: "",
+          start_time: "",
+          end_time: "",
+          status: "scheduled",
+        },
+      ];
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  () => props.initialTheaterId,
+  (newId) => {
+    multipleShowtimeData.theater_id = newId;
+  }
+);
 
 const multipleRules = computed(() => ({
   theater_id: [
@@ -264,23 +286,37 @@ const submitMultipleForm = () => {
     if (valid) {
       appStore.setLoading(true);
       try {
-        const showtimes = multipleShowtimeData.showtimes.map((item) => ({
-          movie_id: item.movie_id,
-          hall_id: item.hall_id,
-          show_date: item.show_date,
-          start_time: item.start_time,
-          end_time: item.end_time,
-          status: item.status,
-          theater_id: multipleShowtimeData.theater_id,
-        }));
+        const payload = {
+          showtimes: multipleShowtimeData.showtimes.map((s) => ({
+            movie_id: s.movie_id,
+            hall_id: s.hall_id,
+            show_date: s.show_date,
+            start_time: s.start_time,
+            end_time: s.end_time,
+            status: s.status,
+            theater_id: multipleShowtimeData.theater_id,
+          })),
+        };
 
-        await showtimeService.createBulkShowtimes({ showtimes });
-
-        ElMessage.success(t("showtimes.createMultipleSuccess"));
-        emit("created");
+        if (props.isDuplicateMode) {
+          payload.showtimes.forEach((s, index) => {
+            const originalShowtime = multipleShowtimeData.showtimes[index];
+            if (typeof originalShowtime.id === "string") {
+              s._id = originalShowtime.id;
+            }
+          });
+          await showtimeService.duplicateBulkShowtimes(payload);
+          ElMessage.success(t("showtimes.duplicateSuccess"));
+        } else {
+          await showtimeService.createBulkShowtimes(payload);
+          ElMessage.success(t("showtimes.createMultipleSuccess"));
+        }
+        emit("submitted");
       } catch (error) {
-        console.error("Failed to create multiple showtimes:", error);
-        ElMessage.error(t("showtimes.createMultipleFailed"));
+        console.error("Form submission failed:", error);
+        ElMessage.error(
+          error?.response?.data?.message || t("messages.unknownError")
+        );
       } finally {
         appStore.setLoading(false);
       }
@@ -333,6 +369,8 @@ watch(
           item.start_time,
           movie.duration_minutes
         );
+      } else {
+        item.end_time = "";
       }
     });
   },

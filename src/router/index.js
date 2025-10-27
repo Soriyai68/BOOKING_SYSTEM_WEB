@@ -262,9 +262,20 @@ const routes = [
         },
       },
       {
+        path: "showtimes/:ids/duplicate",
+        name: "DuplicateShowtime",
+        component: () => import("@/views/showtime/DuplicateShowtime.vue"),
+        meta: {
+          title: "Duplicate Showtime",
+          titleKey: "showtimes.duplicateShowtime",
+          ...createPermissionMeta(PERMISSIONS.SHOWTIMES_CREATE),
+        },
+      },
+      {
         path: "showtimes/multiple-create", // New route
         name: "MultipleShowtimeCreator", // New name
-        component: () => import("@/components/showtimes/MultipleShowtimeCreator.vue"), // Component path
+        component: () =>
+          import("@/components/showtimes/MultipleShowtimeCreator.vue"), // Component path
         meta: {
           title: "Duplicate Showtimes", // New title
           titleKey: "showtimes.duplicateShowtimes", // New title key

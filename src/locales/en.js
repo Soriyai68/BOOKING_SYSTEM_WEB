@@ -364,6 +364,7 @@ export default {
     selectStatus: "Select status",
     selectTheaterForAll: "Select theater for all rows",
     limitError: "You can only add up to {max} rows at once.",
+    duplicateShowtime: "Duplicate showtimes",
   },
   validations: {
     movieRequired: "Please select a movie",
@@ -478,7 +479,10 @@ export default {
     more: "More",
     remove: "Remove",
     update: "Update",
-    addRow: "Add row",
+    addRow: "Add Row",
+    deleteSelected: "Delete Selected Items",
+    duplicateSelected: "Duplicate Selected Items",
+    duplicate: "Duplicate",
   },
 
   // Status Messages
