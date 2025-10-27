@@ -36,14 +36,6 @@
             />
           </el-select>
         </el-form-item>
-
-        <el-form-item
-          :label="$t('theaters.totalCapacity')"
-          prop="total_capacity"
-        >
-          <el-input-number v-model="form.total_capacity" :min="0" />
-        </el-form-item>
-
         <el-form-item :label="$t('theaters.features')">
           <el-select
             v-model="form.features"
@@ -71,9 +63,13 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button v-permission="'theaters.create'" type="primary" :loading="loading" @click="handleSubmit">{{
-            $t("actions.submit")
-          }}</el-button>
+          <el-button
+            v-permission="'theaters.create'"
+            type="primary"
+            :loading="loading"
+            @click="handleSubmit"
+            >{{ $t("actions.submit") }}</el-button
+          >
           <el-button @click="resetForm">{{ $t("actions.reset") }}</el-button>
         </el-form-item>
       </el-form>

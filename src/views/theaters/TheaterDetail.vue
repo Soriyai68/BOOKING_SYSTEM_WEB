@@ -21,7 +21,7 @@
         <el-descriptions-item :label="$t('theaters.status')">
           <el-tag>{{ theater?.status_display || theater?.status }}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('theaters.address')" :span="2">{{
+        <el-descriptions-item :label="$t('theaters.address')" :span="1">{{
           theater?.address
         }}</el-descriptions-item>
         <el-descriptions-item :label="$t('theaters.city')">{{
@@ -33,10 +33,7 @@
         <el-descriptions-item :label="$t('theaters.totalHalls')">{{
           theater?.total_halls
         }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('theaters.totalCapacity')">{{
-          theater?.total_capacity
-        }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('theaters.features')" :span="2">{{
+        <el-descriptions-item :label="$t('theaters.features')" :span="1">{{
           (theater?.features || []).join(", ") || "-"
         }}</el-descriptions-item>
         <el-descriptions-item :label="$t('users.created')">{{
@@ -52,7 +49,7 @@
     <el-card class="halls-section">
       <template #header>
         <div class="section-header">
-          <span>{{ $t('theaters.halls') }} ({{ halls.length }})</span>
+          <span>{{ $t('theaters.halls') }}({{ halls.length }})</span>
           <el-button v-permission="'halls.create'" type="primary" size="small" @click="goToCreateHall">
             <el-icon><Plus /></el-icon>
             {{ $t('halls.addHall') }}
@@ -67,9 +64,9 @@
       <div v-else>
         <el-table :data="halls" style="width: 100%">
           <el-table-column prop="hall_name" :label="$t('halls.name')" />
-          <el-table-column prop="hall_type" :label="$t('halls.type')" width="120">
+          <el-table-column prop="screen_type" :label="$t('halls.screenType')" width="120">
             <template #default="{ row }">
-              <el-tag size="small">{{ row.hall_type?.toUpperCase() }}</el-tag>
+              <el-tag size="small">{{ row.screen_type?.toUpperCase() }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="total_seats" :label="$t('halls.totalSeats')" width="120" />
@@ -82,7 +79,7 @@
             <template #default="{ row }">
               <el-button v-permission="'halls.view'" size="small" link type="primary" @click="viewHall(row.id)">{{ $t('actions.view') }}</el-button>
               <el-button v-permission="'halls.edit'" size="small" link type="primary" @click="editHall(row.id)">{{ $t('actions.edit') }}</el-button>
-              <el-button v-permission="'halls.delete'" size="small" link type="danger" @click="removeHall(row.id)">{{ $t('actions.remove') }}</el-button>
+              <el-button v-permission="'halls.delete'" size="small" link type="danger" @click="removeHall(row.id)">{{ $t('actions.delete') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -126,7 +123,8 @@ const loadHalls = async () => {
   hallsLoading.value = true
   try {
     const response = await hallService.getHallsByTheater(route.params.id)
-    halls.value = response.data || response.halls || []
+    halls.value = response.data.halls || []
+    console.log("hall count:", halls.value.length)
   } catch (e) {
     console.error('Failed to load halls:', e)
     ElMessage.error('Failed to load theater halls')

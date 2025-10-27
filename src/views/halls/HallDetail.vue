@@ -37,7 +37,7 @@
     </el-card>
 
     <el-card v-loading="loading">
-      <el-descriptions :title="hall?.display_name" :column="2" border>
+      <el-descriptions :title="hall?.hall_name" :column="2" border>
         <el-descriptions-item :label="$t('halls.name')">{{
           hall?.hall_name
         }}</el-descriptions-item>

@@ -2,7 +2,9 @@
   <div class="edit-theater">
     <div class="page-header">
       <h2>{{ $t("theaters.editTheater") }}</h2>
-      <el-button @click="$router.back()">{{ $t("actions.back") }}</el-button>
+      <el-button @click="$router.back()"
+        ><el-icon><ArrowLeft /></el-icon>{{ $t("actions.back") }}</el-button
+      >
     </div>
 
     <el-card v-loading="pageLoading">
@@ -56,14 +58,6 @@
             />
           </el-select>
         </el-form-item>
-
-        <el-form-item
-          :label="$t('theaters.totalCapacity')"
-          prop="total_capacity"
-        >
-          <el-input-number v-model="form.total_capacity" :min="0" />
-        </el-form-item>
-
         <el-form-item :label="$t('theaters.features')">
           <el-select
             v-model="form.features"
@@ -91,9 +85,13 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button v-permission="'theaters.edit'" type="primary" :loading="loading" @click="handleSubmit">{{
-            $t("theaters.updateTheater")
-          }}</el-button>
+          <el-button
+            v-permission="'theaters.edit'"
+            type="primary"
+            :loading="loading"
+            @click="handleSubmit"
+            >{{ $t("theaters.updateTheater") }}</el-button
+          >
           <el-button @click="resetForm">{{ $t("actions.reset") }}</el-button>
         </el-form-item>
       </el-form>

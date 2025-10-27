@@ -48,7 +48,7 @@
       </div>
 
       <el-table :data="rows" v-loading="loading" style="width: 100%">
-        <el-table-column prop="name" :label="$t('theaters.name')" />
+        <el-table-column prop="name" :label="$t('theaters.name')"  />
         <el-table-column prop="city" :label="$t('theaters.city')" width="140" />
         <el-table-column
           prop="province"
@@ -59,11 +59,6 @@
           prop="total_halls"
           :label="$t('theaters.totalHalls')"
           width="140"
-        />
-        <el-table-column
-          prop="total_capacity"
-          :label="$t('theaters.totalCapacity')"
-          width="160"
         />
         <el-table-column
           prop="status"
@@ -160,6 +155,7 @@ const load = async () => {
     };
     const res = await theaterService.getTheaters(params);
     rows.value = res.data;
+    console.log("Theaters data:", res.data);
     total.value = res.total || 0;
   } catch (e) {
     console.error(e);

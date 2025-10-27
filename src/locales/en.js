@@ -167,6 +167,7 @@ export default {
   },
   // Theater Management
   theaters: {
+    halls: "Halls",
     title: "Theater Management",
     allTheaters: "All Theaters",
     addTheater: "Add Theater",

@@ -95,7 +95,7 @@ const theatersLoading = ref(false);
 const form = reactive({
   hall_name: "",
   theater_id: route.query.theater_id || "",
-  screen_type: "standard",
+  screen_type: "2d",
   status: "active",
   notes: "",
 });
