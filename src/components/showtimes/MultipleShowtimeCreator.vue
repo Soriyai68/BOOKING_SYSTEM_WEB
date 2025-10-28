@@ -314,9 +314,9 @@ const submitMultipleForm = () => {
         emit("submitted");
       } catch (error) {
         console.error("Form submission failed:", error);
-        ElMessage.error(
-          error?.response?.data?.message || t("messages.unknownError")
-        );
+        // ElMessage.error(
+        //   error?.response?.data?.message || t("messages.unknownError")
+        // );
       } finally {
         appStore.setLoading(false);
       }
