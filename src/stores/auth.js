@@ -78,14 +78,14 @@ export const useAuthStore = defineStore("auth", () => {
 
     try {
       // First try with real API
-      console.log("Attempting API login...");
+      // console.log("Attempting API login...");
       const response = await api.post("/auth/admin-login", {
         phone: credentials.phone,
         password: credentials.password,
         remember: credentials.remember,
       });
 
-      console.log("API login successful:", response.data);
+      // console.log("API login successful:", response.data);
 
       // Handle backend response format
       const responseData = response.data;
@@ -133,10 +133,6 @@ export const useAuthStore = defineStore("auth", () => {
       }
     } catch (error) {
       console.log("API login failed:", error.message);
-      console.log("Trying demo login fallback...");
-
-      // If it's a real API error, throw it
-      console.log("Throwing login error:", error.message);
       throw error;
     } finally {
       isLoading.value = false;
@@ -144,8 +140,6 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const logout = async () => {
-    console.log("Logging out user...");
-
     try {
       // Try to call logout endpoint if we have a token
       if (token.value && import.meta.env.VITE_API_BASE_URL) {
@@ -171,7 +165,6 @@ export const useAuthStore = defineStore("auth", () => {
 
   const fetchUserProfile = async () => {
     if (!token.value) return;
-
     try {
       const response = await api.get("/auth/profile");
 
@@ -223,7 +216,6 @@ export const useAuthStore = defineStore("auth", () => {
 
   const initializeAuth = async () => {
     console.log("Initializing auth state...");
-
     try {
       // Check if we have both token and user data
       if (token.value && user.value) {
@@ -243,7 +235,7 @@ export const useAuthStore = defineStore("auth", () => {
         console.log("Found token, fetching user profile...");
         try {
           await fetchUserProfile();
-          console.log("User profile restored from token");
+          // console.log("User profile restored from token");
         } catch (error) {
           console.warn("Token invalid, clearing auth state");
           setToken(null);
@@ -257,16 +249,6 @@ export const useAuthStore = defineStore("auth", () => {
       console.error("Auth initialization error:", error);
     } finally {
       isInitialized.value = true;
-
-      // // Log current auth state for debugging
-      // console.log("Final auth state:", {
-      //   isAuthenticated: isAuthenticated.value,
-      //   isAdmin: isAdmin.value,
-      //   hasToken: !!token.value,
-      //   hasUser: !!user.value,
-      //   userRole: user.value?.role,
-      //   isInitialized: isInitialized.value,
-      // });
     }
   };
 

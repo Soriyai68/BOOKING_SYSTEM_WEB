@@ -14,12 +14,10 @@ const showLoading = computed(() => !authStore.isInitialized);
 // Initialize auth and permissions on app start
 onMounted(async () => {
   if (!authStore.isInitialized) {
-    console.log("🏠 App mounted, initializing auth...");
     await authStore.initializeAuth();
-    
+
     // Initialize permissions after auth is initialized
     if (authStore.isAuthenticated) {
-      console.log("🔐 Initializing permissions...");
       await permissionStore.initializePermissions();
     }
   }

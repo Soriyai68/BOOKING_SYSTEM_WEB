@@ -32,7 +32,7 @@ const routes = [
         meta: {
           title: "Dashboard",
           titleKey: "dashboard.title",
-          ...createPermissionMeta(PERMISSIONS.DASHBOARD_VIEW),
+          // Dashboard is accessible to all authenticated admins
         },
       },
       //users
@@ -434,6 +434,10 @@ router.beforeEach(async (to, from, next) => {
       const hasPermission = checkRoutePermissions(to, permissionStore);
       if (!hasPermission) {
         console.log("Access denied: Insufficient permissions");
+        // Prevent redirect loop - if already going to dashboard or from dashboard, go to 403
+        if (to.name === "AdminDashboard" || from.name === "AdminDashboard") {
+          return next({ name: "NotFound" });
+        }
         return next({ name: "AdminDashboard" });
       }
     }
@@ -443,7 +447,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresGuest)) {
     if (authStore.isAuthenticated) {
       // console.log("Already authenticated, redirecting to dashboard");
-      return next("/admin/dashboard");
+      return next({ name: "AdminDashboard" });
     }
   }
 

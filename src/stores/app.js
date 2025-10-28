@@ -7,14 +7,14 @@ export const useAppStore = defineStore('app', () => {
   const getInitialTheme = () => {
     const stored = localStorage.getItem('cinema_theme')
     if (stored) return stored
-    
+
     // Check system preference
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       return 'dark'
     }
     return 'light'
   }
-  
+
   const theme = ref(getInitialTheme())
   const loading = ref(false)
   const breadcrumbs = ref([])
@@ -30,21 +30,21 @@ export const useAppStore = defineStore('app', () => {
   const setTheme = (newTheme) => {
     theme.value = newTheme
     localStorage.setItem('cinema_theme', newTheme)
-    
+
     // Apply theme to document
     document.documentElement.setAttribute('data-theme', newTheme)
     document.documentElement.className = newTheme
-    
+
     // Update Element Plus theme
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
     }
-    
+
     console.log(`Theme changed to: ${newTheme}`)
   }
-  
+
   const toggleTheme = () => {
     const newTheme = theme.value === 'light' ? 'dark' : 'light'
     setTheme(newTheme)
@@ -66,7 +66,7 @@ export const useAppStore = defineStore('app', () => {
   const initializeTheme = () => {
     setTheme(theme.value)
   }
-  
+
   // Auto-initialize theme
   initializeTheme()
 
