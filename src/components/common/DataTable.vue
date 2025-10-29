@@ -11,12 +11,12 @@
         clearable
         @input="handleSearch"
       />
-      
+
       <slot name="filters"></slot>
-      
-      <el-select 
-        v-if="sortable" 
-        v-model="currentSort" 
+
+      <el-select
+        v-if="sortable"
+        v-model="currentSort"
         :placeholder="$t('table.sortBy')"
         @change="handleSort"
       >
@@ -27,10 +27,10 @@
           :value="option.value"
         />
       </el-select>
-      
-      <el-select 
-        v-if="sortable" 
-        v-model="currentSortOrder" 
+
+      <el-select
+        v-if="sortable"
+        v-model="currentSortOrder"
         :placeholder="$t('table.sortOrder')"
         @change="handleSort"
       >
@@ -42,9 +42,9 @@
     </div>
 
     <!-- Table Section -->
-    <el-table 
-      :data="data" 
-      v-loading="loading" 
+    <el-table
+      :data="data"
+      v-loading="loading"
       :style="{ width: '100%' }"
       :stripe="stripe"
       :border="border"
@@ -52,12 +52,8 @@
       @selection-change="handleSelectionChange"
       @sort-change="handleTableSort"
     >
-      <el-table-column
-        v-if="selectable"
-        type="selection"
-        width="55"
-      />
-      
+      <el-table-column v-if="selectable" type="selection" width="55" />
+
       <slot></slot>
     </el-table>
 
@@ -77,114 +73,114 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { Search } from '@element-plus/icons-vue';
-import { debounce } from 'lodash-es';
+import { ref, computed, watch } from "vue";
+import { Search } from "@element-plus/icons-vue";
+import { debounce } from "lodash-es";
 
 const props = defineProps({
   data: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   loading: {
     type: Boolean,
-    default: false
+    default: false,
   },
   total: {
     type: Number,
-    default: 0
+    default: 0,
   },
   currentPage: {
     type: Number,
-    default: 1
+    default: 1,
   },
   pageSize: {
     type: Number,
-    default: 10
+    default: 10,
   },
   pageSizes: {
     type: Array,
-    default: () => [10, 20, 50, 100]
+    default: () => [10, 20, 50, 100],
   },
   paginated: {
     type: Boolean,
-    default: true
+    default: true,
   },
   paginationLayout: {
     type: String,
-    default: 'total, sizes, prev, pager, next, jumper'
+    default: "total, sizes, prev, pager, next, jumper",
   },
   searchable: {
     type: Boolean,
-    default: true
+    default: true,
   },
   searchPlaceholder: {
     type: String,
-    default: 'Search...'
+    default: "Search...",
   },
   sortable: {
     type: Boolean,
-    default: true
+    default: true,
   },
   sortOptions: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   defaultSort: {
     type: String,
-    default: ''
+    default: "",
   },
   defaultSortOrder: {
     type: String,
-    default: 'asc'
+    default: "asc",
   },
   showToolbar: {
     type: Boolean,
-    default: true
+    default: true,
   },
   selectable: {
     type: Boolean,
-    default: false
+    default: false,
   },
   stripe: {
     type: Boolean,
-    default: false
+    default: false,
   },
   border: {
     type: Boolean,
-    default: false
+    default: false,
   },
   highlightCurrentRow: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 const emit = defineEmits([
-  'search',
-  'sort',
-  'page-change',
-  'size-change',
-  'selection-change',
-  'update:currentPage',
-  'update:pageSize'
+  "search",
+  "sort",
+  "page-change",
+  "size-change",
+  "selection-change",
+  "update:currentPage",
+  "update:pageSize",
 ]);
 
-const searchText = ref('');
+const searchText = ref("");
 const currentSort = ref(props.defaultSort);
 const currentSortOrder = ref(props.defaultSortOrder);
 const currentPage = computed({
   get: () => props.currentPage,
-  set: (value) => emit('update:currentPage', value)
+  set: (value) => emit("update:currentPage", value),
 });
 const currentPageSize = computed({
   get: () => props.pageSize,
-  set: (value) => emit('update:pageSize', value)
+  set: (value) => emit("update:pageSize", value),
 });
 
 // Debounced search
 const debouncedSearch = debounce(() => {
-  emit('search', searchText.value);
+  emit("search", searchText.value);
 }, 500);
 
 const handleSearch = () => {
@@ -192,44 +188,50 @@ const handleSearch = () => {
 };
 
 const handleSort = () => {
-  emit('sort', {
+  emit("sort", {
     sortBy: currentSort.value,
-    sortOrder: currentSortOrder.value
+    sortOrder: currentSortOrder.value,
   });
 };
 
 const handleTableSort = ({ column, prop, order }) => {
-  const sortOrder = order === 'ascending' ? 'asc' : 'desc';
-  emit('sort', {
+  const sortOrder = order === "ascending" ? "asc" : "desc";
+  emit("sort", {
     sortBy: prop,
-    sortOrder: sortOrder
+    sortOrder: sortOrder,
   });
 };
 
 const handleSizeChange = (size) => {
-  emit('size-change', size);
+  emit("size-change", size);
 };
 
 const handleCurrentChange = (page) => {
-  emit('page-change', page);
+  emit("page-change", page);
 };
 
 const handleSelectionChange = (selection) => {
-  emit('selection-change', selection);
+  emit("selection-change", selection);
 };
 
 // Watch for external changes
-watch(() => props.currentPage, (newVal) => {
-  if (newVal !== currentPage.value) {
-    currentPage.value = newVal;
+watch(
+  () => props.currentPage,
+  (newVal) => {
+    if (newVal !== currentPage.value) {
+      currentPage.value = newVal;
+    }
   }
-});
+);
 
-watch(() => props.pageSize, (newVal) => {
-  if (newVal !== currentPageSize.value) {
-    currentPageSize.value = newVal;
+watch(
+  () => props.pageSize,
+  (newVal) => {
+    if (newVal !== currentPageSize.value) {
+      currentPageSize.value = newVal;
+    }
   }
-});
+);
 </script>
 
 <style scoped>
@@ -262,11 +264,11 @@ watch(() => props.pageSize, (newVal) => {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-input {
     width: 100%;
   }
-  
+
   .pagination {
     flex-direction: column;
     align-items: center;

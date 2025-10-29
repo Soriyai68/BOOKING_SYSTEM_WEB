@@ -132,7 +132,11 @@
           prop="seat_number"
           :label="$t('seats.seatNumber')"
           width="120"
-        />
+        >
+          <template #default="{ row }">
+            {{ Array.isArray(row.seat_number) ? row.seat_number.join(', ') : row.seat_number }}
+          </template>
+        </el-table-column>
         <el-table-column
           prop="hall_name"
           :label="$t('seats.hallName')"

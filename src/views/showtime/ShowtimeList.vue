@@ -176,10 +176,10 @@
         class="bulk-actions flex items-center gap-1 mb-4 align-center"
         v-if="selectedShowtimes.length > 0"
       >
-        <!-- Delete Selected -->
+        <!-- Delete Selected (Force Delete) -->
         <el-button
           type="danger"
-          @click="deleteSelectedShowtimes"
+          @click="forceDeleteSelectedShowtimes"
           v-permission="'showtimes.delete'"
           class="flex items-center gap-1"
         >
@@ -399,28 +399,44 @@ const deleteShowtime = async (id) => {
   }
 };
 
-const deleteSelectedShowtimes = async () => {
+const forceDeleteSelectedShowtimes = async () => {
   try {
     await ElMessageBox.confirm(
-      t("showtimes.deleteSelectedConfirm", {
+      t("showtimes.forceDeleteSelectedConfirm", {
         count: selectedShowtimes.value.length,
       }),
-      t("showtimes.deleteTitle"),
+      t("showtimes.forceDeleteTitle"),
       {
-        confirmButtonText: t("actions.delete"),
+        confirmButtonText: t("actions.forceDelete"),
         cancelButtonText: t("actions.cancel"),
-        type: "warning",
+        type: "error",
+        dangerouslyUseHTMLString: true,
       }
     );
     const ids = selectedShowtimes.value.map((s) => s.id);
-    console.log("Deleted showtime IDs:", ids);
-    await showtimeService.deleteBulkShowtimes(ids);
-    ElMessage.success(t("showtimes.deleteSuccess"));
+    console.log("Force delete showtime IDs:", ids);
+    console.log("Number of IDs:", ids.length);
+    console.log(
+      "ID types:",
+      ids.map((id) => typeof id)
+    );
+    await showtimeService.forceDeleteBulkShowtimes(ids);
+    ElMessage.success(t("showtimes.forceDeleteSuccess"));
     loadShowtimes();
+    cancelSelection();
   } catch (error) {
     if (error !== "cancel") {
-      console.error("Failed to delete selected showtimes:", error);
-      ElMessage.error(t("showtimes.deleteFailed"));
+      console.error("Failed to force delete selected showtimes:", error);
+      console.error("Error response:", error.response?.data);
+      const errorMsg =
+        error.response?.data?.message || t("showtimes.forceDeleteFailed");
+      const errors = error.response?.data?.errors;
+      if (errors && errors.length > 0) {
+        errors.forEach((err) => {
+          console.error(`Validation error - ${err.field}: ${err.message}`);
+        });
+      }
+      ElMessage.error(errorMsg);
     }
   }
 };

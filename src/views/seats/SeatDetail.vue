@@ -19,7 +19,7 @@
           {{ seat?.row }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('seats.seatNumber')">
-          {{ seat?.seat_number }}
+          {{ Array.isArray(seat?.seat_number) ? seat.seat_number.join(', ') : seat?.seat_number }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('seats.hallName')">
           {{ seat?.hall?.hall_name || "-" }}

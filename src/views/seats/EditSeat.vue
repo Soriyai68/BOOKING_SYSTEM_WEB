@@ -431,9 +431,12 @@ const handleSubmit = async () => {
     await formRef.value.validate();
     loading.value = true;
 
+    // Always send seat_number as an array
     const payload = { 
       ...form,
-      seat_number: isMultiSeat.value ? parsedSeatNumbers.value : form.seat_number
+      seat_number: isMultiSeat.value 
+        ? parsedSeatNumbers.value 
+        : [form.seat_number] // Wrap single seat in array
     };
     
     // Remove the seat_numbers field as backend expects seat_number

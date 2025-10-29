@@ -139,7 +139,7 @@ const handleUserMenuCommand = async (command) => {
           }
         );
         // Show loading indicator
-        // loadingInstance = ElLoading.service({ fullscreen: false });
+        loadingInstance = ElLoading.service({ fullscreen: false });
 
         // Perform logout
         await authStore.logout();
