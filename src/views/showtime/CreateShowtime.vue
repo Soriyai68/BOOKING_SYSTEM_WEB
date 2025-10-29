@@ -123,7 +123,7 @@
           :halls="halls"
           :initial-theater-id="showtime.theater_id"
           @theater-changed="loadHallsForMultiple"
-          @created="handleShowtimesCreated"
+          @submitted="handleShowtimesCreated"
         />
       </div>
     </el-card>
@@ -279,7 +279,7 @@ const submitSingleForm = () => {
         router.push("/admin/showtimes");
       } catch (error) {
         console.error("Failed to create showtime:", error);
-        ElMessage.error(t("showtimes.createFailed"));
+        // ElMessage.error(t("showtimes.createFailed"));
       } finally {
         appStore.setLoading(false);
       }

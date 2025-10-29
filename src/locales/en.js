@@ -77,7 +77,6 @@ export default {
     allUsers: "All Users",
     searchUsers: "Search users...",
     filterByStatus: "Filter by status",
-    cashier: "Cashier",
     name: "Name",
     email: "Email",
     phone: "Phone Number",
@@ -125,7 +124,6 @@ export default {
     type: "Type",
     status: "Status",
     price: "Price",
-    searchSeats: "Search seats...",
     filterByStatus: "Filter by status",
     filterByRow: "Filter by row",
     filterByTheater: "Filter by Theater",
@@ -208,8 +206,6 @@ export default {
       out_of_order: "Out of Order",
       reserved: "Reserved",
     },
-    totalHalls: "Total Halls",
-    totalCapacity: "Total Capacity",
   },
   // Hall Management
   halls: {
