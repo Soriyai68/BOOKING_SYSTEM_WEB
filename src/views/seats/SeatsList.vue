@@ -4,10 +4,10 @@
     <div class="page-header">
       <h2>{{ $t("seats.title") }}</h2>
       <el-button
-        type="primary"
-        :icon="Plus"
-        @click="$router.push('/admin/seats/create')"
-        v-permission="'seats.create'"
+          type="primary"
+          :icon="Plus"
+          @click="$router.push('/admin/seats/create')"
+          v-permission="'seats.create'"
       >
         {{ $t("seats.addSeat") }}
       </el-button>
@@ -18,93 +18,93 @@
       <el-form :model="filters" :inline="true" class="filter-form">
         <el-form-item>
           <el-input
-            v-model="filters.search"
-            :placeholder="$t('seats.searchSeats')"
-            :prefix-icon="Search"
-            clearable
-            @keyup.enter="loadSeats"
-            @clear="loadSeats"
+              v-model="filters.search"
+              :placeholder="$t('seats.searchSeats')"
+              :prefix-icon="Search"
+              clearable
+              @keyup.enter="loadSeats"
+              @clear="loadSeats"
           />
         </el-form-item>
         <el-form-item>
           <el-select
-            v-model="filters.row"
-            :placeholder="$t('seats.filterByRow')"
-            clearable
-            style="min-width: 140px"
-            @change="loadSeats"
+              v-model="filters.row"
+              :placeholder="$t('seats.filterByRow')"
+              clearable
+              style="min-width: 140px"
+              @change="loadSeats"
           >
             <el-option
-              v-for="row in availableRows"
-              :key="row"
-              :label="row"
-              :value="row"
+                v-for="row in allRows"
+                :key="row"
+                :label="row"
+                :value="row"
             />
           </el-select>
         </el-form-item>
 
         <el-form-item>
           <el-select
-            v-model="filters.theater_id"
-            :placeholder="$t('seats.filterByTheater')"
-            clearable
-            style="min-width: 250px"
-            @change="handleTheaterChange"
+              v-model="filters.theater_id"
+              :placeholder="$t('seats.filterByTheater')"
+              clearable
+              style="min-width: 250px"
+              @change="handleTheaterChange"
           >
             <el-option
-              v-for="theater in theaters"
-              :key="theater.id"
-              :label="theater.name"
-              :value="theater.id"
+                v-for="theater in theaters"
+                :key="theater.id"
+                :label="theater.name"
+                :value="theater.id"
             />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-select
-            v-model="filters.hall_id"
-            :placeholder="$t('seats.filterByHall')"
-            clearable
-            style="min-width: 200px"
-            :disabled="!filters.theater_id"
+              v-model="filters.hall_id"
+              :placeholder="$t('seats.filterByHall')"
+              clearable
+              style="min-width: 200px"
+              :disabled="!filters.theater_id"
           >
             <el-option
-              v-for="hall in filterHallBytheater.length
+                v-for="hall in filterHallBytheater.length
                 ? filterHallBytheater
                 : halls"
-              :key="hall.id"
-              :label="hall.hall_name"
-              :value="hall.id"
+                :key="hall.id"
+                :label="hall.hall_name"
+                :value="hall.id"
             />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-select
-            v-model="filters.seat_type"
-            :placeholder="$t('seats.filterByType')"
-            clearable
-            style="min-width: 200px"
+              v-model="filters.seat_type"
+              :placeholder="$t('seats.filterByType')"
+              clearable
+              style="min-width: 200px"
           >
             <el-option
-              v-for="type in seatTypes"
-              :key="type.value"
-              :label="$t(`seats.types.${type.value}`)"
-              :value="type.value"
+                v-for="type in seatTypes"
+                :key="type.value"
+                :label="$t(`seats.types.${type.value}`)"
+                :value="type.value"
             />
           </el-select>
         </el-form-item>
 
         <el-form-item>
           <el-select
-            v-model="filters.status"
-            :placeholder="$t('seats.filterByStatus')"
-            clearable
-            style="min-width: 200px"
+              v-model="filters.status"
+              :placeholder="$t('seats.filterByStatus')"
+              clearable
+              style="min-width: 200px"
           >
             <el-option
-              v-for="status in seatStatuses"
-              :key="status.value"
-              :label="$t(`seats.statuses.${status.value}`)"
-              :value="status.value"
+                v-for="status in seatStatuses"
+                :key="status.value"
+                :label="$t(`seats.statuses.${status.value}`)"
+                :value="status.value"
             />
           </el-select>
         </el-form-item>
@@ -114,42 +114,44 @@
     <!-- Seats Table -->
     <el-card shadow="never">
       <el-table
-        :data="seats"
-        v-loading="loading"
-        :element-loading-text="$t('common.loading')"
-        :empty-text="$t('messages.noData')"
-        row-key="id"
+          :data="seats"
+          ref="seatTable"
+          v-loading="loading"
+          :element-loading-text="$t('common.loading')"
+          :empty-text="$t('messages.noData')"
+          row-key="id"
+          @selection-change="handleSelectionChange"
       >
+        <el-table-column type="selection" width="55"/>
         <el-table-column
-          prop="seat_identifier"
-          :label="$t('seats.indentifier')"
-          width="150"
+            prop="seat_identifier"
+            :label="$t('seats.indentifier')"
+            width="150"
         />
 
-        <el-table-column prop="row" :label="$t('seats.row')" width="80" />
-
+        <el-table-column prop="row" :label="$t('seats.row')" width="80"/>
         <el-table-column
-          prop="seat_number"
-          :label="$t('seats.seatNumber')"
-          width="120"
+            prop="seat_number"
+            :label="$t('seats.number')"
+            width="120"
         >
           <template #default="{ row }">
             {{ Array.isArray(row.seat_number) ? row.seat_number.join(', ') : row.seat_number }}
           </template>
         </el-table-column>
         <el-table-column
-          prop="hall_name"
-          :label="$t('seats.hallName')"
-          width="120"
+            prop="hall_name"
+            :label="$t('seats.hallName')"
+            width="120"
         >
           <template #default="{ row }">
             {{ row.hall?.hall_name || "-" }}
           </template>
         </el-table-column>
         <el-table-column
-          prop="theater.name"
-          :label="$t('seats.theaterName')"
-          width="250"
+            prop="theater.name"
+            :label="$t('seats.theaterName')"
+            width="250"
         >
           <template #default="{ row }">
             {{ row.theater?.name || "-" }}
@@ -175,49 +177,38 @@
             ${{ row.price?.toFixed(2) || "0.00" }}
           </template>
         </el-table-column>
-
         <el-table-column
-          prop="created_at"
-          :label="$t('common.createdAt')"
-          width="150"
-        >
-          <template #default="{ row }">
-            {{ formatDate(row.created_at) }}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          :label="$t('common.actions')"
-          width="280"
-          fixed="right"
+            :label="$t('common.actions')"
+            width="280"
+            fixed="right"
         >
           <template #default="{ row }">
             <div class="flex gap-1">
               <el-button
-                v-permission="'seats.view'"
-                size="small"
-                link
-                type="primary"
-                @click="viewSeat(row.id)"
+                  v-permission="'seats.view'"
+                  size="small"
+                  link
+                  type="primary"
+                  @click="viewSeat(row.id)"
               >
                 {{ $t("actions.view") }}
               </el-button>
               <el-button
-                v-permission="'seats.edit'"
-                size="small"
-                link
-                type="primary"
-                @click="editSeat(row.id)"
+                  v-permission="'seats.edit'"
+                  size="small"
+                  link
+                  type="primary"
+                  @click="editSeat(row.id)"
               >
                 {{ $t("actions.edit") }}
               </el-button>
 
               <el-button
-                v-permission="'seats.delete'"
-                size="small"
-                link
-                type="danger"
-                @click="deleteSeat(row.id)"
+                  v-permission="'seats.delete'"
+                  size="small"
+                  link
+                  type="danger"
+                  @click="deleteSeat(row.id)"
               >
                 {{ $t("actions.delete") }}
               </el-button>
@@ -226,16 +217,42 @@
         </el-table-column>
       </el-table>
 
+      <!-- Bulk Actions -->
+      <div
+          class="bulk-actions flex items-center gap-1 mb-4 align-center"
+          v-if="selectedSeats.length > 0"
+      >
+        <!-- Delete Selected (Force Delete) -->
+        <el-button
+            type="danger"
+            @click="forceDeleteSelectedSeats"
+            v-permission="'showtimes.delete'"
+            class="flex items-center gap-1"
+        >
+          <!-- <Trash2 size="16" /> -->
+          <span
+          >{{ $t("actions.deleteSelected") }} ({{
+              selectedSeats.length
+            }})</span
+          >
+        </el-button>
+
+        <!-- Cancel Selection -->
+        <el-button type="default" @click="cancelSelection">
+          {{ $t("actions.cancel") }}
+        </el-button>
+      </div>
+
       <!-- Pagination -->
       <div class="pagination-wrapper">
         <el-pagination
-          v-model:current-page="pagination.current_page"
-          v-model:page-size="pagination.per_page"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="pagination.total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+            v-model:current-page="pagination.current_page"
+            v-model:page-size="pagination.per_page"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="pagination.total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
         />
       </div>
     </el-card>
@@ -243,18 +260,18 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from "vue";
-import { useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { Plus, Search } from "@element-plus/icons-vue";
-import { seatService } from "@/services/seatService";
-import { hallService } from "@/services/hallService";
-import { theaterService } from "@/services/theaterService";
-import { useAuthStore } from "@/stores/auth";
-import { useAppStore } from "@/stores/app";
+import {onMounted, reactive, ref, watch} from "vue";
+import {useRouter} from "vue-router";
+import {useI18n} from "vue-i18n";
+import {ElMessage, ElMessageBox} from "element-plus";
+import {Plus, Search} from "@element-plus/icons-vue";
+import {seatService} from "@/services/seatService";
+import {hallService} from "@/services/hallService";
+import {theaterService} from "@/services/theaterService";
+import {useAuthStore} from "@/stores/auth";
+import {useAppStore} from "@/stores/app";
 
-const { t } = useI18n();
+const {t} = useI18n();
 const router = useRouter();
 const authStore = useAuthStore();
 const appStore = useAppStore();
@@ -264,16 +281,24 @@ const loading = ref(false);
 const seats = ref([]);
 const halls = ref([]);
 const theaters = ref([]);
-const availableRows = ref([]);
+const allRows = ref([]);
 const filterHallBytheater = ref([]);
-
+const selectedSeats = ref([]);
+const seatTable = ref([null]);
+const handleSelectionChange = (val) => {
+  selectedSeats.value = val;
+};
+const cancelSelection = () => {
+  selectedSeats.value = [];
+  if (selectedSeats.value) {
+    seatTable.value.clearSelection();
+  }
+};
 const filters = reactive({
   search: "",
   seat_type: "",
   status: "",
   is_available: "",
-  theater_id: "",
-  hall_id: "",
   sort_by: "row",
   sort_order: "asc",
   row: "",
@@ -292,17 +317,17 @@ const pagination = reactive({
 
 // Seat types and statuses
 const seatTypes = ref([
-  { value: "regular", label: "Regular" },
-  { value: "vip", label: "VIP" },
-  { value: "queen", label: "Queen" },
-  { value: "couple", label: "Couple" },
+  {value: "regular", label: "Regular"},
+  {value: "vip", label: "VIP"},
+  {value: "queen", label: "Queen"},
+  {value: "couple", label: "Couple"},
 ]);
 
 const seatStatuses = ref([
-  { value: "active", label: "Active" },
-  { value: "maintenance", label: "Maintenance" },
-  { value: "out_of_order", label: "Out of Order" },
-  { value: "reserved", label: "Reserved" },
+  {value: "active", label: "Active"},
+  {value: "maintenance", label: "Maintenance"},
+  {value: "out_of_order", label: "Out of Order"},
+  {value: "reserved", label: "Reserved"},
 ]);
 
 // Methods
@@ -325,10 +350,6 @@ const loadSeats = async () => {
     const response = await seatService.getSeats(params);
     seats.value = response.data || [];
     console.log("Seats data:", seats.value);
-    // Extract unique rows for dropdown
-    availableRows.value = [
-      ...new Set(seats.value.map((seat) => seat.row)),
-    ].sort();
 
     Object.assign(pagination, {
       current_page: response.current_page || 1,
@@ -346,9 +367,21 @@ const loadSeats = async () => {
   }
 };
 
+const loadAllRows = async () => {
+  try {
+    const response = await seatService.getSeats({per_page: 100, page: 1});
+    if (response.data) {
+      const uniqueRows = [...new Set(response.data.map(seat => seat.row))];
+      allRows.value = uniqueRows.sort();
+    }
+  } catch (error) {
+    console.error("Error loading all rows for filter:", error);
+  }
+};
+
 const loadHalls = async () => {
   try {
-    const response = await hallService.getHalls({ per_page: 100 });
+    const response = await hallService.getHalls({per_page: 100});
     halls.value = response.data || [];
   } catch (error) {
     console.error("Load halls error:", error);
@@ -356,7 +389,7 @@ const loadHalls = async () => {
 };
 const loadTheaters = async () => {
   try {
-    const response = await theaterService.getTheaters({ per_page: 100 });
+    const response = await theaterService.getTheaters({per_page: 100});
     theaters.value = response.data || [];
   } catch (error) {
     console.error("Load theaters error:", error);
@@ -366,7 +399,7 @@ const loadTheaters = async () => {
 const handleTheaterChange = () => {
   filters.hall_id = "";
   filterHallBytheater.value = halls.value.filter(
-    (hall) => hall.theater_id === filters.theater_id
+      (hall) => hall.theater_id === filters.theater_id
   );
 };
 
@@ -407,7 +440,41 @@ const deleteSeat = async (id) => {
     }
   }
 };
-
+const forceDeleteSelectedSeats = async () => {
+  try {
+    await ElMessageBox.confirm(
+        t("seats.forceDeleteSelectedConfirm", {
+          count: selectedSeats.value.length,
+        }),
+        t("seats.forceDeleteTitle"),
+        {
+          confirmButtonText: t("actions.forceDelete"),
+          cancelButtonText: t("actions.cancel"),
+          type: "error",
+          dangerouslyUseHTMLString: true,
+        }
+    );
+    const ids = selectedSeats.value.map((seat) => seat.id);
+    await seatService.bulkForceDeleteSeats(ids);
+    ElMessage.success(t("seats.forceDeleteSuccess"));
+    loadSeats();
+    cancelSelection();
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("Failed to force delete selected seats:", error);
+      console.error("Error response:", error.response?.data);
+      const errorMsg =
+          error.response?.data?.message || t("seats.forceDeleteFailed");
+      const errors = error.response?.data?.errors;
+      if (errors && errors.length > 0) {
+        errors.forEach((err) => {
+          console.error(`Validation error - ${err.field}: ${err.message}`);
+        });
+      }
+      ElMessage.error(errorMsg);
+    }
+  }
+};
 const getSeatTypeColor = (type) => {
   const colors = {
     regular: "",
@@ -434,30 +501,30 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString();
 };
 
-// Watchers (auto load when filters change)
+// Watchers (autoload when filters change)
 watch(
-  [
-    () => filters.search,
-    () => filters.seat_type,
-    () => filters.status,
-    () => filters.row,
-    () => filters.theater_id,
-    () => filters.hall_id,
-  ],
-  () => {
-    pagination.current_page = 1;
-    loadSeats();
-  }
+    [
+      () => filters.search,
+      () => filters.seat_type,
+      () => filters.status,
+      () => filters.row,
+      () => filters.theater_id,
+      () => filters.hall_id,
+    ],
+    () => {
+      pagination.current_page = 1;
+      loadSeats();
+    }
 );
 
 // Lifecycle
 onMounted(async () => {
-  await Promise.all([loadSeats(), loadHalls(), loadTheaters()]);
+  await Promise.all([loadSeats(), loadHalls(), loadTheaters(), loadAllRows()]);
 
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("seats.title"), path: "/admin/seats" },
-    { title: t("seats.allSeats"), path: "/admin/seats" },
+    {title: t("nav.dashboard"), path: "/admin/dashboard"},
+    {title: t("seats.title"), path: "/admin/seats"},
+    {title: t("seats.allSeats"), path: "/admin/seats"},
   ]);
 });
 </script>
@@ -497,5 +564,12 @@ onMounted(async () => {
 
 .gap-1 {
   gap: 8px;
+}
+
+.bulk-actions {
+  margin: 16px 0;
+  padding: 12px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
 }
 </style>

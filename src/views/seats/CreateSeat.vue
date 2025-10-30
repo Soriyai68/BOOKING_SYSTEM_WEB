@@ -1,31 +1,39 @@
 <template>
   <div class="create-seat">
     <!-- Page Header -->
-    <div class="page-header">
+    <div class="page-header ">
       <h2>{{ $t("seats.addSeat") }}</h2>
       <el-button @click="$router.back()">
-        <el-icon><ArrowLeft /></el-icon>
+        <el-icon>
+          <ArrowLeft/>
+        </el-icon>
         {{ $t("actions.back") }}
       </el-button>
     </div>
-
+    <div class="mode-toggle">
+      <span>{{ toggleTitle }}</span>
+      <el-switch
+          v-model="isMultiSeat"
+          inline-prompt
+      />
+    </div>
     <!-- Seat Form -->
     <el-card>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="140px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="160px">
         <!-- Single Select: Theater & Hall -->
         <el-form-item :label="$t('seats.theaterAndHall')" prop="hall_id">
           <el-select
-            v-model="form.hall_id"
-            clearable
-            filterable
-            placeholder=""
-            :loading="loadingHalls || loadingTheaters"
+              v-model="form.hall_id"
+              clearable
+              filterable
+              placeholder=""
+              :loading="loadingHalls || loadingTheaters"
           >
             <el-option
-              v-for="option in hallOptions"
-              :key="option.id"
-              :label="option.label"
-              :value="option.id"
+                v-for="option in hallOptions"
+                :key="option.id"
+                :label="option.label"
+                :value="option.id"
             />
           </el-select>
         </el-form-item>
@@ -33,67 +41,63 @@
         <!-- Row -->
         <el-form-item :label="$t('seats.row')" prop="row">
           <el-input
-            v-model="form.row"
-            maxlength="5"
-            show-word-limit
-            @input="form.row = form.row.toUpperCase()"
-          />
-        </el-form-item>
-
-        <!-- Multi-seat toggle -->
-        <el-form-item :label="$t('seats.multiSeat')">
-          <el-switch
-            v-model="isMultiSeat"
-            :active-text="$t('seats.multiSeatMode')"
-            :inactive-text="$t('seats.singleSeatMode')"
-            @change="handleSeatModeChange"
-          />
-        </el-form-item>
-
-        <!-- Single Seat Number -->
-        <el-form-item 
-          v-if="!isMultiSeat" 
-          :label="$t('seats.seatNumber')" 
-          prop="seat_number"
-        >
-          <el-input
-            v-model="form.seat_number"
-            maxlength="10"
-            show-word-limit
-            placeholder="e.g., 1, A1, 15"
-            @input="form.seat_number = form.seat_number.toUpperCase()"
-          />
-        </el-form-item>
-
-        <!-- Multi Seat Numbers -->
-        <el-form-item 
-          v-if="isMultiSeat" 
-          :label="$t('seats.seatNumbers')" 
-          prop="seat_numbers"
-        >
-          <div class="multi-seat-input">
-            <el-input
-              v-model="seatNumbersInput"
-              type="textarea"
-              :rows="3"
-              placeholder="Enter multiple seat numbers separated by commas or spaces&#10;e.g., 1, 2, 3 or A1 A2 A3 or 10,11,12"
-              maxlength="200"
+              v-model="form.row"
+              maxlength="5"
               show-word-limit
-              @input="handleMultiSeatInput"
+              @input="form.row = form.row.toUpperCase()"
+          />
+        </el-form-item>
+        <!-- Single Seat Number -->
+        <el-form-item
+            v-if="!isMultiSeat"
+            :label="$t('seats.number')"
+            prop="seat_number"
+        >
+          <el-input-number
+              v-model="form.seat_number"
+              :min="1"
+              :max="9999"
+              controls-position="right"
+              style="width: 100%"
+              :placeholder="t('seats.seatNumber')"
+          />
+        </el-form-item>
+
+        <!-- Multi Seat Numbers Range -->
+        <el-form-item
+            v-if="isMultiSeat"
+            :label="$t('seats.seatNumberRange')"
+            prop="seat_numbers"
+        >
+          <div class="multi-seat-range">
+            <el-input
+                v-model="seatNumberRange.start"
+                :placeholder="t('seats.seatRangeStart')"
+                style="width: 140px"
+                @input="handleRangeInput"
+                maxlength="2"
             />
-            <div v-if="parsedSeatNumbers.length > 0" class="seat-preview">
-              <el-tag 
-                v-for="seat in parsedSeatNumbers" 
-                :key="seat" 
-                closable
-                @close="removeSeatNumber(seat)"
-                style="margin: 2px;"
-              >
-                {{ seat }}
-              </el-tag>
-              <div class="seat-count">
-                Total: {{ parsedSeatNumbers.length }} seat(s)
-              </div>
+            <span class="range-separator">-</span>
+            <el-input
+                v-model="seatNumberRange.end"
+                :placeholder="t('seats.seatRangeEnd')"
+                style="width: 140px"
+                @input="handleRangeInput"
+                maxlength="2"
+
+            />
+
+          </div>
+          <div v-if="parsedSeatNumbers.length > 0" class="seat-preview">
+            <el-tag
+                v-for="seat in parsedSeatNumbers"
+                :key="seat"
+                style="margin: 2px"
+            >
+              {{ seat }}
+            </el-tag>
+            <div class="seat-count">
+              {{ t("seats.seatTotal", {count: parsedSeatNumbers.length}) }}
             </div>
           </div>
         </el-form-item>
@@ -102,10 +106,10 @@
         <el-form-item :label="$t('seats.type')" prop="seat_type">
           <el-select v-model="form.seat_type" style="width: 100%">
             <el-option
-              v-for="type in seatTypes"
-              :key="type.value"
-              :label="$t(`seats.types.${type.value}`)"
-              :value="type.value"
+                v-for="type in seatTypes"
+                :key="type.value"
+                :label="$t(`seats.types.${type.value}`)"
+                :value="type.value"
             />
           </el-select>
         </el-form-item>
@@ -114,10 +118,10 @@
         <el-form-item :label="$t('seats.status')" prop="status">
           <el-select v-model="form.status" style="width: 100%">
             <el-option
-              v-for="status in seatStatuses"
-              :key="status.value"
-              :label="$t(`seats.statuses.${status.value}`)"
-              :value="status.value"
+                v-for="status in seatStatuses"
+                :key="status.value"
+                :label="$t(`seats.statuses.${status.value}`)"
+                :value="status.value"
             />
           </el-select>
         </el-form-item>
@@ -125,22 +129,22 @@
         <!-- Price -->
         <el-form-item :label="$t('seats.price')" prop="price">
           <el-input-number
-            v-model="form.price"
-            :min="0"
-            :max="9999"
-            :precision="2"
-            style="width: 100%"
+              v-model="form.price"
+              :min="0"
+              :max="9999"
+              :precision="2"
+              style="width: 100%"
           />
         </el-form-item>
 
         <!-- Notes -->
         <el-form-item :label="$t('seats.notes')" prop="notes">
           <el-input
-            v-model="form.notes"
-            type="textarea"
-            :rows="3"
-            maxlength="500"
-            show-word-limit
+              v-model="form.notes"
+              type="textarea"
+              :rows="3"
+              maxlength="500"
+              show-word-limit
           />
         </el-form-item>
 
@@ -159,29 +163,32 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from "vue";
-import { useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
-import { ElMessage } from "element-plus";
-import { seatService } from "@/services/seatService";
-import { hallService } from "@/services/hallService";
-import { theaterService } from "@/services/theaterService";
-import { useAppStore } from "@/stores/app";
-import { ArrowLeft } from "@element-plus/icons-vue";
+import {computed, onMounted, reactive, ref, watch} from "vue";
+import {useRouter} from "vue-router";
+import {useI18n} from "vue-i18n";
+import {ElMessage} from "element-plus";
+import {seatService} from "@/services/seatService";
+import {hallService} from "@/services/hallService";
+import {theaterService} from "@/services/theaterService";
+import {useAppStore} from "@/stores/app";
+import {ArrowLeft} from "@element-plus/icons-vue";
 
-const { t } = useI18n();
+const {t} = useI18n();
 const router = useRouter();
 const appStore = useAppStore();
 
 const formRef = ref();
 const loading = ref(false);
 const isMultiSeat = ref(false);
-const seatNumbersInput = ref("");
+const seatNumberRange = reactive({
+  start: "",
+  end: "",
+});
 
 const form = reactive({
   hall_id: "",
   row: "",
-  seat_number: "",
+  seat_number: null,
   seat_numbers: [],
   seat_type: "regular",
   status: "active",
@@ -195,42 +202,49 @@ const loadingHalls = ref(false);
 const loadingTheaters = ref(false);
 
 const seatTypes = ref([
-  { value: "regular", label: "Regular" },
-  { value: "vip", label: "VIP" },
-  { value: "couple", label: "Couple" },
-  { value: "queen", label: "Queen" },
+  {value: "regular", label: "Regular"},
+  {value: "vip", label: "VIP"},
+  {value: "couple", label: "Couple"},
+  {value: "queen", label: "Queen"},
 ]);
 
 const seatStatuses = ref([
-  { value: "active", label: "Active" },
-  { value: "maintenance", label: "Maintenance" },
-  { value: "out_of_order", label: "Out of Order" },
-  { value: "reserved", label: "Reserved" },
-  { value: "closed", label: "Closed" },
+  {value: "active", label: "Active"},
+  {value: "maintenance", label: "Maintenance"},
+  {value: "out_of_order", label: "Out of Order"},
+  {value: "reserved", label: "Reserved"},
+  {value: "closed", label: "Closed"},
 ]);
 
-// Parse seat numbers from input
+// Parse seat numbers from range input
 const parsedSeatNumbers = computed(() => {
-  if (!seatNumbersInput.value) return [];
-  
-  // Split by comma, space, or newline and clean up
-  const numbers = seatNumbersInput.value
-    .split(/[,\s\n]+/)
-    .map(s => s.trim().toUpperCase())
-    .filter(s => s.length > 0);
-  
-  // Remove duplicates
-  return [...new Set(numbers)];
+  const start = seatNumberRange.start.trim();
+  const end = seatNumberRange.end.trim();
+
+  if (!start || !end || !/^\d+$/.test(start) || !/^\d+$/.test(end)) {
+    return [];
+  }
+
+  const startNum = parseInt(start, 10);
+  const endNum = parseInt(end, 10);
+
+  if (startNum > endNum) return [];
+
+  const seats = [];
+  for (let i = startNum; i <= endNum; i++) {
+    seats.push(String(i));
+  }
+  return seats;
 });
 
 // Validation rules
 const rules = computed(() => {
   const baseRules = {
     hall_id: [
-      { required: true, message: t("validation.required"), trigger: "change" },
+      {required: true, message: t("validation.required"), trigger: "change"},
     ],
     row: [
-      { required: true, message: t("validation.required"), trigger: "blur" },
+      {required: true, message: t("validation.required"), trigger: "blur"},
       {
         min: 1,
         max: 5,
@@ -240,15 +254,15 @@ const rules = computed(() => {
       {
         pattern: /^[A-Z][A-Z0-9]*$/,
         message:
-          "Row must start with a letter and contain only letters and numbers",
+            "Row must start with a letter and contain only letters and numbers",
         trigger: "blur",
       },
     ],
     seat_type: [
-      { required: true, message: t("validation.required"), trigger: "change" },
+      {required: true, message: t("validation.required"), trigger: "change"},
     ],
     status: [
-      { required: true, message: t("validation.required"), trigger: "change" },
+      {required: true, message: t("validation.required"), trigger: "change"},
     ],
     price: [
       {
@@ -259,36 +273,41 @@ const rules = computed(() => {
       },
     ],
   };
-
   if (isMultiSeat.value) {
     baseRules.seat_numbers = [
-      { 
+      // {required: true, trigger: "blur"},
+      {
         validator: (rule, value, callback) => {
-          if (parsedSeatNumbers.value.length === 0) {
-            callback(new Error("At least one seat number is required"));
-          } else if (parsedSeatNumbers.value.length > 10) {
-            callback(new Error("Maximum 10 seat numbers allowed"));
-          } else {
-            callback();
+          const start = seatNumberRange.start.trim();
+          const end = seatNumberRange.end.trim();
+
+          if (!start || !end) {
+            return callback(new Error(t("seats.validation.rangeRequired")));
           }
-        }, 
-        trigger: "change" 
+
+          if (!/^\d+$/.test(start) || !/^\d+$/.test(end)) {
+            return callback(new Error(t("seats.validation.mustBeNumericRange")));
+          }
+
+          const startNum = parseInt(start, 10);
+          const endNum = parseInt(end, 10);
+
+          if (startNum > endNum) {
+            return callback(new Error(t("seats.validation.startAfterEnd")));
+          }
+
+          if ((endNum - startNum + 1) > 15) {
+            return callback(new Error(t("seats.validation.rangeTooLarge", {max: 15})));
+          }
+
+          callback();
+        },
+        trigger: "blur"
       },
     ];
   } else {
     baseRules.seat_number = [
-      { required: true, message: t("validation.required"), trigger: "blur" },
-      {
-        min: 1,
-        max: 10,
-        message: "Seat number must be between 1 and 10 characters",
-        trigger: "blur",
-      },
-      {
-        pattern: /^[A-Z0-9]+$/,
-        message: "Seat number must contain only letters and numbers",
-        trigger: "blur",
-      },
+      {required: true, message: t("validation.required"), trigger: "blur"},
     ];
   }
 
@@ -309,7 +328,7 @@ const hallOptions = computed(() => {
 const loadHalls = async () => {
   loadingHalls.value = true;
   try {
-    const response = await hallService.getHalls({ per_page: 100 });
+    const response = await hallService.getHalls({per_page: 100});
     halls.value = response.data;
   } catch (error) {
     console.error("Failed to load halls:", error);
@@ -322,7 +341,7 @@ const loadHalls = async () => {
 const loadTheaters = async () => {
   loadingTheaters.value = true;
   try {
-    const response = await theaterService.getTheaters({ per_page: 100 });
+    const response = await theaterService.getTheaters({per_page: 100});
     theaters.value = response.data;
   } catch (error) {
     console.error("Failed to load theaters:", error);
@@ -332,37 +351,25 @@ const loadTheaters = async () => {
   }
 };
 
-// Handle multi-seat input change
-const handleMultiSeatInput = () => {
+// Handle range input change
+const handleRangeInput = () => {
   // Update the seat_numbers in form for validation
   form.seat_numbers = parsedSeatNumbers.value;
 };
 
-// Remove a seat number from the list
-const removeSeatNumber = (seatToRemove) => {
-  const numbers = seatNumbersInput.value
-    .split(/[,\s\n]+/)
-    .map(s => s.trim().toUpperCase())
-    .filter(s => s.length > 0 && s !== seatToRemove);
-  
-  seatNumbersInput.value = numbers.join(", ");
-  handleMultiSeatInput();
-};
-
-// Handle seat mode change
-const handleSeatModeChange = (value) => {
-  if (value) {
-    // Switching to multi-seat mode
-    form.seat_number = "";
-    if (seatNumbersInput.value) {
-      handleMultiSeatInput();
-    }
-  } else {
-    // Switching to single-seat mode
-    form.seat_numbers = [];
-    seatNumbersInput.value = "";
+watch(isMultiSeat, (isMulti) => {
+  if (formRef.value) {
+    formRef.value.clearValidate();
   }
-};
+  if (isMulti) {
+    form.seat_number = null;
+    handleRangeInput();
+  } else {
+    form.seat_numbers = [];
+    seatNumberRange.start = "";
+    seatNumberRange.end = "";
+  }
+});
 
 const handleSubmit = async () => {
   if (!formRef.value) return;
@@ -371,18 +378,23 @@ const handleSubmit = async () => {
     await formRef.value.validate();
     loading.value = true;
 
-    // Always send seat_number as an array
-    const payload = { 
-      ...form,
-      seat_number: isMultiSeat.value 
-        ? parsedSeatNumbers.value 
-        : [form.seat_number] // Wrap single seat in array
-    };
-    
-    // Remove the seat_numbers field as backend expects seat_number
-    delete payload.seat_numbers;
-
-    await seatService.createSeat(payload);
+    if (isMultiSeat.value) {
+      const payload = {
+        ...form,
+        range: {
+          start: seatNumberRange.start,
+          end: seatNumberRange.end,
+        },
+      };
+      await seatService.bulkCreateSeats(payload);
+    } else {
+      // Single seat creation
+      const payload = {
+        ...form,
+        seat_number: [String(form.seat_number)],
+      };
+      await seatService.createSeat(payload);
+    }
 
     ElMessage.success(t("seats.createSuccess"));
     router.push("/admin/seats");
@@ -393,7 +405,11 @@ const handleSubmit = async () => {
     loading.value = false;
   }
 };
-
+const toggleTitle = computed(() =>
+    isMultiSeat.value
+        ? t("seats.multiSeatMode")
+        : t("seats.singleSeatMode"),
+);
 const resetForm = () => {
   if (formRef.value) {
     formRef.value.resetFields();
@@ -401,7 +417,7 @@ const resetForm = () => {
   Object.assign(form, {
     hall_id: "",
     row: "",
-    seat_number: "",
+    seat_number: null,
     seat_numbers: [],
     seat_type: "regular",
     status: "active",
@@ -409,16 +425,17 @@ const resetForm = () => {
     notes: "",
   });
   isMultiSeat.value = false;
-  seatNumbersInput.value = "";
+  seatNumberRange.start = "";
+  seatNumberRange.end = "";
 };
 
 onMounted(async () => {
   await Promise.all([loadTheaters(), loadHalls()]);
 
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("seats.title"), path: "/admin/seats" },
-    { title: t("seats.addSeat"), path: "/admin/seats/create" },
+    {title: t("nav.dashboard"), path: "/admin/dashboard"},
+    {title: t("seats.title"), path: "/admin/seats"},
+    {title: t("seats.addSeat"), path: "/admin/seats/create"},
   ]);
 });
 </script>
@@ -435,8 +452,14 @@ onMounted(async () => {
   max-width: 640px;
 }
 
-.multi-seat-input {
+.multi-seat-range {
+  display: flex;
+  align-items: center;
   width: 100%;
+}
+
+.range-separator {
+  margin: 0 10px;
 }
 
 .seat-preview {
@@ -451,5 +474,15 @@ onMounted(async () => {
   font-size: 14px;
   color: #606266;
   text-align: right;
+}
+
+.mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: var(--el-fill-color-light);
+  border-radius: 4px;
 }
 </style>

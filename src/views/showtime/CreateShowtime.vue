@@ -2,128 +2,136 @@
   <div class="create-showtime">
     <div class="page-header">
       <h2>{{ $t("showtimes.addShowtime") }}</h2>
+      <el-button @click="$router.back()">
+        <el-icon>
+          <ArrowLeft/>
+        </el-icon>
+        {{ $t("actions.back") }}
+      </el-button>
     </div>
 
     <div class="mode-toggle">
       <span>{{ toggleTitle }}</span>
-      <el-switch v-model="isMultipleMode" inline-prompt />
+      <el-switch v-model="isMultipleMode" inline-prompt/>
     </div>
 
     <el-card>
       <div v-if="!isMultipleMode">
         <el-form
-          ref="singleShowtimeForm"
-          :model="showtime"
-          :rules="singleRules"
-          label-width="140px"
-          @submit.prevent="submitSingleForm"
-          class="single-showtime-form"
+            ref="singleShowtimeForm"
+            :model="showtime"
+            :rules="singleRules"
+            label-width="140px"
+            @submit.prevent="submitSingleForm"
+            class="single-showtime-form"
         >
           <el-form-item :label="$t('showtimes.movie')" prop="movie_id">
             <el-select
-              v-model="showtime.movie_id"
-              :placeholder="$t('showtimes.selectMovie')"
-              filterable
+                v-model="showtime.movie_id"
+                :placeholder="$t('showtimes.selectMovie')"
+                filterable
             >
               <el-option
-                v-for="movie in movies"
-                :key="movie.id"
-                :label="movie.title"
-                :value="movie.id"
+                  v-for="movie in movies"
+                  :key="movie.id"
+                  :label="movie.title"
+                  :value="movie.id"
               ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('showtimes.theater')" prop="theater_id">
             <el-select
-              v-model="showtime.theater_id"
-              :placeholder="$t('showtimes.selectTheater')"
-              filterable
-              @change="loadHallsForSingle"
+                v-model="showtime.theater_id"
+                :placeholder="$t('showtimes.selectTheater')"
+                filterable
+                @change="loadHallsForSingle"
             >
               <el-option
-                v-for="theater in theaters"
-                :key="theater.id"
-                :label="theater.name"
-                :value="theater.id"
+                  v-for="theater in theaters"
+                  :key="theater.id"
+                  :label="theater.name"
+                  :value="theater.id"
               ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('showtimes.hall')" prop="hall_id">
             <el-select
-              v-model="showtime.hall_id"
-              :placeholder="$t('showtimes.selectHall')"
-              filterable
-              :disabled="!showtime.theater_id"
+                v-model="showtime.hall_id"
+                :placeholder="$t('showtimes.selectHall')"
+                filterable
+                :disabled="!showtime.theater_id"
             >
               <el-option
-                v-for="hall in halls"
-                :key="hall.id"
-                :label="hall.hall_name"
-                :value="hall.id"
+                  v-for="hall in halls"
+                  :key="hall.id"
+                  :label="hall.hall_name"
+                  :value="hall.id"
               ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('showtimes.showDate')" prop="show_date">
             <el-date-picker
-              v-model="showtime.show_date"
-              type="date"
-              :placeholder="$t('showtimes.selectShowDate')"
+                v-model="showtime.show_date"
+                type="date"
+                :placeholder="$t('showtimes.selectShowDate')"
             />
           </el-form-item>
           <el-form-item :label="$t('showtimes.startTime')" prop="start_time">
             <el-time-picker
-              v-model="showtime.start_time"
-              :placeholder="$t('showtimes.selectStartTime')"
-              format="HH:mm"
-              value-format="HH:mm"
+                v-model="showtime.start_time"
+                :placeholder="$t('showtimes.selectStartTime')"
+                format="HH:mm"
+                value-format="HH:mm"
             />
           </el-form-item>
 
           <el-form-item :label="$t('showtimes.endTime')" prop="end_time">
             <el-time-picker
-              v-model="showtime.end_time"
-              :placeholder="$t('showtimes.selectEndTime')"
-              format="HH:mm"
-              value-format="HH:mm"
-              readonly
+                v-model="showtime.end_time"
+                :placeholder="$t('showtimes.selectEndTime')"
+                format="HH:mm"
+                value-format="HH:mm"
+                readonly
             />
           </el-form-item>
 
           <el-form-item :label="$t('showtimes.status')" prop="status">
             <el-select
-              v-model="showtime.status"
-              :placeholder="$t('showtimes.selectStatus')"
+                v-model="showtime.status"
+                :placeholder="$t('showtimes.selectStatus')"
             >
               <el-option
-                v-for="status in showtimeService.STATUS_OPTIONS"
-                :key="status.value"
-                :label="$t(`showtimes.statuses.${status.value}`)"
-                :value="status.value"
+                  v-for="status in showtimeService.STATUS_OPTIONS"
+                  :key="status.value"
+                  :label="$t(`showtimes.statuses.${status.value}`)"
+                  :value="status.value"
               />
             </el-select>
           </el-form-item>
           <el-form-item>
             <el-button
-              v-permission="'showtimes.create'"
-              type="primary"
-              @click="submitSingleForm"
-              >{{ $t("actions.create") }}</el-button
+                v-permission="'showtimes.create'"
+                type="primary"
+                @click="submitSingleForm"
+            >{{ $t("actions.create") }}
+            </el-button
             >
             <el-button @click="$router.back()">{{
-              $t("actions.cancel")
-            }}</el-button>
+                $t("actions.cancel")
+              }}
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
 
       <div v-else>
         <MultipleShowtimeCreator
-          :movies="movies"
-          :theaters="theaters"
-          :halls="halls"
-          :initial-theater-id="showtime.theater_id"
-          @theater-changed="loadHallsForMultiple"
-          @submitted="handleShowtimesCreated"
+            :movies="movies"
+            :theaters="theaters"
+            :halls="halls"
+            :initial-theater-id="showtime.theater_id"
+            @theater-changed="loadHallsForMultiple"
+            @submitted="handleShowtimesCreated"
         />
       </div>
     </el-card>
@@ -131,21 +139,22 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch, computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useAppStore } from "@/stores/app";
-import { showtimeService } from "@/services/showtimeService";
-import { movieService } from "@/services/movieService";
-import { theaterService } from "@/services/theaterService";
-import { hallService } from "@/services/hallService";
-import { ElMessage } from "element-plus";
-import { useI18n } from "vue-i18n";
+import {computed, onMounted, reactive, ref, watch} from "vue";
+import {useRoute, useRouter} from "vue-router";
+import {useAppStore} from "@/stores/app";
+import {showtimeService} from "@/services/showtimeService";
+import {movieService} from "@/services/movieService";
+import {theaterService} from "@/services/theaterService";
+import {hallService} from "@/services/hallService";
+import {ElMessage} from "element-plus";
+import {useI18n} from "vue-i18n";
 import MultipleShowtimeCreator from "@/components/showtimes/MultipleShowtimeCreator.vue";
+import {ArrowLeft} from "@element-plus/icons-vue";
 
 const router = useRouter();
 const route = useRoute();
 const appStore = useAppStore();
-const { t } = useI18n();
+const {t} = useI18n();
 
 // --- State Management ---
 const isMultipleMode = ref(false);
@@ -294,9 +303,9 @@ const handleShowtimesCreated = () => {
 };
 
 const toggleTitle = computed(() =>
-  isMultipleMode.value
-    ? t("showtimes.createMultiple")
-    : t("showtimes.createSingle")
+    isMultipleMode.value
+        ? t("showtimes.createMultiple")
+        : t("showtimes.createSingle")
 );
 
 const calculateEndTime = (startTime, durationMinutes) => {
@@ -321,24 +330,24 @@ watch(isMultipleMode, (newMode) => {
 });
 
 watch(
-  () => [showtime.movie_id, showtime.start_time],
-  () => {
-    const movie = movies.value.find((m) => m.id === showtime.movie_id);
-    if (movie && showtime.start_time) {
-      showtime.end_time = calculateEndTime(
-        showtime.start_time,
-        movie.duration_minutes
-      );
-    }
-  },
-  { deep: true }
+    () => [showtime.movie_id, showtime.start_time],
+    () => {
+      const movie = movies.value.find((m) => m.id === showtime.movie_id);
+      if (movie && showtime.start_time) {
+        showtime.end_time = calculateEndTime(
+            showtime.start_time,
+            movie.duration_minutes
+        );
+      }
+    },
+    {deep: true}
 );
 
 onMounted(async () => {
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("showtimes.title"), path: "/admin/showtimes" },
-    { title: t("showtimes.addShowtime"), path: "/admin/showtimes/create" },
+    {title: t("nav.dashboard"), path: "/admin/dashboard"},
+    {title: t("showtimes.title"), path: "/admin/showtimes"},
+    {title: t("showtimes.addShowtime"), path: "/admin/showtimes/create"},
   ]);
   await loadMovies();
   await loadTheaters();
@@ -351,6 +360,9 @@ onMounted(async () => {
 
 <style scoped>
 .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
 }
 

@@ -5,8 +5,9 @@
       <div>
         <el-button @click="$router.back()">{{ $t("actions.back") }}</el-button>
         <el-button v-permission="'seats.edit'" type="primary" @click="goEdit">{{
-          $t("actions.edit")
-        }}</el-button>
+            $t("actions.edit")
+          }}
+        </el-button>
       </div>
     </div>
 
@@ -40,9 +41,6 @@
         <el-descriptions-item :label="$t('seats.price')">
           ${{ seat?.price?.toFixed(2) || "0.00" }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('users.created')">
-          {{ formatDateTime(seat?.created_at) }}
-        </el-descriptions-item>
         <el-descriptions-item :label="$t('users.updated')">
           {{ formatDateTime(seat?.updated_at) }}
         </el-descriptions-item>
@@ -69,18 +67,18 @@
 
     <!-- Update Status Dialog -->
     <el-dialog
-      v-model="showUpdateStatusDialog"
-      :title="$t('seats.updateStatus')"
-      width="400px"
+        v-model="showUpdateStatusDialog"
+        :title="$t('seats.updateStatus')"
+        width="400px"
     >
       <el-form label-width="100px">
         <el-form-item :label="$t('seats.status')">
           <el-select v-model="newStatus" style="width: 100%">
             <el-option
-              v-for="status in seatStatuses"
-              :key="status.value"
-              :label="$t(`seats.statuses.${status.value}`)"
-              :value="status.value"
+                v-for="status in seatStatuses"
+                :key="status.value"
+                :label="$t(`seats.statuses.${status.value}`)"
+                :value="status.value"
             />
           </el-select>
         </el-form-item>
@@ -91,9 +89,9 @@
           {{ $t("actions.cancel") }}
         </el-button>
         <el-button
-          type="primary"
-          @click="updateStatus"
-          :loading="actionLoading"
+            type="primary"
+            @click="updateStatus"
+            :loading="actionLoading"
         >
           {{ $t("actions.update") }}
         </el-button>
@@ -103,19 +101,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useAppStore } from "@/stores/app";
-import { useAuthStore } from "@/stores/auth";
-import { useI18n } from "vue-i18n";
-import { seatService } from "@/services/seatService";
-import { ElMessage, ElMessageBox } from "element-plus";
+import {onMounted, ref} from "vue";
+import {useRoute, useRouter} from "vue-router";
+import {useAppStore} from "@/stores/app";
+import {useAuthStore} from "@/stores/auth";
+import {useI18n} from "vue-i18n";
+import {seatService} from "@/services/seatService";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 const route = useRoute();
 const router = useRouter();
 const appStore = useAppStore();
 const authStore = useAuthStore();
-const { t } = useI18n();
+const {t} = useI18n();
 
 const loading = ref(false);
 const actionLoading = ref(false);
@@ -124,11 +122,11 @@ const showUpdateStatusDialog = ref(false);
 const newStatus = ref("active");
 
 const seatStatuses = ref([
-  { value: "active", label: "Active" },
-  { value: "maintenance", label: "Maintenance" },
-  { value: "out_of_order", label: "Out of Order" },
-  { value: "reserved", label: "Reserved" },
-  { value: "closed", label: "Closed" },
+  {value: "active", label: "Active"},
+  {value: "maintenance", label: "Maintenance"},
+  {value: "out_of_order", label: "Out of Order"},
+  {value: "reserved", label: "Reserved"},
+  {value: "closed", label: "Closed"},
 ]);
 
 const load = async () => {
@@ -165,13 +163,13 @@ const updateStatus = async () => {
 const handleDelete = async () => {
   try {
     await ElMessageBox.confirm(
-      t("seats.confirmDelete"),
-      t("seats.deleteSeat"),
-      {
-        type: "warning",
-        confirmButtonText: t("actions.delete"),
-        cancelButtonText: t("actions.cancel"),
-      }
+        t("seats.confirmDelete"),
+        t("seats.deleteSeat"),
+        {
+          type: "warning",
+          confirmButtonText: t("actions.delete"),
+          cancelButtonText: t("actions.cancel"),
+        }
     );
 
     await seatService.deleteSeat(route.params.id);
@@ -210,9 +208,9 @@ const formatDateTime = (str) => (str ? new Date(str).toLocaleString() : "-");
 onMounted(async () => {
   await load();
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("seats.title"), path: "/admin/seats" },
-    { title: t("seats.seatDetails"), path: "#" },
+    {title: t("nav.dashboard"), path: "/admin/dashboard"},
+    {title: t("seats.title"), path: "/admin/seats"},
+    {title: t("seats.seatDetails"), path: "#"},
   ]);
 });
 </script>
