@@ -57,44 +57,40 @@ const breadcrumbs = computed(() => appStore.breadcrumbs);
 }
 
 .sidebar {
-  background-color: var(--bg-color-primary);
-  transition: width 0.3s, background-color 0.3s;
+  background-color: var(--el-bg-color);
+  transition: width 0.3s;
   overflow: hidden;
 }
 
 .header {
-  background-color: var(--bg-color-primary);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--el-bg-color);
+  border-bottom: 1px solid var(--el-border-color);
   display: flex;
   align-items: center;
   padding: 0;
-  box-shadow: 0 1px 4px var(--shadow-color);
+  box-shadow: var(--el-box-shadow-lighter);
   z-index: 10;
-  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .main-content {
-  background-color: var(--bg-color-secondary);
+  background-color: var(--el-bg-color-page);
   padding: 16px;
   overflow: auto;
-  transition: background-color 0.3s;
 }
 
 .breadcrumb-container {
   margin-bottom: 16px;
-  background: var(--bg-color-primary);
+  background: var(--el-bg-color);
   padding: 12px 16px;
   border-radius: 4px;
-  box-shadow: 0 1px 2px var(--shadow-color);
-  transition: background-color 0.3s;
+  box-shadow: var(--el-box-shadow-lighter);
 }
 
 .page-content {
-  background: var(--bg-color-primary);
+  background: var(--el-bg-color);
   border-radius: 4px;
   padding: 24px;
   min-height: calc(100vh - 140px);
-  box-shadow: 0 1px 2px var(--shadow-color);
-  transition: background-color 0.3s;
+  box-shadow: var(--el-box-shadow-lighter);
 }
 </style>

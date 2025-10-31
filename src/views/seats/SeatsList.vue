@@ -174,7 +174,7 @@
         </el-table-column>
         <el-table-column prop="price" :label="$t('seats.price')" width="100">
           <template #default="{ row }">
-            ${{ row.price?.toFixed(2) || "0.00" }}
+            $ {{ row.price?.toFixed(2) || "0.00" }}
           </template>
         </el-table-column>
         <el-table-column
@@ -569,7 +569,8 @@ onMounted(async () => {
 .bulk-actions {
   margin: 16px 0;
   padding: 12px;
-  background-color: #f5f7fa;
   border-radius: 4px;
+  background-color: var(--el-fill-color-lighter);
+
 }
 </style>

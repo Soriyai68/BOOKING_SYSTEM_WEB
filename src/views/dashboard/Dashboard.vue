@@ -335,12 +335,12 @@ onMounted(() => {
   margin: 0 0 4px 0;
   font-size: 28px;
   font-weight: bold;
-  color: #303133;
+  color: var(--el-text-color-primary);
 }
 
 .stat-info p {
   margin: 0 0 8px 0;
-  color: #606266;
+  color: var(--el-text-color-secondary);
   font-size: 14px;
 }
 
@@ -368,9 +368,9 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-lighter);
   border-radius: 4px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .card-header {
@@ -388,7 +388,7 @@ onMounted(() => {
   display: flex;
   align-items: flex-start;
   padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
 .activity-item:last-child {
@@ -399,8 +399,8 @@ onMounted(() => {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #e6f7ff;
-  color: #1890ff;
+  background-color: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -414,12 +414,12 @@ onMounted(() => {
 
 .activity-text {
   margin: 0 0 4px 0;
-  color: #303133;
+  color: var(--el-text-color-primary);
   font-size: 14px;
 }
 
 .activity-time {
-  color: #909399;
+  color: var(--el-text-color-secondary);
   font-size: 12px;
 }
 

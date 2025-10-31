@@ -190,7 +190,7 @@ const handleUserMenuCommand = async (command) => {
 .page-title {
   font-size: 18px;
   font-weight: 500;
-  color: var(--text-color-primary);
+  color: var(--el-text-color-primary);
 }
 
 .header-right {
@@ -202,11 +202,11 @@ const handleUserMenuCommand = async (command) => {
 .header-btn {
   font-size: 16px;
   padding: 8px;
-  color: var(--text-color-secondary);
+  color: var(--el-text-color-regular);
 }
 
 .header-btn:hover {
-  color: var(--primary-color);
+  color: var(--el-color-primary);
 }
 
 .user-dropdown {
@@ -224,15 +224,15 @@ const handleUserMenuCommand = async (command) => {
 }
 
 .user-info:hover {
-  background-color: var(--bg-color-tertiary);
+  background-color: var(--el-fill-color-light);
 }
 
 .user-avatar {
-  background-color: var(--primary-color);
+  background-color: var(--el-color-primary);
 }
 
 .username {
-  color: var(--text-color-primary);
+  color: var(--el-text-color-primary);
   font-weight: 500;
   max-width: 120px;
   overflow: hidden;
@@ -242,7 +242,7 @@ const handleUserMenuCommand = async (command) => {
 
 .dropdown-icon {
   font-size: 12px;
-  color: var(--text-color-tertiary);
+  color: var(--el-text-color-secondary);
   transition: transform 0.3s;
 }
 

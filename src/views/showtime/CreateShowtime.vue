@@ -374,6 +374,7 @@ onMounted(async () => {
   padding: 10px;
   background-color: var(--el-fill-color-light);
   border-radius: 4px;
+  color: var(--el-text-color-primary);
 }
 
 .single-showtime-form {

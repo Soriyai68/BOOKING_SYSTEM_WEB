@@ -289,7 +289,7 @@ onMounted(() => {
 
 .page-header h2 {
   margin: 0;
-  color: #303133;
+  color: var(--el-text-color-primary);
 }
 
 .toolbar {
@@ -305,7 +305,7 @@ onMounted(() => {
 .bulk-actions {
   margin: 16px 0;
   padding: 12px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-lighter);
   border-radius: 4px;
 }
 
@@ -317,11 +317,11 @@ onMounted(() => {
 
 /* Loading state */
 .el-table__empty-text {
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 /* Selection highlighting */
 :deep(.el-table__row.current-row) {
-  background-color: #ecf5ff;
+  background-color: var(--el-color-primary-light-9);
 }
 </style>
