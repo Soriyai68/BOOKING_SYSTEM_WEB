@@ -10,7 +10,7 @@
       </el-button>
     </div>
 
-    <el-card>
+    <el-card class="filter-card" shadow="never">
       <div class="toolbar">
         <el-input
             v-model="searchText"
@@ -48,8 +48,11 @@
           />
         </el-select>
       </div>
+    </el-card>
 
-      <el-table :data="rows" v-loading="loading" style="width: 100%">
+    <el-card shadow="never">
+      <el-table :data="rows" v-loading="loading" style="width: 100%" ref="theaterTable" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" />
         <el-table-column prop="name" :label="$t('theaters.name')"/>
         <el-table-column prop="city" :label="$t('theaters.city')" width="140"/>
         <el-table-column
@@ -101,6 +104,23 @@
         </el-table-column>
       </el-table>
 
+      <!-- Bulk Actions -->
+      <div
+          class="bulk-actions"
+          v-if="selectedTheaters.length > 0"
+      >
+        <el-button
+            type="danger"
+            @click="bulkDeleteTheaters"
+            v-permission="'theaters.delete'"
+        >
+          {{ $t("actions.deleteSelected") }} ({{ selectedTheaters.length }})
+        </el-button>
+        <el-button type="default" @click="cancelSelection">
+          {{ $t("actions.cancel") }}
+        </el-button>
+      </div>
+
       <div class="pagination">
         <el-pagination
             v-model:current-page="currentPage"
@@ -139,6 +159,48 @@ const searchText = ref("");
 const statusFilter = ref("");
 const cityFilter = ref("");
 const provinceFilter = ref("");
+const theaterTable = ref(null);
+const selectedTheaters = ref([]);
+
+const handleSelectionChange = (val) => {
+  selectedTheaters.value = val;
+};
+
+const cancelSelection = () => {
+  selectedTheaters.value = [];
+  if (theaterTable.value) {
+    theaterTable.value.clearSelection();
+  }
+};
+
+const bulkDeleteTheaters = async () => {
+  try {
+    await ElMessageBox.confirm(
+      `Are you sure you want to delete ${selectedTheaters.value.length} theaters?`,
+      "Delete Theaters",
+      {
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        type: "warning",
+      }
+    );
+
+    const ids = selectedTheaters.value.map((theater) => theater.id);
+    // Assuming theaterService.bulkDeleteTheaters(ids) exists or will be created.
+    await theaterService.bulkDeleteTheaters(ids);
+
+    ElMessage.success(
+      `${selectedTheaters.value.length} theaters deleted successfully`
+    );
+    cancelSelection();
+    load(); // Reload the list
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("Failed to bulk delete theaters:", error);
+      ElMessage.error("Failed to delete theaters");
+    }
+  }
+};
 
 const debouncedSearch = debounce(() => {
   currentPage.value = 1;
@@ -210,6 +272,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.filter-card {
+  margin-bottom: 10px;
+}
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -225,6 +290,16 @@ onMounted(() => {
 
 .search-input {
   width: 220px;
+}
+
+.bulk-actions {
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 4px;
+  background-color: var(--el-fill-color-lighter);
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .pagination {

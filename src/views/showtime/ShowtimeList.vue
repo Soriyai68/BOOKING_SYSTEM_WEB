@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <el-card>
+    <el-card class="filter-card" shadow="never">
       <!-- Filters Toolbar -->
       <div class="toolbar">
         <!-- Search -->
@@ -88,7 +88,9 @@
             value-format="YYYY-MM-DD"
         />
       </div>
+    </el-card>
 
+    <el-card shadow="never">
       <!-- Showtime Table -->
       <el-table
           :data="showtimes"
@@ -484,6 +486,9 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.filter-card {
+  margin-bottom: 10px;
+}
 .page-header {
   display: flex;
   justify-content: space-between;

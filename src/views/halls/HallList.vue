@@ -8,7 +8,7 @@
       </el-button>
     </div>
 
-    <el-card>
+    <el-card class="filter-card" shadow="never">
       <div class="toolbar">
         <el-input
           v-model="searchText"
@@ -73,8 +73,11 @@
           <el-option label="DESC" value="desc" />
         </el-select>
       </div>
+    </el-card>
 
-      <el-table :data="rows" v-loading="loading" style="width: 100%">
+    <el-card shadow="never">
+      <el-table :data="rows" v-loading="loading" style="width: 100%" ref="hallTable" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" />
         <el-table-column prop="hall_name" :label="$t('halls.name')" />
         <el-table-column
           prop="screen_type"
@@ -138,6 +141,23 @@
         </el-table-column>
       </el-table>
 
+      <!-- Bulk Actions -->
+      <div
+          class="bulk-actions"
+          v-if="selectedHalls.length > 0"
+      >
+        <el-button
+            type="danger"
+            @click="bulkDeleteHalls"
+            v-permission="'halls.delete'"
+        >
+          {{ $t("actions.deleteSelected") }} ({{ selectedHalls.length }})
+        </el-button>
+        <el-button type="default" @click="cancelSelection">
+          {{ $t("actions.cancel") }}
+        </el-button>
+      </div>
+
       <div class="pagination">
         <el-pagination
           v-model:current-page="currentPage"
@@ -180,6 +200,48 @@ const theaterFilter = ref("");
 const sortBy = ref("hall_name");
 const sortOrder = ref("asc");
 const theaters = ref([]);
+const hallTable = ref(null);
+const selectedHalls = ref([]);
+
+const handleSelectionChange = (val) => {
+  selectedHalls.value = val;
+};
+
+const cancelSelection = () => {
+  selectedHalls.value = [];
+  if (hallTable.value) {
+    hallTable.value.clearSelection();
+  }
+};
+
+const bulkDeleteHalls = async () => {
+  try {
+    await ElMessageBox.confirm(
+      `Are you sure you want to delete ${selectedHalls.value.length} halls?`,
+      "Delete Halls",
+      {
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        type: "warning",
+      }
+    );
+
+    const ids = selectedHalls.value.map((hall) => hall.id);
+    // Assuming hallService.bulkDeleteHalls(ids) exists or will be created.
+    await hallService.bulkDeleteHalls(ids);
+
+    ElMessage.success(
+      `${selectedHalls.value.length} halls deleted successfully`
+    );
+    cancelSelection();
+    load(); // Reload the list
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("Failed to bulk delete halls:", error);
+      ElMessage.error("Failed to delete halls");
+    }
+  }
+};
 
 const debouncedSearch = debounce(() => {
   currentPage.value = 1;
@@ -299,6 +361,9 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.filter-card {
+  margin-bottom: 10px;
+}
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -312,6 +377,15 @@ onMounted(async () => {
 }
 .search-input {
   width: 360px;
+}
+.bulk-actions {
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 4px;
+  background-color: var(--el-fill-color-lighter);
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 .pagination {
   margin-top: 16px;

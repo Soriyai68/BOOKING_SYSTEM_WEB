@@ -252,7 +252,7 @@ defineExpose({
   max-width: 300px;
   max-height: 450px;
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--el-box-shadow-light);
   display: block;
 }
 
@@ -272,7 +272,7 @@ defineExpose({
 
 .upload-icon {
   font-size: 48px;
-  color: #409eff;
+  color: var(--el-color-primary);
   margin-bottom: 16px;
 }
 
@@ -282,22 +282,22 @@ defineExpose({
 
 .upload-text p {
   margin: 4px 0;
-  color: #606266;
+  color: var(--el-text-color-regular);
 }
 
 .upload-hint {
   font-size: 14px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .upload-hint em {
-  color: #409eff;
+  color: var(--el-color-primary);
   font-style: normal;
 }
 
 .upload-info {
   font-size: 12px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .upload-info p {
@@ -312,7 +312,7 @@ defineExpose({
   text-align: center;
   margin-top: 8px;
   font-size: 14px;
-  color: #606266;
+  color: var(--el-text-color-regular);
 }
 
 :deep(.el-upload) {
@@ -321,14 +321,14 @@ defineExpose({
 
 :deep(.el-upload-dragger) {
   width: 100%;
-  border: 2px dashed #d9d9d9;
+  border: 2px dashed var(--el-border-color);
   border-radius: 8px;
-  background-color: #fafafa;
+  background-color: var(--el-fill-color-lighter);
   transition: all 0.3s;
 }
 
 :deep(.el-upload-dragger:hover) {
-  border-color: #409eff;
-  background-color: #f5f7fa;
+  border-color: var(--el-color-primary);
+  background-color: var(--el-fill-color-light);
 }
 </style>

@@ -12,7 +12,7 @@
       </el-button>
     </div>
 
-    <el-card>
+    <el-card class="filter-card" shadow="never">
       <div class="toolbar">
         <el-input
           v-model="searchText"
@@ -66,8 +66,11 @@
           />
         </el-select>
       </div>
+    </el-card>
 
-      <el-table :data="rows" v-loading="loading" style="width: 100%">
+    <el-card shadow="never">
+      <el-table :data="rows" v-loading="loading" style="width: 100%" ref="movieTable" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" />
         <el-table-column
           prop="title"
           :label="$t('movies.movieTitle')"
@@ -171,6 +174,23 @@
         </el-table-column>
       </el-table>
 
+      <!-- Bulk Actions -->
+      <div
+          class="bulk-actions"
+          v-if="selectedMovies.length > 0"
+      >
+        <el-button
+            type="danger"
+            @click="bulkDeleteMovies"
+            v-permission="'movies.delete'"
+        >
+          {{ $t("actions.deleteSelected") }} ({{ selectedMovies.length }})
+        </el-button>
+        <el-button type="default" @click="cancelSelection">
+          {{ $t("actions.cancel") }}
+        </el-button>
+      </div>
+
       <div class="pagination">
         <el-pagination
           v-model:current-page="currentPage"
@@ -209,6 +229,48 @@ const searchText = ref("");
 const statusFilter = ref("");
 const genreFilter = ref("");
 const sortBy = ref("release_date");
+const movieTable = ref(null);
+const selectedMovies = ref([]);
+
+const handleSelectionChange = (val) => {
+  selectedMovies.value = val;
+};
+
+const cancelSelection = () => {
+  selectedMovies.value = [];
+  if (movieTable.value) {
+    movieTable.value.clearSelection();
+  }
+};
+
+const bulkDeleteMovies = async () => {
+  try {
+    await ElMessageBox.confirm(
+      `Are you sure you want to delete ${selectedMovies.value.length} movies?`,
+      "Delete Movies",
+      {
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        type: "warning",
+      }
+    );
+
+    const ids = selectedMovies.value.map((movie) => movie.id);
+    // Assuming movieService.bulkDeleteMovies(ids) exists or will be created.
+    await movieService.bulkDeleteMovies(ids);
+
+    ElMessage.success(
+      `${selectedMovies.value.length} movies deleted successfully`
+    );
+    cancelSelection();
+    load(); // Reload the list
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("Failed to bulk delete movies:", error);
+      ElMessage.error("Failed to delete movies");
+    }
+  }
+};
 
 const debouncedSearch = debounce(() => {
   currentPage.value = 1;
@@ -297,6 +359,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.filter-card {
+  margin-bottom: 10px;
+}
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -330,6 +395,16 @@ onMounted(() => {
   height: 60px;
   object-fit: cover;
   border-radius: 4px;
+}
+
+.bulk-actions {
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 4px;
+  background-color: var(--el-fill-color-lighter);
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .pagination {

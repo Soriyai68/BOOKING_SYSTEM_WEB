@@ -117,6 +117,7 @@
           :data="seats"
           ref="seatTable"
           v-loading="loading"
+          style="width: 100%"
           :element-loading-text="$t('common.loading')"
           :empty-text="$t('messages.noData')"
           row-key="id"
@@ -126,14 +127,14 @@
         <el-table-column
             prop="seat_identifier"
             :label="$t('seats.indentifier')"
-            width="150"
+            width="200"
         />
 
         <el-table-column prop="row" :label="$t('seats.row')" width="80"/>
         <el-table-column
             prop="seat_number"
             :label="$t('seats.number')"
-            width="120"
+            width="150"
         >
           <template #default="{ row }">
             {{ Array.isArray(row.seat_number) ? row.seat_number.join(', ') : row.seat_number }}
@@ -142,7 +143,7 @@
         <el-table-column
             prop="hall_name"
             :label="$t('seats.hallName')"
-            width="120"
+            width="150"
         >
           <template #default="{ row }">
             {{ row.hall?.hall_name || "-" }}
@@ -151,7 +152,7 @@
         <el-table-column
             prop="theater.name"
             :label="$t('seats.theaterName')"
-            width="250"
+            width="280"
         >
           <template #default="{ row }">
             {{ row.theater?.name || "-" }}

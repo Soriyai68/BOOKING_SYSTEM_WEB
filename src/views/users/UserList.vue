@@ -3,47 +3,52 @@
     <div class="page-header">
       <h2>{{ $t("users.title") }}</h2>
       <el-button v-permission="'users.create'" type="primary" @click="$router.push('/admin/users/create')">
-        <el-icon><Plus /></el-icon>
+        <el-icon>
+          <Plus/>
+        </el-icon>
         {{ $t("users.addUser") }}
       </el-button>
     </div>
 
-    <el-card>
+    <el-card class="filter-card" shadow="never">
       <div class="toolbar">
         <el-input
-          v-model="searchText"
-          :placeholder="$t('users.searchUsers')"
-          class="search-input"
-          :prefix-icon="Search"
-          clearable
-          @input="debouncedSearch"
+            v-model="searchText"
+            :placeholder="$t('users.searchUsers')"
+            class="search-input"
+            :prefix-icon="Search"
+            clearable
+            @input="debouncedSearch"
         />
         <el-select
-          v-model="statusFilter"
-          :placeholder="$t('users.filterByStatus')"
-          clearable
+            v-model="statusFilter"
+            :placeholder="$t('users.filterByStatus')"
+            clearable
         >
-          <el-option :label="$t('table.selectAll')" value="" />
-          <el-option :label="$t('users.active')" value="active" />
-          <el-option :label="$t('users.inactive')" value="inactive" />
+          <el-option :label="$t('table.selectAll')" value=""/>
+          <el-option :label="$t('users.active')" value="active"/>
+          <el-option :label="$t('users.inactive')" value="inactive"/>
         </el-select>
       </div>
+    </el-card>
 
+    <el-card shadow="never">
       <el-table
-        :data="users"
-        v-loading="loading"
-        style="width: 100%"
-        :empty-text="$t('messages.noData')"
-        @selection-change="handleSelectionChange"
+          :data="users"
+          v-loading="loading"
+          style="width: 100%"
+          :empty-text="$t('messages.noData')"
+          ref="userTable"
+          @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" />
+        <el-table-column type="selection" width="55"/>
         <!-- <el-table-column prop="id" label="ID" width="80" /> -->
-        <el-table-column prop="name" :label="$t('users.name')" />
-        <el-table-column prop="phone" :label="$t('users.phone')" />
+        <el-table-column prop="name" :label="$t('users.name')"/>
+        <el-table-column prop="phone" :label="$t('users.phone')"/>
         <el-table-column prop="role" :label="$t('users.role')" width="150">
           <template #default="{ row }">
             <el-tag
-              :type="
+                :type="
                 row.role === 'admin' || row.role === 'superadmin'
                   ? 'warning'
                   : 'info'
@@ -61,9 +66,9 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="created_at"
-          :label="$t('users.created')"
-          width="120"
+            prop="created_at"
+            :label="$t('users.created')"
+            width="120"
         >
           <template #default="{ row }">
             {{ formatDate(row.created_at) }}
@@ -72,20 +77,20 @@
         <el-table-column :label="$t('users.actions')" width="140">
           <template #default="{ row }">
             <el-button
-              v-permission="'users.edit'"
-              type="primary"
-              size="small"
-              link
-              @click="editUser(row.id)"
+                v-permission="'users.edit'"
+                type="primary"
+                size="small"
+                link
+                @click="editUser(row.id)"
             >
               {{ $t("users.edit") }}
             </el-button>
             <el-button
-              v-permission="'users.delete'"
-              type="danger"
-              size="small"
-              link
-              @click="deleteUser(row.id)"
+                v-permission="'users.delete'"
+                type="danger"
+                size="small"
+                link
+                @click="deleteUser(row.id)"
             >
               {{ $t("users.delete") }}
             </el-button>
@@ -98,19 +103,22 @@
         <el-button type="danger" @click="bulkDeleteUsers">
           {{ $t("users.deleteSelected") }} ({{ selectedUsers.length }})
         </el-button>
+        <el-button type="default" @click="cancelSelection">
+          {{ $t("actions.cancel") }}
+        </el-button>
       </div>
 
       <!-- Pagination -->
       <div class="pagination">
         <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          :small="false"
-          :total="total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :small="false"
+            :total="total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
         />
       </div>
     </el-card>
@@ -118,14 +126,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
-import { useRouter } from "vue-router";
-import { useAppStore } from "@/stores/app";
-import { userService } from "@/services/userService";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { Plus, Search } from "@element-plus/icons-vue";
-import { useI18n } from "vue-i18n";
-import { debounce } from "lodash-es"; // You may need to install lodash-es
+import {onMounted, ref, watch} from "vue";
+import {useRouter} from "vue-router";
+import {useAppStore} from "@/stores/app";
+import {userService} from "@/services/userService";
+import {ElMessage, ElMessageBox} from "element-plus";
+import {Plus, Search} from "@element-plus/icons-vue";
+import {useI18n} from "vue-i18n";
+import {debounce} from "lodash-es"; // You may need to install lodash-es
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -138,8 +146,9 @@ const currentPage = ref(1);
 const pageSize = ref(10);
 const total = ref(0);
 const users = ref([]);
+const userTable = ref(null);
 const selectedUsers = ref([]);
-const { t } = useI18n();
+const {t} = useI18n();
 
 // Debounced search function
 const debouncedSearch = debounce(() => {
@@ -200,6 +209,13 @@ const handleSelectionChange = (selection) => {
   selectedUsers.value = selection;
 };
 
+const cancelSelection = () => {
+  selectedUsers.value = [];
+  if (userTable.value) {
+    userTable.value.clearSelection();
+  }
+};
+
 // Edit user
 const editUser = (id) => {
   router.push(`/admin/users/${id}/edit`);
@@ -209,13 +225,13 @@ const editUser = (id) => {
 const deleteUser = async (id) => {
   try {
     await ElMessageBox.confirm(
-      "Are you sure you want to delete this user?",
-      "Delete User",
-      {
-        confirmButtonText: "Delete",
-        cancelButtonText: "Cancel",
-        type: "warning",
-      }
+        "Are you sure you want to delete this user?",
+        "Delete User",
+        {
+          confirmButtonText: "Delete",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
     );
 
     await userService.deleteUser(id);
@@ -237,22 +253,22 @@ const deleteUser = async (id) => {
 const bulkDeleteUsers = async () => {
   try {
     await ElMessageBox.confirm(
-      `Are you sure you want to delete ${selectedUsers.value.length} users?`,
-      "Delete Users",
-      {
-        confirmButtonText: "Delete",
-        cancelButtonText: "Cancel",
-        type: "warning",
-      }
+        `Are you sure you want to delete ${selectedUsers.value.length} users?`,
+        "Delete Users",
+        {
+          confirmButtonText: "Delete",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
     );
 
     const userIds = selectedUsers.value.map((user) => user.id);
     await userService.bulkDeleteUsers(userIds);
 
     ElMessage.success(
-      `${selectedUsers.value.length} users deleted successfully`
+        `${selectedUsers.value.length} users deleted successfully`
     );
-    selectedUsers.value = [];
+    cancelSelection();
     loadUsers();
   } catch (error) {
     if (error !== "cancel") {
@@ -270,9 +286,9 @@ const formatDate = (dateString) => {
 // Initialize component
 onMounted(() => {
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("users.title"), path: "/admin/users" },
-    { title: t("users.allUsers"), path: "/admin/users" },
+    {title: t("nav.dashboard"), path: "/admin/dashboard"},
+    {title: t("users.title"), path: "/admin/users"},
+    {title: t("users.allUsers"), path: "/admin/users"},
   ]);
 
   loadUsers();
@@ -323,5 +339,9 @@ onMounted(() => {
 /* Selection highlighting */
 :deep(.el-table__row.current-row) {
   background-color: var(--el-color-primary-light-9);
+}
+
+.filter-card {
+  margin-bottom: 10px;
 }
 </style>

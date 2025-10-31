@@ -3,72 +3,74 @@
     <div class="page-header">
       <h2>{{ $t("users.createUser") }}</h2>
       <el-button @click="$router.back()">
-        <el-icon><ArrowLeft /></el-icon>
+        <el-icon>
+          <ArrowLeft/>
+        </el-icon>
         {{ $t("actions.back") }}
       </el-button>
     </div>
 
     <el-card>
       <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="120px"
-        @submit.prevent="handleSubmit"
+          ref="formRef"
+          :model="form"
+          :rules="rules"
+          label-width="120px"
+          @submit.prevent="handleSubmit"
       >
         <el-form-item :label="$t('users.name')" prop="name">
           <el-input
-            v-model="form.name"
-            :placeholder="$t('users.name')"
-            maxlength="50"
-            show-word-limit
+              v-model="form.name"
+              :placeholder="$t('users.name')"
+              maxlength="50"
+              show-word-limit
           />
         </el-form-item>
 
         <el-form-item :label="$t('users.phone')" prop="phone">
           <el-input
-            v-model="form.phone"
-            :placeholder="$t('auth.phonePlaceholder')"
-            @input="formatPhoneNumber"
-            maxlength="13"
+              v-model="form.phone"
+              :placeholder="$t('auth.phonePlaceholder')"
+              @input="formatPhoneNumber"
+              maxlength="13"
           />
         </el-form-item>
 
         <el-form-item :label="$t('users.role')" prop="role">
           <el-select
-            v-model="form.role"
-            :placeholder="$t('users.role')"
-            style="width: 100%"
-            filterable
+              v-model="form.role"
+              :placeholder="$t('users.role')"
+              style="width: 100%"
+              filterable
           >
             <el-option
-              v-for="r in roleOptions"
-              :key="r.name"
-              :label="r.displayName || r.name"
-              :value="r.name"
-              :disabled="r.name === 'superadmin' && !authStore.isSuperAdmin"
+                v-for="r in roleOptions"
+                :key="r.name"
+                :label="r.displayName || r.name"
+                :value="r.name"
+                :disabled="r.name === 'superadmin' && !authStore.isSuperAdmin"
             />
           </el-select>
         </el-form-item>
 
         <el-form-item
-          :label="$t('auth.password')"
-          prop="password"
-          v-if="form.role && form.role !== 'user'"
+            :label="$t('auth.password')"
+            prop="password"
+            v-if="form.role && form.role !== 'user'"
         >
           <el-input
-            v-model="form.password"
-            type="password"
-            :placeholder="$t('auth.password')"
-            show-password
+              v-model="form.password"
+              type="password"
+              :placeholder="$t('auth.password')"
+              show-password
           />
         </el-form-item>
 
         <el-form-item :label="$t('users.status')" prop="isActive">
           <el-switch
-            v-model="form.isActive"
-            :active-text="$t('users.active')"
-            :inactive-text="$t('users.inactive')"
+              v-model="form.isActive"
+              :active-text="$t('users.active')"
+              :inactive-text="$t('users.inactive')"
           />
         </el-form-item>
 
@@ -86,29 +88,29 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
-import { ElMessage } from "element-plus";
-import { ArrowLeft } from "@element-plus/icons-vue";
-import { useAppStore } from "@/stores/app";
-import { useAuthStore } from "@/stores/auth";
-import { userService } from "@/services/userService";
+import {onMounted, reactive, ref} from "vue";
+import {useRouter} from "vue-router";
+import {useI18n} from "vue-i18n";
+import {ElMessage} from "element-plus";
+import {ArrowLeft} from "@element-plus/icons-vue";
+import {useAppStore} from "@/stores/app";
+import {useAuthStore} from "@/stores/auth";
+import {userService} from "@/services/userService";
 
 const router = useRouter();
 const appStore = useAppStore();
 const authStore = useAuthStore();
-const { t } = useI18n();
+const {t} = useI18n();
 
 const formRef = ref();
 const loading = ref(false);
 
 // Static roles (backend roles model removed)
 const roleOptions = ref([
-  { name: 'superadmin', displayName: 'Super Admin', isSystem: true },
-  { name: 'admin', displayName: 'Admin', isSystem: true },
-  { name: 'cashier', displayName: 'Cashier', isSystem: true },
-  { name: 'user', displayName: 'User', isSystem: true },
+  {name: 'superadmin', displayName: 'Super Admin', isSystem: true},
+  {name: 'admin', displayName: 'Admin', isSystem: true},
+  {name: 'cashier', displayName: 'Cashier', isSystem: true},
+  {name: 'user', displayName: 'User', isSystem: true},
 ]);
 
 const form = reactive({
@@ -144,7 +146,7 @@ const validatePassword = (rule, value, callback) => {
 
 const rules = {
   name: [
-    { required: true, message: t("validation.required"), trigger: "blur" },
+    {required: true, message: t("validation.required"), trigger: "blur"},
     {
       min: 2,
       max: 50,
@@ -152,11 +154,11 @@ const rules = {
       trigger: "blur",
     },
   ],
-  phone: [{ required: true, validator: validatePhone, trigger: "blur" }],
+  phone: [{required: true, validator: validatePhone, trigger: "blur"}],
   role: [
-    { required: true, message: t("validation.required"), trigger: "change" },
+    {required: true, message: t("validation.required"), trigger: "change"},
   ],
-  password: [{ validator: validatePassword, trigger: "blur" }],
+  password: [{validator: validatePassword, trigger: "blur"}],
 };
 
 // Format phone number
@@ -219,9 +221,9 @@ const resetForm = () => {
 
 onMounted(async () => {
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("users.title"), path: "/admin/users" },
-    { title: t("users.createUser"), path: "/admin/users/create" },
+    {title: t("nav.dashboard"), path: "/admin/dashboard"},
+    {title: t("users.title"), path: "/admin/users"},
+    {title: t("users.createUser"), path: "/admin/users/create"},
   ]);
 });
 </script>
@@ -236,7 +238,8 @@ onMounted(async () => {
 
 .page-header h2 {
   margin: 0;
-  color: #303133;
+  color: var(--el-text-color-primary);
+
 }
 
 .el-form {
