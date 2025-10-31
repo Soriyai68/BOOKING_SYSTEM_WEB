@@ -410,6 +410,8 @@ export default {
         updated: "បានធ្វើបច្ចុប្បន្នភាព",
         updateFailed: "បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាព",
         failedToLoadRolePermissions: "មិនអាចផ្ទុកសិទ្ធិតាមតួនាទីបាន",
+        filterByModule: "ចម្រាញ់តាមម៉ូឌុល",
+        searchPermissions: "ស្វែងរកសិទ្ធិ..."
     },
 
     // Settings

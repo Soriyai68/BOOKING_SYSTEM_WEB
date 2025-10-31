@@ -447,6 +447,8 @@ export default {
         updated: "Updated",
         updateFailed: "Update failed",
         failedToLoadRolePermissions: "Failed to load role permissions",
+        filterByModule: "Filter by module",
+        searchPermissions: "Search permissions...",
     },
 
     // Settings
