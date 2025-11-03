@@ -1,4 +1,5 @@
 import api from "@/utils/api";
+import { movieService } from "./movieService"; // Added this import
 
 export const showtimeService = {
     // List showtimes with pagination and filters
@@ -97,11 +98,30 @@ export const showtimeService = {
             movie_id: payload.movie_id,
             hall_id: payload.hall_id,
             theater_id: payload.theater_id,
-            show_date: payload.show_date,
+            // ✅ ensure show_date is sent in YYYY-MM-DD format
+            show_date: payload.show_date
+                ? new Date(payload.show_date).toISOString().split("T")[0]
+                : undefined,
             start_time: payload.start_time,
             end_time: payload.end_time,
             status: payload.status || "scheduled",
         };
+
+        // Calculate end_time if not provided
+        if (!backendData.end_time && backendData.movie_id && backendData.start_time && backendData.show_date) {
+            try {
+                const movie = await movieService.getMovie(backendData.movie_id);
+                if (movie && movie.duration_minutes) {
+                    const showDateTime = new Date(`${backendData.show_date}T${backendData.start_time}`);
+                    showDateTime.setMinutes(showDateTime.getMinutes() + movie.duration_minutes);
+                    backendData.end_time = `${String(showDateTime.getHours()).padStart(2, '0')}:${String(showDateTime.getMinutes()).padStart(2, '0')}`;
+                }
+            } catch (error) {
+                console.error("Error calculating end_time for showtime:", error);
+                // Optionally, re-throw or handle this error more gracefully
+            }
+        }
+
         Object.keys(backendData).forEach(
             (k) => backendData[k] === undefined && delete backendData[k]
         );
@@ -111,24 +131,45 @@ export const showtimeService = {
     // showtimeService.js
     async createBulkShowtimes(payload) {
         // payload: { showtimes: [ { movie_id, hall_id, theater_id, show_date, start_time, end_time, status } ] }
+        const processedShowtimes = await Promise.all(payload.showtimes.map(async (s) => {
+            const data = {
+                movie_id: s.movie_id,
+                hall_id: s.hall_id,
+                theater_id: s.theater_id,
+                // ✅ ensure show_date is sent in YYYY-MM-DD format
+                show_date: s.show_date
+                    ? new Date(s.show_date).toISOString().split("T")[0]
+                    : undefined,
+                start_time: s.start_time,
+                end_time: s.end_time,
+                status: s.status || "scheduled",
+            };
+
+            // Calculate end_time if not provided
+            if (!data.end_time && data.movie_id && data.start_time && data.show_date) {
+                try {
+                    const movie = await movieService.getMovie(data.movie_id);
+                    if (movie && movie.duration_minutes) {
+                        const showDateTime = new Date(`${data.show_date}T${data.start_time}`);
+                        showDateTime.setMinutes(showDateTime.getMinutes() + movie.duration_minutes);
+                        data.end_time = `${String(showDateTime.getHours()).padStart(2, '0')}:${String(showDateTime.getMinutes()).padStart(2, '0')}`;
+                    }
+                } catch (error) {
+                    console.error(`Error calculating end_time for bulk showtime (movie_id: ${data.movie_id}):`, error);
+                }
+            }
+
+            // Remove undefined fields
+            Object.keys(data).forEach(
+                (k) => data[k] === undefined && delete data[k]
+            );
+            return data;
+        }));
+
         const backendData = {
-            showtimes: payload.showtimes.map((s) => {
-                const data = {
-                    movie_id: s.movie_id,
-                    hall_id: s.hall_id,
-                    theater_id: s.theater_id,
-                    show_date: s.show_date,
-                    start_time: s.start_time,
-                    end_time: s.end_time,
-                    status: s.status || "scheduled",
-                };
-                // Remove undefined fields
-                Object.keys(data).forEach(
-                    (k) => data[k] === undefined && delete data[k]
-                );
-                return data;
-            }),
+            showtimes: processedShowtimes,
         };
+
         const {data} = await api.post("/showtimes/bulk/create", backendData);
         return data;
     },
@@ -138,12 +179,29 @@ export const showtimeService = {
         const backendData = {
             movie_id: payload.movie_id,
             hall_id: payload.hall_id,
-            show_date: payload.show_date,
+            show_date: payload.show_date
+                ? new Date(payload.show_date).toISOString().split("T")[0]
+                : undefined,
             theater_id: payload.theater_id,
             start_time: payload.start_time,
             end_time: payload.end_time,
             status: payload.status,
         };
+
+        // Calculate end_time if not provided during an update and other necessary fields are present
+        if (!backendData.end_time && backendData.movie_id && backendData.start_time && backendData.show_date) {
+            try {
+                const movie = await movieService.getMovie(backendData.movie_id);
+                if (movie && movie.duration_minutes) {
+                    const showDateTime = new Date(`${backendData.show_date}T${backendData.start_time}`);
+                    showDateTime.setMinutes(showDateTime.getMinutes() + movie.duration_minutes);
+                    backendData.end_time = `${String(showDateTime.getHours()).padStart(2, '0')}:${String(showDateTime.getMinutes()).padStart(2, '0')}`;
+                }
+            } catch (error) {
+                console.error("Error calculating end_time for showtime update:", error);
+            }
+        }
+
         Object.keys(backendData).forEach(
             (k) => backendData[k] === undefined && delete backendData[k]
         );
@@ -157,8 +215,8 @@ export const showtimeService = {
             throw new Error("No showtimes provided for duplication");
         }
 
-        const backendData = {
-            showtimes: payload.showtimes.map((s) => ({
+        const processedShowtimes = await Promise.all(payload.showtimes.map(async (s) => {
+            const data = {
                 _id: s._id,
                 movie_id: s.movie_id,
                 hall_id: s.hall_id,
@@ -167,8 +225,28 @@ export const showtimeService = {
                 start_time: s.start_time,
                 end_time: s.end_time,
                 status: s.status,
-            })),
+            };
+
+            // Calculate end_time if not provided
+            if (!data.end_time && data.movie_id && data.start_time && data.show_date) {
+                try {
+                    const movie = await movieService.getMovie(data.movie_id);
+                    if (movie && movie.duration_minutes) {
+                        const showDateTime = new Date(`${data.show_date}T${data.start_time}`);
+                        showDateTime.setMinutes(showDateTime.getMinutes() + movie.duration_minutes);
+                        data.end_time = `${String(showDateTime.getHours()).padStart(2, '0')}:${String(showDateTime.getMinutes()).padStart(2, '0')}`;
+                    }
+                } catch (error) {
+                    console.error(`Error calculating end_time for bulk duplicated showtime (movie_id: ${data.movie_id}):`, error);
+                }
+            }
+            return data;
+        }));
+
+        const backendData = {
+            showtimes: processedShowtimes,
         };
+
         const {data} = await api.post("/showtimes/bulk/duplicate", backendData);
         return data;
     },

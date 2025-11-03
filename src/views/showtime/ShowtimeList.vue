@@ -127,6 +127,8 @@
         <el-table-column
             :label="$t('showtimes.showDate')"
             prop="show_date"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
             width="180"
         />
         <el-table-column :label="$t('showtimes.startTime')" width="180">
@@ -489,6 +491,7 @@ onMounted(async () => {
 .filter-card {
   margin-bottom: 10px;
 }
+
 .page-header {
   display: flex;
   justify-content: space-between;

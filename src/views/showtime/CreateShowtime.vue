@@ -73,6 +73,8 @@
             <el-date-picker
                 v-model="showtime.show_date"
                 type="date"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
                 :placeholder="$t('showtimes.selectShowDate')"
             />
           </el-form-item>
@@ -284,6 +286,7 @@ const submitSingleForm = () => {
       appStore.setLoading(true);
       try {
         await showtimeService.createShowtime(showtime);
+        console.log("payload:", showtime)
         ElMessage.success(t("showtimes.createSuccess"));
         router.push("/admin/showtimes");
       } catch (error) {
