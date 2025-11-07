@@ -50,7 +50,7 @@
       <template #header>
         <div class="section-header">
           <span>{{ $t('theaters.halls') }}({{ halls.length }})</span>
-          <el-button v-permission="'halls.create'" type="primary" size="small" @click="goToCreateHall">
+          <el-button v-permission="'halls.create'" type="primary" size="small" @click="openCreateHallDialog">
             <el-icon><Plus /></el-icon>
             {{ $t('halls.addHall') }}
           </el-button>
@@ -78,13 +78,20 @@
           <el-table-column :label="$t('users.actions')" width="180">
             <template #default="{ row }">
               <el-button v-permission="'halls.view'" size="small" link type="primary" @click="viewHall(row.id)">{{ $t('actions.view') }}</el-button>
-              <el-button v-permission="'halls.edit'" size="small" link type="primary" @click="editHall(row.id)">{{ $t('actions.edit') }}</el-button>
-              <el-button v-permission="'halls.delete'" size="small" link type="danger" @click="removeHall(row.id)">{{ $t('actions.delete') }}</el-button>
+              <el-button v-permission="'halls.edit'" size="small" link type="primary" @click="openEditHallDialog(row.id)">{{ $t('actions.edit') }}</el-button>
+              <el-button v-permission="'halls.delete'" size="small" link type="danger" @click="deleteHall(row.id)">{{ $t('actions.delete') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
     </el-card>
+
+    <!-- Edit Theater Dialog -->
+    <EditTheater v-model="showEditDialog" :theater-id="route.params.id" @success="handleEditSuccess" />
+
+    <!-- Create/Edit Hall Dialogs -->
+    <CreateHall v-model="showCreateHallDialog" :theater-id="route.params.id" @success="handleHallDialogSuccess" />
+    <EditHall v-model="showEditHallDialog" :hall-id="selectedHallId" @success="handleHallDialogSuccess" />
   </div>
 </template>
 
@@ -97,6 +104,9 @@ import { theaterService } from '@/services/theaterService'
 import { hallService } from '@/services/hallService'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
+import EditTheater from './EditTheater.vue'
+import CreateHall from '../halls/CreateHall.vue'
+import EditHall from '../halls/EditHall.vue'
 
 const route = useRoute();
 const router = useRouter();
@@ -107,6 +117,12 @@ const loading = ref(false)
 const theater = ref(null)
 const halls = ref([])
 const hallsLoading = ref(false)
+const showEditDialog = ref(false)
+
+// Hall dialog states
+const showCreateHallDialog = ref(false)
+const showEditHallDialog = ref(false)
+const selectedHallId = ref(null)
 
 const load = async () => {
   loading.value = true;
@@ -133,20 +149,32 @@ const loadHalls = async () => {
   }
 }
 
-const goEdit = () => router.push(`/admin/theaters/${route.params.id}/edit`)
-const goToCreateHall = () => router.push(`/admin/halls/create?theater_id=${route.params.id}`)
-const viewHall = (id) => router.push(`/admin/halls/${id}`)
-const editHall = (id) => router.push(`/admin/halls/${id}/edit`)
+const goEdit = () => {
+  showEditDialog.value = true
+}
 
-const removeHall = async (hallId) => {
+const handleEditSuccess = async () => {
+  await load() // Reload theater data after successful edit
+}
+
+const openCreateHallDialog = () => {
+  showCreateHallDialog.value = true
+}
+const openEditHallDialog = (id) => {
+  selectedHallId.value = id
+  showEditHallDialog.value = true
+}
+const viewHall = (id) => router.push(`/admin/halls/${id}`)
+
+const deleteHall = async (hallId) => {
   try {
     await ElMessageBox.confirm(
       t('theaters.confirmRemoveHall'),
       t('theaters.removeHall'),
       { type: 'warning', confirmButtonText: t('actions.remove'), cancelButtonText: t('actions.cancel') }
     )
-    await theaterService.removeHall(route.params.id, hallId)
-    ElMessage.success(t('theaters.hallRemoved'))
+    await hallService.deleteHall(hallId)
+    ElMessage.success(t('halls.deleteSuccess'))
     // Reload both theater data and halls to update total_halls count
     await load()
   } catch (err) {
@@ -155,6 +183,11 @@ const removeHall = async (hallId) => {
       ElMessage.error('Failed to remove hall from theater')
     }
   }
+}
+
+const handleHallDialogSuccess = async () => {
+  // Reload halls after create/update
+  await load()
 }
 
 const statusTagType = (status) => {

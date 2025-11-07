@@ -1,123 +1,114 @@
 <template>
-  <div class="edit-hall">
-    <div class="page-header">
-      <h2>{{ $t("halls.editHall") }}</h2>
-      <el-button @click="$router.back()"
-        ><el-icon><ArrowLeft /></el-icon>{{ $t("actions.back") }}</el-button
-      >
-    </div>
+  <el-dialog
+    v-model="visible"
+    :title="$t('halls.editHall')"
+    width="640px"
+    :close-on-click-modal="false"
+    @closed="handleClosed"
+  >
+    <el-form
+      ref="formRef"
+      :model="form"
+      :rules="rules"
+      label-width="140px"
+      v-loading="pageLoading"
+    >
+      <el-form-item :label="$t('halls.name')" prop="hall_name">
+        <el-input v-model="form.hall_name" maxlength="100" show-word-limit />
+      </el-form-item>
 
-    <el-card v-loading="pageLoading">
-      <div v-if="loadError" class="error-state">
-        <el-result
-          icon="error"
-          :title="$t('messages.error')"
-          :sub-title="loadError"
+      <el-form-item :label="$t('halls.theater')" prop="theater_id">
+        <el-select
+          v-model="form.theater_id"
+          style="width: 100%"
+          :loading="theatersLoading"
+          filterable
         >
-          <template #extra>
-            <el-button type="primary" @click="load">{{
-              $t("actions.refresh")
-            }}</el-button>
-            <el-button @click="$router.back()">{{
-              $t("actions.back")
-            }}</el-button>
-          </template>
-        </el-result>
-      </div>
-
-      <el-form
-        v-else
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="140px"
-      >
-        <el-form-item :label="$t('halls.name')" prop="hall_name">
-          <el-input v-model="form.hall_name" maxlength="100" show-word-limit />
-        </el-form-item>
-
-        <el-form-item :label="$t('halls.theater')" prop="theater_id">
-          <el-select
-            v-model="form.theater_id"
-            style="width: 100%"
-            :loading="theatersLoading"
-            filterable
-          >
-            <el-option
-              v-for="opt in theaters"
-              :key="opt.id"
-              :label="opt.display_name || opt.name"
-              :value="opt.id"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item :label="$t('halls.type')" prop="screen_type">
-          <el-select v-model="form.screen_type" style="width: 100%">
-            <el-option
-              v-for="opt in hallService.SCREEN_TYPES"
-              :key="opt.value"
-              :label="opt.label"
-              :value="opt.value"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item :label="$t('halls.totalSeats')" prop="total_seats">
-          <el-input-number v-model="form.total_seats" :min="1" :max="1000" readonly />
-        </el-form-item>
-
-        <el-form-item :label="$t('halls.status')" prop="status">
-          <el-select v-model="form.status" style="width: 100%">
-            <el-option
-              v-for="opt in hallService.HALL_STATUSES"
-              :key="opt.value"
-              :label="opt.label"
-              :value="opt.value"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item :label="$t('halls.notes')" prop="notes">
-          <el-input
-            v-model="form.notes"
-            type="textarea"
-            :rows="3"
-            maxlength="1000"
-            show-word-limit
+          <el-option
+            v-for="opt in theaters"
+            :key="opt.id"
+            :label="opt.display_name || opt.name"
+            :value="opt.id"
           />
-        </el-form-item>
+        </el-select>
+      </el-form-item>
 
-        <el-form-item>
-          <el-button v-permission="'halls.edit'" type="primary" :loading="loading" @click="handleSubmit">{{
-            $t("halls.updateHall")
-          }}</el-button>
-          <el-button @click="resetForm">{{ $t("actions.reset") }}</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
-  </div>
+      <el-form-item :label="$t('halls.type')" prop="screen_type">
+        <el-select v-model="form.screen_type" style="width: 100%">
+          <el-option
+            v-for="opt in hallService.SCREEN_TYPES"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item :label="$t('halls.totalSeats')" prop="total_seats">
+        <el-input-number v-model="form.total_seats" :min="1" :max="1000" readonly />
+      </el-form-item>
+
+      <el-form-item :label="$t('halls.status')" prop="status">
+        <el-select v-model="form.status" style="width: 100%">
+          <el-option
+            v-for="opt in hallService.HALL_STATUSES"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item :label="$t('halls.notes')" prop="notes">
+        <el-input
+          v-model="form.notes"
+          type="textarea"
+          :rows="3"
+          maxlength="1000"
+          show-word-limit
+        />
+      </el-form-item>
+    </el-form>
+
+    <template #footer>
+      <el-button @click="visible = false">{{ $t("actions.cancel") }}</el-button>
+      <el-button @click="resetForm">{{ $t("actions.reset") }}</el-button>
+      <el-button
+        v-permission="'halls.edit'"
+        type="primary"
+        :loading="loading"
+        @click="handleSubmit"
+      >
+        {{ $t("halls.updateHall") }}
+      </el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useAppStore } from "@/stores/app";
+import { ref, reactive, watch, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { hallService } from "@/services/hallService";
 import { theaterService } from "@/services/theaterService";
 import { ElMessage } from "element-plus";
-import { ArrowLeft } from "@element-plus/icons-vue";
 
-const route = useRoute();
-const router = useRouter();
-const appStore = useAppStore();
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    default: false,
+  },
+  hallId: {
+    type: [String, Number],
+    default: null,
+  },
+});
+
+const emit = defineEmits(["update:modelValue", "success"]);
+
 const { t } = useI18n();
-
 const formRef = ref();
 const loading = ref(false);
 const pageLoading = ref(false);
-const loadError = ref("");
 
 const original = ref(null);
 const theaters = ref([]);
@@ -144,6 +135,23 @@ const rules = {
   ],
 };
 
+const visible = ref(props.modelValue);
+
+watch(
+  () => props.modelValue,
+  async (val) => {
+    visible.value = val;
+    if (val && props.hallId) {
+      await nextTick();
+      await Promise.all([loadHall(), loadTheaters()]);
+    }
+  }
+);
+
+watch(visible, (val) => {
+  emit("update:modelValue", val);
+});
+
 const loadTheaters = async () => {
   theatersLoading.value = true;
   try {
@@ -160,11 +168,10 @@ const loadTheaters = async () => {
   }
 };
 
-const load = async () => {
+const loadHall = async () => {
   pageLoading.value = true;
-  loadError.value = "";
   try {
-    const data = await hallService.getHall(route.params.id);
+    const data = await hallService.getHall(props.hallId);
     original.value = data;
     Object.assign(form, {
       hall_name: data.hall_name,
@@ -176,7 +183,8 @@ const load = async () => {
     });
   } catch (e) {
     console.error(e);
-    loadError.value = e?.response?.data?.message || "Failed to load hall";
+    ElMessage.error(e?.response?.data?.message || "Failed to load hall");
+    visible.value = false;
   } finally {
     pageLoading.value = false;
   }
@@ -187,9 +195,10 @@ const handleSubmit = async () => {
   try {
     await formRef.value.validate();
     loading.value = true;
-    await hallService.updateHall(route.params.id, form);
+    await hallService.updateHall(props.hallId, form);
     ElMessage.success(t("halls.updateSuccess"));
-    router.push("/admin/halls");
+    visible.value = false;
+    emit("success");
   } catch (e) {
     console.error(e);
     if (e?.response?.data?.message) ElMessage.error(e.response.data.message);
@@ -212,28 +221,24 @@ const resetForm = () => {
   if (formRef.value) formRef.value.clearValidate();
 };
 
-onMounted(async () => {
-  await Promise.all([load(), loadTheaters()]);
-  appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("halls.title"), path: "/admin/halls" },
-    { title: t("halls.editHall"), path: "#" },
-  ]);
-});
+const handleClosed = () => {
+  Object.assign(form, {
+    hall_name: "",
+    theater_id: "",
+    screen_type: "standard",
+    total_seats: 1,
+    status: "active",
+    notes: "",
+  });
+  original.value = null;
+  if (formRef.value) {
+    formRef.value.clearValidate();
+  }
+};
 </script>
 
 <style scoped>
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-.error-state {
-  text-align: center;
-  padding: 40px 20px;
-}
 .el-form {
-  max-width: 640px;
+  max-width: 100%;
 }
 </style>

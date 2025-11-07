@@ -3,7 +3,10 @@
     <div class="page-header">
       <h2>{{ $t("halls.hallDetails") }}</h2>
       <div>
-        <el-button @click="$router.back()">{{ $t("actions.back") }}</el-button>
+        <el-button @click="$router.back()">
+          <el-icon><ArrowLeft /></el-icon>
+          {{ $t("actions.back") }}
+        </el-button>
         <el-button v-permission="'halls.edit'" type="primary" @click="goEdit">{{
           $t("actions.edit")
         }}</el-button>
@@ -66,6 +69,9 @@
         }}</el-descriptions-item>
       </el-descriptions>
     </el-card>
+
+    <!-- Edit Hall Dialog -->
+    <EditHall v-model="showEditDialog" :hall-id="route.params.id" @success="handleEditSuccess" />
   </div>
 </template>
 
@@ -76,7 +82,8 @@ import { useAppStore } from "@/stores/app";
 import { useI18n } from "vue-i18n";
 import { hallService } from "@/services/hallService";
 import { theaterService } from "@/services/theaterService";
-import { ArrowRight } from "@element-plus/icons-vue";
+import { ArrowRight, ArrowLeft } from "@element-plus/icons-vue";
+import EditHall from "./EditHall.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -86,6 +93,7 @@ const { t } = useI18n();
 const loading = ref(false);
 const hall = ref(null);
 const theater = ref(null);
+const showEditDialog = ref(false);
 
 const load = async () => {
   loading.value = true;
@@ -107,7 +115,14 @@ const load = async () => {
   }
 };
 
-const goEdit = () => router.push(`/admin/halls/${route.params.id}/edit`);
+const goEdit = () => {
+  showEditDialog.value = true;
+};
+
+const handleEditSuccess = async () => {
+  await load(); // Reload hall data after successful edit
+};
+
 const goToTheater = () => {
   if (theater.value) {
     router.push(`/admin/theaters/${theater.value.id}`);

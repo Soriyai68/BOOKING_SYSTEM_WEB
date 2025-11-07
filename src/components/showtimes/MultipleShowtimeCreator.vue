@@ -144,11 +144,11 @@
         circle
         plain
         class="col-action"
-        :disabled="multipleShowtimeData.showtimes.length <= 1"
+        :disabled="multipleShowtimeData.showtimes.length <= 1 || isUpdateMode"
       />
     </div>
 
-    <el-form-item>
+    <el-form-item v-if="!isUpdateMode">
       <el-button @click="addShowtimeRow" :icon="Plus">{{
         $t("actions.addRow")
       }}</el-button>
@@ -158,11 +158,11 @@
 
     <el-form-item>
       <el-button
-        v-permission="'showtimes.create'"
+        v-permission="isUpdateMode ? 'showtimes.edit' : 'showtimes.create'"
         type="primary"
         @click="submitMultipleForm"
       >
-        {{ isDuplicateMode ? $t("actions.duplicate") : $t("actions.create") }}
+        {{ isUpdateMode ? $t("actions.update") : (isDuplicateMode ? $t("actions.duplicate") : $t("actions.create")) }}
       </el-button>
       <el-button @click="$router.back()">{{ $t("actions.cancel") }}</el-button>
     </el-form-item>
@@ -185,6 +185,8 @@ const props = defineProps({
   initialTheaterId: { type: String, default: "" },
   initialData: { type: Array, default: null },
   isDuplicateMode: { type: Boolean, default: false },
+  isUpdateMode: { type: Boolean, default: false },
+  showtimeId: { type: String, default: "" },
 });
 
 const emit = defineEmits(["theater-changed", "submitted"]);
@@ -298,7 +300,17 @@ const submitMultipleForm = () => {
           })),
         };
 
-        if (props.isDuplicateMode) {
+        if (props.isUpdateMode) {
+          // Update mode - single showtime update
+          if (multipleShowtimeData.showtimes.length === 1) {
+            const showtimeData = payload.showtimes[0];
+            await showtimeService.updateShowtime(props.showtimeId, showtimeData);
+            ElMessage.success(t("showtimes.updateSuccess"));
+          } else {
+            ElMessage.error(t("showtimes.updateSingleOnly"));
+            return;
+          }
+        } else if (props.isDuplicateMode) {
           payload.showtimes.forEach((s, index) => {
             const originalShowtime = multipleShowtimeData.showtimes[index];
             if (typeof originalShowtime.id === "string") {
@@ -325,6 +337,12 @@ const submitMultipleForm = () => {
 };
 
 const addShowtimeRow = () => {
+  // Disable adding rows in update mode
+  if (props.isUpdateMode) {
+    ElMessage.warning(t("showtimes.cannotAddInUpdateMode"));
+    return;
+  }
+  
   const max_rows = 8;
   if (multipleShowtimeData.showtimes.length >= max_rows) {
     ElMessage.error(`${t("showtimes.limitError", { max: max_rows })}`);

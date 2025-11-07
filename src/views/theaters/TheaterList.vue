@@ -2,7 +2,7 @@
   <div class="theater-list">
     <div class="page-header">
       <h2>{{ $t("theaters.title") }}</h2>
-      <el-button v-permission="'theaters.create'" type="primary" @click="$router.push('/admin/theaters/create')">
+      <el-button v-permission="'theaters.create'" type="primary" @click="openCreateDialog">
         <el-icon>
           <Plus/>
         </el-icon>
@@ -38,6 +38,8 @@
             v-model="statusFilter"
             :placeholder="$t('theaters.status')"
             clearable
+            style="width: 250px"
+
         >
           <el-option :label="$t('table.selectAll')" value=""/>
           <el-option
@@ -133,6 +135,10 @@
         />
       </div>
     </el-card>
+
+    <!-- Dialogs -->
+    <CreateTheater v-model="showCreateDialog" @success="handleDialogSuccess" />
+    <EditTheater v-model="showEditDialog" :theater-id="selectedTheaterId" @success="handleDialogSuccess" />
   </div>
 </template>
 
@@ -145,6 +151,8 @@ import {theaterService} from "@/services/theaterService";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {Plus, Search} from "@element-plus/icons-vue";
 import {debounce} from "lodash-es";
+import CreateTheater from "./CreateTheater.vue";
+import EditTheater from "./EditTheater.vue";
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -161,6 +169,9 @@ const cityFilter = ref("");
 const provinceFilter = ref("");
 const theaterTable = ref(null);
 const selectedTheaters = ref([]);
+const showCreateDialog = ref(false);
+const showEditDialog = ref(false);
+const selectedTheaterId = ref(null);
 
 const handleSelectionChange = (val) => {
   selectedTheaters.value = val;
@@ -243,7 +254,19 @@ const handleCurrentChange = (page) => {
 };
 
 const viewTheater = (id) => router.push(`/admin/theaters/${id}`);
-const editTheater = (id) => router.push(`/admin/theaters/${id}/edit`);
+
+const openCreateDialog = () => {
+  showCreateDialog.value = true;
+};
+
+const editTheater = (id) => {
+  selectedTheaterId.value = id;
+  showEditDialog.value = true;
+};
+
+const handleDialogSuccess = () => {
+  load();
+};
 
 const deleteTheater = async (id) => {
   try {

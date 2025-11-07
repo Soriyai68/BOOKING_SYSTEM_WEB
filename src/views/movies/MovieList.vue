@@ -22,6 +22,7 @@
             class="search-input"
             :prefix-icon="Search"
             clearable
+            style="width: 200px"
             @input="debouncedSearch"
         />
         <el-select

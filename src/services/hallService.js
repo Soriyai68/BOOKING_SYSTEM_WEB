@@ -321,6 +321,49 @@ export const hallService = {
   // Get halls by theater
   async getHallsByTheater(theaterId, params = {}) {
     const response = await api.get(`/halls/theater/${theaterId}`, { params });
+    
+    // Handle different response formats
+    if (response.data?.success && response.data?.data) {
+      const halls = response.data.data.halls || response.data.data;
+      return {
+        data: {
+          halls: Array.isArray(halls) ? halls.map((hall) => ({
+            id: hall._id || hall.id,
+            hall_name: hall.hall_name,
+            screen_type: hall.screen_type,
+            total_seats: hall.total_seats,
+            seat_layout_id: hall.seat_layout_id,
+            theater_id: hall.theater_id,
+            status: hall.status,
+            capacity: hall.capacity || {
+              standard: 0,
+              premium: 0,
+              vip: 0,
+              wheelchair: 0,
+              recliner: 0,
+            },
+            dimensions: hall.dimensions || { width: 10, height: 10 },
+            features: hall.features || [],
+            notes: hall.notes || "",
+            created_at: hall.createdAt,
+            updated_at: hall.updatedAt,
+            deleted_at: hall.deletedAt,
+            is_deleted: !!hall.deletedAt,
+            display_name: hall.theater_id
+              ? `${hall.theater_id} - ${hall.hall_name}`
+              : hall.hall_name,
+            status_display: (() => {
+              if (!!hall.deletedAt) return "Deleted";
+              return (
+                hall.status.charAt(0).toUpperCase() +
+                hall.status.slice(1).replace("_", " ")
+              );
+            })(),
+          })) : [],
+        },
+      };
+    }
+    
     return response.data;
   },
 

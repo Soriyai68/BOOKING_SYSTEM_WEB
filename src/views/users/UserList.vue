@@ -2,7 +2,7 @@
   <div class="user-list">
     <div class="page-header">
       <h2>{{ $t("users.title") }}</h2>
-      <el-button v-permission="'users.create'" type="primary" @click="$router.push('/admin/users/create')">
+      <el-button v-permission="'users.create'" type="primary" @click="openCreateDialog">
         <el-icon>
           <Plus/>
         </el-icon>
@@ -18,12 +18,16 @@
             class="search-input"
             :prefix-icon="Search"
             clearable
+            style="width: 250px"
+
             @input="debouncedSearch"
         />
         <el-select
             v-model="statusFilter"
             :placeholder="$t('users.filterByStatus')"
             clearable
+            style="width: 250px"
+
         >
           <el-option :label="$t('table.selectAll')" value=""/>
           <el-option :label="$t('users.active')" value="active"/>
@@ -122,20 +126,26 @@
         />
       </div>
     </el-card>
+
+    <!-- User Form Dialog -->
+    <UserFormDialog
+      v-model="showFormDialog"
+      :user-id="selectedUserId"
+      @success="handleFormSuccess"
+    />
   </div>
 </template>
 
 <script setup>
 import {onMounted, ref, watch} from "vue";
-import {useRouter} from "vue-router";
 import {useAppStore} from "@/stores/app";
 import {userService} from "@/services/userService";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {Plus, Search} from "@element-plus/icons-vue";
 import {useI18n} from "vue-i18n";
-import {debounce} from "lodash-es"; // You may need to install lodash-es
+import {debounce} from "lodash-es";
+import UserFormDialog from "@/components/users/UserFormDialog.vue";
 
-const router = useRouter();
 const appStore = useAppStore();
 
 // Reactive data
@@ -148,6 +158,8 @@ const total = ref(0);
 const users = ref([]);
 const userTable = ref(null);
 const selectedUsers = ref([]);
+const showFormDialog = ref(false);
+const selectedUserId = ref("");
 const {t} = useI18n();
 
 // Debounced search function
@@ -216,9 +228,21 @@ const cancelSelection = () => {
   }
 };
 
+// Open create dialog
+const openCreateDialog = () => {
+  selectedUserId.value = "";
+  showFormDialog.value = true;
+};
+
 // Edit user
 const editUser = (id) => {
-  router.push(`/admin/users/${id}/edit`);
+  selectedUserId.value = id;
+  showFormDialog.value = true;
+};
+
+// Handle form success
+const handleFormSuccess = () => {
+  loadUsers();
 };
 
 // Delete single user

@@ -6,7 +6,7 @@
       <el-button
           type="primary"
           :icon="Plus"
-          @click="$router.push('/admin/seats/create')"
+          @click="openCreateDialog"
           v-permission="'seats.create'"
       >
         {{ $t("seats.addSeat") }}
@@ -31,7 +31,7 @@
               v-model="filters.row"
               :placeholder="$t('seats.filterByRow')"
               clearable
-              style="min-width: 140px"
+              style="min-width: 200px"
               @change="loadSeats"
           >
             <el-option
@@ -48,7 +48,7 @@
               v-model="filters.theater_id"
               :placeholder="$t('seats.filterByTheater')"
               clearable
-              style="min-width: 250px"
+              style="min-width: 200px"
               @change="handleTheaterChange"
           >
             <el-option
@@ -127,14 +127,14 @@
         <el-table-column
             prop="seat_identifier"
             :label="$t('seats.indentifier')"
-            width="200"
+            width="220"
         />
 
-        <el-table-column prop="row" :label="$t('seats.row')" width="80"/>
+        <el-table-column prop="row" :label="$t('seats.row')" width="180"/>
         <el-table-column
             prop="seat_number"
             :label="$t('seats.number')"
-            width="150"
+            width="220"
         >
           <template #default="{ row }">
             {{ Array.isArray(row.seat_number) ? row.seat_number.join(', ') : row.seat_number }}
@@ -143,7 +143,7 @@
         <el-table-column
             prop="hall_name"
             :label="$t('seats.hallName')"
-            width="150"
+            width="200"
         >
           <template #default="{ row }">
             {{ row.hall?.hall_name || "-" }}
@@ -152,7 +152,7 @@
         <el-table-column
             prop="theater.name"
             :label="$t('seats.theaterName')"
-            width="280"
+            width="300"
         >
           <template #default="{ row }">
             {{ row.theater?.name || "-" }}
@@ -166,21 +166,16 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" :label="$t('seats.status')" width="120">
+        <el-table-column prop="status" :label="$t('seats.status')" width="200">
           <template #default="{ row }">
             <el-tag :type="getStatusColor(row.status)">
               {{ $t(`seats.statuses.${row.status}`) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="price" :label="$t('seats.price')" width="100">
-          <template #default="{ row }">
-            $ {{ row.price?.toFixed(2) || "0.00" }}
-          </template>
-        </el-table-column>
         <el-table-column
             :label="$t('common.actions')"
-            width="280"
+            width="220"
             fixed="right"
         >
           <template #default="{ row }">
@@ -199,7 +194,7 @@
                   size="small"
                   link
                   type="primary"
-                  @click="editSeat(row.id)"
+                  @click="openEditDialog(row)"
               >
                 {{ $t("actions.edit") }}
               </el-button>
@@ -257,11 +252,130 @@
         />
       </div>
     </el-card>
+
+    <!-- Create/Edit Dialog -->
+    <el-dialog
+        v-model="dialogVisible"
+        :title="dialogMode === 'create' ? $t('seats.addSeat') : $t('seats.editSeat')"
+        width="600px"
+        :close-on-click-modal="false"
+    >
+      <el-form ref="dialogFormRef" :model="dialogForm" :rules="dialogRules" label-width="160px">
+        <!-- Theater & Hall -->
+        <el-form-item :label="$t('seats.theaterAndHall')" prop="hall_id">
+          <el-select
+              v-model="dialogForm.hall_id"
+              clearable
+              filterable
+              placeholder=""
+              :loading="loadingHalls || loadingTheaters"
+              style="width: 100%"
+          >
+            <el-option
+                v-for="option in hallOptions"
+                :key="option.id"
+                :label="option.label"
+                :value="option.id"
+            />
+          </el-select>
+        </el-form-item>
+
+        <!-- Row -->
+        <el-form-item :label="$t('seats.row')" prop="row">
+          <el-input
+              v-model="dialogForm.row"
+              maxlength="5"
+              show-word-limit
+              @input="dialogForm.row = dialogForm.row.toUpperCase()"
+          />
+        </el-form-item>
+
+        <!-- Multi Seat Numbers Range -->
+        <el-form-item
+            :label="$t('seats.seatNumberRange')"
+            prop="seat_numbers"
+        >
+          <div class="multi-seat-range">
+            <el-input
+                v-model="seatNumberRange.start"
+                :placeholder="t('seats.seatRangeStart')"
+                style="width: 140px"
+                @input="handleRangeInput"
+                maxlength="2"
+            />
+            <span class="range-separator">-</span>
+            <el-input
+                v-model="seatNumberRange.end"
+                :placeholder="t('seats.seatRangeEnd')"
+                style="width: 140px"
+                @input="handleRangeInput"
+                maxlength="2"
+            />
+          </div>
+          <div v-if="parsedSeatNumbers.length > 0" class="seat-preview">
+            <el-tag
+                v-for="seat in parsedSeatNumbers"
+                :key="seat"
+                style="margin: 2px"
+            >
+              {{ seat }}
+            </el-tag>
+            <div class="seat-count">
+              {{ t("seats.seatTotal", {count: parsedSeatNumbers.length}) }}
+            </div>
+          </div>
+        </el-form-item>
+
+        <!-- Seat Type -->
+        <el-form-item :label="$t('seats.type')" prop="seat_type">
+          <el-select v-model="dialogForm.seat_type" style="width: 100%">
+            <el-option
+                v-for="type in seatTypes"
+                :key="type.value"
+                :label="$t(`seats.types.${type.value}`)"
+                :value="type.value"
+            />
+          </el-select>
+        </el-form-item>
+
+        <!-- Status -->
+        <el-form-item :label="$t('seats.status')" prop="status">
+          <el-select v-model="dialogForm.status" style="width: 100%">
+            <el-option
+                v-for="status in seatStatuses"
+                :key="status.value"
+                :label="$t(`seats.statuses.${status.value}`)"
+                :value="status.value"
+            />
+          </el-select>
+        </el-form-item>
+
+        <!-- Notes -->
+        <el-form-item :label="$t('seats.notes')" prop="notes">
+          <el-input
+              v-model="dialogForm.notes"
+              type="textarea"
+              :rows="3"
+              maxlength="500"
+              show-word-limit
+          />
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="closeDialog">{{ $t("actions.cancel") }}</el-button>
+          <el-button type="primary" :loading="dialogLoading" @click="handleDialogSubmit">
+            {{ $t("actions.submit") }}
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import {onMounted, reactive, ref, watch} from "vue";
+import {computed, onMounted, reactive, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {ElMessage, ElMessageBox} from "element-plus";
@@ -286,6 +400,29 @@ const allRows = ref([]);
 const filterHallBytheater = ref([]);
 const selectedSeats = ref([]);
 const seatTable = ref([null]);
+const loadingHalls = ref(false);
+const loadingTheaters = ref(false);
+
+// Dialog state
+const dialogVisible = ref(false);
+const dialogMode = ref('create'); // 'create' or 'edit'
+const dialogLoading = ref(false);
+const dialogFormRef = ref();
+const editingSeatId = ref(null);
+
+const seatNumberRange = reactive({
+  start: "",
+  end: "",
+});
+
+const dialogForm = reactive({
+  hall_id: "",
+  row: "",
+  seat_numbers: [],
+  seat_type: "regular",
+  status: "active",
+  notes: "",
+});
 const handleSelectionChange = (val) => {
   selectedSeats.value = val;
 };
@@ -294,6 +431,97 @@ const cancelSelection = () => {
   if (selectedSeats.value) {
     seatTable.value.clearSelection();
   }
+};
+
+// Computed properties for dialog
+const hallOptions = computed(() => {
+  return halls.value.map((hall) => {
+    const theater = theaters.value.find((t) => t.id === hall.theater_id);
+    return {
+      id: hall.id,
+      label: `${theater?.name || "Unknown Theater"} - ${hall.hall_name}`,
+    };
+  });
+});
+
+const parsedSeatNumbers = computed(() => {
+  const start = seatNumberRange.start.trim();
+  const end = seatNumberRange.end.trim();
+
+  if (!start || !end || !/^\d+$/.test(start) || !/^\d+$/.test(end)) {
+    return [];
+  }
+
+  const startNum = parseInt(start, 10);
+  const endNum = parseInt(end, 10);
+
+  if (startNum > endNum) return [];
+
+  const seats = [];
+  for (let i = startNum; i <= endNum; i++) {
+    seats.push(String(i));
+  }
+  return seats;
+});
+
+const dialogRules = computed(() => ({
+  hall_id: [
+    {required: true, message: t("validation.required"), trigger: "change"},
+  ],
+  row: [
+    {required: true, message: t("validation.required"), trigger: "blur"},
+    {
+      min: 1,
+      max: 5,
+      message: "Row must be between 1 and 5 characters",
+      trigger: "blur",
+    },
+    {
+      pattern: /^[A-Z][A-Z0-9]*$/,
+      message: "Row must start with a letter and contain only letters and numbers",
+      trigger: "blur",
+    },
+  ],
+  seat_numbers: [
+    {
+      validator: (rule, value, callback) => {
+        const start = seatNumberRange.start.trim();
+        const end = seatNumberRange.end.trim();
+
+        if (!start || !end) {
+          return callback(new Error(t("seats.validation.rangeRequired")));
+        }
+
+        if (!/^\d+$/.test(start) || !/^\d+$/.test(end)) {
+          return callback(new Error(t("seats.validation.mustBeNumericRange")));
+        }
+
+        const startNum = parseInt(start, 10);
+        const endNum = parseInt(end, 10);
+
+        if (startNum > endNum) {
+          return callback(new Error(t("seats.validation.startAfterEnd")));
+        }
+
+        if ((endNum - startNum + 1) > 50) {
+          return callback(new Error(t("seats.validation.rangeTooLarge", {max: 50})));
+        }
+
+        callback();
+      },
+      trigger: "blur"
+    },
+  ],
+  seat_type: [
+    {required: true, message: t("validation.required"), trigger: "change"},
+  ],
+  status: [
+    {required: true, message: t("validation.required"), trigger: "change"},
+  ],
+}));
+
+const handleRangeInput = () => {
+  dialogForm.seat_numbers = parsedSeatNumbers.value;
 };
 const filters = reactive({
   search: "",
@@ -381,19 +609,115 @@ const loadAllRows = async () => {
 };
 
 const loadHalls = async () => {
+  loadingHalls.value = true;
   try {
     const response = await hallService.getHalls({per_page: 100});
     halls.value = response.data || [];
   } catch (error) {
     console.error("Load halls error:", error);
+  } finally {
+    loadingHalls.value = false;
   }
 };
 const loadTheaters = async () => {
+  loadingTheaters.value = true;
   try {
     const response = await theaterService.getTheaters({per_page: 100});
     theaters.value = response.data || [];
   } catch (error) {
     console.error("Load theaters error:", error);
+  } finally {
+    loadingTheaters.value = false;
+  }
+};
+
+// Dialog methods
+const openCreateDialog = () => {
+  dialogMode.value = 'create';
+  resetDialogForm();
+  dialogVisible.value = true;
+};
+
+const openEditDialog = (seat) => {
+  dialogMode.value = 'edit';
+  editingSeatId.value = seat.id;
+  
+  // Populate form with seat data
+  Object.assign(dialogForm, {
+    hall_id: seat.hall_id || seat.hall?.id || '',
+    row: seat.row || '',
+    seat_type: seat.seat_type || 'regular',
+    status: seat.status || 'active',
+    notes: seat.notes || '',
+  });
+  
+  // For edit, show current seat numbers as range if possible
+  if (Array.isArray(seat.seat_number) && seat.seat_number.length > 0) {
+    const numbers = seat.seat_number.map(n => parseInt(n)).sort((a, b) => a - b);
+    seatNumberRange.start = String(numbers[0]);
+    seatNumberRange.end = String(numbers[numbers.length - 1]);
+  } else if (seat.seat_number) {
+    seatNumberRange.start = String(seat.seat_number);
+    seatNumberRange.end = String(seat.seat_number);
+  }
+  
+  handleRangeInput();
+  dialogVisible.value = true;
+};
+
+const closeDialog = () => {
+  dialogVisible.value = false;
+  resetDialogForm();
+  editingSeatId.value = null;
+};
+
+const resetDialogForm = () => {
+  if (dialogFormRef.value) {
+    dialogFormRef.value.resetFields();
+  }
+  Object.assign(dialogForm, {
+    hall_id: "",
+    row: "",
+    seat_numbers: [],
+    seat_type: "regular",
+    status: "active",
+    notes: "",
+  });
+  seatNumberRange.start = "";
+  seatNumberRange.end = "";
+};
+
+const handleDialogSubmit = async () => {
+  if (!dialogFormRef.value) return;
+
+  try {
+    await dialogFormRef.value.validate();
+    dialogLoading.value = true;
+
+    const payload = {
+      ...dialogForm,
+      range: {
+        start: seatNumberRange.start,
+        end: seatNumberRange.end,
+      },
+    };
+
+    if (dialogMode.value === 'create') {
+      await seatService.bulkCreateSeats(payload);
+      ElMessage.success(t("seats.createSuccess"));
+    } else {
+      // For edit, use update endpoint
+      await seatService.updateSeat(editingSeatId.value, payload);
+      ElMessage.success(t("seats.updateSuccess"));
+    }
+
+    closeDialog();
+    loadSeats();
+  } catch (error) {
+    console.error("Dialog submit error:", error);
+    ElMessage.error(error.response?.data?.message || t("seats.saveError"));
+  } finally {
+    dialogLoading.value = false;
   }
 };
 
@@ -417,10 +741,6 @@ const handleCurrentChange = (val) => {
 
 const viewSeat = (id) => {
   router.push(`/admin/seats/${id}`);
-};
-
-const editSeat = (id) => {
-  router.push(`/admin/seats/${id}/edit`);
 };
 
 const deleteSeat = async (id) => {
@@ -572,6 +892,29 @@ onMounted(async () => {
   padding: 12px;
   border-radius: 4px;
   background-color: var(--el-fill-color-lighter);
+}
 
+.multi-seat-range {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.range-separator {
+  margin: 0 10px;
+}
+
+.seat-preview {
+  margin-top: 12px;
+  padding: 12px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+}
+
+.seat-count {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #606266;
+  text-align: right;
 }
 </style>

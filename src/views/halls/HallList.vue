@@ -2,7 +2,7 @@
   <div class="hall-list">
     <div class="page-header">
       <h2>{{ $t("halls.title") }}</h2>
-      <el-button v-permission="'halls.create'" type="primary" @click="$router.push('/admin/halls/create')">
+      <el-button v-permission="'halls.create'" type="primary" @click="openCreateDialog">
         <el-icon><Plus /></el-icon>
         {{ $t("halls.addHall") }}
       </el-button>
@@ -36,6 +36,8 @@
           v-model="statusFilter"
           :placeholder="$t('halls.filterByStatus')"
           clearable
+          style="min-width: 200px"
+
         >
           <el-option :label="$t('table.selectAll')" value="" />
           <el-option
@@ -170,6 +172,10 @@
         />
       </div>
     </el-card>
+
+    <!-- Dialogs -->
+    <CreateHall v-model="showCreateDialog" :theater-id="selectedTheaterId" @success="handleDialogSuccess" />
+    <EditHall v-model="showEditDialog" :hall-id="selectedHallId" @success="handleDialogSuccess" />
   </div>
 </template>
 
@@ -183,6 +189,8 @@ import { theaterService } from "@/services/theaterService";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Search } from "@element-plus/icons-vue";
 import { debounce } from "lodash-es";
+import CreateHall from "./CreateHall.vue";
+import EditHall from "./EditHall.vue";
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -202,6 +210,10 @@ const sortOrder = ref("asc");
 const theaters = ref([]);
 const hallTable = ref(null);
 const selectedHalls = ref([]);
+const showCreateDialog = ref(false);
+const showEditDialog = ref(false);
+const selectedHallId = ref(null);
+const selectedTheaterId = ref(null);
 
 const handleSelectionChange = (val) => {
   selectedHalls.value = val;
@@ -307,7 +319,20 @@ const handleCurrentChange = (page) => {
 };
 
 const viewHall = (id) => router.push(`/admin/halls/${id}`);
-const editHall = (id) => router.push(`/admin/halls/${id}/edit`);
+
+const openCreateDialog = () => {
+  selectedTheaterId.value = theaterFilter.value || null;
+  showCreateDialog.value = true;
+};
+
+const editHall = (id) => {
+  selectedHallId.value = id;
+  showEditDialog.value = true;
+};
+
+const handleDialogSuccess = () => {
+  load();
+};
 
 const deleteHall = async (id) => {
   try {

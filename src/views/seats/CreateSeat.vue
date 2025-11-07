@@ -18,7 +18,7 @@
       />
     </div>
     <!-- Seat Form -->
-    <el-card>
+    <el-card >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="160px">
         <!-- Single Select: Theater & Hall -->
         <el-form-item :label="$t('seats.theaterAndHall')" prop="hall_id">
@@ -126,16 +126,6 @@
           </el-select>
         </el-form-item>
 
-        <!-- Price -->
-        <el-form-item :label="$t('seats.price')" prop="price">
-          <el-input-number
-              v-model="form.price"
-              :min="0"
-              :max="9999"
-              :precision="2"
-              style="width: 100%"
-          />
-        </el-form-item>
 
         <!-- Notes -->
         <el-form-item :label="$t('seats.notes')" prop="notes">
@@ -192,7 +182,6 @@ const form = reactive({
   seat_numbers: [],
   seat_type: "regular",
   status: "active",
-  price: 0,
   notes: "",
 });
 
@@ -263,15 +252,7 @@ const rules = computed(() => {
     ],
     status: [
       {required: true, message: t("validation.required"), trigger: "change"},
-    ],
-    price: [
-      {
-        type: "number",
-        min: 0,
-        message: "Price must be greater than or equal to 0",
-        trigger: "blur",
-      },
-    ],
+    ]
   };
   if (isMultiSeat.value) {
     baseRules.seat_numbers = [
@@ -421,7 +402,6 @@ const resetForm = () => {
     seat_numbers: [],
     seat_type: "regular",
     status: "active",
-    price: 0,
     notes: "",
   });
   isMultiSeat.value = false;

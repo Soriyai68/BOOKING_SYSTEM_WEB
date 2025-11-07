@@ -3,7 +3,7 @@
     <!-- Logo -->
     <div class="logo">
       <div class="logo-content" :class="{ collapsed: sidebarCollapsed }">
-        <img src="@/assets/ek.jpg" alt="Logo" class="logo-image"/>
+        <img src="@/assets/ek.jpg" alt="Logo" class="logo-image" />
         <span v-show="!sidebarCollapsed" class="logo-text">Ninja Booking</span>
         <!-- Optional text if sidebar not collapsed -->
       </div>
@@ -11,15 +11,18 @@
 
     <!-- Navigation Menu -->
     <el-menu
-        :default-active="activeMenu"
-        class="sidebar-menu"
-        :collapse="sidebarCollapsed"
-        :unique-opened="true"
-        router
+      :default-active="activeMenu"
+      class="sidebar-menu"
+      :collapse="sidebarCollapsed"
+      :unique-opened="true"
+      router
     >
-      <el-menu-item v-if="isSuperAdmin || canViewDashboard" index="/admin/dashboard">
+      <el-menu-item
+        v-if="isSuperAdmin || canViewDashboard"
+        index="/admin/dashboard"
+      >
         <el-icon>
-          <LayoutDashboard/>
+          <LayoutDashboard />
         </el-icon>
         <template #title>{{ $t("nav.dashboard") }}</template>
       </el-menu-item>
@@ -27,82 +30,85 @@
       <el-sub-menu v-if="isSuperAdmin || canViewSeats" index="seats">
         <template #title>
           <el-icon>
-            <Armchair/>
+            <Armchair />
           </el-icon>
           <span>{{ $t("seats.title") }}</span>
         </template>
         <el-menu-item index="/admin/seats">
           <el-icon>
-            <Armchair/>
+            <Armchair />
           </el-icon>
           <template #title>{{ $t("seats.allSeats") }}</template>
         </el-menu-item>
-        <el-menu-item v-if="isSuperAdmin || canCreateSeats" index="/admin/seats/create">
+        <!-- <el-menu-item v-if="isSuperAdmin || canCreateSeats" index="/admin/seats/create">
           <el-icon>
             <Plus/>
           </el-icon>
           <template #title>{{ $t("seats.addSeat") }}</template>
-        </el-menu-item>
+        </el-menu-item> -->
       </el-sub-menu>
 
       <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="halls">
         <template #title>
           <el-icon>
-            <Monitor/>
+            <Monitor />
           </el-icon>
           <span>{{ $t("halls.title") }}</span>
         </template>
         <el-menu-item index="/admin/halls">
           <el-icon>
-            <Monitor/>
+            <Monitor />
           </el-icon>
           <template #title>{{ $t("halls.allHalls") }}</template>
         </el-menu-item>
-        <el-menu-item v-if="isSuperAdmin || canCreateHalls" index="/admin/halls/create">
+        <!-- <el-menu-item v-if="isSuperAdmin || canCreateHalls" @click="openCreateHallDialog">
           <el-icon>
             <Plus/>
           </el-icon>
           <template #title>{{ $t("halls.addHall") }}</template>
-        </el-menu-item>
+        </el-menu-item> -->
       </el-sub-menu>
 
       <el-sub-menu v-if="isSuperAdmin || canViewTheaters" index="theaters">
         <template #title>
           <el-icon>
-            <Projector/>
+            <Projector />
           </el-icon>
           <span>{{ $t("theaters.title") }}</span>
         </template>
         <el-menu-item index="/admin/theaters">
           <el-icon>
-            <Projector/>
+            <Projector />
           </el-icon>
           <template #title>{{ $t("theaters.allTheaters") }}</template>
         </el-menu-item>
-        <el-menu-item v-if="isSuperAdmin || canCreateTheaters" index="/admin/theaters/create">
+        <!-- <el-menu-item v-if="isSuperAdmin || canCreateTheaters" index="/admin/theaters/create">
           <el-icon>
             <Plus/>
           </el-icon>
           <template #title>{{ $t("theaters.addTheater") }}</template>
-        </el-menu-item>
+        </el-menu-item> -->
       </el-sub-menu>
 
       <el-sub-menu v-if="isSuperAdmin || canViewMovies" index="movies">
         <template #title>
           <el-icon>
-            <Film/>
+            <Film />
           </el-icon>
           <span>{{ $t("movies.title") }}</span>
         </template>
         <el-menu-item index="/admin/movies">
           <el-icon>
-            <Clapperboard/>
+            <Clapperboard />
           </el-icon>
           <template #title>{{ $t("movies.allMovies") }}</template>
         </el-menu-item>
-        <el-menu-item v-if="isSuperAdmin || canCreateMovies" index="/admin/movies/create">
+        <el-menu-item
+          v-if="isSuperAdmin || canCreateMovies"
+          index="/admin/movies/create"
+        >
           <el-icon>
-            <Plus/>
+            <Plus />
           </el-icon>
           <template #title>{{ $t("movies.addMovie") }}</template>
         </el-menu-item>
@@ -111,19 +117,22 @@
       <el-sub-menu v-if="isSuperAdmin || canViewShowtimes" index="showtimes">
         <template #title>
           <el-icon>
-            <Ticket/>
+            <Ticket />
           </el-icon>
           <span>{{ $t("showtimes.title") }}</span>
         </template>
         <el-menu-item index="/admin/showtimes">
           <el-icon>
-            <Ticket/>
+            <Ticket />
           </el-icon>
           <template #title>{{ $t("showtimes.allShowtimes") }}</template>
         </el-menu-item>
-        <el-menu-item v-if="isSuperAdmin || canCreateShowtimes" index="/admin/showtimes/create">
+        <el-menu-item
+          v-if="isSuperAdmin || canCreateShowtimes"
+          index="/admin/showtimes/create"
+        >
           <el-icon>
-            <Plus/>
+            <Plus />
           </el-icon>
           <template #title>{{ $t("showtimes.addShowtime") }}</template>
         </el-menu-item>
@@ -132,19 +141,22 @@
       <el-sub-menu v-if="isSuperAdmin || canViewUsers" index="users">
         <template #title>
           <el-icon>
-            <Users/>
+            <Users />
           </el-icon>
           <span>{{ $t("users.title") }}</span>
         </template>
         <el-menu-item index="/admin/users">
           <el-icon>
-            <Users/>
+            <Users />
           </el-icon>
           <template #title>{{ $t("users.allUsers") }}</template>
         </el-menu-item>
-        <el-menu-item v-if="isSuperAdmin || canCreateUsers" index="/admin/users/create">
+        <el-menu-item
+          v-if="isSuperAdmin || canCreateUsers"
+          index="/admin/users/create"
+        >
           <el-icon>
-            <UserPlus/>
+            <UserPlus />
           </el-icon>
           <template #title>{{ $t("users.addUser") }}</template>
         </el-menu-item>
@@ -158,39 +170,46 @@
       <el-sub-menu v-if="isSuperAdmin" index="system">
         <template #title>
           <el-icon>
-            <Shield/>
+            <Shield />
           </el-icon>
           <span>{{ $t("system.title") }}</span>
         </template>
         <el-menu-item index="/admin/system/permissions">
           <el-icon>
-            <Shield/>
+            <Shield />
           </el-icon>
           <template #title>{{ $t("system.permissions") }}</template>
         </el-menu-item>
         <el-menu-item index="/admin/system/role-permissions">
           <el-icon>
-            <UserCog/>
+            <UserCog />
           </el-icon>
           <template #title>{{ $t("system.rolePermissions") }}</template>
         </el-menu-item>
       </el-sub-menu>
 
-      <el-menu-item v-if="isSuperAdmin || canViewSettings" index="/admin/settings">
+      <el-menu-item
+        v-if="isSuperAdmin || canViewSettings"
+        index="/admin/settings"
+      >
         <el-icon>
-          <Settings/>
+          <Settings />
         </el-icon>
         <template #title>{{ $t("nav.settings") }}</template>
       </el-menu-item>
     </el-menu>
+
+    <!-- Hall Create Dialog -->
+    <CreateHall v-model="showCreateHallDialog" @success="handleHallCreated" />
   </div>
 </template>
 
 <script setup>
-import {computed} from "vue";
-import {useRoute, useRouter} from "vue-router";
-import {useAppStore} from "@/stores/app";
-import {usePermissions} from "@/composables/usePermissions";
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useAppStore } from "@/stores/app";
+import { usePermissions } from "@/composables/usePermissions";
+import CreateHall from "@/views/halls/CreateHall.vue";
 import {
   Armchair,
   Clapperboard,
@@ -228,7 +247,7 @@ const {
   canViewShowtimes,
   canCreateShowtimes,
   canViewBookings,
-  isSuperAdmin
+  isSuperAdmin,
 } = usePermissions();
 
 // Remove debug after fixing
@@ -237,11 +256,26 @@ const activeMenu = computed(() => route.path);
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed);
 const theme = computed(() => appStore.theme);
 
+const showCreateHallDialog = ref(false);
 
 // Navigation method
 const navigateToRoles = () => {
-  console.log('Navigating to roles page...');
-  router.push('/admin/users/roles');
+  console.log("Navigating to roles page...");
+  router.push("/admin/users/roles");
+};
+
+const openCreateHallDialog = () => {
+  showCreateHallDialog.value = true;
+};
+
+const handleHallCreated = () => {
+  // Optionally navigate to halls list or refresh if already there
+  if (route.path === "/admin/halls") {
+    // Trigger a refresh if on halls page
+    router.go(0);
+  } else {
+    router.push("/admin/halls");
+  }
 };
 </script>
 
@@ -310,7 +344,6 @@ const navigateToRoles = () => {
   line-height: 40px;
   padding-left: 50px !important;
 }
-
 
 .logo-image {
   height: 36px; /* keeps it compact */

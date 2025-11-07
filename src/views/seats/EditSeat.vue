@@ -134,16 +134,6 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="t('seats.price')" prop="price">
-          <el-input-number
-            v-model="form.price"
-            :min="0"
-            :max="9999"
-            :precision="2"
-            style="width: 100%"
-          />
-        </el-form-item>
-
         <el-form-item :label="t('seats.notes')" prop="notes">
           <el-input
             v-model="form.notes"
@@ -208,7 +198,6 @@ const form = reactive({
   seat_numbers: [],
   seat_type: "regular",
   status: "active",
-  price: 0,
   notes: "",
 });
 
@@ -269,9 +258,6 @@ const rules = computed(() => {
     ],
     status: [
       { required: true, message: t("validation.required"), trigger: "change" },
-    ],
-    price: [
-      { type: "number", min: 0, message: "Price must be >= 0", trigger: "blur" },
     ],
   };
 
@@ -489,7 +475,6 @@ const resetForm = () => {
         seat_number: "",
         seat_type: originalSeat.value.seat_type || "regular",
         status: originalSeat.value.status || "active",
-        price: originalSeat.value.price || 0,
         notes: originalSeat.value.notes || "",
       });
     } else {
@@ -502,7 +487,6 @@ const resetForm = () => {
         seat_number: originalSeat.value.seat_number || "",
         seat_type: originalSeat.value.seat_type || "regular",
         status: originalSeat.value.status || "active",
-        price: originalSeat.value.price || 0,
         notes: originalSeat.value.notes || "",
       });
     }
