@@ -1,6 +1,6 @@
-import {createRouter, createWebHistory} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import AdminLayout from "@/layouts/AdminLayout.vue";
-import {checkRoutePermissions, createPermissionMeta, PERMISSIONS,} from "@/composables/usePermissions";
+import { checkRoutePermissions, createPermissionMeta, PERMISSIONS, } from "@/composables/usePermissions";
 
 const routes = [
     {
@@ -8,13 +8,13 @@ const routes = [
         name: "Login",
         alias: ["/cashier/login"],
         component: () => import("@/views/auth/Login.vue"),
-        meta: {requiresGuest: true},
+        meta: { requiresGuest: true },
     },
 
     {
         path: "/admin",
         component: AdminLayout,
-        meta: {requiresAuth: true, requiresAdmin: true},
+        meta: { requiresAuth: true, requiresAdmin: true },
         children: [
             {
                 path: "",
@@ -297,7 +297,7 @@ const routes = [
                     ...createPermissionMeta(PERMISSIONS.SHOWTIMES_EDIT),
                 },
             },
-            //booking
+            // Booking Management
             {
                 path: "bookings",
                 name: "Bookings",
@@ -318,6 +318,28 @@ const routes = [
                     ...createPermissionMeta(PERMISSIONS.BOOKINGS_VIEW),
                 },
             },
+            // Booking Create/Edit now handled via BookingFormDialog component
+            // Accessible from MovieDetail "Book Now" button or BookingList
+            // {
+            //     path: "bookings/create",
+            //     name: "CreateBooking",
+            //     component: () => import("@/views/bookings/CreateBooking.vue"),
+            //     meta: {
+            //         title: "Create Booking",
+            //         titleKey: "bookings.createBooking",
+            //         ...createPermissionMeta(PERMISSIONS.BOOKINGS_CREATE),
+            //     },
+            // },
+            // {
+            //     path: "bookings/:id/edit",
+            //     name: "EditBooking",
+            //     component: () => import("@/views/bookings/EditBooking.vue"),
+            //     meta: {
+            //         title: "Edit Booking",
+            //         titleKey: "bookings.editBooking",
+            //         ...createPermissionMeta(PERMISSIONS.BOOKINGS_EDIT),
+            //     },
+            // },
             // System Management (SuperAdmin only)
             {
                 path: "system/permissions",
@@ -367,8 +389,8 @@ const router = createRouter({
 
 // Navigation guards
 router.beforeEach(async (to, from, next) => {
-    const {useAuthStore} = await import("@/stores/auth");
-    const {usePermissionStore} = await import("@/stores/permission");
+    const { useAuthStore } = await import("@/stores/auth");
+    const { usePermissionStore } = await import("@/stores/permission");
     const authStore = useAuthStore();
     const permissionStore = usePermissionStore();
 
@@ -397,7 +419,11 @@ router.beforeEach(async (to, from, next) => {
     if (to.matched.some((record) => record.meta.requiresAuth)) {
         if (!authStore.isAuthenticated) {
             console.log("Access denied: Not authenticated");
-            return next({path: "/login", query: {redirect: to.fullPath}});
+            // Clear any auth data to prevent components from making API calls
+            authStore.setToken(null);
+            authStore.setRefreshToken(null);
+            authStore.setUser(null);
+            return next({ path: "/login", query: { redirect: to.fullPath } });
         }
 
         // SuperAdmin bypass: full access
@@ -421,7 +447,7 @@ router.beforeEach(async (to, from, next) => {
         ) {
             // console.log("Access denied: Not admin");
             // Avoid redirecting to the same route to prevent infinite loops
-            return next({name: "NotFound"});
+            return next({ name: "NotFound" });
         }
 
         // Check permissions if required
@@ -431,9 +457,9 @@ router.beforeEach(async (to, from, next) => {
                 console.log("Access denied: Insufficient permissions");
                 // Prevent redirect loop - if already going to dashboard or from dashboard, go to 403
                 if (to.name === "AdminDashboard" || from.name === "AdminDashboard") {
-                    return next({name: "NotFound"});
+                    return next({ name: "NotFound" });
                 }
-                return next({name: "AdminDashboard"});
+                return next({ name: "AdminDashboard" });
             }
         }
     }
@@ -442,7 +468,7 @@ router.beforeEach(async (to, from, next) => {
     if (to.matched.some((record) => record.meta.requiresGuest)) {
         if (authStore.isAuthenticated) {
             // console.log("Already authenticated, redirecting to dashboard");
-            return next({name: "AdminDashboard"});
+            return next({ name: "AdminDashboard" });
         }
     }
 

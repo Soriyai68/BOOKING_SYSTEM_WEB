@@ -27,6 +27,17 @@
         <template #title>{{ $t("nav.dashboard") }}</template>
       </el-menu-item>
 
+      <!-- Booking Management -->
+      <el-menu-item
+        v-if="isSuperAdmin || canViewBookings"
+        index="/admin/bookings"
+      >
+        <el-icon>
+          <BookOpen />
+        </el-icon>
+        <template #title>{{ $t("bookings.title") }}</template>
+      </el-menu-item>
+
       <el-sub-menu v-if="isSuperAdmin || canViewSeats" index="seats">
         <template #title>
           <el-icon>
@@ -138,33 +149,56 @@
         </el-menu-item>
       </el-sub-menu>
 
-      <el-sub-menu v-if="isSuperAdmin || canViewUsers" index="users">
+      <!-- <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="bookings">
         <template #title>
           <el-icon>
-            <Users />
+            <BookOpen />
           </el-icon>
-          <span>{{ $t("users.title") }}</span>
+          <span>{{ $t("bookings.title") }}</span>
         </template>
-        <el-menu-item index="/admin/users">
+        <el-menu-item index="/admin/bookings">
           <el-icon>
-            <Users />
+            <BookOpen />
           </el-icon>
-          <template #title>{{ $t("users.allUsers") }}</template>
+          <template #title>{{ $t("bookings.title") }}</template>
         </el-menu-item>
-        <el-menu-item
-          v-if="isSuperAdmin || canCreateUsers"
-          index="/admin/users/create"
-        >
+      </el-sub-menu> -->
+
+      <!-- report  -->
+      <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="bookings">
+        <template #title>
           <el-icon>
-            <UserPlus />
+           <ClipboardCheck />
           </el-icon>
-          <template #title>{{ $t("users.addUser") }}</template>
+          <span>Reports Management</span>
+        </template>
+        <el-menu-item index="/admin/bookings">
+          <el-icon>
+            <BookOpen />
+          </el-icon>
+          <template #title>All Reports</template>
         </el-menu-item>
-        <!-- <el-menu-item index="/admin/users/roles" @click="navigateToRoles">
-          <el-icon><UserCog /></el-icon>
-          <template #title>Assign Roles</template>
-        </el-menu-item> -->
+        <el-menu-item index="/admin/bookings">
+          <el-icon>
+            <BookOpen />
+          </el-icon>
+          <template #title>All Bookings</template>
+        </el-menu-item>
+        <el-menu-item index="/admin/bookings">
+          <el-icon>
+            <BookOpen />
+          </el-icon>
+          <template #title>All Payments</template>
+        </el-menu-item>
       </el-sub-menu>
+
+      <!-- User Management (Dialog-based create) -->
+      <el-menu-item v-if="isSuperAdmin || canViewUsers" index="/admin/users">
+        <el-icon>
+          <Users />
+        </el-icon>
+        <template #title>{{ $t("users.title") }}</template>
+      </el-menu-item>
 
       <!-- System Management (SuperAdmin Only) -->
       <el-sub-menu v-if="isSuperAdmin" index="system">
@@ -198,9 +232,6 @@
         <template #title>{{ $t("nav.settings") }}</template>
       </el-menu-item>
     </el-menu>
-
-    <!-- Hall Create Dialog -->
-    <CreateHall v-model="showCreateHallDialog" @success="handleHallCreated" />
   </div>
 </template>
 
@@ -209,7 +240,6 @@ import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import { usePermissions } from "@/composables/usePermissions";
-import CreateHall from "@/views/halls/CreateHall.vue";
 import {
   Armchair,
   Clapperboard,
@@ -222,8 +252,9 @@ import {
   Shield,
   Ticket,
   UserCog,
-  UserPlus,
   Users,
+  BookOpen,
+  ClipboardCheck
 } from "lucide-vue-next";
 
 const route = useRoute();
@@ -231,17 +262,13 @@ const router = useRouter();
 const appStore = useAppStore();
 const {
   canViewUsers,
-  canCreateUsers,
-  canManageUsers,
   canViewDashboard,
   canViewSettings,
-  canManageSettings,
   canViewTheaters,
   canCreateTheaters,
   canViewHalls,
   canCreateHalls,
   canViewSeats,
-  canCreateSeats,
   canViewMovies,
   canCreateMovies,
   canViewShowtimes,
@@ -255,28 +282,6 @@ const {
 const activeMenu = computed(() => route.path);
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed);
 const theme = computed(() => appStore.theme);
-
-const showCreateHallDialog = ref(false);
-
-// Navigation method
-const navigateToRoles = () => {
-  console.log("Navigating to roles page...");
-  router.push("/admin/users/roles");
-};
-
-const openCreateHallDialog = () => {
-  showCreateHallDialog.value = true;
-};
-
-const handleHallCreated = () => {
-  // Optionally navigate to halls list or refresh if already there
-  if (route.path === "/admin/halls") {
-    // Trigger a refresh if on halls page
-    router.go(0);
-  } else {
-    router.push("/admin/halls");
-  }
-};
 </script>
 
 <style scoped>

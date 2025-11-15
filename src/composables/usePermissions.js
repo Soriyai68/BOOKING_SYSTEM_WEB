@@ -73,6 +73,24 @@ export function usePermissions() {
     canEditBookings: permissionStore.canEditBookings,
     canDeleteBookings: permissionStore.canDeleteBookings,
     canManageBookings: permissionStore.canManageBookings,
+
+    canViewBookingDetails: permissionStore.canViewBookingDetails,
+    canCreateBookingDetails: permissionStore.canCreateBookingDetails,
+    canEditBookingDetails: permissionStore.canEditBookingDetails,
+    canDeleteBookingDetails: permissionStore.canDeleteBookingDetails,
+    canManageBookingDetails: permissionStore.canManageBookingDetails,
+
+    canViewInvoices: permissionStore.canViewInvoices,
+    canCreateInvoices: permissionStore.canCreateInvoices,
+    canEditInvoices: permissionStore.canEditInvoices,
+    canDeleteInvoices: permissionStore.canDeleteInvoices,
+    canManageInvoices: permissionStore.canManageInvoices,
+
+    canViewPayments: permissionStore.canViewPayments,
+    canCreatePayments: permissionStore.canCreatePayments,
+    canEditPayments: permissionStore.canEditPayments,
+    canDeletePayments: permissionStore.canDeletePayments,
+    canManagePayments: permissionStore.canManagePayments,
     
     canViewDashboard: permissionStore.canViewDashboard,
     canViewAnalytics: permissionStore.canViewAnalytics,
@@ -144,6 +162,27 @@ export const PERMISSIONS = {
   BOOKINGS_EDIT: 'bookings.edit',
   BOOKINGS_DELETE: 'bookings.delete',
   BOOKINGS_MANAGE: 'bookings.manage',
+
+  // Booking Details
+  BOOKING_DETAILS_VIEW: 'bookingDetails.view',
+  BOOKING_DETAILS_CREATE: 'bookingDetails.create',
+  BOOKING_DETAILS_EDIT: 'bookingDetails.edit',
+  BOOKING_DETAILS_DELETE: 'bookingDetails.delete',
+  BOOKING_DETAILS_MANAGE: 'bookingDetails.manage',
+
+  // Invoices
+  INVOICES_VIEW: 'invoices.view',
+  INVOICES_CREATE: 'invoices.create',
+  INVOICES_EDIT: 'invoices.edit',
+  INVOICES_DELETE: 'invoices.delete',
+  INVOICES_MANAGE: 'invoices.manage',
+
+  // Payments
+  PAYMENTS_VIEW: 'payments.view',
+  PAYMENTS_CREATE: 'payments.create',
+  PAYMENTS_EDIT: 'payments.edit',
+  PAYMENTS_DELETE: 'payments.delete',
+  PAYMENTS_MANAGE: 'payments.manage',
 
   // System
   DASHBOARD_VIEW: 'dashboard.view',

@@ -119,49 +119,51 @@ const showNotifications = () => {
 };
 
 const handleUserMenuCommand = async (command) => {
-  switch (command) {
-    case "profile":
-      ElMessage.info("Profile page coming soon!");
-      break;
-    case "settings":
-      router.push("/admin/settings");
-      break;
-    case "logout":
-      let loadingInstance = null; // Declare loadingInstance here
-      try {
-        await ElMessageBox.confirm(
-          t("auth.logoutConfirm.message"),
-          t("auth.logoutConfirm.title"),
-          {
-            confirmButtonText: t("auth.logoutConfirm.confirmButton"),
-            cancelButtonText: t("actions.cancel"),
-            type: "warning",
-          }
-        );
-        // Show loading indicator
-        loadingInstance = ElLoading.service({ fullscreen: false });
+  let loadingInstance = null;
 
-        // Perform logout
-        await authStore.logout();
+  if (command === "profile") {
+    ElMessage.info("Profile page coming soon!");
+    return;
+  }
 
-        // Clear any remaining messages
-        ElMessage.closeAll();
+  if (command === "settings") {
+    router.push("/admin/settings");
+    return;
+  }
 
-        // Show success message briefly
-        ElMessage.success("Logged out successfully");
-
-        // Redirect to login page
-        await router.replace("/login");
-      } catch (error) {
-        if (error !== "cancel") {
-          console.error("Logout error:", error);
+  if (command === "logout") {
+    try {
+      await ElMessageBox.confirm(
+        t("auth.logoutConfirm.message"),
+        t("auth.logoutConfirm.title"),
+        {
+          confirmButtonText: t("auth.logoutConfirm.confirmButton"),
+          cancelButtonText: t("actions.cancel"),
+          type: "warning",
         }
-      } finally {
-        if (loadingInstance) {
-          loadingInstance.close();
-        }
+      );
+
+      loadingInstance = ElLoading.service({ fullscreen: false });
+
+      authStore.logout().catch((err) => {
+        console.warn("Logout API call failed (non-blocking):", err.message);
+      });
+
+      await router.replace("/login");
+
+      ElMessage.closeAll();
+      ElMessage.success("Logged out successfully");
+    } catch (error) {
+      if (error !== "cancel") {
+        console.error("Logout error:", error);
       }
-      break;
+    } finally {
+      if (loadingInstance) {
+        loadingInstance.close();
+      }
+    }
+
+    return;
   }
 };
 </script>

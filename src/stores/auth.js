@@ -140,25 +140,24 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const logout = async () => {
-    try {
-      // Try to call logout endpoint if we have a token
-      if (token.value && import.meta.env.VITE_API_BASE_URL) {
-        await api.post("/auth/logout");
-        console.log("Logout API call successful");
-      }
-    } catch (error) {
-      console.warn("Logout API call failed:", error.message);
-      // Continue with local logout even if API fails
-    }
+    // Capture token before clearing
+    const wasAuthenticated = !!token.value;
 
-    // Always clear local data regardless of API call result
+    // Clear local data FIRST to prevent any components from making API calls
     console.log("Clearing local auth data...");
     setToken(null);
     setRefreshToken(null);
     setUser(null);
-
-    // Reset initialization state
     isInitialized.value = false;
+
+    // Then try to call logout endpoint (non-blocking, don't await)
+    if (wasAuthenticated && import.meta.env.VITE_API_BASE_URL) {
+      api.post("/auth/logout").then(() => {
+        console.log("Logout API call successful");
+      }).catch(error => {
+        console.warn("Logout API call failed:", error.message);
+      });
+    }
 
     console.log("Logout completed successfully");
   };

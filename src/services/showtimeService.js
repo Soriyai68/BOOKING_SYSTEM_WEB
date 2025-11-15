@@ -322,4 +322,21 @@ export const showtimeService = {
         {value: "EN", label: "English"},
         {value: "KH", label: "Khmer"},
     ],
+
+    // Get showtimes for dropdown
+    async getDropdownShowtimes(search = "", limit = 20, status = "scheduled") {
+        const response = await api.get('/bookings/dropdown/showtimes', {
+            params: {
+                search,
+                limit,
+                status
+            }
+        })
+        
+        if (response.data?.success && response.data?.data) {
+            return response.data.data
+        }
+        
+        return []
+    }
 };
