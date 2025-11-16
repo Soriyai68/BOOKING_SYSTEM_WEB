@@ -6,10 +6,10 @@
     <div class="login-box">
       <div class="login-header">
         <el-icon class="login-icon"><Film /></el-icon>
-        <h1>{{ $t('auth.loginTitle') }}</h1>
-        <p>{{ $t('auth.loginSubtitle') }}</p>
+        <h1>{{ $t("auth.loginTitle") }}</h1>
+        <p>{{ $t("auth.loginSubtitle") }}</p>
       </div>
-      
+
       <el-form
         ref="loginFormRef"
         :model="loginForm"
@@ -28,7 +28,7 @@
             maxlength="13"
           />
         </el-form-item>
-        
+
         <el-form-item prop="password">
           <el-input
             v-model="loginForm.password"
@@ -40,206 +40,178 @@
             @keyup.enter="handleLogin"
           />
         </el-form-item>
-        
+
         <el-form-item>
           <el-checkbox v-model="loginForm.remember">
-            {{ $t('auth.rememberMe') }}
+            {{ $t("auth.rememberMe") }}
           </el-checkbox>
         </el-form-item>
-        
+
         <el-form-item>
           <el-button
             type="primary"
             size="large"
             :loading="loading"
             @click="handleLogin"
-            style="width: 100%; margin-bottom: 8px;"
+            style="width: 100%; margin-bottom: 8px"
           >
-            {{ $t('auth.signIn') }}
+            {{ $t("auth.signIn") }}
           </el-button>
         </el-form-item>
       </el-form>
-
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { ElMessage } from 'element-plus'
-import { useAuthStore } from '@/stores/auth'
-import { Film, User, Lock } from '@element-plus/icons-vue'
-import api from '@/utils/api'
-import LanguageSwitcher from '@/components/common/LanguageSwitcher.vue'
+import { ref, reactive, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
+import { useAuthStore } from "@/stores/auth";
+import { Film, User, Lock } from "@element-plus/icons-vue";
+import api from "@/utils/api";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher.vue";
 
-const router = useRouter()
-const authStore = useAuthStore()
-const { t } = useI18n()
+const router = useRouter();
+const authStore = useAuthStore();
+const { t } = useI18n();
 
-const loginFormRef = ref()
-const loading = ref(false)
+const loginFormRef = ref();
+const loading = ref(false);
 const apiStatus = ref({
-  title: t('auth.checkingApi'),
-  type: 'info',
-  description: t('auth.testingConnection')
-})
+  title: t("auth.checkingApi"),
+  type: "info",
+  description: t("auth.testingConnection"),
+});
 
 const loginForm = reactive({
-  phone: '+85581218840',
-  password: 'superadmin123',
-  remember: false
-})
+  phone: "+85581218840",
+  password: "superadmin123",
+  remember: false,
+});
 
-// Phone number validation for Cambodia (+855)
 const validatePhone = (rule, value, callback) => {
   if (!value) {
-    callback(new Error(t('validation.phoneRequired')))
+    callback(new Error(t("validation.phoneRequired")));
   } else if (!/^\+855[0-9]{8,9}$/.test(value)) {
-    callback(new Error(t('validation.phoneInvalid')))
+    callback(new Error(t("validation.phoneInvalid")));
   } else {
-    callback()
+    callback();
   }
-}
+};
 
 const loginRules = {
-  phone: [
-    { required: true, validator: validatePhone, trigger: 'blur' }
-  ],
+  phone: [{ required: true, validator: validatePhone, trigger: "blur" }],
   password: [
-    { required: true, message: t('validation.passwordRequired'), trigger: 'blur' },
-    { min: 6, message: t('validation.passwordMin'), trigger: 'blur' }
-  ]
-}
+    {
+      required: true,
+      message: t("validation.passwordRequired"),
+      trigger: "blur",
+    },
+    { min: 6, message: t("validation.passwordMin"), trigger: "blur" },
+  ],
+};
 
 const handleLogin = async () => {
-  if (!loginFormRef.value) return
-  
+  if (!loginFormRef.value) return;
+
   try {
-    await loginFormRef.value.validate()
-    loading.value = true
-    
-    // Use the auth store login method which handles both API and demo login
-    const result = await authStore.login({
+    await loginFormRef.value.validate();
+    loading.value = true;
+
+    await authStore.login({
       phone: loginForm.phone,
       password: loginForm.password,
-      remember: loginForm.remember
-    })
-    
-    ElMessage.success('Login successful!')
-    
-    // Log successful login for debugging
-    if (import.meta.env.VITE_APP_ENV === 'development') {
-      console.log('Login successful, redirecting to dashboard...')
-      // console.log('User data:', result.user || result)
-      // console.log('Auth state after login:', {
-      //   isAuthenticated: authStore.isAuthenticated,
-      //   isAdmin: authStore.isAdmin,
-      //   token: !!authStore.token
-      // })
-    }
-    
-    // Force immediate redirect using multiple methods to ensure it works
-    const redirectPath = router.currentRoute.value.query.redirect || '/admin/dashboard'
-    // console.log('Attempting redirect to:', redirectPath)
-    
+      remember: loginForm.remember,
+    });
+
+    ElMessage.success("Login successful!");
+
+    const redirectPath =
+      router.currentRoute.value.query.redirect || "/admin/dashboard";
+
     try {
-      // Method 1: Vue Router replace
-      await router.replace(redirectPath)
-      // console.log('Router redirect successful')
-    } catch (routerError) {
-      window.location.href = redirectPath
+      await router.replace(redirectPath);
+    } catch {
+      window.location.href = redirectPath;
     }
-    
   } catch (error) {
-    console.error('Login error:', error)
-    
-    // Handle different types of errors
     if (error.response) {
-      // API error with response
-      const status = error.response.status
-      const data = error.response.data
-      
+      const status = error.response.status;
+      const data = error.response.data;
+
       switch (status) {
         case 401:
-          ElMessage.error(data.message || 'Invalid email or password')
-          break
+          ElMessage.error(data.message || "Invalid email or password");
+          break;
         case 422:
-          // Validation errors
           if (data.errors) {
-            const firstError = Object.values(data.errors)[0]
-            ElMessage.error(Array.isArray(firstError) ? firstError[0] : firstError)
+            const firstError = Object.values(data.errors)[0];
+            ElMessage.error(
+              Array.isArray(firstError) ? firstError[0] : firstError
+            );
           } else {
-            ElMessage.error(data.message || 'Validation failed')
+            ElMessage.error(data.message || "Validation failed");
           }
-          break
+          break;
         case 429:
-          ElMessage.warning('Too many login attempts. Please try again later.')
-          break
+          ElMessage.warning("Too many login attempts. Please try again later.");
+          break;
         case 500:
-          ElMessage.error('Server error. Please try again later.')
-          break
+          ElMessage.error("Server error. Please try again later.");
+          break;
         default:
-          ElMessage.error(data.message || 'Login failed. Please try again.')
+          ElMessage.error(data.message || "Login failed. Please try again.");
       }
     } else if (error.request) {
-      // Network error
-      ElMessage.error('Network error. Please check your connection and try again.')
+      ElMessage.error(
+        "Network error. Please check your connection and try again."
+      );
     } else {
-      // Other errors
-      ElMessage.error('Invalid email or password')
+      ElMessage.error("Invalid email or password");
     }
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
-// Format phone number input
 const formatPhoneNumber = (value) => {
-  // Remove all non-digit characters except +
-  let cleaned = value.replace(/[^+\d]/g, '')
-  
-  // If it doesn't start with +855, add it
-  if (cleaned && !cleaned.startsWith('+855')) {
-    if (cleaned.startsWith('855')) {
-      cleaned = '+' + cleaned
-    } else if (cleaned.startsWith('0')) {
-      // Replace leading 0 with +855
-      cleaned = '+855' + cleaned.substring(1)
-    } else if (!cleaned.startsWith('+')) {
-      // Add +855 prefix
-      cleaned = '+855' + cleaned
+  let cleaned = value.replace(/[^+\d]/g, "");
+
+  if (cleaned && !cleaned.startsWith("+855")) {
+    if (cleaned.startsWith("855")) {
+      cleaned = "+" + cleaned;
+    } else if (cleaned.startsWith("0")) {
+      cleaned = "+855" + cleaned.substring(1);
+    } else if (!cleaned.startsWith("+")) {
+      cleaned = "+855" + cleaned;
     }
   }
-  
-  // Update the form value
-  loginForm.phone = cleaned
-}
 
-// Test API connection on component mount
+  loginForm.phone = cleaned;
+};
+
 const checkApiConnection = async () => {
   try {
-    // Try a simple health check or any endpoint that doesn't require auth
-    await api.get('/health')
+    await api.get("/health");
     apiStatus.value = {
-      title: t('auth.apiConnected'),
-      type: 'success',
-      description: t('auth.apiCredentials')
-    }
-  } catch (error) {
-    // API not available, show demo mode
+      title: t("auth.apiConnected"),
+      type: "success",
+      description: t("auth.apiCredentials"),
+    };
+  } catch {
     apiStatus.value = {
-      title: t('auth.demoMode'),
-      type: 'warning',
-      description: t('auth.demoCredentials')
-    }
+      title: t("auth.demoMode"),
+      type: "warning",
+      description: t("auth.demoCredentials"),
+    };
   }
-}
+};
 
 onMounted(() => {
-  checkApiConnection()
-})
+  checkApiConnection();
+});
 </script>
 
 <style scoped>

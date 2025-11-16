@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AdminLayout from "@/layouts/AdminLayout.vue";
-import { checkRoutePermissions, createPermissionMeta, PERMISSIONS, } from "@/composables/usePermissions";
+import { checkRoutePermissions, createPermissionMeta, PERMISSIONS } from "@/composables/usePermissions";
 
 const routes = [
     {
@@ -27,7 +27,6 @@ const routes = [
                 meta: {
                     title: "Dashboard",
                     titleKey: "dashboard.title",
-                    // Dashboard is accessible to all authenticated admins
                 },
             },
             //users
@@ -71,6 +70,7 @@ const routes = [
                     ...createPermissionMeta(PERMISSIONS.USERS_MANAGE),
                 },
             },
+
             //seats
             {
                 path: "seats",
@@ -112,6 +112,7 @@ const routes = [
                     ...createPermissionMeta(PERMISSIONS.SEATS_EDIT),
                 },
             },
+
             //theaters
             {
                 path: "theaters",
@@ -153,6 +154,7 @@ const routes = [
                     ...createPermissionMeta(PERMISSIONS.THEATERS_EDIT),
                 },
             },
+
             //halls
             {
                 path: "halls",
@@ -194,6 +196,7 @@ const routes = [
                     ...createPermissionMeta(PERMISSIONS.HALLS_EDIT),
                 },
             },
+
             //movies
             {
                 path: "movies",
@@ -235,7 +238,8 @@ const routes = [
                     ...createPermissionMeta(PERMISSIONS.MOVIES_EDIT),
                 },
             },
-            //showtime
+
+            //showtimes
             {
                 path: "showtimes",
                 name: "Showtimes",
@@ -267,14 +271,14 @@ const routes = [
                 },
             },
             {
-                path: "showtimes/multiple-create", // New route
-                name: "MultipleShowtimeCreator", // New name
+                path: "showtimes/multiple-create",
+                name: "MultipleShowtimeCreator",
                 component: () =>
-                    import("@/components/showtimes/MultipleShowtimeCreator.vue"), // Component path
+                    import("@/components/showtimes/MultipleShowtimeCreator.vue"),
                 meta: {
-                    title: "Duplicate Showtimes", // New title
-                    titleKey: "showtimes.duplicateShowtimes", // New title key
-                    ...createPermissionMeta(PERMISSIONS.SHOWTIMES_CREATE), // Assuming same permission
+                    title: "Duplicate Showtimes",
+                    titleKey: "showtimes.duplicateShowtimes",
+                    ...createPermissionMeta(PERMISSIONS.SHOWTIMES_CREATE),
                 },
             },
             {
@@ -297,7 +301,8 @@ const routes = [
                     ...createPermissionMeta(PERMISSIONS.SHOWTIMES_EDIT),
                 },
             },
-            // Booking Management
+
+            // bookings
             {
                 path: "bookings",
                 name: "Bookings",
@@ -318,29 +323,8 @@ const routes = [
                     ...createPermissionMeta(PERMISSIONS.BOOKINGS_VIEW),
                 },
             },
-            // Booking Create/Edit now handled via BookingFormDialog component
-            // Accessible from MovieDetail "Book Now" button or BookingList
-            // {
-            //     path: "bookings/create",
-            //     name: "CreateBooking",
-            //     component: () => import("@/views/bookings/CreateBooking.vue"),
-            //     meta: {
-            //         title: "Create Booking",
-            //         titleKey: "bookings.createBooking",
-            //         ...createPermissionMeta(PERMISSIONS.BOOKINGS_CREATE),
-            //     },
-            // },
-            // {
-            //     path: "bookings/:id/edit",
-            //     name: "EditBooking",
-            //     component: () => import("@/views/bookings/EditBooking.vue"),
-            //     meta: {
-            //         title: "Edit Booking",
-            //         titleKey: "bookings.editBooking",
-            //         ...createPermissionMeta(PERMISSIONS.BOOKINGS_EDIT),
-            //     },
-            // },
-            // System Management (SuperAdmin only)
+
+            // system
             {
                 path: "system/permissions",
                 name: "SystemPermissions",
@@ -371,10 +355,8 @@ const routes = [
             },
         ],
     },
-    {
-        path: "/",
-        redirect: "/admin",
-    },
+
+    { path: "/", redirect: "/admin" },
     {
         path: "/:pathMatch(.*)*",
         name: "NotFound",
@@ -387,75 +369,54 @@ const router = createRouter({
     routes,
 });
 
-// Navigation guards
 router.beforeEach(async (to, from, next) => {
     const { useAuthStore } = await import("@/stores/auth");
     const { usePermissionStore } = await import("@/stores/permission");
     const authStore = useAuthStore();
     const permissionStore = usePermissionStore();
 
-    // Wait for auth initialization if not already initialized
-    if (!authStore.isInitialized) {
-        console.log("Waiting for auth initialization...");
-        try {
+    // if (!authStore.isInitialized) {
+    //     console.log("Waiting for auth initialization...");
+    // }
+
+    try {
+        if (!authStore.isInitialized) {
             await authStore.initializeAuth();
-        } catch (error) {
-            console.error("Auth initialization failed:", error);
         }
+    } catch (error) {
+        // console.error("Auth initialization failed:", error);
     }
 
-    // console.log("Route guard check:", {
-    //   to: to.path,
-    //   requiresAuth: to.matched.some((record) => record.meta.requiresAuth),
-    //   requiresAdmin: to.matched.some((record) => record.meta.requiresAdmin),
-    //   requiresGuest: to.matched.some((record) => record.meta.requiresGuest),
-    //   requiresPermission: to.matched.some((record) => record.meta.requiresPermission),
-    //   isAuthenticated: authStore.isAuthenticated,
-    //   isAdmin: authStore.isAdmin,
-    //   userRole: authStore.userRole,
-    // });
-
-    // Auth required?
     if (to.matched.some((record) => record.meta.requiresAuth)) {
         if (!authStore.isAuthenticated) {
-            console.log("Access denied: Not authenticated");
-            // Clear any auth data to prevent components from making API calls
+            // console.log("Access denied: Not authenticated");
             authStore.setToken(null);
             authStore.setRefreshToken(null);
             authStore.setUser(null);
             return next({ path: "/login", query: { redirect: to.fullPath } });
         }
 
-        // SuperAdmin bypass: full access
         if (authStore.isSuperAdmin) {
             return next();
         }
 
-        // Initialize permissions if authenticated
-        if (authStore.isAuthenticated && !permissionStore.isInitialized) {
+        if (!permissionStore.isInitialized) {
             try {
                 await permissionStore.initializePermissions();
             } catch (error) {
-                console.error("Permission initialization failed:", error);
+                // console.error("Permission initialization failed:", error);
             }
         }
 
-        // Check admin if required
-        if (
-            to.matched.some((record) => record.meta.requiresAdmin) &&
-            !authStore.isAdmin
-        ) {
+        if (to.matched.some((r) => r.meta.requiresAdmin) && !authStore.isAdmin) {
             // console.log("Access denied: Not admin");
-            // Avoid redirecting to the same route to prevent infinite loops
             return next({ name: "NotFound" });
         }
 
-        // Check permissions if required
-        if (to.matched.some((record) => record.meta.requiresPermission)) {
-            const hasPermission = checkRoutePermissions(to, permissionStore);
-            if (!hasPermission) {
-                console.log("Access denied: Insufficient permissions");
-                // Prevent redirect loop - if already going to dashboard or from dashboard, go to 403
+        if (to.matched.some((r) => r.meta.requiresPermission)) {
+            const allowed = checkRoutePermissions(to, permissionStore);
+            if (!allowed) {
+                // console.log("Access denied: Insufficient permissions");
                 if (to.name === "AdminDashboard" || from.name === "AdminDashboard") {
                     return next({ name: "NotFound" });
                 }
@@ -464,21 +425,19 @@ router.beforeEach(async (to, from, next) => {
         }
     }
 
-    // Guest routes (like login)
     if (to.matched.some((record) => record.meta.requiresGuest)) {
         if (authStore.isAuthenticated) {
-            // console.log("Already authenticated, redirecting to dashboard");
             return next({ name: "AdminDashboard" });
         }
     }
-    
-    if (to.matched.some((record) => record.meta.requiresAuth)) {
-        console.log("Route access granted to protected route:", to.fullPath);
-    } else if (to.matched.some((record) => record.meta.requiresGuest)) {
-        console.log("Route access granted to guest route:", to.fullPath);
-    } else {
-        console.log("Route access granted to public route:", to.fullPath);
-    }
+
+    // if (to.matched.some((record) => record.meta.requiresAuth)) {
+    //     console.log("Route access granted to protected:", to.fullPath);
+    // } else if (to.matched.some((record) => record.meta.requiresGuest)) {
+    //     console.log("Route access granted to guest:", to.fullPath);
+    // } else {
+    //     console.log("Route access granted to public:", to.fullPath);
+    // }
 
     return next();
 });
