@@ -3,7 +3,6 @@ import { ref, computed } from "vue";
 import api from "@/utils/api";
 
 export const useAuthStore = defineStore("auth", () => {
-  // Initialize user from localStorage if available
   const getUserFromStorage = () => {
     try {
       const stored = localStorage.getItem("cinema_user");
@@ -29,9 +28,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   const isAuthenticated = computed(() => !!token.value);
   const userRole = computed(() => user.value?.role || "user");
-  const isAdmin = computed(
-    () => ["admin", "superadmin", "cashier"].includes(userRole.value)
-  );
+  const isAdmin = computed(() => ["admin", "superadmin", "cashier"].includes(userRole.value));
   const isSuperAdmin = computed(() => userRole.value === "superadmin");
   const isRegularAdmin = computed(() => userRole.value === "admin");
   const isCashier = computed(() => userRole.value === "cashier");
@@ -40,99 +37,52 @@ export const useAuthStore = defineStore("auth", () => {
   const setToken = (newToken) => {
     token.value = newToken;
     const tokenKey = import.meta.env.VITE_AUTH_TOKEN_KEY || "cinema_auth_token";
-    if (newToken) {
-      localStorage.setItem(tokenKey, newToken);
-    } else {
-      localStorage.removeItem(tokenKey);
-    }
+    if (newToken) localStorage.setItem(tokenKey, newToken);
+    else localStorage.removeItem(tokenKey);
   };
 
   const setRefreshToken = (newRefreshToken) => {
     refreshToken.value = newRefreshToken;
-    const refreshTokenKey =
-      import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY || "cinema_refresh_token";
-    if (newRefreshToken) {
-      localStorage.setItem(refreshTokenKey, newRefreshToken);
-    } else {
-      localStorage.removeItem(refreshTokenKey);
-    }
+    const refreshTokenKey = import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY || "cinema_refresh_token";
+    if (newRefreshToken) localStorage.setItem(refreshTokenKey, newRefreshToken);
+    else localStorage.removeItem(refreshTokenKey);
   };
 
   const setUser = (userData) => {
     user.value = userData;
-    // Persist user data to localStorage
-    if (userData) {
-      localStorage.setItem("cinema_user", JSON.stringify(userData));
-    } else {
-      localStorage.removeItem("cinema_user");
-    }
+    if (userData) localStorage.setItem("cinema_user", JSON.stringify(userData));
+    else localStorage.removeItem("cinema_user");
   };
 
   const login = async (credentials) => {
     isLoading.value = true;
-    console.log("Login attempt with credentials:", {
-      phone: credentials.phone,
-      password: credentials.password ? "[HIDDEN]" : "MISSING",
-      remember: credentials.remember,
-    });
-
     try {
-      // First try with real API
-      // console.log("Attempting API login...");
       const response = await api.post("/auth/admin-login", {
         phone: credentials.phone,
         password: credentials.password,
         remember: credentials.remember,
       });
 
-      // console.log("API login successful:", response.data);
-
-      // Handle backend response format
       const responseData = response.data;
 
-      // Backend returns: { success: true, data: { accessToken, user, ... } }
       if (responseData.success && responseData.data) {
         const data = responseData.data;
-        const accessToken = data.accessToken;
-        const refToken = data.refreshToken;
-        const userData = data.user;
-
-        setToken(accessToken);
-        if (refToken) {
-          setRefreshToken(refToken);
-        }
-        setUser(userData);
-
-        console.log("Auth state updated via API:", {
-          token: !!accessToken,
-          user: userData,
-          isAuthenticated: !!accessToken,
-          isAdmin: userData?.role === "admin",
-        });
-
-        return responseData;
-      } else {
-        // Fallback for different response formats
-        const accessToken = responseData.access_token || responseData.token;
-        const refToken = responseData.refresh_token;
-        const userData = responseData.user || responseData.data;
-
-        setToken(accessToken);
-        if (refToken) {
-          setRefreshToken(refToken);
-        }
-
-        console.log("Auth state updated via API (fallback):", {
-          token: !!accessToken,
-          user: userData,
-          isAuthenticated: !!accessToken,
-          isAdmin: userData?.role === "admin",
-        });
-
+        setToken(data.accessToken);
+        if (data.refreshToken) setRefreshToken(data.refreshToken);
+        setUser(data.user);
         return responseData;
       }
+
+      const accessToken = responseData.access_token || responseData.token;
+      const refToken = responseData.refresh_token;
+      const userData = responseData.user || responseData.data;
+
+      setToken(accessToken);
+      if (refToken) setRefreshToken(refToken);
+      setUser(userData);
+
+      return responseData;
     } catch (error) {
-      console.log("API login failed:", error.message);
       throw error;
     } finally {
       isLoading.value = false;
@@ -140,26 +90,16 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const logout = async () => {
-    // Capture token before clearing
     const wasAuthenticated = !!token.value;
 
-    // Clear local data FIRST to prevent any components from making API calls
-    console.log("Clearing local auth data...");
     setToken(null);
     setRefreshToken(null);
     setUser(null);
     isInitialized.value = false;
 
-    // Then try to call logout endpoint (non-blocking, don't await)
     if (wasAuthenticated && import.meta.env.VITE_API_BASE_URL) {
-      api.post("/auth/logout").then(() => {
-        console.log("Logout API call successful");
-      }).catch(error => {
-        console.warn("Logout API call failed:", error.message);
-      });
+      api.post("/auth/logout").catch(() => { });
     }
-
-    console.log("Logout completed successfully");
   };
 
   const fetchUserProfile = async () => {
@@ -167,7 +107,6 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       const response = await api.get("/auth/profile");
 
-      // Handle backend response format: { success: true, data: { user: {...} } }
       let userData;
       if (response.data?.success && response.data?.data?.user) {
         userData = response.data.data.user;
@@ -180,12 +119,10 @@ export const useAuthStore = defineStore("auth", () => {
       if (userData) {
         setUser(userData);
         return userData;
-      } else {
-        throw new Error("No user data in response");
       }
+
+      throw new Error("No user data in response");
     } catch (error) {
-      console.error("Failed to fetch user profile:", error);
-      // Throw error so initializeAuth can handle it
       throw error;
     }
   };
@@ -214,38 +151,24 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const initializeAuth = async () => {
-    console.log("Initializing auth state...");
     try {
-      // Check if we have both token and user data
       if (token.value && user.value) {
-        // We have everything, just verify the token is still valid
-        console.log("Found stored token and user, verifying...");
         try {
           await fetchUserProfile();
-          console.log("Auth state verified and restored");
-        } catch (error) {
-          console.warn("Token expired, clearing auth state");
+        } catch {
           setToken(null);
           setRefreshToken(null);
           setUser(null);
         }
       } else if (token.value && !user.value) {
-        // We have token but no user data, fetch it
-        console.log("Found token, fetching user profile...");
         try {
           await fetchUserProfile();
-          // console.log("User profile restored from token");
-        } catch (error) {
-          console.warn("Token invalid, clearing auth state");
+        } catch {
           setToken(null);
           setRefreshToken(null);
           setUser(null);
         }
-      } else {
-        console.log("No stored authentication found");
       }
-    } catch (error) {
-      console.error("Auth initialization error:", error);
     } finally {
       isInitialized.value = true;
     }

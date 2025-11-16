@@ -471,8 +471,15 @@ router.beforeEach(async (to, from, next) => {
             return next({ name: "AdminDashboard" });
         }
     }
+    
+    if (to.matched.some((record) => record.meta.requiresAuth)) {
+        console.log("Route access granted to protected route:", to.fullPath);
+    } else if (to.matched.some((record) => record.meta.requiresGuest)) {
+        console.log("Route access granted to guest route:", to.fullPath);
+    } else {
+        console.log("Route access granted to public route:", to.fullPath);
+    }
 
-    console.log("Route access granted");
     return next();
 });
 

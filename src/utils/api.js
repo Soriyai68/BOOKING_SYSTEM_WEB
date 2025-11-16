@@ -13,6 +13,9 @@ const api = axios.create({
   }
 })
 
+// Prevent multiple simultaneous 401 handlers from running
+let isHandling401 = false
+
 // Request interceptor with debugging
 api.interceptors.request.use(
   (config) => {
@@ -40,7 +43,7 @@ api.interceptors.response.use(
     // Log response time in development
     if (import.meta.env.VITE_APP_ENV === 'development') {
       const duration = Date.now() - response.config.metadata.startTime
-      console.log(`API: ${response.config.method?.toUpperCase()} ${response.config.url} - ${duration}ms`, response.status)
+      // console.log(`API: ${response.config.method?.toUpperCase()} ${response.config.url} - ${duration}ms`, response.status)
     }
 
     return response
@@ -66,13 +69,27 @@ api.interceptors.response.use(
       // Only show automatic error messages for non-auth requests
       if (!isAuthAttempt) {
         switch (status) {
-          case 401:
+          case 401: {
             // Unauthorized - token expired or invalid (but not for login)
             const authStore = useAuthStore()
-            authStore.logout()
-            ElMessage.error('Session expired. Please login again.')
-            router.push('/login')
+
+            // Avoid repeated logout/redirect when multiple requests fail with 401
+            if (!isHandling401 && authStore.isAuthenticated) {
+              isHandling401 = true
+              try {
+                await authStore.logout()
+                ElMessage.error('Session expired. Please login again.')
+
+                const currentPath = router.currentRoute.value.path
+                if (currentPath !== '/login') {
+                  router.push('/login')
+                }
+              } finally {
+                isHandling401 = false
+              }
+            }
             break
+          }
 
           case 403:
             ElMessage.error('Access denied. You don\'t have permission to perform this action.')

@@ -26,15 +26,7 @@ app.component('PermissionGuard', PermissionGuard)
 
 // Test API connection in development
 if (import.meta.env.VITE_APP_ENV === 'development') {
-  console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL)
-  console.log('Environment:', import.meta.env.VITE_APP_ENV)
-  
-  // Test API connection
-  api.get('/health').then(response => {
-    console.log('API Connected:', response.data)
-  }).catch(error => {
-    console.warn('API Connection failed:', error.message)
-  })
+  api.get('/health').then(() => {}).catch(() => {})
 }
 
 app.use(pinia)
@@ -44,7 +36,6 @@ app.use(i18n)
 app.use(PermissionPlugin)
 app.use(PermissionDirective)
 
-// Initialize permission system after mounting
 app.mount('#app')
 
 // Initialize the permission system
