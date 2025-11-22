@@ -118,6 +118,11 @@ export const usePermissionStore = defineStore("permission", () => {
   const canDeleteBookings = computed(() => canDelete('bookings'));
   const canManageBookings = computed(() => canManage('bookings'));
 
+  const canViewPromotions = computed(() => canView('promotions'));
+  const canCreatePromotions = computed(() => canCreate('promotions'));
+  const canEditPromotions = computed(() => canEdit('promotions'));
+  const canDeletePromotions = computed(() => canDelete('promotions'));
+  const canManagePromotions = computed(() => canManage('promotions'));
 
 
   // Actions
@@ -287,6 +292,12 @@ export const usePermissionStore = defineStore("permission", () => {
     canEditBookings,
     canDeleteBookings,
     canManageBookings,
+
+    canViewPromotions,
+    canCreatePromotions,
+    canEditPromotions,
+    canDeletePromotions,
+    canManagePromotions,
 
     canViewDashboard,
     canViewAnalytics,

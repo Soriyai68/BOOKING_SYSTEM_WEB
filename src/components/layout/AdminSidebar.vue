@@ -125,6 +125,31 @@
         </el-menu-item>
       </el-sub-menu>
 
+      <!-- Promotions -->
+      <el-sub-menu v-if="isSuperAdmin || canViewPromotions" index="promotions">
+        <template #title>
+          <el-icon>
+            <Tag />
+          </el-icon>
+          <span>{{ $t("promotions.title") }}</span>
+        </template>
+        <el-menu-item index="/admin/promotions">
+          <el-icon>
+            <Tag />
+          </el-icon>
+          <template #title>{{ $t("promotions.allPromotions") || 'All Promotions' }}</template>
+        </el-menu-item>
+        <el-menu-item
+          v-if="isSuperAdmin || canCreatePromotions"
+          index="/admin/promotions/create"
+        >
+          <el-icon>
+            <Plus />
+          </el-icon>
+          <template #title>{{ $t("promotions.addPromotion") || 'Add Promotion' }}</template>
+        </el-menu-item>
+      </el-sub-menu>
+
       <el-sub-menu v-if="isSuperAdmin || canViewShowtimes" index="showtimes">
         <template #title>
           <el-icon>
@@ -165,7 +190,7 @@
       </el-sub-menu> -->
 
       <!-- report  -->
-      <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="bookings">
+      <!-- <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="bookings">
         <template #title>
           <el-icon>
            <ClipboardCheck />
@@ -190,7 +215,7 @@
           </el-icon>
           <template #title>All Payments</template>
         </el-menu-item>
-      </el-sub-menu>
+      </el-sub-menu> -->
 
       <!-- User Management (Dialog-based create) -->
       <el-menu-item v-if="isSuperAdmin || canViewUsers" index="/admin/users">
@@ -254,7 +279,8 @@ import {
   UserCog,
   Users,
   BookOpen,
-  ClipboardCheck
+  ClipboardCheck,
+  Tag
 } from "lucide-vue-next";
 
 const route = useRoute();
@@ -271,6 +297,8 @@ const {
   canViewSeats,
   canViewMovies,
   canCreateMovies,
+  canViewPromotions,
+  canCreatePromotions,
   canViewShowtimes,
   canCreateShowtimes,
   canViewBookings,

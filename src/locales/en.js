@@ -320,6 +320,42 @@ export default {
         },
     },
 
+    // Promotion Management
+    promotions: {
+        title: "Promotion Management",
+        addPromotion: "Add Promotion",
+        createPromotion: "Create Promotion",
+        editPromotion: "Edit Promotion",
+        promotionDetails: "Promotion Details",
+        allPromotions: "All Promotions",
+        searchPromotions: "Search by code or title...",
+        filterByStatus: "Filter by status",
+        sortBy: "Sort by",
+        code: "Code",
+        titleColumn: "Title",
+        startDate: "Start Date",
+        endDate: "End Date",
+        status: "Status",
+        image: "Image",
+        promotionImage: "Promotion Image",
+        deletePromotion: "Delete Promotion",
+        confirmDelete: "Are you sure you want to delete this promotion?",
+        deleteSuccess: "Promotion deleted successfully",
+        deleteFailed: "Failed to delete promotion",
+        confirmBulkDelete: "Are you sure you want to delete {count} promotions?",
+        deletePromotions: "Delete Promotions",
+        bulkDeleteSuccess: "{count} promotions deleted successfully",
+        bulkDeleteFailed: "Failed to delete promotions",
+        createSuccess: "Promotion created successfully",
+        updateSuccess: "Promotion updated successfully",
+        loadFailed: "Failed to load promotions",
+        statuses: {
+            Active: "Active",
+            Inactive: "Inactive",
+            Expired: "Expired",
+        },
+    },
+
     // Showtime Management
     showtimes: {
         title: "Showtime Management",

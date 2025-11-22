@@ -296,6 +296,42 @@ export default {
         },
     },
 
+    // Promotion Management
+    promotions: {
+        title: "គ្រប់គ្រងការផ្សព្វផ្សាយ",
+        addPromotion: "បន្ថែមការផ្សព្វផ្សាយ",
+        createPromotion: "បង្កើតការផ្សព្វផ្សាយ",
+        editPromotion: "កែសម្រួលការផ្សព្វផ្សាយ",
+        promotionDetails: "ព័ត៌មានលម្អិតការផ្សព្វផ្សាយ",
+        allPromotions: "ការផ្សព្វផ្សាយទាំងអស់",
+        searchPromotions: "ស្វែងរកតាមលេខកូដ ឬចំណងជើង...",
+        filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
+        sortBy: "តម្រៀបតាម",
+        code: "លេខកូដ",
+        titleColumn: "ចំណងជើង",
+        startDate: "កាលបរិច្ឆេទចាប់ផ្តើម",
+        endDate: "កាលបរិច្ឆេទបញ្ចប់",
+        status: "ស្ថានភាព",
+        image: "រូបភាព",
+        promotionImage: "រូបភាពផ្សព្វផ្សាយ",
+        deletePromotion: "លុបការផ្សព្វផ្សាយ",
+        confirmDelete: "តើអ្នកប្រាកដថាចង់លុបការផ្សព្វផ្សាយនេះមែនទេ?",
+        deleteSuccess: "លុបការផ្សព្វផ្សាយបានជោគជ័យ",
+        deleteFailed: "ការលុបការផ្សព្វផ្សាយបានបរាជ័យ",
+        confirmBulkDelete: "តើអ្នកប្រាកដទេថាចង់លុបការផ្សព្វផ្សាយ {count} មែនទេ?",
+        deletePromotions: "លុបការផ្សព្វផ្សាយ",
+        bulkDeleteSuccess: "លុបការផ្សព្វផ្សាយ {count} បានជោគជ័យ",
+        bulkDeleteFailed: "ការលុបការផ្សព្វផ្សាយបានបរាជ័យ",
+        createSuccess: "បង្កើតការផ្សព្វផ្សាយបានជោគជ័យ",
+        updateSuccess: "ធ្វើបច្ចុប្បន្នភាពការផ្សព្វផ្សាយបានជោគជ័យ",
+        loadFailed: "ការផ្ទុកការផ្សព្វផ្សាយបានបរាជ័យ",
+        statuses: {
+            Active: "សកម្ម",
+            Inactive: "មិនសកម្ម",
+            Expired: "ផុតកំណត់",
+        },
+    },
+
     // Showtime Management
     showtimes: {
         title: "គ្រប់គ្រងម៉ោងបញ្ចាំង",
