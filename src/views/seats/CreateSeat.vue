@@ -92,6 +92,8 @@
             <el-tag
                 v-for="seat in parsedSeatNumbers"
                 :key="seat"
+                type="info"
+                effect="dark"
                 style="margin: 2px"
             >
               {{ seat }}
@@ -445,14 +447,14 @@ onMounted(async () => {
 .seat-preview {
   margin-top: 12px;
   padding: 12px;
-  background-color: #f5f7fa;
+  background-color: var(--el-bg-color-overlay);
   border-radius: 4px;
 }
 
 .seat-count {
   margin-top: 8px;
   font-size: 14px;
-  color: #606266;
+  color: var(--el-text-color-regular);
   text-align: right;
 }
 

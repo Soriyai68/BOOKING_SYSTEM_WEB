@@ -316,6 +316,8 @@
             <el-tag
                 v-for="seat in parsedSeatNumbers"
                 :key="seat"
+                type="info"
+                effect="dark"
                 style="margin: 2px"
             >
               {{ seat }}
@@ -641,7 +643,7 @@ const openCreateDialog = () => {
 const openEditDialog = (seat) => {
   dialogMode.value = 'edit';
   editingSeatId.value = seat.id;
-  
+
   // Populate form with seat data
   Object.assign(dialogForm, {
     hall_id: seat.hall_id || seat.hall?.id || '',
@@ -650,7 +652,7 @@ const openEditDialog = (seat) => {
     status: seat.status || 'active',
     notes: seat.notes || '',
   });
-  
+
   // For edit, show current seat numbers as range if possible
   if (Array.isArray(seat.seat_number) && seat.seat_number.length > 0) {
     const numbers = seat.seat_number.map(n => parseInt(n)).sort((a, b) => a - b);
@@ -660,7 +662,7 @@ const openEditDialog = (seat) => {
     seatNumberRange.start = String(seat.seat_number);
     seatNumberRange.end = String(seat.seat_number);
   }
-  
+
   handleRangeInput();
   dialogVisible.value = true;
 };
@@ -907,14 +909,15 @@ onMounted(async () => {
 .seat-preview {
   margin-top: 12px;
   padding: 12px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-lighter);
   border-radius: 4px;
+
 }
 
 .seat-count {
   margin-top: 8px;
   font-size: 14px;
-  color: #606266;
+  color: var(--el-text-color-secondary);
   text-align: right;
 }
 </style>

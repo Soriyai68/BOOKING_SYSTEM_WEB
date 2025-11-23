@@ -1,63 +1,63 @@
 <template>
   <el-dialog
-    v-model="dialogVisible"
-    :title="isEditMode ? $t('users.editUser') : $t('users.createUser')"
-    width="600px"
-    :close-on-click-modal="false"
-    @closed="handleClosed"
+      v-model="dialogVisible"
+      :title="isEditMode ? $t('users.editUser') : $t('users.createUser')"
+      width="600px"
+      :close-on-click-modal="false"
+      @closed="handleClosed"
   >
     <el-form
-      ref="formRef"
-      :model="form"
-      :rules="rules"
-      label-width="120px"
-      @submit.prevent="handleSubmit"
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-width="120px"
+        @submit.prevent="handleSubmit"
     >
       <el-form-item :label="$t('users.name')" prop="name">
         <el-input
-          v-model="form.name"
-          :placeholder="$t('users.name')"
-          maxlength="50"
-          show-word-limit
+            v-model="form.name"
+            :placeholder="$t('users.name')"
+            maxlength="50"
+            show-word-limit
         />
       </el-form-item>
 
       <el-form-item :label="$t('users.phone')" prop="phone">
         <el-input
-          v-model="form.phone"
-          :placeholder="$t('auth.phonePlaceholder')"
-          @input="formatPhoneNumber"
-          maxlength="13"
+            v-model="form.phone"
+            :placeholder="$t('auth.phonePlaceholder')"
+            @input="formatPhoneNumber"
+            maxlength="13"
         />
       </el-form-item>
 
       <el-form-item :label="$t('users.role')" prop="role">
         <el-select
-          v-model="form.role"
-          :placeholder="$t('users.role')"
-          style="width: 100%"
-          filterable
+            v-model="form.role"
+            :placeholder="$t('users.role')"
+            style="width: 100%"
+            filterable
         >
           <el-option
-            v-for="r in roleOptions"
-            :key="r.name"
-            :label="r.displayName || r.name"
-            :value="r.name"
-            :disabled="r.name === 'superadmin' && !authStore.isSuperAdmin"
+              v-for="r in roleOptions"
+              :key="r.name"
+              :label="r.displayName || r.name"
+              :value="r.name"
+              :disabled="r.name === 'superadmin' && !authStore.isSuperAdmin"
           />
         </el-select>
       </el-form-item>
 
       <el-form-item
-        :label="$t('auth.password')"
-        prop="password"
-        v-if="form.role && form.role !== 'user'"
+          :label="$t('auth.password')"
+          prop="password"
+          v-if="form.role"
       >
         <el-input
-          v-model="form.password"
-          type="password"
-          :placeholder="passwordPlaceholder"
-          show-password
+            v-model="form.password"
+            type="password"
+            :placeholder="passwordPlaceholder"
+            show-password
         />
         <div class="form-tip" v-if="isEditMode && !passwordRequired">
           {{ $t("users.passwordOptional") }}
@@ -66,15 +66,15 @@
 
       <el-form-item :label="$t('users.status')" prop="isActive">
         <el-switch
-          v-model="form.isActive"
-          :active-text="$t('users.active')"
-          :inactive-text="$t('users.inactive')"
+            v-model="form.isActive"
+            :active-text="$t('users.active')"
+            :inactive-text="$t('users.inactive')"
         />
       </el-form-item>
 
       <el-form-item
-        v-if="isEditMode && originalUser?.lastLogin"
-        :label="$t('users.lastLogin')"
+          v-if="isEditMode && originalUser?.lastLogin"
+          :label="$t('users.lastLogin')"
       >
         <el-text type="info">{{ formatDateTime(originalUser.lastLogin) }}</el-text>
       </el-form-item>
@@ -85,10 +85,10 @@
         {{ $t("actions.cancel") }}
       </el-button>
       <el-button
-        v-permission="isEditMode ? 'users.edit' : 'users.create'"
-        type="primary"
-        :loading="loading"
-        @click="handleSubmit"
+          v-permission="isEditMode ? 'users.edit' : 'users.create'"
+          type="primary"
+          :loading="loading"
+          @click="handleSubmit"
       >
         {{ isEditMode ? $t("actions.update") : $t("actions.create") }}
       </el-button>
@@ -97,11 +97,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from "vue";
-import { useI18n } from "vue-i18n";
-import { ElMessage } from "element-plus";
-import { useAuthStore } from "@/stores/auth";
-import { userService } from "@/services/userService";
+import {computed, reactive, ref, watch} from "vue";
+import {useI18n} from "vue-i18n";
+import {ElMessage} from "element-plus";
+import {useAuthStore} from "@/stores/auth";
+import {userService} from "@/services/userService";
 
 const props = defineProps({
   modelValue: {
@@ -117,7 +117,7 @@ const props = defineProps({
 const emit = defineEmits(["update:modelValue", "success"]);
 
 const authStore = useAuthStore();
-const { t } = useI18n();
+const {t} = useI18n();
 
 const formRef = ref();
 const loading = ref(false);
@@ -131,10 +131,10 @@ const dialogVisible = computed({
 });
 
 const roleOptions = ref([
-  { name: "superadmin", displayName: "Super Admin", isSystem: true },
-  { name: "admin", displayName: "Admin", isSystem: true },
-  { name: "cashier", displayName: "Cashier", isSystem: true },
-  { name: "user", displayName: "User", isSystem: true },
+  {name: "superadmin", displayName: "Super Admin", isSystem: true},
+  {name: "admin", displayName: "Admin", isSystem: true},
+  {name: "cashier", displayName: "Cashier", isSystem: true},
+  {name: "user", displayName: "User", isSystem: true},
 ]);
 
 const form = reactive({
@@ -159,8 +159,8 @@ const passwordPlaceholder = computed(() => {
     return t("auth.password");
   }
   return passwordRequired.value
-    ? t("auth.password")
-    : t("settings.changePassword");
+      ? t("auth.password")
+      : t("settings.changePassword");
 });
 
 // Phone number validation
@@ -176,7 +176,7 @@ const validatePhone = (rule, value, callback) => {
 
 // Password validation
 const validatePassword = (rule, value, callback) => {
-  if (form.role && form.role !== "user") {
+  if (form.role) {
     if (passwordRequired.value && !value) {
       return callback(new Error(t("validation.passwordRequired")));
     }
@@ -191,7 +191,7 @@ const validatePassword = (rule, value, callback) => {
 
 const rules = {
   name: [
-    { required: true, message: t("validation.required"), trigger: "blur" },
+    {required: true, message: t("validation.required"), trigger: "blur"},
     {
       min: 2,
       max: 50,
@@ -199,11 +199,11 @@ const rules = {
       trigger: "blur",
     },
   ],
-  phone: [{ required: true, validator: validatePhone, trigger: "blur" }],
+  phone: [{required: true, validator: validatePhone, trigger: "blur"}],
   role: [
-    { required: true, message: t("validation.required"), trigger: "change" },
+    {required: true, message: t("validation.required"), trigger: "change"},
   ],
-  password: [{ validator: validatePassword, trigger: "blur" }],
+  password: [{validator: validatePassword, trigger: "blur"}],
 };
 
 // Format phone number
@@ -288,7 +288,7 @@ const handleSubmit = async () => {
       ElMessage.error(error.response.data.message);
     } else {
       ElMessage.error(
-        isEditMode.value ? "Failed to update user" : "Failed to create user"
+          isEditMode.value ? "Failed to update user" : "Failed to create user"
       );
     }
   } finally {
@@ -320,22 +320,22 @@ const formatDateTime = (dateString) => {
 
 // Watch dialog visibility to load user data
 watch(
-  () => props.modelValue,
-  (newVal) => {
-    if (newVal && isEditMode.value) {
-      loadUser();
+    () => props.modelValue,
+    (newVal) => {
+      if (newVal && isEditMode.value) {
+        loadUser();
+      }
     }
-  }
 );
 
 // Watch role changes to re-validate password
 watch(
-  () => form.role,
-  () => {
-    if (formRef.value) {
-      formRef.value.validateField("password");
+    () => form.role,
+    () => {
+      if (formRef.value) {
+        formRef.value.validateField("password");
+      }
     }
-  }
 );
 </script>
 

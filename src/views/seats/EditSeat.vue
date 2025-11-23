@@ -65,9 +65,9 @@
         </el-form-item>
 
         <!-- Single Seat Number -->
-        <el-form-item 
-          v-if="!isMultiSeat" 
-          :label="t('seats.seatNumber')" 
+        <el-form-item
+          v-if="!isMultiSeat"
+          :label="t('seats.seatNumber')"
           prop="seat_number"
         >
           <el-input
@@ -80,9 +80,9 @@
         </el-form-item>
 
         <!-- Multi Seat Numbers -->
-        <el-form-item 
-          v-if="isMultiSeat" 
-          :label="t('seats.seatNumbers')" 
+        <el-form-item
+          v-if="isMultiSeat"
+          :label="t('seats.seatNumbers')"
           prop="seat_numbers"
         >
           <div class="multi-seat-input">
@@ -96,9 +96,9 @@
               @input="handleMultiSeatInput"
             />
             <div v-if="parsedSeatNumbers.length > 0" class="seat-preview">
-              <el-tag 
-                v-for="seat in parsedSeatNumbers" 
-                :key="seat" 
+              <el-tag
+                v-for="seat in parsedSeatNumbers"
+                :key="seat"
                 closable
                 @close="removeSeatNumber(seat)"
                 style="margin: 2px;"
@@ -204,13 +204,13 @@ const form = reactive({
 // Parse seat numbers from input
 const parsedSeatNumbers = computed(() => {
   if (!seatNumbersInput.value) return [];
-  
+
   // Split by comma, space, or newline and clean up
   const numbers = seatNumbersInput.value
     .split(/[,\s\n]+/)
     .map(s => s.trim().toUpperCase())
     .filter(s => s.length > 0);
-  
+
   // Remove duplicates
   return [...new Set(numbers)];
 });
@@ -263,7 +263,7 @@ const rules = computed(() => {
 
   if (isMultiSeat.value) {
     baseRules.seat_numbers = [
-      { 
+      {
         validator: (rule, value, callback) => {
           if (parsedSeatNumbers.value.length === 0) {
             callback(new Error("At least one seat number is required"));
@@ -272,8 +272,8 @@ const rules = computed(() => {
           } else {
             callback();
           }
-        }, 
-        trigger: "change" 
+        },
+        trigger: "change"
       },
     ];
   } else {
@@ -346,7 +346,7 @@ const removeSeatNumber = (seatToRemove) => {
     .split(/[,\s\n]+/)
     .map(s => s.trim().toUpperCase())
     .filter(s => s.length > 0 && s !== seatToRemove);
-  
+
   seatNumbersInput.value = numbers.join(", ");
   handleMultiSeatInput();
 };
@@ -385,7 +385,7 @@ const loadSeat = async () => {
     const seatData = await seatService.getSeat(seatId);
     originalSeat.value = seatData;
     console.log("Original Seat:", originalSeat.value);
-    
+
     // Check if this is a multi-seat entry
     if (Array.isArray(seatData.seat_number)) {
       isMultiSeat.value = true;
@@ -418,13 +418,13 @@ const handleSubmit = async () => {
     loading.value = true;
 
     // Always send seat_number as an array
-    const payload = { 
+    const payload = {
       ...form,
-      seat_number: isMultiSeat.value 
-        ? parsedSeatNumbers.value 
+      seat_number: isMultiSeat.value
+        ? parsedSeatNumbers.value
         : [form.seat_number] // Wrap single seat in array
     };
-    
+
     // Remove the seat_numbers field as backend expects seat_number
     delete payload.seat_numbers;
 
