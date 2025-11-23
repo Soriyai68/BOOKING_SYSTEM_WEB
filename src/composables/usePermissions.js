@@ -8,7 +8,7 @@ import { useAuthStore } from "@/stores/auth";
 export function usePermissions() {
   const permissionStore = usePermissionStore();
   const authStore = useAuthStore();
-  
+
   // Re-export all permission store functionality
   return {
     // State
@@ -18,56 +18,56 @@ export function usePermissions() {
     isInitialized: permissionStore.isInitialized,
     isSuperAdmin: permissionStore.isSuperAdmin,
     userRole: permissionStore.userRole,
-    
+
     // Generic permission checking
     hasPermission: permissionStore.hasPermission,
     hasAllPermissions: permissionStore.hasAllPermissions,
     hasAnyPermission: permissionStore.hasAnyPermission,
-    
+
     // Module-based helpers
     canView: permissionStore.canView,
     canCreate: permissionStore.canCreate,
     canEdit: permissionStore.canEdit,
     canDelete: permissionStore.canDelete,
     canManage: permissionStore.canManage,
-    
+
     // Specific module permissions
     canViewUsers: permissionStore.canViewUsers,
     canCreateUsers: permissionStore.canCreateUsers,
     canEditUsers: permissionStore.canEditUsers,
     canDeleteUsers: permissionStore.canDeleteUsers,
     canManageUsers: permissionStore.canManageUsers,
-    
+
     canViewTheaters: permissionStore.canViewTheaters,
     canCreateTheaters: permissionStore.canCreateTheaters,
     canEditTheaters: permissionStore.canEditTheaters,
     canDeleteTheaters: permissionStore.canDeleteTheaters,
     canManageTheaters: permissionStore.canManageTheaters,
-    
+
     canViewHalls: permissionStore.canViewHalls,
     canCreateHalls: permissionStore.canCreateHalls,
     canEditHalls: permissionStore.canEditHalls,
     canDeleteHalls: permissionStore.canDeleteHalls,
     canManageHalls: permissionStore.canManageHalls,
-    
+
     canViewSeats: permissionStore.canViewSeats,
     canCreateSeats: permissionStore.canCreateSeats,
     canEditSeats: permissionStore.canEditSeats,
     canDeleteSeats: permissionStore.canDeleteSeats,
     canManageSeats: permissionStore.canManageSeats,
-    
+
     canViewMovies: permissionStore.canViewMovies,
     canCreateMovies: permissionStore.canCreateMovies,
     canEditMovies: permissionStore.canEditMovies,
     canDeleteMovies: permissionStore.canDeleteMovies,
     canManageMovies: permissionStore.canManageMovies,
-    
+
     canViewShowtimes: permissionStore.canViewShowtimes,
     canCreateShowtimes: permissionStore.canCreateShowtimes,
     canEditShowtimes: permissionStore.canEditShowtimes,
     canDeleteShowtimes: permissionStore.canDeleteShowtimes,
     canManageShowtimes: permissionStore.canManageShowtimes,
-    
+
     canViewBookings: permissionStore.canViewBookings,
     canCreateBookings: permissionStore.canCreateBookings,
     canEditBookings: permissionStore.canEditBookings,
@@ -91,18 +91,24 @@ export function usePermissions() {
     canEditPayments: permissionStore.canEditPayments,
     canDeletePayments: permissionStore.canDeletePayments,
     canManagePayments: permissionStore.canManagePayments,
-    
+
+    canViewPromotions: permissionStore.canViewPromotions,
+    canCreatePromotions: permissionStore.canCreatePromotions,
+    canEditPromotions: permissionStore.canEditPromotions,
+    canDeletePromotions: permissionStore.canDeletePromotions,
+    canManagePromotions: permissionStore.canManagePromotions,
+
     canViewDashboard: permissionStore.canViewDashboard,
     canViewAnalytics: permissionStore.canViewAnalytics,
     canViewSettings: permissionStore.canViewSettings,
     canEditSettings: permissionStore.canEditSettings,
     canManageSettings: permissionStore.canManageSettings,
     canManageSystem: permissionStore.canManageSystem,
-    
+
     // Data getters
     getPermissionsByModule: permissionStore.getPermissionsByModule,
     getAvailableModules: permissionStore.getAvailableModules,
-    
+
     // Actions
     initializePermissions: permissionStore.initializePermissions,
     refreshPermissions: permissionStore.refreshPermissions,
@@ -170,6 +176,13 @@ export const PERMISSIONS = {
   BOOKING_DETAILS_DELETE: 'bookingDetails.delete',
   BOOKING_DETAILS_MANAGE: 'bookingDetails.manage',
 
+  // Promotions
+  PROMOTION_VIEW: 'promotions.view',
+  PROMOTION_CREATE: 'promotions.create',
+  PROMOTION_EDIT: 'promotions.edit',
+  PROMOTION_DELETE: 'promotions.delete',
+  PROMOTION_MANAGE: 'promotions.manage',
+
   // Invoices
   INVOICES_VIEW: 'invoices.view',
   INVOICES_CREATE: 'invoices.create',
@@ -215,33 +228,33 @@ export function createPermissionMeta(permissions, requireAll = false) {
  */
 export function checkRoutePermissions(route, permissionStore) {
   // Check if route requires permissions
-  const requiresPermission = route.matched.some(record => 
+  const requiresPermission = route.matched.some(record =>
     record.meta.requiresPermission
   );
-  
+
   if (!requiresPermission) {
     return true; // No permissions required
   }
-  
+
   // Get all required permissions from matched routes
   const allRequiredPermissions = [];
   let requireAll = false;
-  
+
   route.matched.forEach(record => {
     if (record.meta.requiresPermission) {
       const routePermissions = record.meta.permissions || [];
       allRequiredPermissions.push(...routePermissions);
-      
+
       // If any route requires all permissions, set requireAll to true
       if (record.meta.requireAll) {
         requireAll = true;
       }
     }
   });
-  
+
   // Remove duplicates
   const uniquePermissions = [...new Set(allRequiredPermissions)];
-  
+
   // Check permissions
   if (requireAll) {
     return permissionStore.hasAllPermissions(uniquePermissions);

@@ -208,6 +208,48 @@ const routes = [
                     ...createPermissionMeta(PERMISSIONS.MOVIES_VIEW),
                 },
             },
+
+            // promotions
+            {
+                path: "promotions",
+                name: "Promotions",
+                component: () => import("@/views/promotions/PromotionList.vue"),
+                meta: {
+                    title: "Promotions Management",
+                    titleKey: "promotions.title",
+                    ...createPermissionMeta(PERMISSIONS.PROMOTION_VIEW),
+                },
+            },
+            {
+                path: "promotions/create",
+                name: "CreatePromotion",
+                component: () => import("@/views/promotions/CreatePromotion.vue"),
+                meta: {
+                    title: "Create Promotion",
+                    titleKey: "promotions.createPromotion",
+                    ...createPermissionMeta(PERMISSIONS.PROMOTION_CREATE),
+                },
+            },
+            {
+                path: "promotions/:id",
+                name: "PromotionDetail",
+                component: () => import("@/views/promotions/PromotionDetail.vue"),
+                meta: {
+                    title: "Promotion Details",
+                    titleKey: "promotions.promotionDetails",
+                    ...createPermissionMeta(PERMISSIONS.PROMOTION_VIEW),
+                },
+            },
+            {
+                path: "promotions/:id/edit",
+                name: "EditPromotion",
+                component: () => import("@/views/promotions/EditPromotion.vue"),
+                meta: {
+                    title: "Edit Promotion",
+                    titleKey: "promotions.editPromotion",
+                    ...createPermissionMeta(PERMISSIONS.PROMOTION_EDIT),
+                },
+            },
             {
                 path: "movies/create",
                 name: "CreateMovie",
