@@ -90,7 +90,7 @@ export default {
         number: "លេខកៅអី",
         seatNumber: "លេខកៅអី (ឧ. 1)",
         type: "ប្រភេទ",
-        actions: "ស​កម្មភាព",
+        actions: "សកម្មភាព",
         price: "តម្លៃ",
         status: "ស្ថានភាព",
         sortOrder: "លំដាប់តម្រៀប",
@@ -120,8 +120,12 @@ export default {
             active: "សកម្ម",
             maintenance: "ថែទាំ",
             out_of_order: "ខូច",
-            reserved: "បានកក់",
+            available: "ទំនេរ",
+            locked: "ចាក់សោរជាបណ្ដោះអាសន្ន",
             closed: "បិទ",
+            booked: "បានកក់",
+            reserved: "បានបម្រុង",
+            expired: "ផុតកំណត់"
         },
         deleteSelectedConfirm: "តើអ្នកប្រាកដទេថាចង់លុបកៅអីដែលបានជ្រើសរើស {count} មែនទេ?",
         forceDeleteTitle: "លុបកៅអីជាអចិន្ត្រៃយ៍",
@@ -133,7 +137,9 @@ export default {
             mustBeNumericRange: "ជួរត្រូវតែជាចំនួនលេខ",
             startAfterEnd: "ជួរចាប់ផ្តើមមិនអាចធំជាងជួរបញ្ចប់បានទេ",
             rangeTooLarge: "ជួរមិនអាចលើសពី {max} កៅអីបានទេ"
-        }
+        },
+        selectShowtime: "ជ្រើសរើសម៉ោងបញ្ចាំង",
+        seatBooking: "កៅអីដែលបានកក់"
     },
 
     // Theater Management
@@ -435,7 +441,6 @@ export default {
         paymentId: "លេខបង់ប្រាក់",
         paymentInfo: "ព័ត៌មានលម្អិតការបង់ប្រាក់",
         notes: "ចំណាំ",
-        bookingDetails: "ព័ត៌មានលម្អិតការកក់",
         confirmed: "បានបញ្ជាក់",
         pending: "កំពុងរង់ចាំ",
         cancelled: "បានលុបចោល",

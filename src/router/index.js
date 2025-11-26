@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {createRouter, createWebHistory} from "vue-router";
 import AdminLayout from "@/layouts/AdminLayout.vue";
-import { checkRoutePermissions, createPermissionMeta, PERMISSIONS } from "@/composables/usePermissions";
+import {checkRoutePermissions, createPermissionMeta, PERMISSIONS} from "@/composables/usePermissions";
 
 const routes = [
     {
@@ -8,13 +8,13 @@ const routes = [
         name: "Login",
         alias: ["/cashier/login"],
         component: () => import("@/views/auth/Login.vue"),
-        meta: { requiresGuest: true },
+        meta: {requiresGuest: true},
     },
 
     {
         path: "/admin",
         component: AdminLayout,
-        meta: { requiresAuth: true, requiresAdmin: true },
+        meta: {requiresAuth: true, requiresAdmin: true},
         children: [
             {
                 path: "",
@@ -110,6 +110,16 @@ const routes = [
                     title: "Edit Seat",
                     titleKey: "seats.editSeat",
                     ...createPermissionMeta(PERMISSIONS.SEATS_EDIT),
+                },
+            },
+            {
+                path: "seat-booking",
+                name: "SeatBooking",
+                component: () => import("@/views/seats/SeatBooking.vue"),
+                meta: {
+                    title: "Seat Booking",
+                    titleKey: "seats.seatBooking",
+                    ...createPermissionMeta(PERMISSIONS.BOOKINGS_VIEW),
                 },
             },
 
@@ -398,7 +408,7 @@ const routes = [
         ],
     },
 
-    { path: "/", redirect: "/admin" },
+    {path: "/", redirect: "/admin"},
     {
         path: "/:pathMatch(.*)*",
         name: "NotFound",
@@ -412,8 +422,8 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    const { useAuthStore } = await import("@/stores/auth");
-    const { usePermissionStore } = await import("@/stores/permission");
+    const {useAuthStore} = await import("@/stores/auth");
+    const {usePermissionStore} = await import("@/stores/permission");
     const authStore = useAuthStore();
     const permissionStore = usePermissionStore();
 
@@ -435,7 +445,7 @@ router.beforeEach(async (to, from, next) => {
             authStore.setToken(null);
             authStore.setRefreshToken(null);
             authStore.setUser(null);
-            return next({ path: "/login", query: { redirect: to.fullPath } });
+            return next({path: "/login", query: {redirect: to.fullPath}});
         }
 
         if (authStore.isSuperAdmin) {
@@ -452,7 +462,7 @@ router.beforeEach(async (to, from, next) => {
 
         if (to.matched.some((r) => r.meta.requiresAdmin) && !authStore.isAdmin) {
             // console.log("Access denied: Not admin");
-            return next({ name: "NotFound" });
+            return next({name: "NotFound"});
         }
 
         if (to.matched.some((r) => r.meta.requiresPermission)) {
@@ -460,16 +470,16 @@ router.beforeEach(async (to, from, next) => {
             if (!allowed) {
                 // console.log("Access denied: Insufficient permissions");
                 if (to.name === "AdminDashboard" || from.name === "AdminDashboard") {
-                    return next({ name: "NotFound" });
+                    return next({name: "NotFound"});
                 }
-                return next({ name: "AdminDashboard" });
+                return next({name: "AdminDashboard"});
             }
         }
     }
 
     if (to.matched.some((record) => record.meta.requiresGuest)) {
         if (authStore.isAuthenticated) {
-            return next({ name: "AdminDashboard" });
+            return next({name: "AdminDashboard"});
         }
     }
 

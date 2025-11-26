@@ -1,5 +1,5 @@
 import api from "@/utils/api";
-import { movieService } from "./movieService"; // Added this import
+import {movieService} from "./movieService"; // Added this import
 
 export const showtimeService = {
     // List showtimes with pagination and filters
@@ -324,19 +324,20 @@ export const showtimeService = {
     ],
 
     // Get showtimes for dropdown
-    async getDropdownShowtimes(search = "", limit = 20, status = "scheduled") {
-        const response = await api.get('/bookings/dropdown/showtimes', {
-            params: {
-                search,
-                limit,
-                status
-            }
-        })
-        
-        if (response.data?.success && response.data?.data) {
-            return response.data.data
+    async getDropdownShowtimes(search = "", limit = 10, status = "scheduled") {
+        const response = await this.getShowtimes({
+            per_page: limit,
+            search: search,
+            status: status,
+        });
+
+        if (response && response.data) {
+            return response.data.map(s => ({
+                value: s.id,
+                label: `${s.movie_title || 'N/A'} - ${s.theater_name || 'N/A'} (${s.hall_name || 'N/A'}) - ${s.start_time}`
+            }));
         }
-        
+
         return []
     }
 };

@@ -155,8 +155,12 @@ export default {
             active: "Active",
             maintenance: "Maintenance",
             out_of_order: "Out of Order",
-            reserved: "Reserved",
+            available: "Available",
+            locked: "Locked (Temporary Hold)",
             closed: "Closed",
+            booked: "Booked",
+            reserved: "Reserved",
+            expired: "Expired"
         },
         updateStatus: "Update Status",
         originalInfo: "Original Information",
@@ -177,7 +181,9 @@ export default {
             mustBeNumericRange: "Seat range must be numeric for bulk creation.",
             startAfterEnd: "Start of range cannot be greater than end.",
             rangeTooLarge: "The range cannot exceed {max} seats."
-        }
+        },
+        selectShowtime: "Select show time",
+        seatBooking: "Seat booking",
     },
     // Theater Management
     theaters: {
@@ -472,7 +478,6 @@ export default {
         paymentId: "Payment ID",
         paymentInfo: "Payment Information",
         notes: "Notes",
-        bookingDetails: "Booking Details",
         confirmed: "Confirmed",
         pending: "Pending",
         cancelled: "Cancelled",

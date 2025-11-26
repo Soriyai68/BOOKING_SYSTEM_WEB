@@ -316,8 +316,6 @@
             <el-tag
                 v-for="seat in parsedSeatNumbers"
                 :key="seat"
-                type="info"
-                effect="dark"
                 style="margin: 2px"
             >
               {{ seat }}
@@ -558,7 +556,6 @@ const seatStatuses = ref([
   {value: "active", label: "Active"},
   {value: "maintenance", label: "Maintenance"},
   {value: "out_of_order", label: "Out of Order"},
-  {value: "reserved", label: "Reserved"},
 ]);
 
 // Methods
@@ -574,17 +571,14 @@ const loadSeats = async () => {
       seat_type: filters.seat_type || undefined,
       status: filters.status || undefined,
       row: filters.row || undefined,
-      theater_id: filters.theater_id || undefined,
       hall_id: filters.hall_id || undefined,
     };
 
     const response = await seatService.getSeats(params);
     seats.value = response.data || [];
-    console.log("Seats data:", seats.value);
-
     Object.assign(pagination, {
       current_page: response.current_page || 1,
-      per_page: response.per_page || 20,
+      per_page: response.per_page || 10,
       total: response.total || 0,
       total_pages: response.total_pages || 0,
       has_next_page: response.has_next_page || false,
@@ -831,7 +825,6 @@ watch(
       () => filters.seat_type,
       () => filters.status,
       () => filters.row,
-      () => filters.theater_id,
       () => filters.hall_id,
     ],
     () => {

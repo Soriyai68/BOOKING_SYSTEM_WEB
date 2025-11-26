@@ -38,7 +38,7 @@
             {{ $t(`seats.statuses.${seat?.status}`) }}
           </el-tag>
         </el-descriptions-item>
-  
+
         <el-descriptions-item :label="$t('users.updated')">
           {{ formatDateTime(seat?.updated_at) }}
         </el-descriptions-item>
@@ -160,6 +160,7 @@
                 v-for="num in parsedSeatNumbers"
                 :key="num"
                 style="margin: 2px"
+
             >
               {{ num }}
             </el-tag>
@@ -274,7 +275,6 @@ const seatStatuses = ref([
   {value: "active", label: "Active"},
   {value: "maintenance", label: "Maintenance"},
   {value: "out_of_order", label: "Out of Order"},
-  {value: "reserved", label: "Reserved"},
   {value: "closed", label: "Closed"},
 ]);
 
@@ -413,13 +413,13 @@ const goEdit = () => {
   let hallId = '';
   if (seat.value.hall_id) {
     // If hall_id is an object, extract the id/string property
-    hallId = typeof seat.value.hall_id === 'object' 
-      ? (seat.value.hall_id._id || seat.value.hall_id.id || '') 
-      : seat.value.hall_id;
+    hallId = typeof seat.value.hall_id === 'object'
+        ? (seat.value.hall_id._id || seat.value.hall_id.id || '')
+        : seat.value.hall_id;
   } else if (seat.value.hall) {
     hallId = seat.value.hall._id || seat.value.hall.id || '';
   }
-  
+
   Object.assign(editForm, {
     hall_id: hallId,
     row: seat.value.row || '',
@@ -427,7 +427,7 @@ const goEdit = () => {
     status: seat.value.status || 'active',
     notes: seat.value.notes || '',
   });
-  
+
   // Set seat number range
   if (Array.isArray(seat.value.seat_number) && seat.value.seat_number.length > 0) {
     const numbers = seat.value.seat_number.map(n => parseInt(n)).sort((a, b) => a - b);
@@ -437,7 +437,7 @@ const goEdit = () => {
     seatNumberRange.start = String(seat.value.seat_number);
     seatNumberRange.end = String(seat.value.seat_number);
   }
-  
+
   handleRangeInput();
   showEditDialog.value = true;
 };
@@ -535,7 +535,7 @@ const handleEditSubmit = async () => {
 
     await seatService.updateSeat(route.params.id, payload);
     ElMessage.success(t("seats.updateSuccess"));
-    
+
     closeEditDialog();
     await load(); // Reload seat data
   } catch (error) {
@@ -587,14 +587,15 @@ onMounted(async () => {
 .seat-preview {
   margin-top: 12px;
   padding: 12px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-lighter);
   border-radius: 4px;
+
 }
 
 .seat-count {
   margin-top: 8px;
   font-size: 14px;
-  color: #606266;
+  color: var(--el-text-color-secondary);
   text-align: right;
 }
 </style>
