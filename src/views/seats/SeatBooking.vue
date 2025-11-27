@@ -20,6 +20,25 @@
         </el-form-item>
         <el-form-item>
           <el-select
+              v-model="filters.showtime_id"
+              filterable
+              clearable
+              :placeholder="$t('seats.selectShowtime')"
+              @change="handleFilterChange"
+              style="width: 600px"
+              :loading="loading.showtimes"
+          >
+            <el-option
+                v-for="item in showtimeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item>
+          <el-select
               v-model="filters.status"
               clearable
               :placeholder="$t('seats.filterByStatus')"
@@ -34,21 +53,20 @@
             />
           </el-select>
         </el-form-item>
+
         <el-form-item>
           <el-select
-              v-model="filters.showtime_id"
-              filterable
+              v-model="filters.seat_type"
+              :placeholder="$t('seats.filterByType')"
               clearable
-              :placeholder="$t('seats.selectShowtime')"
               @change="handleFilterChange"
-              style="width: 600px"
-              :loading="loading.showtimes"
+              style="min-width: 200px"
           >
             <el-option
-                v-for="item in showtimeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="type in seatTypes"
+                :key="type.value"
+                :label="$t(`seats.types.${type.value}`)"
+                :value="type.value"
             />
           </el-select>
         </el-form-item>
@@ -68,42 +86,37 @@
         <el-table-column
             prop="reference_code"
             :label="$t('bookings.referenceCode')"
-            width="180"
+            width="400"
         />
         <el-table-column
             prop="seat_identifier"
             :label="$t('seats.indentifier')"
-            width="150"
+            width="300"
         />
         <el-table-column
             prop="row"
             :label="$t('seats.row')"
-            width="150"
+            width="200"
         />
         <el-table-column
             prop="seat_number"
             :label="$t('seats.number')"
-            width="150"
+            width="200"
         />
-        <el-table-column prop="status" :label="$t('seats.status')" width="120">
+        <el-table-column prop="status" :label="$t('seats.status')" width="250">
           <template #default="{ row }">
             <el-tag :type="getStatusColor(row.status)">
               {{ $t(`seats.statuses.${row.status}`) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="seat_type" :label="$t('seats.type')" width="120">
+        <el-table-column prop="seat_type" :label="$t('seats.type')" width="200">
           <template #default="{ row }">
             <el-tag :type="getSeatTypeColor(row.seat_type)">
               {{ $t(`seats.types.${row.seat_type}`) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-            prop="phone"
-            :label="$t('users.phone')"
-            width="180"
-        />
       </el-table>
 
       <!-- Pagination -->
@@ -143,12 +156,14 @@ const loading = reactive({
 });
 const seatBookings = ref([]);
 const showtimeOptions = ref([]);
+const seatTypeOptions = ref([]);
 
 
 const filters = reactive({
   search: '',
   status: '',
-  showtime_id: ''
+  showtime_id: '',
+  seat_type: ''
 });
 
 const seatBookingStatus = ref([
@@ -156,6 +171,12 @@ const seatBookingStatus = ref([
   {value: "locked", label: "Locked"},
 ]);
 
+const seatTypes = ref([
+  {value: "regular", label: "Regular"},
+  {value: "vip", label: "VIP"},
+  {value: "queen", label: "Queen"},
+  {value: "couple", label: "Couple"},
+]);
 const pagination = reactive({
   currentPage: 1,
   perPage: 10,
@@ -176,7 +197,6 @@ const loadShowtimes = async (query = '') => {
     loading.showtimes = false;
   }
 };
-
 // Main data loading
 const loadSeatBookings = async () => {
   loading.seatBookings = true;
@@ -187,6 +207,7 @@ const loadSeatBookings = async () => {
       page: pagination.currentPage,
       limit: pagination.perPage,
       status: filters.status || undefined,
+      seat_type: filters.seat_type || undefined,
     };
     const response = await seatBookingService.getSeatBookings(params);
     console.log(response);

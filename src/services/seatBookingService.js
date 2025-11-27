@@ -9,9 +9,11 @@ export const seatBookingService = {
             search: params.search,
             status: params.status,
             showtimeId: params.showtimeId,
+            seatId: params.seatId,
             user_id: params.user_id,
             phone: params.phone,
             booking_id: params.booking_id,
+            seat_type: params.seat_type,
             sortBy: params.sort_by || 'createdAt',
             sortOrder: params.sort_order || 'desc'
         };
