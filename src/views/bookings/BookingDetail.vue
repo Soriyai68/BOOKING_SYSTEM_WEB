@@ -1,25 +1,201 @@
-<template>
-  <div>
-    <h2>Booking Details</h2>
-    <el-card>
-      <p>Booking details will be implemented here.</p>
-      <p>Booking ID: {{ $route.params.id }}</p>
-      <el-button @click="$router.back()">Go Back</el-button>
-    </el-card>
+a<template>
+  <div class="booking-detail">
+    <div class="page-header">
+      <h2>{{ $t('bookings.bookingDetails') }}</h2>
+      <el-button @click="$router.back()" :icon="ArrowLeft">{{ $t('actions.back') }}</el-button>
+    </div>
+
+    <el-card v-if="loading" v-loading="loading" :element-loading-text="$t('common.loading')"
+             style="min-height: 200px;"></el-card>
+
+    <el-row :gutter="20" v-else-if="booking">
+      <el-col :span="16">
+        <!-- Main Details -->
+        <el-card class="details-card">
+          <template #header>
+            <div class="card-header">
+              <span>{{ $t('bookings.bookingSummary') }}</span>
+            </div>
+          </template>
+          <el-descriptions :column="2" border>
+            <el-descriptions-item :label="$t('bookings.referenceCode')">{{
+                booking.reference_code
+              }}
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('bookings.bookingDate')">{{
+                formatDateTime(booking.booking_date)
+              }}
+            </el-descriptions-item>
+
+            <el-descriptions-item :label="$t('bookings.bookingStatus')">
+              <el-tag :type="getStatusType(bookingStatusOptions, booking.booking_status)">
+                {{ booking.booking_status }}
+              </el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('bookings.paymentStatus')">
+              <el-tag :type="getStatusType(paymentStatusOptions, booking.payment_status)">
+                {{ booking.payment_status }}
+              </el-tag>
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+
+        <!-- Showtime Details -->
+        <el-card class="details-card">
+          <template #header>
+            <div class="card-header">
+              <span>{{ $t('showtimes.title') }}</span>
+            </div>
+          </template>
+          <el-descriptions :column="2" border>
+            <el-descriptions-item :label="$t('showtimes.movie')">{{ booking.movie?.title }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('showtimes.hall')">{{ booking.hall?.hall_name }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('showtimes.showDate')">
+              {{ new Date(booking.showtime?.show_date).toLocaleString().slice(0, 10) }}
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('showtimes.startTime')">{{
+                booking.showtime?.start_time
+              }}
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+
+        <!-- Seats Details -->
+        <el-card class="details-card">
+          <template #header>
+            <div class="card-header">
+              <span>{{ $t('seats.title') }} ({{ booking.seat_count }})</span>
+            </div>
+          </template>
+          <el-table :data="booking.seats" stripe>
+            <el-table-column prop="seat_identifier" :label="$t('seats.indentifier')"/>
+            <el-table-column prop="seat_type" :label="$t('seats.type')">
+              <template #default="{ row }">
+                <el-tag size="small">{{ $t(`seats.types.${row.seat_type}`) }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="row" :label="$t('seats.row')"/>
+            <el-table-column prop="seat_number" :label="$t('seats.number')"/>
+          </el-table>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <!-- Customer Details -->
+        <el-card class="details-card">
+          <template #header>
+            <div class="card-header">
+              <span>{{ $t('users.customerDetails') }}</span>
+            </div>
+          </template>
+          <el-descriptions direction="vertical" :column="1" border>
+            <el-descriptions-item :label="$t('users.name')">{{ booking.user?.name }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('users.phone')">{{ booking.user?.phone }}</el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+        <!-- Pricing Details -->
+        <el-card class="details-card">
+          <template #header>
+            <div class="card-header">
+              <span>{{ $t('bookings.pricing') }}</span>
+            </div>
+          </template>
+          <el-descriptions direction="vertical" :column="1" border>
+            <el-descriptions-item :label="$t('bookings.totalPrice')">
+              <span class="total-price">{{ formatCurrency(booking.total_price) }}</span>
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-empty v-else :description="$t('messages.noData')"/>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import { useAppStore } from '@/stores/app'
+import {onMounted, ref} from 'vue';
+import {useRoute} from 'vue-router';
+import {useI18n} from 'vue-i18n';
+import {ElMessage} from 'element-plus';
+import {ArrowLeft} from '@element-plus/icons-vue'
+import {bookingService} from '@/services/bookingService';
+import {useAppStore} from '@/stores/app';
 
-const appStore = useAppStore()
+const {t} = useI18n();
+const route = useRoute();
+const appStore = useAppStore();
+
+const loading = ref(true);
+const booking = ref(null);
+
+const bookingStatusOptions = bookingService.BOOKING_STATUSES;
+const paymentStatusOptions = bookingService.PAYMENT_STATUSES;
+
+const loadBookingDetails = async () => {
+  loading.value = true;
+  try {
+    const response = await bookingService.getBookingById(route.params.id);
+    if (response) {
+      booking.value = response;
+    } else {
+      ElMessage.error(t('errors.loadDataFailed'));
+    }
+  } catch (error) {
+    console.error("Failed to load booking details:", error);
+    ElMessage.error(error.message || t('errors.loadDataFailed'));
+  } finally {
+    loading.value = false;
+  }
+};
+
+const formatCurrency = (value) => {
+  if (typeof value !== 'number') return '';
+  return new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(value);
+};
+
+const formatDateTime = (value) => {
+  if (!value) return '';
+  return new Intl.DateTimeFormat('en-CA', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).format(new Date(value));
+}
+
+const getStatusType = (options, status) => {
+  const option = options.find(opt => opt.value === status);
+  return option ? option.type : 'info'; // Default to 'info' type if not found
+};
 
 onMounted(() => {
+  loadBookingDetails();
   appStore.setBreadcrumbs([
-    { title: 'Dashboard', path: '/admin/dashboard' },
-    { title: 'Bookings', path: '/admin/bookings' },
-    { title: 'Booking Details', path: '#' }
-  ])
-})
+    {title: t("nav.dashboard"), path: "/admin/dashboard"},
+    {title: t("bookings.title"), path: "/admin/bookings"},
+    {title: t('bookings.bookingDetails'), path: `/admin/bookings/${route.params.id}`},
+  ]);
+});
 </script>
+
+<style scoped>
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.details-card {
+  margin-bottom: 20px;
+}
+
+.total-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+</style>
