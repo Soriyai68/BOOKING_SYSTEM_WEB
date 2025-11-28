@@ -10,50 +10,60 @@
       <el-form :inline="true" :model="filters" class="filter-form">
         <el-form-item>
           <el-input
-              v-model="filters.search"
-              :placeholder="$t('bookings.searchBookings')"
-              clearable
-              @keyup.enter="loadBookings"
-              @clear="loadBookings"
+            v-model="filters.search"
+            :placeholder="$t('bookings.searchBookings')"
+            clearable
+            @keyup.enter="loadBookings"
+            @clear="loadBookings"
           />
         </el-form-item>
         <el-form-item>
-          <el-select v-model="filters.booking_status" clearable @change="handleFilterChange" style="width: 200px"
-                     :placeholder="$t('bookings.bookingStatus')">
+          <el-select
+            v-model="filters.booking_status"
+            clearable
+            @change="handleFilterChange"
+            style="width: 200px"
+            :placeholder="$t('bookings.bookingStatus')"
+          >
             <el-option
-                v-for="status in bookingStatusOptions"
-                :key="status.value"
-                :label="status.label"
-                :value="status.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-select v-model="filters.payment_status" clearable @change="handleFilterChange" style="width: 200px;"
-                     :placeholder="$t('bookings.paymentStatus')">
-            <el-option
-                v-for="status in paymentStatusOptions"
-                :key="status.value"
-                :label="status.label"
-                :value="status.value"
+              v-for="status in bookingStatusOptions"
+              :key="status.value"
+              :label="status.label"
+              :value="status.value"
             />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-select
-              v-model="filters.showtime_id"
-              filterable
-              clearable
-              :placeholder="$t('seats.selectShowtime')"
-              @change="handleFilterChange"
-              style="width: 500px"
-              :loading="loading.showtimes"
+            v-model="filters.payment_status"
+            clearable
+            @change="handleFilterChange"
+            style="width: 200px"
+            :placeholder="$t('bookings.paymentStatus')"
           >
             <el-option
-                v-for="item in showtimeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+              v-for="status in paymentStatusOptions"
+              :key="status.value"
+              :label="status.label"
+              :value="status.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-select
+            v-model="filters.showtime_id"
+            filterable
+            clearable
+            :placeholder="$t('seats.selectShowtime')"
+            @change="handleFilterChange"
+            style="width: 500px"
+            :loading="loading.showtimes"
+          >
+            <el-option
+              v-for="item in showtimeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
             />
           </el-select>
         </el-form-item>
@@ -75,13 +85,23 @@
 
     <!-- Bookings Table -->
     <el-card shadow="never">
-      <el-table :data="bookings" v-loading="loading.bookings" style="width: 100%" :empty-text="$t('messages.noData')"
-                @row-click="handleRowClick">
-        <el-table-column prop="reference_code" :label="$t('bookings.referenceCode')" width="180"/>
+      <el-table
+        :data="bookings"
+        v-loading="loading.bookings"
+        style="width: 100%"
+        :empty-text="$t('messages.noData')"
+      >
+        <el-table-column
+          prop="reference_code"
+          :label="$t('bookings.referenceCode')"
+          width="180"
+        />
         <el-table-column :label="$t('users.name')" width="250">
           <template #default="{ row }">
             <div v-if="row.user">{{ row.user.name }}</div>
-            <small v-if="row.user" class="text-muted">{{ row.user.phone }}</small>
+            <small v-if="row.user" class="text-muted">{{
+              row.user.phone
+            }}</small>
           </template>
         </el-table-column>
         <el-table-column :label="$t('showtimes.movie')" width="200">
@@ -90,64 +110,86 @@
         <el-table-column :label="$t('showtimes.showtimeDetails')" width="220">
           <template #default="{ row }">
             <div v-if="row.hall">{{ row.hall.hall_name }}</div>
-            <small v-if="row.showtime" class="text-muted">{{
+            <small v-if="row.showtime" class="text-muted"
+              >{{
                 new Date(row.showtime.show_date).toLocaleString().slice(0, 10)
-              }} {{
-                row.showtime.start_time
-              }}</small>
+              }}
+              {{ row.showtime.start_time }}</small
+            >
           </template>
         </el-table-column>
-        <el-table-column prop="seat_count" :label="$t('bookings.seatCount')" width="100"/>
-        <el-table-column prop="total_price" :label="$t('bookings.totalPrice')" width="120">
-          <template #default="{ row }">{{ formatCurrency(row.total_price) }}</template>
+        <el-table-column
+          prop="seat_count"
+          :label="$t('bookings.seatCount')"
+          width="100"
+        />
+        <el-table-column
+          prop="total_price"
+          :label="$t('bookings.totalPrice')"
+          width="120"
+        >
+          <template #default="{ row }">{{
+            formatCurrency(row.total_price)
+          }}</template>
         </el-table-column>
         <el-table-column :label="$t('bookings.bookingStatus')" width="140">
           <template #default="{ row }">
-            <el-tag :type="getStatusType(bookingStatusOptions, row.booking_status)">
+            <el-tag
+              :type="getStatusType(bookingStatusOptions, row.booking_status)"
+            >
               {{ row.booking_status }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column :label="$t('bookings.paymentStatus')" width="140">
           <template #default="{ row }">
-            <el-tag :type="getStatusType(paymentStatusOptions, row.payment_status)">
+            <el-tag
+              :type="getStatusType(paymentStatusOptions, row.payment_status)"
+            >
               {{ row.payment_status }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('common.actions')" fixed="right" width="100">
+        <el-table-column
+          :label="$t('common.actions')"
+          fixed="right"
+          width="100"
+        >
           <template #default="{ row }">
-            <el-dropdown trigger="click" @command="(command) => handleCommand(command, row)">
-              <el-button size="small" :icon="MoreFilled" circle @click.stop/>
+            <el-dropdown
+              trigger="click"
+              @command="(command) => handleCommand(command, row)"
+            >
+              <el-button size="small" :icon="MoreFilled" circle @click.stop />
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item command="view" class="text-info">
                     <el-icon>
-                      <View/>
+                      <View />
                     </el-icon>
-                    {{ $t('actions.view') }}
+                    {{ $t("actions.view") }}
                   </el-dropdown-item>
                   <el-dropdown-item command="edit" class="text-primary">
                     <el-icon>
-                      <Edit/>
+                      <Edit />
                     </el-icon>
-                    {{ $t('actions.edit') }}
+                    {{ $t("actions.edit") }}
                   </el-dropdown-item>
                   <el-dropdown-item command="delete" class="text-danger">
                     <el-icon>
-                      <Delete/>
+                      <Delete />
                     </el-icon>
-                    {{ $t('actions.delete') }}
+                    {{ $t("actions.delete") }}
                   </el-dropdown-item>
                   <el-dropdown-item
-                      v-if="row.payment_status === 'Pending'"
-                      command="createPayment"
-                      class="text-success"
+                    v-if="row.payment_status === 'Pending'"
+                    command="createPayment"
+                    class="text-success"
                   >
                     <el-icon>
-                      <Wallet/>
+                      <Wallet />
                     </el-icon>
-                    {{ $t('payments.createPayment') }}
+                    {{ $t("payments.createPayment") }}
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -159,83 +201,125 @@
       <!-- Pagination -->
       <div class="pagination-wrapper" v-if="pagination.total > 0">
         <el-pagination
-            v-model:current-page="pagination.current_page"
-            v-model:page-size="pagination.per_page"
-            :page-sizes="[10, 20, 50, 100]"
-            :total="pagination.total"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
+          v-model:current-page="pagination.current_page"
+          v-model:page-size="pagination.per_page"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="pagination.total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
         />
       </div>
     </el-card>
 
     <!-- Edit Booking Dialog -->
-    <el-dialog v-model="editDialogVisible" :title="$t('bookings.editBooking')" width="500px">
+    <el-dialog
+      v-model="editDialogVisible"
+      :title="$t('bookings.editBooking')"
+      width="500px"
+    >
       <el-form :model="editForm" label-position="top">
         <el-form-item :label="$t('bookings.bookingStatus')">
-          <el-select v-model="editForm.booking_status" style="width: 100%;">
-            <el-option v-for="status in bookingStatusOptions" :key="status.value" :label="status.label"
-                       :value="status.value"/>
+          <el-select v-model="editForm.booking_status" style="width: 100%">
+            <el-option
+              v-for="status in bookingStatusOptions"
+              :key="status.value"
+              :label="status.label"
+              :value="status.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('bookings.paymentStatus')">
-          <el-select v-model="editForm.payment_status" style="width: 100%;">
-            <el-option v-for="status in paymentStatusOptions" :key="status.value" :label="status.label"
-                       :value="status.value"/>
+          <el-select v-model="editForm.payment_status" style="width: 100%">
+            <el-option
+              v-for="status in paymentStatusOptions"
+              :key="status.value"
+              :label="status.label"
+              :value="status.value"
+            />
           </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="editDialogVisible = false">{{ $t('actions.cancel') }}</el-button>
+        <el-button @click="editDialogVisible = false">{{
+          $t("actions.cancel")
+        }}</el-button>
         <el-button type="primary" @click="handleUpdate" :loading="loading.edit">
-          {{ $t('actions.update') }}
+          {{ $t("actions.update") }}
         </el-button>
       </template>
     </el-dialog>
 
     <!-- Create Payment Dialog -->
-    <el-dialog v-model="paymentDialogVisible" :title="$t('payments.createPayment')" width="500px">
+    <el-dialog
+      v-model="paymentDialogVisible"
+      :title="$t('payments.createPayment')"
+      width="500px"
+    >
       <el-form :model="paymentForm" label-position="top">
         <el-form-item :label="$t('payments.amount')">
-          <el-input :model-value="formatCurrency(paymentForm.amount)" disabled/>
+          <el-input
+            :model-value="formatCurrency(paymentForm.amount)"
+            disabled
+          />
         </el-form-item>
-        <el-form-item :label="$t('payments.paymentMethod')" prop="payment_method">
-          <el-select v-model="paymentForm.payment_method" style="width: 100%;">
-            <el-option v-for="method in paymentMethods" :key="method.value" :label="method.label"
-                       :value="method.value"/>
+        <el-form-item
+          :label="$t('payments.paymentMethod')"
+          prop="payment_method"
+        >
+          <el-select v-model="paymentForm.payment_method" style="width: 100%">
+            <el-option
+              v-for="method in paymentMethods"
+              :key="method.value"
+              :label="method.label"
+              :value="method.value"
+            />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('payments.transactionId')" prop="transaction_id">
-          <el-input v-model="paymentForm.transaction_id"/>
+        <el-form-item
+          :label="$t('payments.transactionId')"
+          prop="transaction_id"
+        >
+          <el-input v-model="paymentForm.transaction_id" />
         </el-form-item>
         <el-form-item :label="$t('payments.description')" prop="description">
-          <el-input type="textarea" v-model="paymentForm.description"/>
+          <el-input type="textarea" v-model="paymentForm.description" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="paymentDialogVisible = false">{{ $t('actions.cancel') }}</el-button>
-        <el-button type="primary" @click="handleCreatePayment" :loading="loading.payment">
-          {{ $t('actions.submit') }}
+        <el-button @click="paymentDialogVisible = false">{{
+          $t("actions.cancel")
+        }}</el-button>
+        <el-button
+          type="primary"
+          @click="handleCreatePayment"
+          :loading="loading.payment"
+        >
+          {{ $t("actions.submit") }}
         </el-button>
       </template>
     </el-dialog>
-
   </div>
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from 'vue';
-import {useI18n} from 'vue-i18n';
-import {useRouter} from 'vue-router';
-import {ElMessage, ElMessageBox} from 'element-plus';
-import {bookingService} from '@/services/bookingService';
-import {showtimeService} from '@/services/showtimeService';
-import {paymentService} from '@/services/paymentService';
-import {useAppStore} from '@/stores/app';
-import {Delete, Edit, MoreFilled, View, Wallet} from '@element-plus/icons-vue' // Import icons
+import { onMounted, reactive, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { bookingService } from "@/services/bookingService";
+import { showtimeService } from "@/services/showtimeService";
+import { paymentService } from "@/services/paymentService";
+import { useAppStore } from "@/stores/app";
+import {
+  Delete,
+  Edit,
+  MoreFilled,
+  View,
+  Wallet,
+} from "@element-plus/icons-vue"; // Import icons
 
-const {t} = useI18n();
+const { t } = useI18n();
 const router = useRouter();
 const appStore = useAppStore();
 
@@ -249,10 +333,10 @@ const bookings = ref([]);
 const showtimeOptions = ref([]);
 
 const filters = reactive({
-  search: '',
-  booking_status: '',
-  payment_status: '',
-  showtime_id: '',
+  search: "",
+  booking_status: "",
+  payment_status: "",
+  showtime_id: "",
   dateRange: [],
 });
 
@@ -265,23 +349,23 @@ const pagination = reactive({
 const editDialogVisible = ref(false);
 const editForm = reactive({
   id: null,
-  booking_status: '',
-  payment_status: '',
+  booking_status: "",
+  payment_status: "",
 });
 
 const paymentDialogVisible = ref(false);
 const paymentForm = reactive({
   booking_id: null,
   amount: 0,
-  currency: 'USD',
-  payment_method: 'Cash',
-  status: 'Completed',
-  transaction_id: '',
-  description: ''
+  currency: "USD",
+  payment_method: "Cash",
+  status: "Completed",
+  transaction_id: "",
+  description: "",
 });
 
 const bookingStatusOptions = bookingService.BOOKING_STATUSES;
-const paymentStatusOptions = bookingService.PAYMENT_STATUSES; // Corrected to use bookingService for consistency
+const paymentStatusOptions = bookingService.PAYMENT_STATUSES;
 const paymentMethods = paymentService.PAYMENT_METHODS;
 
 const loadBookings = async () => {
@@ -290,12 +374,16 @@ const loadBookings = async () => {
     const params = {
       page: pagination.current_page,
       limit: pagination.per_page,
-      searchTerm: filters.search,
+      search: filters.search,
       booking_status: filters.booking_status,
       payment_status: filters.payment_status,
       showtime_id: filters.showtime_id,
-      date_from: filters.dateRange?.[0] ? new Date(filters.dateRange[0]).toISOString() : undefined,
-      date_to: filters.dateRange?.[1] ? new Date(filters.dateRange[1]).toISOString() : undefined,
+      date_from: filters.dateRange?.[0]
+        ? new Date(filters.dateRange[0]).toISOString()
+        : undefined,
+      date_to: filters.dateRange?.[1]
+        ? new Date(filters.dateRange[1]).toISOString()
+        : undefined,
     };
     const response = await bookingService.getBookings(params);
     if (response.data) {
@@ -308,14 +396,14 @@ const loadBookings = async () => {
       pagination.total = 0;
     }
   } catch (error) {
-    ElMessage.error(error?.message || t('errors.loadDataFailed'));
+    ElMessage.error(error?.message || t("errors.loadDataFailed"));
     console.error(error);
   } finally {
     loading.bookings = false;
   }
 };
 
-const loadShowtimes = async (query = '') => {
+const loadShowtimes = async (query = "") => {
   loading.showtimes = true;
   try {
     showtimeOptions.value = await showtimeService.getDropdownShowtimes(query);
@@ -333,10 +421,10 @@ const handleFilterChange = () => {
 
 const resetFilters = () => {
   Object.assign(filters, {
-    search: '',
-    booking_status: '',
-    payment_status: '',
-    showtime_id: '',
+    search: "",
+    booking_status: "",
+    payment_status: "",
+    showtime_id: "",
     dateRange: [],
   });
   handleFilterChange();
@@ -356,25 +444,28 @@ const handleCurrentChange = (page) => {
 const handleRowClick = (row, column, event) => {
   // Prevent row click from triggering when action buttons/dropdown are clicked
   const target = event.target;
-  const isButtonClick = target.tagName === 'BUTTON' || target.closest('.el-button') || target.closest('.el-dropdown');
+  const isButtonClick =
+    target.tagName === "BUTTON" ||
+    target.closest(".el-button") ||
+    target.closest(".el-dropdown");
   if (isButtonClick) {
     return;
   }
-  router.push({name: 'BookingDetail', params: {id: row.id}});
+  router.push({ name: "BookingDetail", params: { id: row.id } });
 };
 
 const handleCommand = (command, row) => {
   switch (command) {
-    case 'view':
-      router.push({name: 'BookingDetail', params: {id: row.id}});
+    case "view":
+      router.push({ name: "BookingDetail", params: { id: row.id } });
       break;
-    case 'edit':
+    case "edit":
       openEditDialog(row);
       break;
-    case 'delete':
+    case "delete":
       cancelBooking(row.id);
       break;
-    case 'createPayment':
+    case "createPayment":
       openCreatePaymentDialog(row);
       break;
     default:
@@ -397,14 +488,14 @@ const handleUpdate = async () => {
       payment_status: editForm.payment_status,
     });
     if (response.success) {
-      ElMessage.success(t('bookings.updateSuccess'));
+      ElMessage.success(t("bookings.updateSuccess"));
       editDialogVisible.value = false;
       await loadBookings();
     } else {
-      ElMessage.error(response.message || t('errors.updateFailed'));
+      ElMessage.error(response.message || t("errors.updateFailed"));
     }
   } catch (error) {
-    ElMessage.error(error?.message || t('errors.updateFailed'));
+    ElMessage.error(error?.message || t("errors.updateFailed"));
     console.error(error);
   } finally {
     loading.edit = false;
@@ -413,21 +504,25 @@ const handleUpdate = async () => {
 
 const cancelBooking = async (id) => {
   try {
-    await ElMessageBox.confirm(t('bookings.confirmDelete'), t('common.warning'), {
-      confirmButtonText: t('actions.delete'),
-      cancelButtonText: t('actions.cancel'),
-      type: 'warning',
-    });
+    await ElMessageBox.confirm(
+      t("bookings.confirmDelete"),
+      t("common.warning"),
+      {
+        confirmButtonText: t("actions.delete"),
+        cancelButtonText: t("actions.cancel"),
+        type: "warning",
+      }
+    );
     const response = await bookingService.cancelBooking(id);
     if (response.success) {
-      ElMessage.success(t('bookings.deleteSuccess'));
+      ElMessage.success(t("bookings.deleteSuccess"));
       await loadBookings();
     } else {
-      ElMessage.error(response.message || t('errors.deleteFailed'));
+      ElMessage.error(response.message || t("errors.deleteFailed"));
     }
   } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage.error(error?.message || t('errors.deleteFailed'));
+    if (error !== "cancel") {
+      ElMessage.error(error?.message || t("errors.deleteFailed"));
       console.error(error);
     }
   }
@@ -436,7 +531,7 @@ const cancelBooking = async (id) => {
 const openCreatePaymentDialog = (booking) => {
   paymentForm.booking_id = booking.id;
   paymentForm.amount = booking.total_price;
-  paymentForm.transaction_id = '';
+  paymentForm.transaction_id = "";
   paymentForm.description = `Payment for booking ${booking.reference_code}`;
   paymentDialogVisible.value = true;
 };
@@ -446,14 +541,14 @@ const handleCreatePayment = async () => {
   try {
     const response = await paymentService.createPayment(paymentForm);
     if (response.success) {
-      ElMessage.success(t('payments.createSuccess'));
+      ElMessage.success(t("payments.createSuccess"));
       paymentDialogVisible.value = false;
       await loadBookings();
     } else {
-      ElMessage.error(response.message || t('errors.createFailed'));
+      ElMessage.error(response.message || t("errors.createFailed"));
     }
   } catch (error) {
-    ElMessage.error(error?.message || t('errors.createFailed'));
+    ElMessage.error(error?.message || t("errors.createFailed"));
     console.error(error);
   } finally {
     loading.payment = false;
@@ -461,21 +556,36 @@ const handleCreatePayment = async () => {
 };
 
 const formatCurrency = (value) => {
-  if (typeof value !== 'number') return '';
-  return new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(value);
+  if (typeof value !== "number") return "";
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value);
 };
 
 const getStatusType = (options, status) => {
-  const option = options.find(opt => opt.value === status);
-  return option ? option.type : 'info';
+  const option = options.find((opt) => opt.value === status);
+  return option ? option.type : "info";
 };
 
+watch(
+  [
+    () => filters.search,
+    () => filters.booking_status,
+    () => filters.payment_status,
+    () => filters.showtime_id,
+  ],
+  () => {
+    pagination.current_page = 1;
+    loadBookings();
+  }
+);
 onMounted(() => {
   loadBookings();
   loadShowtimes();
   appStore.setBreadcrumbs([
-    {title: t("nav.dashboard"), path: "/admin/dashboard"},
-    {title: t("bookings.title"), path: "/admin/bookings"},
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("bookings.title"), path: "/admin/bookings" },
   ]);
 });
 </script>
@@ -490,7 +600,9 @@ onMounted(() => {
 .el-dropdown-menu__item.text-info:hover,
 .el-dropdown-menu__item.text-info:hover .el-icon {
   color: var(--el-color-info) !important; /* Keep color on hover */
-  background-color: var(--el-color-info-light-9); /* Element Plus default hover background */
+  background-color: var(
+    --el-color-info-light-9
+  ); /* Element Plus default hover background */
 }
 
 .el-dropdown-menu__item.text-primary,

@@ -10,7 +10,7 @@ export const bookingService = {
     const backendParams = {
       page: params.page || 1,
       limit: params.limit || 10,
-      searchTerm: params.search,
+      search: params.search,
       booking_status: params.booking_status,
       payment_status: params.payment_status,
       showtimeId: params.showtime_id,
