@@ -166,6 +166,12 @@
           </template>
         </el-table-column>
 
+        <el-table-column prop="price" :label="$t('seats.price')" width="120">
+          <template #default="{ row }">
+            {{ formatCurrency(row.price) }}
+          </template>
+        </el-table-column>
+
         <el-table-column prop="status" :label="$t('seats.status')" width="200">
           <template #default="{ row }">
             <el-tag :type="getStatusColor(row.status)">
@@ -338,6 +344,18 @@
           </el-select>
         </el-form-item>
 
+        <!-- Price -->
+        <el-form-item :label="$t('seats.price')" prop="price">
+          <el-input-number
+              v-model="dialogForm.price"
+              :min="0"
+              :precision="2"
+              :step="0.5"
+              controls-position="right"
+              style="width: 100%"
+          />
+        </el-form-item>
+
         <!-- Status -->
         <el-form-item :label="$t('seats.status')" prop="status">
           <el-select v-model="dialogForm.status" style="width: 100%">
@@ -420,6 +438,7 @@ const dialogForm = reactive({
   row: "",
   seat_numbers: [],
   seat_type: "regular",
+  price: 0,
   status: "active",
   notes: "",
 });
@@ -514,6 +533,24 @@ const dialogRules = computed(() => ({
   ],
   seat_type: [
     {required: true, message: t("validation.required"), trigger: "change"},
+  ],
+  price: [
+    {required: true, message: t("validation.required"), trigger: "blur"},
+    {
+      type: 'number',
+      message: 'Price must be a number',
+      trigger: ['blur', 'change'],
+    },
+    {
+      validator: (rule, value, callback) => {
+        if (value < 0) {
+          callback(new Error('Price cannot be negative'));
+        } else {
+          callback();
+        }
+      },
+      trigger: ['blur', 'change'],
+    },
   ],
   status: [
     {required: true, message: t("validation.required"), trigger: "change"},
@@ -645,6 +682,7 @@ const openEditDialog = (seat) => {
     seat_type: seat.seat_type || 'regular',
     status: seat.status || 'active',
     notes: seat.notes || '',
+    price: seat.price || 0,
   });
 
   // For edit, show current seat numbers as range if possible
@@ -676,6 +714,7 @@ const resetDialogForm = () => {
     row: "",
     seat_numbers: [],
     seat_type: "regular",
+    price: 0,
     status: "active",
     notes: "",
   });
@@ -816,6 +855,11 @@ const getStatusColor = (status) => {
 const formatDate = (dateString) => {
   if (!dateString) return "-";
   return new Date(dateString).toLocaleDateString();
+};
+
+const formatCurrency = (value) => {
+  if (typeof value !== 'number') return '';
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 };
 
 // Watchers (autoload when filters change)

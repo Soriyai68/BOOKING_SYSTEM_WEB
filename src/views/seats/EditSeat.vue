@@ -123,6 +123,17 @@
           </el-select>
         </el-form-item>
 
+        <el-form-item :label="$t('seats.price')" prop="price">
+          <el-input-number
+              v-model="form.price"
+              :min="0"
+              :precision="2"
+              :step="0.5"
+              controls-position="right"
+              style="width: 100%"
+          />
+        </el-form-item>
+
         <el-form-item :label="t('seats.status')" prop="status">
           <el-select v-model="form.status" style="width: 100%">
             <el-option
@@ -197,6 +208,7 @@ const form = reactive({
   seat_number: "",
   seat_numbers: [],
   seat_type: "regular",
+  price: 0,
   status: "active",
   notes: "",
 });
@@ -253,12 +265,30 @@ const rules = computed(() => {
         trigger: "blur",
       },
     ],
-    seat_type: [
-      { required: true, message: t("validation.required"), trigger: "change" },
-    ],
-    status: [
-      { required: true, message: t("validation.required"), trigger: "change" },
-    ],
+      seat_type: [
+        {required: true, message: t("validation.required"), trigger: "change"},
+      ],
+      price: [
+        {required: true, message: t("validation.required"), trigger: "blur"},
+        {
+          type: 'number',
+          message: 'Price must be a number',
+          trigger: ['blur', 'change'],
+        },
+        {
+          validator: (rule, value, callback) => {
+            if (value < 0) {
+              callback(new Error('Price cannot be negative'));
+            } else {
+              callback();
+            }
+          },
+          trigger: ['blur', 'change'],
+        },
+      ],
+      status: [
+        {required: true, message: t("validation.required"), trigger: "change"},
+      ],
   };
 
   if (isMultiSeat.value) {
@@ -474,6 +504,7 @@ const resetForm = () => {
         row: originalSeat.value.row || "",
         seat_number: "",
         seat_type: originalSeat.value.seat_type || "regular",
+        price: originalSeat.value.price || 0,
         status: originalSeat.value.status || "active",
         notes: originalSeat.value.notes || "",
       });
@@ -486,6 +517,7 @@ const resetForm = () => {
         row: originalSeat.value.row || "",
         seat_number: originalSeat.value.seat_number || "",
         seat_type: originalSeat.value.seat_type || "regular",
+        price: originalSeat.value.price || 0,
         status: originalSeat.value.status || "active",
         notes: originalSeat.value.notes || "",
       });

@@ -32,6 +32,7 @@ export const seatBookingService = {
                     seat_number: sb.seatId?.seat_number,
                     row: sb.seatId?.row,
                     seat_type: sb.seatId?.seat_type,
+                    price: sb.seatId?.price,
                     seat_identifier: sb.seatId?.seat_identifier,
                     showtime_id: sb.showtimeId?._id,
                     movie_title: sb.showtimeId?.movie_id.title,
@@ -69,7 +70,12 @@ export const seatBookingService = {
             throw new Error('showtimeId is required');
         }
         const response = await api.get(`/seatBookings/showtime/${showtimeId}/raw`);
-        return response.data?.data || [];
+        if (response.data?.success) {
+            return response.data.data || [];
+        }
+        // If success is false, or data is not in the expected format, return an empty array.
+        // This prevents errors when 'No seat bookings found'.
+        return [];
     },
 
 

@@ -366,6 +366,16 @@ const routes = [
                 },
             },
             {
+                path: "booking/create",
+                name: "CreateBooking",
+                component: () => import("@/views/bookings/CreateBooking.vue"),
+                meta: {
+                    title: "Create Booking",
+                    titleKey: "bookings.addBooking",
+                    ...createPermissionMeta(PERMISSIONS.BOOKINGS_CREATE),
+                },
+            },
+            {
                 path: "bookings/:id",
                 name: "BookingDetail",
                 component: () => import("@/views/bookings/BookingDetail.vue"),

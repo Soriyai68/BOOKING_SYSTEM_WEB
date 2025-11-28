@@ -24,55 +24,68 @@ export const seatService = {
             }
         });
 
-        const response = await api.get("/seats", {params: backendParams});
+        try {
+            const response = await api.get("/seats", {params: backendParams});
 
-        // Backend returns: { success: true, data: { seats, pagination } }
-        if (response.data?.success && response.data?.data) {
-            const {seats, pagination} = response.data.data;
-            return {
-                data: seats.map((seat) => {
-                    // Handle multi-seat display
-                    const seatNumbers = Array.isArray(seat.seat_number) ? seat.seat_number : [seat.seat_number];
-                    const seatIdentifier = seatNumbers.map(num => `${seat.row}${num}`).join(', ');
-                    const displayName = seatNumbers.length > 1
-                        ? `Seats ${seat.row}${seatNumbers.join(', ')} (${seat.seat_type})`
-                        : `Seat ${seat.row}${seat.seat_number} (${seat.seat_type})`;
+            // Backend returns: { success: true, data: { seats, pagination } }
+            if (response.data?.success && response.data?.data) {
+                const {seats, pagination} = response.data.data;
+                return {
+                    data: seats.map((seat) => {
+                        // Handle multi-seat display
+                        const seatNumbers = Array.isArray(seat.seat_number) ? seat.seat_number : [seat.seat_number];
+                        const seatIdentifier = seatNumbers.map(num => `${seat.row}${num}`).join(', ');
+                        const displayName = seatNumbers.length > 1
+                            ? `Seats ${seat.row}${seatNumbers.join(', ')} (${seat.seat_type})`
+                            : `Seat ${seat.row}${seat.seat_number} (${seat.seat_type})`;
 
-                    return {
-                        id: seat._id,
-                        row: seat.row,
-                        seat_number: seat.seat_number,
-                        seat_type: seat.seat_type,
-                        status: seat.status,
-                        price: seat.price || 0,
-                        notes: seat.notes || "",
-                        created_at: seat.createdAt,
-                        updated_at: seat.updatedAt,
-                        seat_identifier: seatIdentifier,
-                        display_name: displayName,
-                        is_multi_seat: Array.isArray(seat.seat_number),
-                        seat_count: seatNumbers.length,
-                        hall: seat.hall_id
-                            ? {id: seat.hall_id._id, hall_name: seat.hall_id.hall_name}
-                            : null,
-                        theater: seat.hall_id?.theater_id
-                            ? {
-                                id: seat.hall_id.theater_id._id,
-                                name: seat.hall_id.theater_id.name,
-                            }
-                            : null,
-                    };
-                }),
-                total: pagination.totalCount,
-                current_page: pagination.currentPage,
-                per_page: pagination.limit,
-                total_pages: pagination.totalPages,
-                has_next_page: pagination.hasNextPage,
-                has_prev_page: pagination.hasPrevPage,
-            };
+                        return {
+                            id: seat._id,
+                            row: seat.row,
+                            seat_number: seat.seat_number,
+                            seat_type: seat.seat_type,
+                            status: seat.status,
+                            price: seat.price || 0,
+                            notes: seat.notes || "",
+                            created_at: seat.createdAt,
+                            updated_at: seat.updatedAt,
+                            seat_identifier: seatIdentifier,
+                            display_name: displayName,
+                            is_multi_seat: Array.isArray(seat.seat_number),
+                            seat_count: seatNumbers.length,
+                            hall: seat.hall_id
+                                ? {id: seat.hall_id._id, hall_name: seat.hall_id.hall_name}
+                                : null,
+                            theater: seat.hall_id?.theater_id
+                                ? {
+                                    id: seat.hall_id.theater_id._id,
+                                    name: seat.hall_id.theater_id.name,
+                                }
+                                : null,
+                        };
+                    }),
+                    total: pagination.totalCount,
+                    current_page: pagination.currentPage,
+                    per_page: pagination.limit,
+                    total_pages: pagination.totalPages,
+                    has_next_page: pagination.hasNextPage,
+                    has_prev_page: pagination.hasPrevPage,
+                };
+            }
+        } catch (error) {
+            console.error("Error fetching seats:", error);
         }
 
-        return response.data;
+        // Return a default structure if the API call fails or the response is not as expected
+        return {
+            data: [],
+            total: 0,
+            current_page: 1,
+            per_page: params.per_page || 10,
+            total_pages: 0,
+            has_next_page: false,
+            has_prev_page: false,
+        };
     },
 
     // Get single seat by ID

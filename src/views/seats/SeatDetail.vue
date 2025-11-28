@@ -33,6 +33,9 @@
             {{ $t(`seats.types.${seat?.seat_type}`) }}
           </el-tag>
         </el-descriptions-item>
+        <el-descriptions-item :label="$t('seats.price')">
+          {{ formatCurrency(seat?.price) }}
+        </el-descriptions-item>
         <el-descriptions-item :label="$t('seats.status')">
           <el-tag :type="getStatusColor(seat?.status)" size="small">
             {{ $t(`seats.statuses.${seat?.status}`) }}
@@ -544,6 +547,11 @@ const handleEditSubmit = async () => {
   } finally {
     editLoading.value = false;
   }
+};
+
+const formatCurrency = (value) => {
+  if (typeof value !== 'number') return '';
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 };
 
 const formatDateTime = (str) => (str ? new Date(str).toLocaleString() : "-");

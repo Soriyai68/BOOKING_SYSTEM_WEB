@@ -3,6 +3,18 @@
     <!-- Page Header -->
     <div class="page-header">
       <h2>{{ $t("bookings.title") }}</h2>
+      <div>
+        <el-button
+          v-permission="'bookings.create'"
+          type="primary"
+          @click="$router.push('/admin/booking/create')"
+        >
+          <el-icon>
+            <Plus />
+          </el-icon>
+          {{ $t("bookings.addBooking") }}
+        </el-button>
+      </div>
     </div>
 
     <!-- Filters -->
@@ -68,7 +80,7 @@
           </el-select>
         </el-form-item>
         <!-- <el-form-item>
-          <el-date-picker
+          <el-date-pick
               v-model="filters.dateRange"
               type="daterange"
               range-separator="-"
@@ -260,7 +272,7 @@
         <el-form-item :label="$t('payments.amount')">
           <el-input
             :model-value="formatCurrency(paymentForm.amount)"
-            disabled
+            readonly
           />
         </el-form-item>
         <el-form-item
@@ -276,12 +288,12 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item
+        <!-- <el-form-item
           :label="$t('payments.transactionId')"
           prop="transaction_id"
         >
           <el-input v-model="paymentForm.transaction_id" />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item :label="$t('payments.description')" prop="description">
           <el-input type="textarea" v-model="paymentForm.description" />
         </el-form-item>
@@ -530,8 +542,7 @@ const cancelBooking = async (id) => {
 
 const openCreatePaymentDialog = (booking) => {
   paymentForm.booking_id = booking.id;
-  paymentForm.amount = booking.total_price;
-  paymentForm.transaction_id = "";
+  paymentForm.amount = booking.total_price
   paymentForm.description = `Payment for booking ${booking.reference_code}`;
   paymentDialogVisible.value = true;
 };

@@ -116,6 +116,18 @@
           </el-select>
         </el-form-item>
 
+        <!-- Price -->
+        <el-form-item :label="$t('seats.price')" prop="price">
+          <el-input-number
+              v-model="form.price"
+              :min="0"
+              :precision="2"
+              :step="0.5"
+              controls-position="right"
+              style="width: 100%"
+          />
+        </el-form-item>
+
         <!-- Status -->
         <el-form-item :label="$t('seats.status')" prop="status">
           <el-select v-model="form.status" style="width: 100%">
@@ -183,6 +195,7 @@ const form = reactive({
   seat_number: null,
   seat_numbers: [],
   seat_type: "regular",
+  price: 0,
   status: "active",
   notes: "",
 });
@@ -251,6 +264,24 @@ const rules = computed(() => {
     ],
     seat_type: [
       {required: true, message: t("validation.required"), trigger: "change"},
+    ],
+    price: [
+      {required: true, message: t("validation.required"), trigger: "blur"},
+      {
+        type: 'number',
+        message: 'Price must be a number',
+        trigger: ['blur', 'change'],
+      },
+      {
+        validator: (rule, value, callback) => {
+          if (value < 0) {
+            callback(new Error('Price cannot be negative'));
+          } else {
+            callback();
+          }
+        },
+        trigger: ['blur', 'change'],
+      },
     ],
     status: [
       {required: true, message: t("validation.required"), trigger: "change"},
@@ -403,6 +434,7 @@ const resetForm = () => {
     seat_number: null,
     seat_numbers: [],
     seat_type: "regular",
+    price: 0,
     status: "active",
     notes: "",
   });

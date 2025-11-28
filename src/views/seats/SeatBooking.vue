@@ -103,6 +103,15 @@
             :label="$t('seats.number')"
             width="200"
         />
+        <!-- <el-table-column
+            prop="price"
+            :label="$t('seats.price')"
+            width="200"
+        >
+          <template #default="{ row }">
+            {{ formatCurrency(row.price) }}
+          </template>
+        </el-table-column> -->
         <el-table-column prop="status" :label="$t('seats.status')" width="250">
           <template #default="{ row }">
             <el-tag :type="getStatusColor(row.status)">
@@ -258,6 +267,11 @@ const handleCurrentChange = (val) => {
   loadSeatBookings();
 };
 
+
+const formatCurrency = (value) => {
+  if (typeof value !== 'number') return '';
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+};
 
 // Color getters
 const getSeatTypeColor = (type) => {

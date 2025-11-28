@@ -75,6 +75,7 @@ export default {
     createUser: "Create User",
     editUser: "Edit User",
     allUsers: "All Users",
+    customer: "Customer",
     customerDetails: "Customer Details",
     searchUsers: "Search users...",
     filterByStatus: "Filter by status",
@@ -157,6 +158,7 @@ export default {
       maintenance: "Maintenance",
       out_of_order: "Out of Order",
       available: "Available",
+      selected: "Selected",
       locked: "Locked (Temporary Hold)",
       closed: "Closed",
       booked: "Booked",
@@ -450,6 +452,12 @@ export default {
     title: "Booking Management",
     addBooking: "Add Booking",
     createBooking: "Create Booking",
+    steps: {
+      selectShowtime: "Select Showtime",
+      selectSeats: "Select Seats",
+      confirm: "Confirm & Pay"
+    },
+    screen: "Screen",
     bookingDetails: "Booking Details",
     bookingSummary: "Booking Summary",
     details: "Details",
