@@ -35,7 +35,7 @@ export const seatBookingService = {
                     price: sb.seatId?.price,
                     seat_identifier: sb.seatId?.seat_identifier,
                     showtime_id: sb.showtimeId?._id,
-                    movie_title: sb.showtimeId?.movie_id.title,
+                    movie_title: sb.showtimeId?.movie_id?.title,
                     start_time: sb.showtimeId?.start_time,
                     booking_id: sb.bookingId?._id,
                     status: sb.status,

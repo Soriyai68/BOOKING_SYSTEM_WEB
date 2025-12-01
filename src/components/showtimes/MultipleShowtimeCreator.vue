@@ -324,8 +324,8 @@ const submitMultipleForm = () => {
           ElMessage.success(t("showtimes.createMultipleSuccess"));
         }
         emit("submitted");
-      } catch (error) {
-        console.error("Form submission failed:", error);
+      } catch (errors) {
+        console.error("Form submission failed:", errors);
         // ElMessage.error(
         //   error?.response?.data?.message || t("messages.unknownError")
         // );

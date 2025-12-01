@@ -75,7 +75,7 @@ onMounted(async () => {
   // loading.value = true;
   try {
     const [movieRes, hallRes, theaterRes] = await Promise.all([
-      movieService.getMovies({ per_page: 100 }),
+      movieService.getMovies({ per_page: 100, status: "now_showing" }),
       hallService.getHalls({ per_page: 100 }),
       theaterService.getTheaters({ per_page: 100 }),
     ]);
