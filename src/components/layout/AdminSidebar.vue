@@ -57,6 +57,12 @@
           </el-icon>
           <template #title>{{ $t("seats.seatBooking") }}</template>
         </el-menu-item>
+        <el-menu-item v-if="true" index="/admin/seat-booking-history">
+          <el-icon>
+            <History/>
+          </el-icon>
+          <template #title>{{ $t("seats.seatBookingHistory") }}</template>
+        </el-menu-item>
         <!-- <el-menu-item v-if="isSuperAdmin || canCreateSeats" index="/admin/seats/create">
           <el-icon>
             <Plus/>
@@ -285,7 +291,8 @@ import {
   Tag,
   Ticket,
   UserCog,
-  Users
+  Users,
+  History
 } from "lucide-vue-next";
 
 const route = useRoute();

@@ -1,3 +1,5 @@
+import SeatBookingHistory from "../views/seats/SeatBookingHistory.vue";
+
 export default {
   // Navigation and Layout
   nav: {
@@ -126,6 +128,7 @@ export default {
       booked: "បានកក់",
       reserved: "បានបម្រុង",
       expired: "ផុតកំណត់",
+      canceled: "បានលុបចោល",
     },
     deleteSelectedConfirm:
       "តើអ្នកប្រាកដទេថាចង់លុបកៅអីដែលបានជ្រើសរើស {count} មែនទេ?",
@@ -142,6 +145,8 @@ export default {
     },
     selectShowtime: "ជ្រើសរើសម៉ោងបញ្ចាំង",
     seatBooking: "កៅអីដែលបានកក់",
+    seatBookingHistory: "ប្រវត្តិកៅអីដែលបានកក់",
+    searchHistory: "ស្វែងរកតាមលេខកៅអី ឬលេខកូដ...",
   },
 
   // Theater Management

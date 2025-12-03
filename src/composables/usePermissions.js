@@ -55,6 +55,7 @@ export function usePermissions() {
     canEditSeats: permissionStore.canEditSeats,
     canDeleteSeats: permissionStore.canDeleteSeats,
     canManageSeats: permissionStore.canManageSeats,
+    canViewSeatBookingHistory: permissionStore.canViewSeatBookingHistory,
 
     canViewMovies: permissionStore.canViewMovies,
     canCreateMovies: permissionStore.canCreateMovies,
@@ -147,6 +148,7 @@ export const PERMISSIONS = {
   SEATS_EDIT: 'seats.edit',
   SEATS_DELETE: 'seats.delete',
   SEATS_MANAGE: 'seats.manage',
+  VIEW_SEAT_BOOKING_HISTORY: 'seat_bookings.history.view',
 
   // Movies
   MOVIES_VIEW: 'movies.view',

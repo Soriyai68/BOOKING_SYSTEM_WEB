@@ -1,3 +1,5 @@
+import SeatBookingHistory from "../views/seats/SeatBookingHistory.vue";
+
 export default {
   // Navigation and Layout
   nav: {
@@ -164,6 +166,7 @@ export default {
       booked: "Booked",
       reserved: "Reserved",
       expired: "Expired",
+      canceled: "Canceled",
     },
     updateStatus: "Update Status",
     originalInfo: "Original Information",
@@ -189,6 +192,7 @@ export default {
     },
     selectShowtime: "Select show time",
     seatBooking: "Seat booking",
+    seatBookingHistory: "Seat Booking History",
   },
   // Theater Management
   theaters: {
@@ -455,7 +459,7 @@ export default {
     steps: {
       selectShowtime: "Select Showtime",
       selectSeats: "Select Seats",
-      confirm: "Confirm & Pay"
+      confirm: "Confirm & Pay",
     },
     screen: "Screen",
     bookingDetails: "Booking Details",
