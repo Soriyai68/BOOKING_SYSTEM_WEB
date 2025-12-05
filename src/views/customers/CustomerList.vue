@@ -52,17 +52,17 @@
       >
         <el-table-column prop="name" :label="$t('customers.name')">
           <template #default="{ row }">
-            {{ row.name || '-' }}
+            {{ row.name || "-" }}
           </template>
         </el-table-column>
         <el-table-column prop="phone" :label="$t('customers.phone')">
           <template #default="{ row }">
-            {{ row.phone || '-' }}
+            {{ row.phone || "-" }}
           </template>
         </el-table-column>
         <el-table-column prop="email" :label="$t('customers.email')">
           <template #default="{ row }">
-            {{ row.email || '-' }}
+            {{ row.email || "-" }}
           </template>
         </el-table-column>
         <el-table-column
@@ -79,21 +79,12 @@
         <el-table-column
           prop="isActive"
           :label="$t('customers.status')"
-          width="100"
+          width="120"
         >
           <template #default="{ row }">
             <el-tag :type="row.isActive ? 'success' : 'danger'">
               {{ $t(`customers.${row.isActive ? "active" : "inactive"}`) }}
             </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="created_at"
-          :label="$t('customers.created')"
-          width="120"
-        >
-          <template #default="{ row }">
-            {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
         <el-table-column :label="$t('actions.title')" width="180">
