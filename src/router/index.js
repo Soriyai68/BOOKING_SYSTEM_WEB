@@ -75,6 +75,44 @@ const routes = [
         },
       },
 
+      //customers
+      {
+        path: "customers",
+        name: "Customers",
+        component: () => import("@/views/customers/CustomerList.vue"),
+        meta: {
+          title: "Customers Management",
+          titleKey: "customers.title",
+        },
+      },
+      {
+        path: "customers/create",
+        name: "CreateCustomer",
+        component: () => import("@/views/customers/CreateCustomer.vue"),
+        meta: {
+          title: "Create Customer",
+          titleKey: "customers.createCustomer",
+        },
+      },
+      {
+        path: "customers/:id/edit",
+        name: "EditCustomer",
+        component: () => import("@/views/customers/EditCustomer.vue"),
+        meta: {
+          title: "Edit Customer",
+          titleKey: "customers.editCustomer",
+        },
+      },
+      {
+        path: "customers/:id",
+        name: "CustomerDetail",
+        component: () => import("@/views/customers/CustomerDetail.vue"),
+        meta: {
+          title: "Customer Details",
+          titleKey: "customers.customerDetails",
+        },
+      },
+
       //seats
       {
         path: "seats",

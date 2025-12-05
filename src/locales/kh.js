@@ -1,4 +1,6 @@
+import { last } from "lodash-es";
 import SeatBookingHistory from "../views/seats/SeatBookingHistory.vue";
+import { all } from "axios";
 
 export default {
   // Navigation and Layout
@@ -243,6 +245,44 @@ export default {
     user: "អ្នកប្រើប្រាស់",
     updated: "បានកែ",
     customerDetails: "ព័ត៌មានលម្អិតអតិថិជន",
+  },
+  // Customer Management
+  customers: {
+    title: "គ្រប់គ្រងអតិថិជន",
+    addCustomer: "បន្ថែមអតិថិជន",
+    createCustomer: "បង្កើតអតិថិជន",
+    editCustomer: "កែសម្រួលអតិថិជន",
+    allCustomers: "អតិថិជនទាំងអស់",
+    customerDetails: "ព័ត៌មានលម្អិតអតិថិជន",
+    searchCustomers: "ស្វែងរកអតិថិជន...",
+    filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
+    filterByType: "ចម្រាញ់តាមប្រភេទអតិថិជន",
+    name: "ឈ្មោះ",
+    email: "អ៊ីមែល",
+    phone: "លេខទូរស័ព្ទ",
+    username: "ឈ្មោះអ្នកប្រើប្រាស់",
+    customerType: "ប្រភេទអតិថិជន",
+    status: "ស្ថានភាព",
+    created: "បានបង្កើត",
+    actions: "សកម្មភាព",
+    active: "សកម្ម",
+    inactive: "មិនសកម្ម",
+    member: "Member",
+    walkin: "Walk-in",
+    guest: "Guest",
+    isVerified: "ស្ថានភាពការផ្ទៀងផ្ទាត់",
+    passwordChangedAt: "បានប្ដូរលេខសម្ងាត់នៅ",
+    lastLogin: "ការចូលចុងក្រោយ",
+    verified: "បានផ្ទៀងផ្ទាត់",
+    unverified: "មិនទាន់ផ្ទៀងផ្ទាត់",
+    confirmDelete: "តើអ្នកប្រាកដថាចង់លុបអតិថិជននេះមែនទេ?",
+    deleteSuccess: "លុបអតិថិជនបានជោគជ័យ",
+    deleteError: "បរាជ័យក្នុងការលុបអតិថិជន",
+    createSuccess: "បង្កើតអតិថិជនបានជោគជ័យ",
+    createError: "បរាជ័យក្នុងការបង្កើតអតិថិជន",
+    updateSuccess: "ធ្វើបច្ចុប្បន្នភាពអតិថិជនបានជោគជ័យ",
+    updateError: "បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពអតិថិជន",
+    loadError: "បរាជ័យក្នុងការផ្ទុកព័ត៌មានអតិថិជន",
   },
   // Movie Management
   movies: {
@@ -538,6 +578,7 @@ export default {
 
   // Common Actions
   actions: {
+    title: "សកម្មភាព",
     create: "បង្កើត",
     add: "បន្ថែម",
     edit: "កែសម្រួល",
