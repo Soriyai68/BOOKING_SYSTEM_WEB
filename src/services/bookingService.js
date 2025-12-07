@@ -31,7 +31,7 @@ export const bookingService = {
         return {
             data: bookings.map(b => ({
                 id: b._id,
-                user: b.user,
+                customer: b.customer,
                 showtime: b.showtime,
                 movie: b.movie,
                 hall: b.hall,
@@ -68,7 +68,7 @@ export const bookingService = {
       const booking = response.data.data.booking;
        return {
             id: booking._id,
-            user: booking.userId,
+            customer: booking.customerId,
             showtime: booking.showtimeId,
             movie: booking.showtimeId?.movie_id,
             hall: booking.showtimeId?.hall_id,

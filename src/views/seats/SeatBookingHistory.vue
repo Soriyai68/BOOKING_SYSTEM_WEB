@@ -99,7 +99,11 @@
           :label="$t('seats.indentifier')"
           width="150"
         />
-        <el-table-column prop="seat.seat_type" :label="$t('seats.type')" width="150">
+        <el-table-column
+          prop="seat.seat_type"
+          :label="$t('seats.type')"
+          width="150"
+        >
           <template #default="{ row }">
             <el-tag :type="getSeatTypeColor(row.seat_type)">
               {{ $t(`seats.types.${row.seat.seat_type}`) }}
@@ -126,17 +130,64 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="booking.user"
-          :label="$t('users.user')"
-          width="150"
-        />
-
-        <el-table-column
-          prop="booking.phone"
-          :label="$t('users.phone')"
-          width="150"
-        />
+        <el-table-column :label="$t('customers.customer')" width="250">
+          <template #default="{ row }">
+            <div v-if="row.booking">
+              <div>
+                <strong>
+                  {{
+                    row.booking.name ||
+                    (row.booking.phone
+                      ? "Walk-in Customer"
+                      : row.booking.email
+                      ? "Guest Customer"
+                      : "-")
+                  }}
+                </strong>
+              </div>
+              <div
+                v-if="row.booking.phone"
+                class="text-muted"
+                style="display: flex; align-items: center; gap: 4px"
+              >
+                <el-icon><Phone /></el-icon>
+                <span>{{ row.booking.phone }}</span>
+              </div>
+              <div
+                v-if="row.booking.email"
+                class="text-muted"
+                style="display: flex; align-items: center; gap: 4px"
+              >
+                <el-icon><ChatLineSquare /></el-icon>
+                <span>{{ row.booking.email }}</span>
+              </div>
+              <el-tag
+                :type="getCustomerTypeTag(row.booking.customerType)"
+                size="small"
+                v-if="row.booking.customerType"
+                style="margin-top: 4px"
+              >
+                {{ $t(`customers.${row.booking.customerType}`) }}
+              </el-tag>
+            </div>
+            <div v-else>
+              <span class="text-muted">No customer data</span>
+            </div>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column :label="$t('common.actions')" fixed="right" width="100">
+          <template #default="{ row }">
+            <el-button
+              v-if="row.booking"
+              size="small"
+              type="primary"
+              plain
+              @click="viewBooking(row.booking._id)"
+            >
+              {{ $t('actions.view') }}
+            </el-button>
+          </template>
+        </el-table-column> -->
       </el-table>
 
       <!-- Pagination -->
@@ -158,14 +209,26 @@
 <script setup>
 import { onMounted, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { showtimeService } from "@/services/showtimeService";
 import { seatBookingService } from "@/services/seatBookingService";
 import { useAppStore } from "@/stores/app";
-import { Search } from "@element-plus/icons-vue";
+import { Search, Phone, ChatLineSquare } from "@element-plus/icons-vue";
 
 const { t } = useI18n();
+const router = useRouter();
 const appStore = useAppStore();
+
+// ... existing code ...
+
+const viewBooking = (bookingId) => {
+  if (bookingId) {
+    router.push({ name: "BookingDetail", params: { id: bookingId } });
+  }
+};
+
+// ... existing code ...
 
 // Reactive data
 const loading = reactive({
@@ -182,6 +245,18 @@ const filters = reactive({
   seat_type: "",
 });
 
+const getCustomerTypeTag = (type) => {
+  switch (type) {
+    case "member":
+      return "success";
+    case "walkin":
+      return "info";
+    case "guest":
+      return "warning";
+    default:
+      return "primary";
+  }
+};
 const seatBookingActions = ref([
   { value: "booked", label: "Booked" },
   // { value: "locked", label: "Locked" },
@@ -216,6 +291,8 @@ const loadSeatBookingHistory = async () => {
   loading.seatBookingHistory = true;
   try {
     const params = {
+      page: pagination.currentPage,
+      limit: pagination.per_page,
       showtimeId: filters.showtimeId || undefined,
       seat_type: filters.seat_type || undefined,
       search: filters.search || undefined,
@@ -227,7 +304,9 @@ const loadSeatBookingHistory = async () => {
     if (response.data) {
       seatBookingHistory.value = response.data.histories;
       console.log(response.data.histories);
-      Object.assign(pagination, response.data.pagination);
+      pagination.currentPage = response.data.pagination.currentPage;
+      pagination.perPage = response.data.pagination.limit;
+      pagination.total = response.data.pagination.totalCount;
     } else {
       seatBookingHistory.value = [];
       Object.assign(pagination, { currentPage: 1, perPage: 10, total: 0 });

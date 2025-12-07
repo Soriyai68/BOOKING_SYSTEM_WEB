@@ -22,6 +22,7 @@ export default {
     loginSubtitle: "ចូលក្នុងគណនីរបស់អ្នក",
     phone: "លេខទូរស័ព្ទ",
     phonePlaceholder: "លេខទូរស័ព្ទ (+855...)",
+    emailPlaceholder: "បញ្ចូលអ៊ីមែលរបស់អ្នក",
     password: "លេខសម្ងាត់",
     passwordPlaceholder: "លេខសម្ងាត់",
     rememberMe: "ចងចាំខ្ញុំ",
@@ -248,6 +249,7 @@ export default {
   },
   // Customer Management
   customers: {
+    customer: "អតិថិជន",
     title: "គ្រប់គ្រងអតិថិជន",
     addCustomer: "បន្ថែមអតិថិជន",
     createCustomer: "បង្កើតអតិថិជន",
@@ -255,6 +257,10 @@ export default {
     allCustomers: "អតិថិជនទាំងអស់",
     customerDetails: "ព័ត៌មានលម្អិតអតិថិជន",
     searchCustomers: "ស្វែងរកអតិថិជន...",
+    searchExistingCustomer: "ស្វែងរកអតិថិជនដែលមានស្រាប់",
+    newWalkInCustomer: "អតិថិជនថ្មី (Walk-in)",
+    newGuestCustomer: "អតិថិជនថ្មី (Guest)",
+    searchAndSelectCustomer: "ស្វែងរក និង ជ្រើសរើសអតិថិជន",
     filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
     filterByType: "ចម្រាញ់តាមប្រភេទអតិថិជន",
     name: "ឈ្មោះ",

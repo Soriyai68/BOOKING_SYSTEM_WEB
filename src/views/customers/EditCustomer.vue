@@ -37,20 +37,18 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item v-if="form.customerType === 'member' || form.customerType === 'walkin'" :label="$t('customers.name')" prop="name">
+        <el-form-item v-if="form.customerType === 'member'" :label="$t('customers.name')" prop="name">
           <el-input v-model="form.name" :placeholder="$t('customers.name')" maxlength="50" show-word-limit />
         </el-form-item>
 
         <el-form-item v-if="form.customerType === 'member' || form.customerType === 'walkin'" :label="$t('customers.phone')" prop="phone">
           <el-input v-model="form.phone" :placeholder="$t('auth.phonePlaceholder')" maxlength="13" />
         </el-form-item>
-
-        <el-form-item v-if="form.customerType === 'member' || form.customerType === 'guest'" :label="$t('customers.email')" prop="email">
-          <el-input v-model="form.email" :placeholder="$t('customers.email')" />
-        </el-form-item>
-        
         <el-form-item v-if="form.customerType === 'member'" :label="$t('customers.username')" prop="username">
           <el-input v-model="form.username" :placeholder="$t('customers.username')" />
+        </el-form-item>
+        <el-form-item v-if="form.customerType === 'guest'" :label="$t('customers.email')" prop="email">
+          <el-input v-model="form.email" :placeholder="$t('auth.emailPlaceholder')" />
         </el-form-item>
 
         <el-form-item :label="$t('customers.status')" prop="isActive">
