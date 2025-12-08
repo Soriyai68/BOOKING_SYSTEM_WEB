@@ -37,6 +37,26 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item>
+          <el-date-picker
+            v-model="filters.show_date"
+            type="date"
+            :placeholder="$t('showtimes.showDate')"
+            clearable
+            style="width: 200px"
+            value-format="YYYY-MM-DD"
+          />
+        </el-form-item>
+        <!-- <el-form-item>
+          <el-time-picker
+            v-model="filters.start_time"
+            :placeholder="$t('showtimes.startTime')"
+            format="HH:mm"
+            value-format="HH:mm"
+            clearable
+            style="width: 150px"
+          />
+        </el-form-item> -->
 
         <el-form-item>
           <el-select
@@ -243,6 +263,8 @@ const filters = reactive({
   action: "",
   showtimeId: "",
   seat_type: "",
+  show_date: "",
+  start_time: "",
 });
 
 const getCustomerTypeTag = (type) => {
@@ -299,6 +321,8 @@ const loadSeatBookingHistory = async () => {
       page: pagination.currentPage,
       limit: pagination.perPage,
       action: filters.action || undefined,
+      show_date: filters.show_date || undefined,
+      start_time: filters.start_time || undefined,
     };
     const response = await seatBookingService.getSeatBookingHistory(params);
     if (response.data) {
@@ -360,7 +384,7 @@ const getSeatTypeColor = (type) => {
 };
 // Watchers (autoload when filters change)
 watch(
-  () => [filters.search, filters.action, filters.showtimeId],
+  () => [filters.search, filters.action, filters.showtimeId, filters.show_date, filters.start_time],
   () => {
     pagination.currentPage = 1;
     loadSeatBookingHistory();
