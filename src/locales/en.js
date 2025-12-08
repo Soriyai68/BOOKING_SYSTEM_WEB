@@ -220,7 +220,7 @@ export default {
       "Are you sure you want to delete  {count} selected seat?",
     forceDeleteTitle: "Permanent Delete Seats",
     forceDeleteSelectedConfirm:
-      "<strong>⚠️ Warning:</strong> Are you sure you want to <strong>permanently delete</strong> {count} selected seats?<br/><br/>This action <strong>cannot be undone</strong>!",
+      "<strong>⚠️Warning:</strong> Are you sure you want to <strong>permanently delete</strong> {count} selected seats?<br/><br/>This action <strong>cannot be undone</strong>!",
     forceDeleteSuccess: "Seats permanently deleted successfully",
     forceDeleteFailed: "Failed to permanently delete seats",
     validation: {
@@ -232,6 +232,27 @@ export default {
     selectShowtime: "Select show time",
     seatBooking: "Seat booking",
     seatBookingHistory: "Seat Booking History",
+    // Duplicate seats
+    duplicateToHall: "Duplicate to Hall",
+    duplicateSelectedInfo: "Duplicate {count} selected seat(s) to another hall.",
+    selectedSeats: "Selected Seats",
+    fromHall: "From Hall",
+    targetHall: "Target Hall",
+    selectTargetHall: "Select target hall",
+    optionalOverrides: "Optional Overrides",
+    keepOriginal: "Keep original",
+    keepCurrent: "Keep current",
+    duplicate: "Duplicate",
+    duplicateSuccess: "{count} seats duplicated successfully",
+    duplicateSkipped: "{count} seats skipped (already exist)",
+    duplicateError: "Failed to duplicate seats",
+    noSeatsSelected: "No seats selected",
+    noChangesSelected: "No changes selected",
+    // Bulk update
+    bulkUpdate: "Bulk Update",
+    bulkUpdateInfo: "Update {count} selected seat(s).",
+    bulkUpdateSuccess: "{count} seats updated successfully",
+    bulkUpdateError: "Failed to update seats",
   },
   // Theater Management
   theaters: {
@@ -651,6 +672,7 @@ export default {
     deleteSelected: "Delete Selected Items",
     duplicateSelected: "Duplicate Selected Items",
     duplicate: "Duplicate",
+    bulkUpdate: "Bulk Update",
   },
 
   // Status Messages

@@ -224,6 +224,26 @@
           class="bulk-actions flex items-center gap-1 mb-4 align-center"
           v-if="selectedSeats.length > 0"
       >
+        <!-- Bulk Update Selected -->
+        <el-button
+            type="primary"
+            @click="openBulkUpdateDialog"
+            v-permission="'seats.edit'"
+            class="flex items-center gap-1"
+        >
+          <span>{{ $t("actions.bulkUpdate") }} ({{ selectedSeats.length }})</span>
+        </el-button>
+
+        <!-- Duplicate Selected to Hall -->
+        <el-button
+            type="success"
+            @click="openDuplicateDialog"
+            v-permission="'seats.create'"
+            class="flex items-center gap-1"
+        >
+          <span>{{ $t("seats.duplicateToHall") }} ({{ selectedSeats.length }})</span>
+        </el-button>
+
         <!-- Delete Selected (Force Delete) -->
         <el-button
             type="danger"
@@ -389,6 +409,174 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- Bulk Update Dialog -->
+    <el-dialog
+        v-model="bulkUpdateDialogVisible"
+        :title="$t('seats.bulkUpdate')"
+        width="500px"
+        :close-on-click-modal="false"
+    >
+      <el-alert
+          type="info"
+          :closable="false"
+          style="margin-bottom: 16px"
+      >
+        {{ $t('seats.bulkUpdateInfo', { count: selectedSeats.length }) }}
+      </el-alert>
+
+      <el-form ref="bulkUpdateFormRef" :model="bulkUpdateForm" label-width="120px">
+        <!-- Seat Type -->
+        <el-form-item :label="$t('seats.type')">
+          <el-select v-model="bulkUpdateForm.seat_type" clearable style="width: 100%" :placeholder="$t('seats.keepCurrent')">
+            <el-option
+                v-for="type in seatTypes"
+                :key="type.value"
+                :label="$t(`seats.types.${type.value}`)"
+                :value="type.value"
+            />
+          </el-select>
+        </el-form-item>
+
+        <!-- Price -->
+        <el-form-item :label="$t('seats.price')">
+          <el-input-number
+              v-model="bulkUpdateForm.price"
+              :min="0"
+              :precision="2"
+              :step="0.5"
+              controls-position="right"
+              style="width: 100%"
+              :placeholder="$t('seats.keepCurrent')"
+          />
+        </el-form-item>
+
+        <!-- Status -->
+        <el-form-item :label="$t('seats.status')">
+          <el-select v-model="bulkUpdateForm.status" clearable style="width: 100%" :placeholder="$t('seats.keepCurrent')">
+            <el-option
+                v-for="status in seatStatuses"
+                :key="status.value"
+                :label="$t(`seats.statuses.${status.value}`)"
+                :value="status.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="closeBulkUpdateDialog">{{ $t("actions.cancel") }}</el-button>
+          <el-button type="primary" :loading="bulkUpdateLoading" @click="handleBulkUpdate">
+            {{ $t("actions.update") }}
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- Duplicate Seats Dialog -->
+    <el-dialog
+        v-model="duplicateDialogVisible"
+        :title="$t('seats.duplicateToHall')"
+        width="600px"
+        :close-on-click-modal="false"
+    >
+      <el-alert
+          type="info"
+          :closable="false"
+          style="margin-bottom: 16px"
+      >
+        {{ $t('seats.duplicateSelectedInfo', { count: selectedSeats.length }) }}
+      </el-alert>
+
+      <!-- Selected Seats Preview -->
+      <div class="selected-seats-preview" v-if="selectedSeats.length > 0">
+        <div class="preview-label">{{ $t('seats.selectedSeats') }} ({{ selectedSeats.length }}):</div>
+        <div class="seats-tags">
+          <el-tag
+              v-for="seat in sortedSelectedSeats"
+              :key="seat.id"
+              type="info"
+              style="margin: 2px"
+          >
+            {{ seat.row }}{{ Array.isArray(seat.seat_number) ? seat.seat_number.join(',') : seat.seat_number }}
+          </el-tag>
+        </div>
+        <div class="source-hall-info" v-if="selectedSeatsSourceHall">
+          {{ $t('seats.fromHall') }}: <strong>{{ selectedSeatsSourceHall }}</strong>
+        </div>
+      </div>
+
+      <el-divider />
+
+      <el-form ref="duplicateFormRef" :model="duplicateForm" :rules="duplicateRules" label-width="140px">
+        <!-- Target Hall -->
+        <el-form-item :label="$t('seats.targetHall')" prop="target_hall_id">
+          <el-select
+              v-model="duplicateForm.target_hall_id"
+              filterable
+              style="width: 100%"
+              :placeholder="$t('seats.selectTargetHall')"
+              :loading="loadingHalls"
+          >
+            <el-option
+                v-for="option in duplicateHallOptions"
+                :key="option.id"
+                :label="option.label"
+                :value="option.id"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-divider>{{ $t('seats.optionalOverrides') }}</el-divider>
+
+        <!-- Override Seat Type -->
+        <el-form-item :label="$t('seats.type')">
+          <el-select v-model="duplicateForm.seat_type" clearable style="width: 100%" :placeholder="$t('seats.keepOriginal')">
+            <el-option
+                v-for="type in seatTypes"
+                :key="type.value"
+                :label="$t(`seats.types.${type.value}`)"
+                :value="type.value"
+            />
+          </el-select>
+        </el-form-item>
+
+        <!-- Override Price -->
+        <el-form-item :label="$t('seats.price')">
+          <el-input-number
+              v-model="duplicateForm.price"
+              :min="0"
+              :precision="2"
+              :step="0.5"
+              controls-position="right"
+              style="width: 100%"
+              :placeholder="$t('seats.keepOriginal')"
+          />
+        </el-form-item>
+
+        <!-- Override Status -->
+        <el-form-item :label="$t('seats.status')">
+          <el-select v-model="duplicateForm.status" clearable style="width: 100%" :placeholder="$t('seats.keepOriginal')">
+            <el-option
+                v-for="status in seatStatuses"
+                :key="status.value"
+                :label="$t(`seats.statuses.${status.value}`)"
+                :value="status.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="closeDuplicateDialog">{{ $t("actions.cancel") }}</el-button>
+          <el-button type="primary" :loading="duplicateLoading" @click="handleDuplicate">
+            {{ $t("seats.duplicate") }}
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -441,6 +629,27 @@ const dialogForm = reactive({
   price: 0,
   status: "active",
   notes: "",
+});
+
+// Bulk update state
+const bulkUpdateDialogVisible = ref(false);
+const bulkUpdateLoading = ref(false);
+const bulkUpdateFormRef = ref();
+const bulkUpdateForm = reactive({
+  seat_type: null,
+  price: null,
+  status: null,
+});
+
+// Duplicate seats state
+const duplicateDialogVisible = ref(false);
+const duplicateLoading = ref(false);
+const duplicateFormRef = ref();
+const duplicateForm = reactive({
+  target_hall_id: null,
+  seat_type: null,
+  price: null,
+  status: null,
 });
 const handleSelectionChange = (val) => {
   selectedSeats.value = val;
@@ -557,6 +766,48 @@ const dialogRules = computed(() => ({
   ],
 }));
 
+const duplicateRules = computed(() => ({
+  target_hall_id: [
+    {required: true, message: t("validation.required"), trigger: "change"},
+  ],
+}));
+
+// Get source hall ID from selected seats
+const selectedSeatsSourceHallId = computed(() => {
+  if (selectedSeats.value.length === 0) return null;
+  return selectedSeats.value[0].hall?.id || null;
+});
+
+// Get source hall name from selected seats
+const selectedSeatsSourceHall = computed(() => {
+  if (selectedSeats.value.length === 0) return null;
+  const firstSeat = selectedSeats.value[0];
+  if (firstSeat.hall?.hall_name && firstSeat.theater?.name) {
+    return `${firstSeat.theater.name} - ${firstSeat.hall.hall_name}`;
+  }
+  return firstSeat.hall?.hall_name || null;
+});
+
+// Hall options for duplicate - exclude source hall
+const duplicateHallOptions = computed(() => {
+  return hallOptions.value.filter(opt => opt.id !== selectedSeatsSourceHallId.value);
+});
+
+// Get sorted selected seats for display
+const sortedSelectedSeats = computed(() => {
+  if (selectedSeats.value.length === 0) return [];
+  return [...selectedSeats.value].sort((a, b) => {
+    // Sort by row first
+    if (a.row !== b.row) {
+      return a.row.localeCompare(b.row);
+    }
+    // Then by seat number
+    const aNum = Array.isArray(a.seat_number) ? a.seat_number[0] : a.seat_number;
+    const bNum = Array.isArray(b.seat_number) ? b.seat_number[0] : b.seat_number;
+    return aNum - bNum;
+  });
+});
+
 const handleRangeInput = () => {
   dialogForm.seat_numbers = parsedSeatNumbers.value;
 };
@@ -612,7 +863,18 @@ const loadSeats = async () => {
     };
 
     const response = await seatService.getSeats(params);
-    seats.value = response.data || [];
+    // Sort seats by row then by seat_number
+    const sortedData = (response.data || []).sort((a, b) => {
+      // Sort by row first
+      if (a.row !== b.row) {
+        return a.row.localeCompare(b.row);
+      }
+      // Then by seat_number
+      const aNum = Array.isArray(a.seat_number) ? a.seat_number[0] : a.seat_number;
+      const bNum = Array.isArray(b.seat_number) ? b.seat_number[0] : b.seat_number;
+      return aNum - bNum;
+    });
+    seats.value = sortedData;
     Object.assign(pagination, {
       current_page: response.current_page || 1,
       per_page: response.per_page || 10,
@@ -753,6 +1015,132 @@ const handleDialogSubmit = async () => {
     ElMessage.error(error.response?.data?.message || t("seats.saveError"));
   } finally {
     dialogLoading.value = false;
+  }
+};
+
+// Bulk update methods
+const openBulkUpdateDialog = () => {
+  resetBulkUpdateForm();
+  bulkUpdateDialogVisible.value = true;
+};
+
+const closeBulkUpdateDialog = () => {
+  bulkUpdateDialogVisible.value = false;
+  resetBulkUpdateForm();
+};
+
+const resetBulkUpdateForm = () => {
+  Object.assign(bulkUpdateForm, {
+    seat_type: null,
+    price: null,
+    status: null,
+  });
+};
+
+const handleBulkUpdate = async () => {
+  if (selectedSeats.value.length === 0) {
+    ElMessage.warning(t("seats.noSeatsSelected"));
+    return;
+  }
+
+  // Build update data only with non-null values
+  const updateData = {};
+  if (bulkUpdateForm.seat_type) updateData.seat_type = bulkUpdateForm.seat_type;
+  if (bulkUpdateForm.price !== null && bulkUpdateForm.price !== undefined) updateData.price = bulkUpdateForm.price;
+  if (bulkUpdateForm.status) updateData.status = bulkUpdateForm.status;
+
+  if (Object.keys(updateData).length === 0) {
+    ElMessage.warning(t("seats.noChangesSelected"));
+    return;
+  }
+
+  try {
+    bulkUpdateLoading.value = true;
+
+    // Build seatUpdates array with id and update fields
+    const seatUpdates = selectedSeats.value.map(seat => ({
+      id: seat.id,
+      ...updateData,
+    }));
+
+    await seatService.bulkUpdateSeats(seatUpdates);
+    ElMessage.success(t("seats.bulkUpdateSuccess", { count: selectedSeats.value.length }));
+    closeBulkUpdateDialog();
+    cancelSelection();
+    loadSeats();
+  } catch (error) {
+    console.error("Bulk update error:", error);
+    ElMessage.error(error.response?.data?.message || t("seats.bulkUpdateError"));
+  } finally {
+    bulkUpdateLoading.value = false;
+  }
+};
+
+// Duplicate seats methods
+const openDuplicateDialog = () => {
+  resetDuplicateForm();
+  duplicateDialogVisible.value = true;
+};
+
+const closeDuplicateDialog = () => {
+  duplicateDialogVisible.value = false;
+  resetDuplicateForm();
+};
+
+const resetDuplicateForm = () => {
+  Object.assign(duplicateForm, {
+    target_hall_id: null,
+    seat_type: null,
+    price: null,
+    status: null,
+  });
+  if (duplicateFormRef.value) {
+    duplicateFormRef.value.resetFields();
+  }
+};
+
+const handleDuplicate = async () => {
+  if (!duplicateFormRef.value) return;
+  
+  if (selectedSeats.value.length === 0) {
+    ElMessage.warning(t("seats.noSeatsSelected"));
+    return;
+  }
+
+  try {
+    await duplicateFormRef.value.validate();
+    duplicateLoading.value = true;
+
+    // Build payload with seat_ids from selected seats
+    const payload = {
+      seat_ids: selectedSeats.value.map(seat => seat.id),
+      target_hall_id: duplicateForm.target_hall_id,
+    };
+    if (duplicateForm.seat_type) payload.seat_type = duplicateForm.seat_type;
+    if (duplicateForm.price !== null && duplicateForm.price !== undefined) payload.price = duplicateForm.price;
+    if (duplicateForm.status) payload.status = duplicateForm.status;
+
+    const response = await seatService.bulkDuplicateSeats(payload);
+    
+    const message = t("seats.duplicateSuccess", { 
+      count: response.data?.createdCount || 0 
+    });
+    ElMessage.success(message);
+    
+    if (response.data?.skippedCount > 0) {
+      ElMessage.warning(t("seats.duplicateSkipped", { 
+        count: response.data.skippedCount 
+      }));
+    }
+    
+    closeDuplicateDialog();
+    cancelSelection();
+    loadSeats();
+  } catch (error) {
+    console.error("Duplicate seats error:", error);
+    ElMessage.error(error.response?.data?.message || t("seats.duplicateError"));
+  } finally {
+    duplicateLoading.value = false;
   }
 };
 
@@ -956,5 +1344,32 @@ onMounted(async () => {
   font-size: 14px;
   color: var(--el-text-color-secondary);
   text-align: right;
+}
+
+.selected-seats-preview {
+  padding: 12px;
+  background-color: var(--el-fill-color-light);
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.selected-seats-preview .preview-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--el-text-color-primary);
+}
+
+.selected-seats-preview .seats-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.selected-seats-preview .source-hall-info {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--el-text-color-regular);
 }
 </style>

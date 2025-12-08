@@ -268,5 +268,17 @@ export const seatService = {
 
         const {data} = await api.post(`/seats/bulk/create-seats`, backendData);
         return data;
+    },
+
+    // Bulk update seats
+    async bulkUpdateSeats(seatUpdates) {
+        const {data} = await api.put(`/seats/bulk/update-seats`, {seatUpdates});
+        return data;
+    },
+
+    // Bulk duplicate seats from one hall to another
+    async bulkDuplicateSeats(duplicateData) {
+        const {data} = await api.post(`/seats/bulk/duplicate-seats`, duplicateData);
+        return data;
     }
 };

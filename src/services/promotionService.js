@@ -147,8 +147,8 @@ export const promotionService = {
   { value: "start_date", label: "Start Date" },
   { value: "end_date", label: "End Date" },
   { value: "code", label: "Code" },
-  { value: "title", label: "Title" },
   { value: "status", label: "Status" },
   { value: "createdAt", label: "Created Date" },
+  { value: "updatedAt", label: "Updated Date" },
  ],
 };

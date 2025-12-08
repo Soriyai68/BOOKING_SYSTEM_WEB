@@ -149,6 +149,28 @@ export default {
     seatBooking: "កៅអីដែលបានកក់",
     seatBookingHistory: "ប្រវត្តិកៅអីដែលបានកក់",
     searchHistory: "ស្វែងរកតាមលេខកៅអី ឬលេខកូដ...",
+    // Duplicate seats
+    duplicateToHall: "ចម្លងទៅសាល",
+    duplicateSelectedInfo: "ចម្លងកៅអីដែលបានជ្រើសរើសចំនួន {count} ទៅសាលផ្សេងទៀត។",
+    selectedSeats: "កៅអីដែលបានជ្រើស",
+    fromHall: "ពីសាល",
+    targetHall: "សាលគោលដៅ",
+    selectTargetHall: "ជ្រើសសាលគោលដៅ",
+    optionalOverrides: "ជម្រើសប្ដូរជំនួស",
+    keepOriginal: "រក្សាទុកដើម",
+    keepCurrent: "រក្សាទុកបច្ចុប្បន្ន",
+    duplicate: "ចម្លង",
+    duplicateSuccess: "កៅអី {count} ត្រូវបានចម្លងដោយជោគជ័យ",
+    duplicateSkipped: "{count} កៅអីត្រូវបានរំលង (មានរួចហើយ)",
+    duplicateError: "មិនអាចចម្លងកៅអីបានទេ",
+    noSeatsSelected: "មិនមានកៅអីត្រូវបានជ្រើស",
+    noChangesSelected: "មិនមានការកែប្រែត្រូវបានជ្រើស",
+
+    // Bulk update
+    bulkUpdateInfo: "អាប់ដេតកៅអីដែលបានជ្រើសរើសចំនួន {count}។",
+    bulkUpdateSuccess: "កៅអី {count} ត្រូវបានអាប់ដេតដោយជោគជ័យ",
+    bulkUpdateError: "មិនអាចអាប់ដេតកៅអីបានទេ",
+
   },
 
   // Theater Management
@@ -606,6 +628,7 @@ export default {
     more: "ផ្សេងៗ",
     remove: "យកចេញ",
     update: "ធ្វើបច្ចុប្បន្នភាព",
+    bulkUpdate: "ការអាប់ដេតជាក្រុម",
     addRow: "បន្ថែមជួរ",
     deleteSelected: "លុបជួរដែលបានជ្រើសរើស",
     duplicateSelected: "ចម្លងជួរដែលបានជ្រើសរើស",
@@ -684,4 +707,6 @@ export default {
     fileTooLarge: "ឯកសារធំពេក។ អតិបរមា {size}MB",
     invalidUrl: "ទម្រង់តំណមិនត្រឹមត្រូវ",
   },
+
+
 };
