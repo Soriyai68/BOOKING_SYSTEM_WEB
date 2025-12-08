@@ -84,12 +84,22 @@ a<template>
         <el-card class="details-card">
           <template #header>
             <div class="card-header">
-              <span>{{ $t('users.customerDetails') }}</span>
+              <span>{{ $t('customers.customerDetails') }}</span>
             </div>
           </template>
           <el-descriptions direction="vertical" :column="1" border>
-            <el-descriptions-item :label="$t('users.name')">{{ booking.user?.name }}</el-descriptions-item>
-            <el-descriptions-item :label="$t('users.phone')">{{ booking.user?.phone }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('customers.customerType')" v-if="booking.customer?.customerType">
+              <el-tag>{{ booking.customer.customerType }}</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('customers.name')" v-if="booking.customer?.name">
+              {{ booking.customer.name }}
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('customers.phone')" v-if="booking.customer?.phone">
+              {{ booking.customer.phone }}
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('customers.email')" v-if="booking.customer?.email">
+              {{ booking.customer.email }}
+            </el-descriptions-item>
           </el-descriptions>
         </el-card>
         <!-- Pricing Details -->
@@ -137,6 +147,7 @@ const loadBookingDetails = async () => {
     const response = await bookingService.getBookingById(route.params.id);
     if (response) {
       booking.value = response;
+      console.log("Loaded booking details:", response);
     } else {
       ElMessage.error(t('errors.loadDataFailed'));
     }

@@ -114,24 +114,81 @@
         </el-descriptions>
 
         <el-form style="margin-top: 20px" label-position="top">
-          <el-form-item :label="$t('users.customer')">
-            <el-select
-              v-model="selectedUserId"
-              filterable
-              remote
-              :remote-method="loadUsers"
-              :loading="loading.users"
-              placeholder="Search and select a user"
-              style="width: 100%"
+          <el-form-item :label="$t('customers.customer')">
+            <el-radio-group
+              v-model="customerSelectionMode"
+              style="margin-bottom: 10px"
             >
-              <el-option
-                v-for="user in userOptions"
-                :key="user.id"
-                :label="`${user.name} (${user.phone})`"
-                :value="user.id"
-              />
-            </el-select>
+              <el-radio-button label="search">{{
+                $t("customers.searchExistingCustomer")
+              }}</el-radio-button>
+              <el-radio-button label="walkin">{{
+                $t("customers.newWalkInCustomer")
+              }}</el-radio-button>
+              <el-radio-button label="guest">{{
+                $t("customers.newGuestCustomer")
+              }}</el-radio-button>
+            </el-radio-group>
           </el-form-item>
+
+          <div v-if="customerSelectionMode === 'search'">
+            <el-form-item>
+              <el-select
+                v-model="selectedCustomerId"
+                filterable
+                remote
+                :remote-method="loadCustomers"
+                :loading="loading.customers"
+                :placeholder="$t('customers.searchAndSelectCustomer')"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="customer in customerOptions"
+                  :key="customer.id"
+                  :label="getCustomerLabel(customer)"
+                  :value="customer.id"
+                />
+              </el-select>
+            </el-form-item>
+          </div>
+
+          <div v-if="customerSelectionMode === 'walkin'">
+            <el-form
+              :model="walkinCustomer"
+              label-position="top"
+              ref="walkinForm"
+            >
+              <el-form-item
+                :label="$t('customers.phone')"
+                prop="phone"
+                :rules="{ required: true, message: 'Phone is required' }"
+              >
+                <el-input
+                  :placeholder="$t('auth.phonePlaceholder')"
+                  v-model="walkinCustomer.phone"
+                />
+              </el-form-item>
+            </el-form>
+          </div>
+
+          <div v-if="customerSelectionMode === 'guest'">
+            <el-form :model="guestDetails" label-position="top" ref="guestForm">
+              <el-form-item
+                :label="$t('customers.email')"
+                prop="email"
+                :rules="{
+                  required: true,
+                  type: 'email',
+                  message: 'Valid email is required',
+                }"
+              >
+                <el-input
+                  v-model="guestDetails.email"
+                  :placeholder="$t('auth.emailPlaceholder')"
+                />
+              </el-form-item>
+            </el-form>
+          </div>
           <el-form-item :label="$t('payments.paymentMethod')">
             <el-select v-model="selectedPaymentMethod" style="width: 100%">
               <el-option
@@ -181,7 +238,7 @@ import { useAppStore } from "@/stores/app";
 import { showtimeService } from "@/services/showtimeService";
 import { seatService } from "@/services/seatService";
 import { seatBookingService } from "@/services/seatBookingService";
-import { userService } from "@/services/userService";
+import { customerService } from "@/services/customerService";
 import { bookingService } from "@/services/bookingService";
 import { paymentService } from "@/services/paymentService";
 
@@ -194,7 +251,7 @@ const activeStep = ref(0);
 const loading = reactive({
   showtimes: false,
   seats: false,
-  users: false,
+  customers: false,
   booking: false,
 });
 
@@ -209,10 +266,39 @@ const bookedSeats = ref([]);
 const selectedSeats = ref(new Set());
 
 // Step 3
-const userOptions = ref([]);
-const selectedUserId = ref(null);
+const customerOptions = ref([]);
+const selectedCustomerId = ref(null);
+const customerSelectionMode = ref("search"); // 'search' or 'walkin'
+const walkinCustomer = reactive({
+  phone: "",
+});
+const guestDetails = reactive({
+  email: "",
+});
 const paymentMethods = paymentService.PAYMENT_METHODS;
 const selectedPaymentMethod = ref("Cash");
+
+const getCustomerLabel = (customer) => {
+  if (customer.customerType === "walkin") {
+    return `Walk-in Customer (${
+      customer.phone || customer.name || customer.id
+    })`;
+  }
+  if (customer.customerType === "guest") {
+    return `Guest Customer (${customer.email || customer.name || customer.id})`;
+  }
+  // Default for member or other types
+  if (customer.name && customer.phone) {
+    return `${customer.name} (${customer.phone})`;
+  }
+  if (customer.name) {
+    return customer.name;
+  }
+  if (customer.email) {
+    return customer.email;
+  }
+  return customer.id; // fallback
+};
 
 const loadShowtimes = async (query = "") => {
   loading.showtimes = true;
@@ -270,20 +356,19 @@ const loadSeatData = async () => {
   }
 };
 
-const loadUsers = async (query = "") => {
-  loading.users = true;
+const loadCustomers = async (query = "") => {
+  loading.customers = true;
   try {
-    const response = await userService.getUsers({
+    const response = await customerService.getCustomers({
       search: query,
       limit: 20,
-      role: "user",
     });
-    userOptions.value = response.data;
+    customerOptions.value = response.data;
   } catch (error) {
-    console.error("Failed to load users:", error);
+    console.error("Failed to load customers:", error);
     ElMessage.error(t("errors.loadDataFailed"));
   } finally {
-    loading.users = false;
+    loading.customers = false;
   }
 };
 
@@ -344,19 +429,34 @@ const bookingSummary = computed(() => {
 
 const isStepValid = computed(() => {
   if (activeStep.value === 0) return !!selectedShowtimeId.value;
+
   if (activeStep.value === 1) return selectedSeats.value.size > 0;
-  if (activeStep.value === 2) return !!selectedUserId.value;
+
+  if (activeStep.value === 2) {
+    if (customerSelectionMode.value === "search") {
+      return !!selectedCustomerId.value;
+    } else if (customerSelectionMode.value === "walkin") {
+      return !!walkinCustomer.phone;
+    } else if (customerSelectionMode.value === "guest") {
+      const emailRegex = /.+@.+\..+/;
+
+      return !!(guestDetails.email && emailRegex.test(guestDetails.email));
+    }
+  }
+
   return false;
 });
 
 const nextStep = () => {
   if (activeStep.value < 2) {
     activeStep.value++;
+
     if (activeStep.value === 1) {
       loadSeatData();
     }
+
     if (activeStep.value === 2) {
-      loadUsers();
+      loadCustomers();
     }
   }
 };
@@ -373,13 +473,22 @@ const submitBooking = async () => {
 
   const bookingData = {
     showtimeId: selectedShowtimeId.value,
-    userId: selectedUserId.value,
     seats: Array.from(selectedSeats.value),
     total_price: bookingSummary.value.totalPrice,
     seat_count: selectedSeats.value.size,
     payment_method: selectedPaymentMethod.value,
     noted: "",
   };
+
+  if (customerSelectionMode.value === "search") {
+    bookingData.customerId = selectedCustomerId.value;
+  } else if (customerSelectionMode.value === "walkin") {
+    bookingData.phone = walkinCustomer.phone;
+  } else {
+    // guest
+    bookingData.guestEmail = guestDetails.email;
+  }
+
   console.log("Submitting booking:", bookingData);
   try {
     const response = await bookingService.createBooking(bookingData);

@@ -231,12 +231,12 @@ const loadSeatBookings = async () => {
         status: sb.status,
         phone: sb.phone,
       }));
-      Object.assign(pagination, {
-        currentPage: response.currentPage || 1,
-        perPage: response.data.limit || 10,
-        total: response.data.total || 0,
-        total_pages: response.data.totalPages || 0,
-      });
+      
+      pagination.currentPage = response.current_page || response.currentPage || 1;
+      pagination.perPage = response.per_page || response.limit || 10;
+      pagination.total = response.total || 0;
+      pagination.total_pages = response.total_pages || response.totalPages || 0;
+
     } else {
       seatBookings.value = [];
       Object.assign(pagination, {currentPage: 1, perPage: 10, total: 0, total_pages: 0});

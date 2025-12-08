@@ -108,12 +108,50 @@
           :label="$t('bookings.referenceCode')"
           width="180"
         />
-        <el-table-column :label="$t('users.name')" width="250">
+        <el-table-column :label="$t('customers.customer')" width="250">
           <template #default="{ row }">
-            <div v-if="row.user">{{ row.user.name }}</div>
-            <small v-if="row.user" class="text-muted">{{
-              row.user.phone
-            }}</small>
+            <div v-if="row.customer">
+              <div>
+                <strong>
+                  {{
+                    row.customer.name ||
+                    (row.customer.phone
+                      ? "Walk-in Customer"
+                      : row.customer.email
+                      ? "Guest Customer"
+                      : "-")
+                  }}
+                </strong>
+              </div>
+
+              <div
+                v-if="row.customer.phone"
+                class="text-muted"
+                style="display: flex; align-items: center; gap: 4px"
+              >
+                <el-icon><Phone /></el-icon>
+                <span>{{ row.customer.phone }}</span>
+              </div>
+              <div
+                v-if="row.customer.email"
+                class="text-muted"
+                style="display: flex; align-items: center; gap: 4px"
+              >
+                <el-icon><ChatLineSquare /></el-icon>
+                <span>{{ row.customer.email }}</span>
+              </div>
+              <el-tag
+                :type="getCustomerTypeTag(row.customer.customerType)"
+                size="small"
+                v-if="row.customer.customerType"
+                style="margin-top: 4px"
+              >
+                {{ $t(`customers.${row.customer.customerType}`) }}
+              </el-tag>
+            </div>
+            <div v-else>
+              <span class="text-muted">No customer data</span>
+            </div>
           </template>
         </el-table-column>
         <el-table-column :label="$t('showtimes.movie')" width="200">
@@ -329,6 +367,8 @@ import {
   MoreFilled,
   View,
   Wallet,
+  Phone,
+  ChatLineSquare,
 } from "@element-plus/icons-vue"; // Import icons
 
 const { t } = useI18n();
@@ -376,6 +416,18 @@ const paymentForm = reactive({
   description: "",
 });
 
+const getCustomerTypeTag = (type) => {
+  switch (type) {
+    case "member":
+      return "success";
+    case "walkin":
+      return "info";
+    case "guest":
+      return "warning";
+    default:
+      return "primary";
+  }
+};
 const bookingStatusOptions = bookingService.BOOKING_STATUSES;
 const paymentStatusOptions = bookingService.PAYMENT_STATUSES;
 const paymentMethods = paymentService.PAYMENT_METHODS;
@@ -400,6 +452,7 @@ const loadBookings = async () => {
     const response = await bookingService.getBookings(params);
     if (response.data) {
       bookings.value = response.data;
+      console.log("Loaded bookings:", bookings.value);
       pagination.total = response.total;
       pagination.current_page = response.current_page;
       pagination.per_page = response.per_page;
@@ -542,7 +595,7 @@ const cancelBooking = async (id) => {
 
 const openCreatePaymentDialog = (booking) => {
   paymentForm.booking_id = booking.id;
-  paymentForm.amount = booking.total_price
+  paymentForm.amount = booking.total_price;
   paymentForm.description = `Payment for booking ${booking.reference_code}`;
   paymentDialogVisible.value = true;
 };

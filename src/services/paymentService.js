@@ -1,4 +1,3 @@
-
 import api from "@/utils/api";
 
 export const paymentService = {
@@ -198,7 +197,9 @@ export const paymentService = {
       sortOrder: params.sort_order || "desc",
     };
 
-    const response = await api.get("/payments/deleted", { params: backendParams });
+    const response = await api.get("/payments/deleted", {
+      params: backendParams,
+    });
 
     if (response.data?.success && response.data?.data) {
       const { payments, pagination } = response.data.data;
@@ -231,6 +232,7 @@ export const paymentService = {
   PAYMENT_METHODS: [
     { value: "Bakong", label: "Bakong" },
     { value: "Cash", label: "Cash" },
+    { value: "PayAtCinema", label: "Pay At Cinema" },
     { value: "Card", label: "Card" },
     { value: "Mobile Banking", label: "Mobile Banking" },
     { value: "Bank Transfer", label: "Bank Transfer" },
