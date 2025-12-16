@@ -56,6 +56,13 @@ api.interceptors.response.use(
 
     if (error.response) {
       const { status, data } = error.response
+      const { url, method } = error.config;
+
+      // Special handling for check-payment polling: a 400 status is an expected "not yet paid" state.
+      // We suppress the global error message for this specific case to avoid user confusion.
+      if (status === 400 && method === 'post' && url && url.includes('/payments/check-payment')) {
+        return Promise.reject(error);
+      }
 
       // Log API errors in development
       if (import.meta.env.VITE_APP_ENV === 'development') {

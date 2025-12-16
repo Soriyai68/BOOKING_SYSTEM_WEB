@@ -393,7 +393,7 @@ export const showtimeService = {
       per_page: limit,
       search: search,
       status: status,
-      show_date: todayDateString, // <--- Add this line to include today's date
+      dateFrom: todayDateString,
     });
 
     if (response && response.data) {
@@ -401,7 +401,7 @@ export const showtimeService = {
         value: s.id,
         label: `${s.movie_title || "N/A"} - ${s.theater_name || "N/A"} (${
           s.hall_name || "N/A"
-        }) - ${s.start_time}`,
+        }) - ${s.show_date} - ${s.start_time}`,
       }));
     }
 

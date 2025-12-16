@@ -11,7 +11,6 @@ export const paymentService = {
       status: params.status,
       payment_method: params.payment_method,
       currency: params.currency,
-      transaction_id: params.transaction_id,
       dateFrom: params.date_from,
       dateTo: params.date_to,
       amountFrom: params.amount_from,
@@ -39,7 +38,6 @@ export const paymentService = {
           payment_method: payment.payment_method,
           currency: payment.currency,
           status: payment.status,
-          transaction_id: payment.transaction_id,
           description: payment.description,
           payment_date: payment.payment_date,
           created_at: payment.createdAt,
@@ -78,7 +76,6 @@ export const paymentService = {
         payment_method: payment.payment_method,
         currency: payment.currency,
         status: payment.status,
-        transaction_id: payment.transaction_id,
         description: payment.description,
         payment_date: payment.payment_date,
         created_at: payment.createdAt,
@@ -88,27 +85,7 @@ export const paymentService = {
     return response.data;
   },
 
-  // Get payment by transaction ID
-  async getPaymentByTransactionId(transactionId) {
-    const response = await api.get(`/payments/transaction/${transactionId}`);
-    if (response.data?.success && response.data?.data?.payment) {
-      const payment = response.data.data.payment;
-      return {
-        id: payment._id,
-        booking: payment.bookingId || {},
-        amount: payment.amount,
-        payment_method: payment.payment_method,
-        currency: payment.currency,
-        status: payment.status,
-        transaction_id: payment.transaction_id,
-        description: payment.description,
-        payment_date: payment.payment_date,
-        created_at: payment.createdAt,
-        updated_at: payment.updatedAt,
-      };
-    }
-    return response.data;
-  },
+
 
   // Get all payments for a specific booking
   async getPaymentsByBookingId(bookingId) {
@@ -121,7 +98,6 @@ export const paymentService = {
         payment_method: payment.payment_method,
         currency: payment.currency,
         status: payment.status,
-        transaction_id: payment.transaction_id,
         description: payment.description,
         payment_date: payment.payment_date,
       }));
@@ -129,15 +105,20 @@ export const paymentService = {
     return [];
   },
 
+  // Check payment status by md5
+  async checkPaymentStatus(md5) {
+    const response = await api.post("/payments/check-payment", { md5 });
+    return response.data;
+  },
+
   // Create new payment
   async createPayment(paymentData) {
     const backendData = {
-      bookingId: paymentData.booking_id,
+      bookingId: paymentData.bookingId,
       amount: paymentData.amount,
       payment_method: paymentData.payment_method,
       currency: paymentData.currency,
       status: paymentData.status,
-      transaction_id: paymentData.transaction_id,
       description: paymentData.description,
     };
     const response = await api.post("/payments", backendData);
@@ -147,12 +128,11 @@ export const paymentService = {
   // Update payment
   async updatePayment(id, paymentData) {
     const backendData = {
-      bookingId: paymentData.booking_id,
+      bookingId: paymentData.bookingId,
       amount: paymentData.amount,
       payment_method: paymentData.payment_method,
       currency: paymentData.currency,
       status: paymentData.status,
-      transaction_id: paymentData.transaction_id,
       description: paymentData.description,
     };
     Object.keys(backendData).forEach((key) => {
@@ -258,3 +238,5 @@ export const paymentService = {
     { value: "createdAt", label: "Created Date" },
   ],
 };
+
+

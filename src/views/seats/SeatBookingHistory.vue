@@ -16,7 +16,7 @@
             clearable
             @keyup.enter="loadSeatBookingHistory"
             @clear="loadSeatBookingHistory"
-            style="width: 400px"
+            style="width: 300px"
           />
         </el-form-item>
         <el-form-item>
@@ -109,47 +109,6 @@
           :label="$t('bookings.referenceCode')"
           width="150"
         />
-        <el-table-column
-          prop="showtime.movie"
-          :label="$t('movies.movieTitle')"
-          width="250"
-        />
-        <el-table-column
-          prop="seat.seat_identifier"
-          :label="$t('seats.indentifier')"
-          width="150"
-        />
-        <el-table-column
-          prop="seat.seat_type"
-          :label="$t('seats.type')"
-          width="150"
-        >
-          <template #default="{ row }">
-            <el-tag :type="getSeatTypeColor(row.seat_type)">
-              {{ $t(`seats.types.${row.seat.seat_type}`) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="showtime.show_date"
-          :label="$t('showtimes.showDate')"
-          width="200"
-          ><template #default="{ row }">
-            {{ new Date(row.showtime.show_date).toLocaleDateString() }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="showtime.start_time"
-          :label="$t('showtimes.startTime')"
-          width="200"
-        />
-        <el-table-column prop="action" :label="$t('seats.status')" width="150">
-          <template #default="{ row }">
-            <el-tag :type="getActionColor(row.action)">
-              {{ $t(`seats.statuses.${row.action}`) }}
-            </el-tag>
-          </template>
-        </el-table-column>
         <el-table-column :label="$t('customers.customer')" width="250">
           <template #default="{ row }">
             <div v-if="row.booking">
@@ -193,6 +152,47 @@
             <div v-else>
               <span class="text-muted">No customer data</span>
             </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="showtime.movie"
+          :label="$t('movies.movieTitle')"
+          width="250"
+        />
+        <el-table-column
+          prop="seat.seat_identifier"
+          :label="$t('seats.indentifier')"
+          width="150"
+        />
+        <el-table-column
+          prop="seat.seat_type"
+          :label="$t('seats.type')"
+          width="150"
+        >
+          <template #default="{ row }">
+            <el-tag :type="getSeatTypeColor(row.seat_type)">
+              {{ $t(`seats.types.${row.seat.seat_type}`) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="showtime.show_date"
+          :label="$t('showtimes.showDate')"
+          width="200"
+          ><template #default="{ row }">
+            {{ new Date(row.showtime.show_date).toLocaleDateString() }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="showtime.start_time"
+          :label="$t('showtimes.startTime')"
+          width="200"
+        />
+        <el-table-column prop="action" :label="$t('seats.status')" width="150">
+          <template #default="{ row }">
+            <el-tag :type="getActionColor(row.action)">
+              {{ $t(`seats.statuses.${row.action}`) }}
+            </el-tag>
           </template>
         </el-table-column>
         <!-- <el-table-column :label="$t('common.actions')" fixed="right" width="100">

@@ -31,6 +31,34 @@
         </el-form-item>
         <el-form-item>
           <el-select
+            v-model="filters.showtime_id"
+            filterable
+            clearable
+            :placeholder="$t('seats.selectShowtime')"
+            @change="handleFilterChange"
+            style="width: 500px"
+            :loading="loading.showtimes"
+          >
+            <el-option
+              v-for="item in showtimeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-date-picker
+            v-model="filters.show_date"
+            type="date"
+            :placeholder="$t('showtimes.showDate')"
+            clearable
+            style="width: 200px"
+            value-format="YYYY-MM-DD"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-select
             v-model="filters.booking_status"
             clearable
             @change="handleFilterChange"
@@ -58,24 +86,6 @@
               :key="status.value"
               :label="status.label"
               :value="status.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-select
-            v-model="filters.showtime_id"
-            filterable
-            clearable
-            :placeholder="$t('seats.selectShowtime')"
-            @change="handleFilterChange"
-            style="width: 500px"
-            :loading="loading.showtimes"
-          >
-            <el-option
-              v-for="item in showtimeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
             />
           </el-select>
         </el-form-item>
@@ -389,6 +399,7 @@ const filters = reactive({
   booking_status: "",
   payment_status: "",
   showtime_id: "",
+  show_date: "",
   dateRange: [],
 });
 
@@ -407,7 +418,7 @@ const editForm = reactive({
 
 const paymentDialogVisible = ref(false);
 const paymentForm = reactive({
-  booking_id: null,
+  bookingId: null,
   amount: 0,
   currency: "USD",
   payment_method: "Cash",
@@ -442,6 +453,7 @@ const loadBookings = async () => {
       booking_status: filters.booking_status,
       payment_status: filters.payment_status,
       showtime_id: filters.showtime_id,
+      show_date: filters.show_date || undefined,
       date_from: filters.dateRange?.[0]
         ? new Date(filters.dateRange[0]).toISOString()
         : undefined,
@@ -452,7 +464,7 @@ const loadBookings = async () => {
     const response = await bookingService.getBookings(params);
     if (response.data) {
       bookings.value = response.data;
-      console.log("Loaded bookings:", bookings.value);
+      // console.log("Loaded bookings:", bookings.value);
       pagination.total = response.total;
       pagination.current_page = response.current_page;
       pagination.per_page = response.per_page;
@@ -594,7 +606,7 @@ const cancelBooking = async (id) => {
 };
 
 const openCreatePaymentDialog = (booking) => {
-  paymentForm.booking_id = booking.id;
+  paymentForm.bookingId = booking.id;
   paymentForm.amount = booking.total_price;
   paymentForm.description = `Payment for booking ${booking.reference_code}`;
   paymentDialogVisible.value = true;
@@ -638,6 +650,7 @@ watch(
     () => filters.booking_status,
     () => filters.payment_status,
     () => filters.showtime_id,
+    () => filters.show_date,
   ],
   () => {
     pagination.current_page = 1;

@@ -17,6 +17,7 @@
         <el-step :title="$t('bookings.steps.selectShowtime')" />
         <el-step :title="$t('bookings.steps.selectSeats')" />
         <el-step :title="$t('bookings.steps.confirm')" />
+        <el-step :title="$t('bookings.steps.payment')" />
       </el-steps>
 
       <!-- Step 1: Select Showtime -->
@@ -112,7 +113,10 @@
             }}</span>
           </el-descriptions-item>
         </el-descriptions>
+      </div>
 
+      <!-- Step 4: Payment -->
+      <div v-if="activeStep === 3" class="step-content">
         <el-form style="margin-top: 20px" label-position="top">
           <el-form-item :label="$t('customers.customer')">
             <el-radio-group
@@ -199,6 +203,9 @@
               />
             </el-select>
           </el-form-item>
+          <div v-if="selectedPaymentMethod === 'Cash'" class="payment-details">
+            <h4>{{ $t("payments.cashInstructions") }}</h4>
+          </div>
         </el-form>
       </div>
 
@@ -210,14 +217,14 @@
         <el-button
           type="primary"
           @click="nextStep"
-          v-if="activeStep < 2"
+          v-if="activeStep < 3"
           :disabled="!isStepValid"
           >{{ $t("actions.next") }}</el-button
         >
         <el-button
           type="success"
           @click="submitBooking"
-          v-if="activeStep === 2"
+          v-if="activeStep === 3"
           :disabled="!isStepValid"
           :loading="loading.booking"
         >
@@ -225,6 +232,21 @@
         </el-button>
       </div>
     </el-card>
+
+    <el-dialog
+      v-model="showBakongDialog"
+      :title="$t('payments.bakongPayment')"
+      width="400px"
+      @closed="onPaymentDialogClose"
+    >
+      <bakong-qr-payment
+        v-if="bakongPaymentData"
+        :payment="bakongPaymentData"
+        @paid="onPaymentPaid"
+        @close="onPaymentDialogClose"
+        @regenerate="handleRegenerateQR"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -232,7 +254,7 @@
 import { ref, reactive, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElDialog } from "element-plus";
 import { ArrowLeft } from "@element-plus/icons-vue";
 import { useAppStore } from "@/stores/app";
 import { showtimeService } from "@/services/showtimeService";
@@ -241,18 +263,23 @@ import { seatBookingService } from "@/services/seatBookingService";
 import { customerService } from "@/services/customerService";
 import { bookingService } from "@/services/bookingService";
 import { paymentService } from "@/services/paymentService";
+import BakongQrPayment from "@/components/payments/BakongQRPayment.vue";
 
 const { t } = useI18n();
 const router = useRouter();
 const appStore = useAppStore();
 
 const activeStep = ref(0);
+const showBakongDialog = ref(false);
+const bakongPaymentData = ref(null);
+const currentBookingId = ref(null);
 
 const loading = reactive({
   showtimes: false,
   seats: false,
   customers: false,
   booking: false,
+  regeneratingQR: false,
 });
 
 // Step 1
@@ -265,17 +292,19 @@ const hallSeats = ref([]);
 const bookedSeats = ref([]);
 const selectedSeats = ref(new Set());
 
-// Step 3
+// Step 3 & 4
 const customerOptions = ref([]);
 const selectedCustomerId = ref(null);
-const customerSelectionMode = ref("search"); // 'search' or 'walkin'
+const customerSelectionMode = ref("search"); // 'search' or 'walkin' or 'guest'
 const walkinCustomer = reactive({
   phone: "",
 });
 const guestDetails = reactive({
   email: "",
 });
-const paymentMethods = paymentService.PAYMENT_METHODS;
+const paymentMethods = paymentService.PAYMENT_METHODS.filter((p) =>
+  ["Cash", "Bakong", "PayAtCinema"].includes(p.value)
+);
 const selectedPaymentMethod = ref("Cash");
 
 const getCustomerLabel = (customer) => {
@@ -320,7 +349,6 @@ const handleShowtimeChange = async (showtimeId) => {
   try {
     loading.showtimes = true;
     selectedShowtime.value = await showtimeService.getShowtime(showtimeId);
-    console.log("Selected showtime:", selectedShowtime.value);
   } catch (error) {
     console.error("Failed to load showtime details:", error);
     ElMessage.error(t("errors.loadDataFailed"));
@@ -344,13 +372,11 @@ const loadSeatData = async () => {
     ]);
 
     hallSeats.value = seatResponse.data;
-    console.log("booking res:", bookings.seatBookings);
     bookedSeats.value = bookings.seatBookings.map((b) =>
       b.seatId?._id.toString()
     );
   } catch (error) {
     console.error("Failed to load seat data:", error);
-    // ElMessage.error(t("errors.loadDataFailed"));
   } finally {
     loading.seats = false;
   }
@@ -381,7 +407,6 @@ const seatRows = computed(() => {
     }
     rows[seat.row].seats.push(seat);
   });
-  // sort seats within row
   Object.values(rows).forEach((row) => {
     row.seats.sort((a, b) => a.seat_number - b.seat_number);
   });
@@ -429,42 +454,31 @@ const bookingSummary = computed(() => {
 
 const isStepValid = computed(() => {
   if (activeStep.value === 0) return !!selectedShowtimeId.value;
-
   if (activeStep.value === 1) return selectedSeats.value.size > 0;
-
-  if (activeStep.value === 2) {
+  if (activeStep.value === 2) return selectedSeats.value.size > 0;
+  if (activeStep.value === 3) {
     if (customerSelectionMode.value === "search") {
       return !!selectedCustomerId.value;
     } else if (customerSelectionMode.value === "walkin") {
       return !!walkinCustomer.phone;
     } else if (customerSelectionMode.value === "guest") {
       const emailRegex = /.+@.+\..+/;
-
       return !!(guestDetails.email && emailRegex.test(guestDetails.email));
     }
   }
-
   return false;
 });
 
 const nextStep = () => {
-  if (activeStep.value < 2) {
+  if (activeStep.value < 3) {
     activeStep.value++;
-
-    if (activeStep.value === 1) {
-      loadSeatData();
-    }
-
-    if (activeStep.value === 2) {
-      loadCustomers();
-    }
+    if (activeStep.value === 1) loadSeatData();
+    if (activeStep.value === 3) loadCustomers();
   }
 };
 
 const prevStep = () => {
-  if (activeStep.value > 0) {
-    activeStep.value--;
-  }
+  if (activeStep.value > 0) activeStep.value--;
 };
 
 const submitBooking = async () => {
@@ -485,28 +499,129 @@ const submitBooking = async () => {
   } else if (customerSelectionMode.value === "walkin") {
     bookingData.phone = walkinCustomer.phone;
   } else {
-    // guest
     bookingData.guestEmail = guestDetails.email;
   }
 
-  console.log("Submitting booking:", bookingData);
   try {
-    const response = await bookingService.createBooking(bookingData);
-    console.log("Booking creation response:", response);
-    // const bookingId = response.data.booking._id;
+    // Step 1: Create the booking
+    const bookingResponse = await bookingService.createBooking(bookingData);
 
-    if (response.success) {
+    if (!bookingResponse.success) {
+      ElMessage.error(bookingResponse.message || t("bookings.createFailed"));
+      loading.booking = false;
+      return;
+    }
+
+    currentBookingId.value = bookingResponse.data.booking?._id;
+
+    // Step 2: Handle payment flow based on the selected method
+    if (selectedPaymentMethod.value === "Bakong") {
+      if (!currentBookingId.value) {
+        ElMessage.error(t("bookings.errors.bakongPaymentFailed"));
+        router.push("/admin/bookings");
+        return;
+      }
+
+      const paymentResponse = await paymentService.createPayment({
+        bookingId: currentBookingId.value,
+        payment_method: "Bakong",
+        amount: bookingSummary.value.totalPrice,
+        currency: "USD",
+      });
+
+      if (paymentResponse.success && paymentResponse.data) {
+        bakongPaymentData.value = paymentResponse.data.payment;
+        showBakongDialog.value = true;
+      } else {
+        ElMessage.error(
+          paymentResponse.message || t("bookings.errors.bakongPaymentFailed")
+        );
+        router.push("/admin/bookings");
+      }
+    } else if (selectedPaymentMethod.value === "Cash") {
+      // For Cash, immediately update the status to Completed via a separate call
+      if (currentBookingId.value) {
+        await bookingService.updateBooking(currentBookingId.value, {
+          booking_status: "Completed",
+          payment_status: "Completed",
+        });
+      }
       ElMessage.success(t("bookings.createSuccess"));
       router.push("/admin/bookings");
     } else {
-      ElMessage.error(response.message || t("errors.createFailed"));
+      // For other methods like 'PayAtCinema' which remain pending
+      ElMessage.success(t("bookings.createSuccess"));
+      router.push("/admin/bookings");
     }
   } catch (error) {
-    ElMessage.error(error.message || t("errors.createFailed"));
-    console.error(error);
+    ElMessage.error(error.message || t("bookings.createFailed"));
   } finally {
     loading.booking = false;
   }
+};
+
+const handleRegenerateQR = async () => {
+  if (!currentBookingId.value) {
+    ElMessage.error(t("bookings.errors.missingBookingForQR"));
+    return;
+  }
+  loading.regeneratingQR = true;
+  try {
+    const paymentResponse = await paymentService.createPayment({
+      bookingId: currentBookingId.value,
+      payment_method: "Bakong",
+      amount: bookingSummary.value.totalPrice,
+      currency: "USD",
+    });
+
+    if (paymentResponse.success && paymentResponse.data) {
+      bakongPaymentData.value = paymentResponse.data;
+    } else {
+      ElMessage.error(
+        paymentResponse.message || t("bookings.errors.regenerateQRFailed")
+      );
+    }
+  } catch (error) {
+    ElMessage.error(error.message || t("bookings.errors.regenerateQRError"));
+  } finally {
+    loading.regeneratingQR = false;
+  }
+};
+
+const onPaymentPaid = async () => {
+  try {
+    if (!currentBookingId.value) return;
+
+    await bookingService.updateBooking(currentBookingId.value, {
+      payment_status: "Completed",
+      booking_status: "Confirmed",
+    });
+    showBakongDialog.value = false;
+    ElMessage.success(t("bookings.paymentAndBookingSuccess"));
+    router.push("/admin/bookings");
+  } catch (error) {
+    ElMessage.error(t("bookings.errors.paymentUpdateFailed"));
+  }
+};
+
+const onPaymentDialogClose = async (paidStatus) => {
+  if (!paidStatus && currentBookingId.value) {
+    ElMessage.warning(t("bookings.paymentPendingMessage"));
+
+    try {
+      await bookingService.updateBooking(currentBookingId.value, {
+        payment_status: "Pending",
+        booking_status: "Pending",
+      });
+    } catch (error) {
+      console.error("Failed to update booking status to Pending:", error);
+      ElMessage.error(t("bookings.errors.updateStatusFailed"));
+    }
+    router.push("/admin/bookings");
+  }
+  showBakongDialog.value = false;
+  bakongPaymentData.value = null;
+  currentBookingId.value = null;
 };
 
 const formatCurrency = (value) => {
@@ -627,5 +742,18 @@ onMounted(() => {
   width: 20px;
   height: 20px;
   cursor: default;
+}
+
+.payment-details {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+}
+
+.qr-code-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
 }
 </style>
