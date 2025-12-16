@@ -238,6 +238,7 @@
       :title="$t('payments.bakongPayment')"
       width="400px"
       @closed="onPaymentDialogClose"
+      :show-close="false"
     >
       <bakong-qr-payment
         v-if="bakongPaymentData"
@@ -245,6 +246,7 @@
         @paid="onPaymentPaid"
         @close="onPaymentDialogClose"
         @regenerate="handleRegenerateQR"
+        style="margin: 0 auto;"
       />
     </el-dialog>
   </div>
@@ -575,7 +577,7 @@ const handleRegenerateQR = async () => {
     });
 
     if (paymentResponse.success && paymentResponse.data) {
-      bakongPaymentData.value = paymentResponse.data;
+      bakongPaymentData.value = paymentResponse.data.payment;
     } else {
       ElMessage.error(
         paymentResponse.message || t("bookings.errors.regenerateQRFailed")
@@ -671,8 +673,8 @@ onMounted(() => {
   width: 80%;
   padding: 10px;
   margin-bottom: 30px;
-  background-color: #333;
-  color: white;
+  background-color: var(--el-color-info-dark-2); /* Use a darker info color for screen */
+  color: var(--el-color-white);
   text-align: center;
   border-radius: 5px;
   text-transform: uppercase;
@@ -693,6 +695,7 @@ onMounted(() => {
 .row-label {
   width: 20px;
   font-weight: bold;
+  color: var(--el-text-color-regular); /* Ensure label color adapts */
 }
 
 .seat {
@@ -701,7 +704,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid #ccc;
+  border: 1px solid var(--el-border-color); /* Use Element Plus border color */
   border-radius: 5px;
   cursor: pointer;
   font-size: 12px;
@@ -709,21 +712,22 @@ onMounted(() => {
 }
 
 .seat.available {
-  background-color: #fff;
+  background-color: var(--el-fill-color-blank); /* Use Element Plus blank fill color */
+  color: var(--el-text-color-primary); /* Ensure text color adapts */
 }
 .seat.available:hover {
-  background-color: #f0f0f0;
+  background-color: var(--el-fill-color-light); /* Use Element Plus light fill color */
 }
 .seat.selected {
   background-color: var(--el-color-primary);
-  color: white;
+  color: var(--el-color-white);
   border-color: var(--el-color-primary);
 }
 .seat.booked {
-  background-color: #909399;
-  color: white;
+  background-color: var(--el-color-info-light-3); /* Use Element Plus info color for booked */
+  color: var(--el-color-white);
   cursor: not-allowed;
-  border-color: #909399;
+  border-color: var(--el-color-info-light-3);
 }
 
 .legend {

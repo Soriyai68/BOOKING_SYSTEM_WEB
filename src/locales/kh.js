@@ -152,7 +152,8 @@ export default {
     searchHistory: "ស្វែងរកតាមលេខកៅអី ឬលេខកូដ...",
     // Duplicate seats
     duplicateToHall: "ចម្លងទៅសាល",
-    duplicateSelectedInfo: "ចម្លងកៅអីដែលបានជ្រើសរើសចំនួន {count} ទៅសាលផ្សេងទៀត។",
+    duplicateSelectedInfo:
+      "ចម្លងកៅអីដែលបានជ្រើសរើសចំនួន {count} ទៅសាលផ្សេងទៀត។",
     selectedSeats: "កៅអីដែលបានជ្រើស",
     fromHall: "ពីសាល",
     targetHall: "សាលគោលដៅ",
@@ -171,7 +172,6 @@ export default {
     bulkUpdateInfo: "អាប់ដេតកៅអីដែលបានជ្រើសរើសចំនួន {count}។",
     bulkUpdateSuccess: "កៅអី {count} ត្រូវបានអាប់ដេតដោយជោគជ័យ",
     bulkUpdateError: "មិនអាចអាប់ដេតកៅអីបានទេ",
-
   },
 
   // Theater Management
@@ -554,13 +554,16 @@ export default {
     loadFailed: "ការផ្ទុកការកក់បានបរាជ័យ",
     deleteFailed: "ការលុបការកក់បានបរាជ័យ",
     paymentAndBookingSuccess: "ការទូទាត់ជោគជ័យ និងបង្កើតការកក់!",
-    bookingCreatedPendingPayment: "ការកក់ត្រូវបានបង្កើត ហើយកំពុងរង់ចាំការបង់ប្រាក់។",
+    bookingCreatedPendingPayment:
+      "ការកក់ត្រូវបានបង្កើត ហើយកំពុងរង់ចាំការបង់ប្រាក់។",
     createFailed: "ការបង្កើតការកក់បានបរាជ័យ។",
-    bakongPaymentFailed: "ការកក់ត្រូវបានបង្កើត ប៉ុន្តែការចាប់ផ្តើមការទូទាត់តាម Bakong បានបរាជ័យ។",
+    bakongPaymentFailed:
+      "ការកក់ត្រូវបានបង្កើត ប៉ុន្តែការចាប់ផ្តើមការទូទាត់តាម Bakong បានបរាជ័យ។",
     regenerateQRFailed: "ការបង្កើត QR code ឡើងវិញបានបរាជ័យ។",
     regenerateQRError: "មានកំហុសក្នុងការបង្កើត QR code ឡើងវិញ។",
     missingBookingForQR: "មិនអាចបង្កើត QR code ឡើងវិញទេ៖ រកមិនឃើញ Booking ID។",
-    paymentPendingMessage: "ការទូទាត់មិនទាន់បានបញ្ចប់ទេ។ ស្ថានភាពនៃការកក់ត្រូវបានកំណត់ទៅជាកំពុងរង់ចាំ។",
+    paymentPendingMessage:
+      "ការទូទាត់មិនទាន់បានបញ្ចប់ទេ។ ស្ថានភាពនៃការកក់ត្រូវបានកំណត់ទៅជាកំពុងរង់ចាំ។",
   },
   payments: {
     bakongPayment: "ការទូទាត់តាម Bakong",
@@ -570,9 +573,11 @@ export default {
     paymentMethod: "វិធីសាស្រ្តបង់ប្រាក់",
     amount: "ចំនួនទឹកប្រាក់",
     scanToPay: "ស្កេនដើម្បីបង់ប្រាក់",
-    bakongInstructions: "សូមស្កេន QR កូដជាមួយកម្មវិធី Bakong របស់អ្នកដើម្បីធ្វើការទូទាត់។",
+    bakongInstructions:
+      "សូមស្កេន QR កូដជាមួយកម្មវិធី Bakong របស់អ្នកដើម្បីធ្វើការទូទាត់។",
     cashInstructions: "សូមបង់ប្រាក់ជាសាច់ប្រាក់នៅបញ្ជរ។",
     expiresIn: "ផុតកំណត់ក្នុង",
+    paymentExpired: "ការទូទាត់បានផុតកំណត់",
   },
   // System Management
   system: {
@@ -660,6 +665,7 @@ export default {
     deleteSelected: "លុបជួរដែលបានជ្រើសរើស",
     duplicateSelected: "ចម្លងជួរដែលបានជ្រើសរើស",
     duplicate: "ចម្លង",
+    regenerate: "បង្កើតឡើងវិញ",
   },
 
   // Status Messages
@@ -734,6 +740,4 @@ export default {
     fileTooLarge: "ឯកសារធំពេក។ អតិបរមា {size}MB",
     invalidUrl: "ទម្រង់តំណមិនត្រឹមត្រូវ",
   },
-
-
 };

@@ -2,7 +2,7 @@
   <el-card class="qr-payment-card" shadow="always">
     <template #header>
       <div class="card-header">
-        <span>{{ $t("payments.paymentDetails") }}</span>
+        <span class="card-title">{{ $t("payments.paymentDetails") }}</span>
         <el-button class="close-btn" :icon="Close" circle @click="onClose" />
       </div>
     </template>
@@ -27,6 +27,7 @@
           <p class="expiry-label">{{ $t("payments.expiresIn") }}</p>
           <p class="expiry-time">{{ formatTime(remainingTime) }}</p>
         </div>
+        <p class="instruction-text">{{ $t("payments.scanToPay") }}</p>
       </div>
 
       <div v-if="expired" class="status-section">
@@ -68,7 +69,6 @@ import { ref, onUnmounted, computed, watch } from "vue";
 import QrcodeVue from "qrcode.vue";
 import {
   ElMessage,
-  ElBadge,
   ElCard,
   ElButton,
   ElAlert,
@@ -212,70 +212,128 @@ onUnmounted(() => {
 
 <style scoped>
 .qr-payment-card {
-  width: 350px;
+  width: 350px; /* Further reduced width */
   text-align: center;
+  border-radius: 12px;
+  overflow: hidden;
 }
+
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px 5px; /* Further reduced padding */
+  border-bottom: 1px solid var(--el-border-color-light);
+  background-color: var(--el-fill-color-light);
 }
+
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 0 5px;
+  color: var(--el-text-color-primary);
+}
+
+.close-btn {
+  color: var(--el-text-color-secondary);
+}
+
 .card-content {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px; /* Further reduced gap */
   align-items: center;
+  padding: 10px 15px; /* Further reduced padding */
+  background-color: var(--el-bg-color-overlay);
 }
+
+.amount-section {
+  width: 100%;
+  padding-bottom: 8px; /* Further reduced padding */
+  border-bottom: 1px dashed var(--el-border-color-lighter);
+}
+
 .amount-label {
   color: var(--el-text-color-secondary);
   font-size: 14px;
-  margin-bottom: 4px;
+  margin-bottom: 4px; /* Further reduced margin */
 }
+
 .amount-value {
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 30px; /* Further reduced font size */
+  font-weight: bolder;
   color: var(--el-color-primary);
+  letter-spacing: 0.5px;
 }
+
 .qr-code-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 10px; /* Further reduced gap */
+  padding: 8px 0; /* Further reduced padding */
+  border-radius: 8px;
+  background-color: var(--el-fill-color-extra-light);
+  box-shadow: var(--el-box-shadow-lighter);
+  width: 100%;
 }
+
 .qr-container {
   background-color: white;
-  padding: 15px;
+  padding: 8px; /* Further reduced padding */
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
+
 .expiry-info {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px;
+  background-color: var(--el-color-warning-light-9);
+  border-radius: 6px;
+  padding: 4px 10px; /* Further reduced padding */
+  margin-top: 5px;
+  min-width: 150px;
 }
+
 .expiry-label {
-  font-size: 14px;
-  color: var(--el-text-color-secondary);
-  margin-bottom: 4px;
+  font-size: 13px;
+  color: var(--el-text-color-regular);
+  margin-bottom: 1px; /* Further reduced margin */
 }
+
 .expiry-time {
-  font-size: 18px;
+  font-size: 16px; /* Further reduced font size */
   font-weight: bold;
   color: var(--el-color-warning);
 }
+
+.instruction-text {
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
+  margin-top: 2px; /* Further reduced margin */
+}
+
 .status-section {
   width: 100%;
-  padding: 20px 0;
+  padding: 15px 0;
 }
+
 .regenerate-btn {
-  margin-top: 15px;
+  margin-top: 10px; /* Further reduced margin */
+  width: 80%;
+  max-width: 200px;
 }
+
 .card-footer {
   display: flex;
   justify-content: center;
+  padding: 8px 0px; /* Further reduced padding */
+  border-top: 1px solid var(--el-border-color-light);
+  background-color: var(--el-fill-color-light);
 }
+
 .w-full {
-  width: 100%;
+  width: 90%;
 }
 </style>
