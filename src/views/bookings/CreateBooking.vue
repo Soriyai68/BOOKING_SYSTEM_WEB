@@ -238,6 +238,7 @@
       :title="$t('payments.bakongPayment')"
       width="400px"
       @closed="onPaymentDialogClose"
+      :show-close="false"
     >
       <bakong-qr-payment
         v-if="bakongPaymentData"
@@ -245,6 +246,7 @@
         @paid="onPaymentPaid"
         @close="onPaymentDialogClose"
         @regenerate="handleRegenerateQR"
+        style="margin: 0 auto;"
       />
     </el-dialog>
   </div>
@@ -575,7 +577,7 @@ const handleRegenerateQR = async () => {
     });
 
     if (paymentResponse.success && paymentResponse.data) {
-      bakongPaymentData.value = paymentResponse.data;
+      bakongPaymentData.value = paymentResponse.data.payment;
     } else {
       ElMessage.error(
         paymentResponse.message || t("bookings.errors.regenerateQRFailed")

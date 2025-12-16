@@ -606,6 +606,7 @@ export default {
     paymentMethod: "Payment Method",
     expiresIn: "Expires In",
     paymentDetails: "Payment Details",
+    paymentExpired: "Payment Expired",
   },
 
   // System Management
@@ -692,6 +693,7 @@ export default {
     duplicateSelected: "Duplicate Selected Items",
     duplicate: "Duplicate",
     bulkUpdate: "Bulk Update",
+    regenerate: "Regenerate",
   },
 
   // Status Messages
