@@ -28,7 +28,7 @@
           customer?.name || "-"
         }}</el-descriptions-item>
         <el-descriptions-item :label="$t('customers.phone')">{{
-          customer?.phone || "-"
+          toLocalPhone(customer?.phone) || "-"
         }}</el-descriptions-item>
         <el-descriptions-item :label="$t('customers.email')">{{
           customer?.email || "-"
@@ -77,6 +77,7 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/stores/app";
 import { customerService } from "@/services/customerService";
+import { formatDate, toLocalPhone } from "@/utils/formatters";
 import {
   ElMessage,
   ElResult,
@@ -111,11 +112,6 @@ const loadCustomer = async () => {
   } finally {
     loading.value = false;
   }
-};
-
-const formatDate = (dateString) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleString().slice(0,9);
 };
 
 const getCustomerTypeTag = (type) => {

@@ -48,7 +48,11 @@
         <el-table-column type="selection" width="55"/>
         <!-- <el-table-column prop="id" label="ID" width="80" /> -->
         <el-table-column prop="name" :label="$t('users.name')"/>
-        <el-table-column prop="phone" :label="$t('users.phone')"/>
+        <el-table-column :label="$t('users.phone')">
+          <template #default="{ row }">
+            {{ toLocalPhone(row.phone) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="role" :label="$t('users.role')" width="150">
           <template #default="{ row }">
             <el-tag
@@ -145,6 +149,7 @@ import {Plus, Search} from "@element-plus/icons-vue";
 import {useI18n} from "vue-i18n";
 import {debounce} from "lodash-es";
 import UserFormDialog from "@/components/users/UserFormDialog.vue";
+import { formatDate, toLocalPhone } from "@/utils/formatters";
 
 const appStore = useAppStore();
 
@@ -299,12 +304,6 @@ const bulkDeleteUsers = async () => {
       console.error("Failed to delete users:", error);
     }
   }
-};
-
-// Format date utility
-const formatDate = (dateString) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleDateString();
 };
 
 // Initialize component

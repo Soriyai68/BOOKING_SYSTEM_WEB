@@ -19,7 +19,7 @@ export default {
     loginTitle: "Cinema Admin",
     loginSubtitle: "Sign in to your admin account",
     phone: "Phone Number",
-    phonePlaceholder: "Phone Number (+855...)",
+    phonePlaceholder: "Phone Number",
     emailPlaceholder: "Enter your email",
     password: "Password",
     passwordPlaceholder: "Password",
@@ -28,6 +28,9 @@ export default {
     loginSuccess: "Login successful!",
     loginFailed: "Login failed",
     invalidCredentials: "Invalid phone number or password",
+    brandingTitle: "Booking System Pro",
+    brandingSubtitle:
+      "Your all-in-one solution for managing movie theaters, showtimes, and bookings.",
     demoMode: "Demo Mode",
     apiConnected: "API Connected",
     demoCredentials: "Demo login: +855123456789 / password123",

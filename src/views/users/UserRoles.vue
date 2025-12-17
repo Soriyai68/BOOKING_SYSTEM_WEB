@@ -141,7 +141,7 @@
                 <div class="user-name">{{ row.name }}</div>
                 <div class="user-contact">
                   <el-icon class="contact-icon"><Phone /></el-icon>
-                  {{ row.phone }}
+                  {{ toLocalPhone(row.phone) }}
                   <span v-if="row.email" class="user-email">
                     <el-icon><Message /></el-icon>
                     {{ row.email }}
@@ -286,7 +286,7 @@
             <h3>{{ selectedUser.name }}</h3>
             <p class="user-contact-info">
               <el-icon><Phone /></el-icon>
-              {{ selectedUser.phone }}
+              {{ toLocalPhone(selectedUser.phone) }}
             </p>
             <div class="current-role-section">
               <span class="current-role-label">Current Role:</span>
@@ -404,7 +404,7 @@
             <h3>{{ selectedUser.name }}</h3>
             <p class="user-contact-info">
               <el-icon><Phone /></el-icon>
-              {{ selectedUser.phone }}
+              {{ toLocalPhone(selectedUser.phone) }}
             </p>
             <div class="current-role-section">
               <span class="current-role-label">Role:</span>
@@ -503,6 +503,7 @@ import {
 import api from "@/utils/api";
 import { usePermissions } from "@/composables/usePermissions";
 import { useAuthStore } from "@/stores/auth";
+import { toLocalPhone, formatDate, getRelativeTime } from "@/utils/formatters";
 
 // Stores and permissions
 const authStore = useAuthStore();
@@ -832,27 +833,6 @@ const viewUserPermissions = async (user) => {
   }
 
   permissionsDialogVisible.value = true;
-};
-
-const formatDate = (dateString, dateOnly = false) => {
-  if (!dateString) return "Never";
-  const date = new Date(dateString);
-  if (dateOnly) {
-    return date.toLocaleDateString();
-  }
-  return date.toLocaleDateString() + " " + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-};
-
-const getRelativeTime = (dateString) => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now - date) / 1000);
-  
-  if (diffInSeconds < 60) return "Just now";
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-  return `${Math.floor(diffInSeconds / 86400)}d ago`;
 };
 
 const formatPermissionName = (permission) => {

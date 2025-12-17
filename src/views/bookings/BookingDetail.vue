@@ -51,7 +51,7 @@ a<template>
             <el-descriptions-item :label="$t('showtimes.movie')">{{ booking.movie?.title }}</el-descriptions-item>
             <el-descriptions-item :label="$t('showtimes.hall')">{{ booking.hall?.hall_name }}</el-descriptions-item>
             <el-descriptions-item :label="$t('showtimes.showDate')">
-              {{ new Date(booking.showtime?.show_date).toLocaleString().slice(0, 10) }}
+              {{ formatDate(booking.showtime?.show_date) }}
             </el-descriptions-item>
             <el-descriptions-item :label="$t('showtimes.startTime')">{{
                 booking.showtime?.start_time
@@ -95,7 +95,7 @@ a<template>
               {{ booking.customer.name }}
             </el-descriptions-item>
             <el-descriptions-item :label="$t('customers.phone')" v-if="booking.customer?.phone">
-              {{ booking.customer.phone }}
+              {{ toLocalPhone(booking.customer.phone) }}
             </el-descriptions-item>
             <el-descriptions-item :label="$t('customers.email')" v-if="booking.customer?.email">
               {{ booking.customer.email }}
@@ -130,6 +130,7 @@ import {ElMessage} from 'element-plus';
 import {ArrowLeft} from '@element-plus/icons-vue'
 import {bookingService} from '@/services/bookingService';
 import {useAppStore} from '@/stores/app';
+import { formatDate, formatDateTime, formatCurrency, toLocalPhone } from "@/utils/formatters";
 
 const {t} = useI18n();
 const route = useRoute();
@@ -158,24 +159,6 @@ const loadBookingDetails = async () => {
     loading.value = false;
   }
 };
-
-const formatCurrency = (value) => {
-  if (typeof value !== 'number') return '';
-  return new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(value);
-};
-
-const formatDateTime = (value) => {
-  if (!value) return '';
-  return new Intl.DateTimeFormat('en-CA', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  }).format(new Date(value));
-}
 
 const getStatusType = (options, status) => {
   const option = options.find(opt => opt.value === status);

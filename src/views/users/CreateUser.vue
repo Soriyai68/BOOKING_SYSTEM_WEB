@@ -29,10 +29,10 @@
 
         <el-form-item :label="$t('users.phone')" prop="phone">
           <el-input
-              v-model="form.phone"
+              v-model="displayPhone"
               :placeholder="$t('auth.phonePlaceholder')"
               @input="formatPhoneNumber"
-              maxlength="13"
+              maxlength="10"
           />
         </el-form-item>
 
@@ -96,6 +96,7 @@ import {ArrowLeft} from "@element-plus/icons-vue";
 import {useAppStore} from "@/stores/app";
 import {useAuthStore} from "@/stores/auth";
 import {userService} from "@/services/userService";
+import { toInternationalPhone } from "@/utils/formatters";
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -121,6 +122,7 @@ const form = reactive({
   isActive: true,
   isVerified: true,
 });
+const displayPhone = ref("");
 
 // Phone number validation
 const validatePhone = (rule, value, callback) => {
@@ -162,22 +164,17 @@ const rules = {
 };
 
 // Format phone number
-const formatPhoneNumber = (value) => {
-  let cleaned = value.replace(/[^+\d]/g, "");
+const formatPhoneNumber = (inputValue) => {
+  let cleanedDisplay = inputValue.replace(/\D/g, '');
 
-  if (cleaned && !cleaned.startsWith("+855")) {
-    if (cleaned.startsWith("855")) {
-      cleaned = "+" + cleaned;
-    } else if (cleaned.startsWith("0")) {
-      cleaned = "+855" + cleaned.substring(1);
-    } else if (!cleaned.startsWith("+")) {
-      cleaned = "+855" + cleaned;
-    }
+  if (cleanedDisplay.startsWith('855') && cleanedDisplay.length > 3) {
+      cleanedDisplay = '0' + cleanedDisplay.substring(3);
+  } else if (!cleanedDisplay.startsWith('0') && cleanedDisplay.length > 0 && cleanedDisplay.length < 10) {
+      cleanedDisplay = '0' + cleanedDisplay;
   }
-  form.phone = cleaned;
+  displayPhone.value = cleanedDisplay.substring(0, 10);
+  form.phone = toInternationalPhone(displayPhone.value);
 };
-
-// Roles are static; default already set to 'user'
 
 // Submit form
 const handleSubmit = async () => {
@@ -217,6 +214,7 @@ const resetForm = () => {
     isActive: true,
     isVerified: true,
   });
+  displayPhone.value = "";
 };
 
 onMounted(async () => {

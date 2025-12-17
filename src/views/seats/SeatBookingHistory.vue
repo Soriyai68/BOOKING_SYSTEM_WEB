@@ -130,7 +130,7 @@
                 style="display: flex; align-items: center; gap: 4px"
               >
                 <el-icon><Phone /></el-icon>
-                <span>{{ row.booking.phone }}</span>
+                <span>{{ toLocalPhone(row.booking.phone) }}</span>
               </div>
               <div
                 v-if="row.booking.email"
@@ -180,7 +180,7 @@
           :label="$t('showtimes.showDate')"
           width="200"
           ><template #default="{ row }">
-            {{ new Date(row.showtime.show_date).toLocaleDateString() }}
+            {{ formatDate(row.showtime.show_date) }}
           </template>
         </el-table-column>
         <el-table-column
@@ -234,6 +234,7 @@ import { ElMessage } from "element-plus";
 import { showtimeService } from "@/services/showtimeService";
 import { seatBookingService } from "@/services/seatBookingService";
 import { useAppStore } from "@/stores/app";
+import { formatDate, toLocalPhone } from "@/utils/formatters";
 import { Search, Phone, ChatLineSquare } from "@element-plus/icons-vue";
 
 const { t } = useI18n();

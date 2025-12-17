@@ -42,7 +42,12 @@
         </el-form-item>
 
         <el-form-item v-if="form.customerType === 'member' || form.customerType === 'walkin'" :label="$t('customers.phone')" prop="phone">
-          <el-input v-model="form.phone" :placeholder="$t('auth.phonePlaceholder')" maxlength="13" />
+          <el-input
+            v-model="displayPhone"
+            :placeholder="$t('auth.phonePlaceholder')"
+            maxlength="10"
+            @input="formatPhoneNumber"
+          />
         </el-form-item>
         <el-form-item v-if="form.customerType === 'member'" :label="$t('customers.username')" prop="username">
           <el-input v-model="form.username" :placeholder="$t('customers.username')" />
@@ -80,6 +85,7 @@ import { ElMessage, ElResult } from 'element-plus';
 import { ArrowLeft } from '@element-plus/icons-vue';
 import { useAppStore } from '@/stores/app';
 import { customerService } from '@/services/customerService';
+import { toInternationalPhone, toLocalPhone } from "@/utils/formatters";
 
 const route = useRoute();
 const router = useRouter();
@@ -91,6 +97,7 @@ const pageLoading = ref(true);
 const saving = ref(false);
 const loadError = ref('');
 const originalCustomer = ref(null);
+const displayPhone = ref("");
 
 const form = reactive({
   name: '',
@@ -101,6 +108,27 @@ const form = reactive({
   isActive: true,
 });
 
+const formatPhoneNumber = (inputValue) => {
+  let cleanedDisplay = inputValue.replace(/\D/g, ''); // only digits
+  if (cleanedDisplay.startsWith('855')) {
+    cleanedDisplay = '0' + cleanedDisplay.substring(3);
+  } else if (!cleanedDisplay.startsWith('0') && cleanedDisplay.length > 1) {
+    cleanedDisplay = '0' + cleanedDisplay;
+  }
+  displayPhone.value = cleanedDisplay.substring(0, 10);
+  form.phone = toInternationalPhone(displayPhone.value);
+};
+
+const validatePhone = (rule, value, callback) => {
+  if (!value) {
+    callback(new Error(t("validation.phoneRequired")));
+  } else if (!/^\+855[0-9]{8,9}$/.test(value)) {
+    callback(new Error(t("validation.phoneInvalid")));
+  } else {
+    callback();
+  }
+};
+
 const rules = computed(() => {
   const currentType = form.customerType;
   let phoneRules = [];
@@ -109,9 +137,9 @@ const rules = computed(() => {
 
   if (currentType === 'member') {
     nameRules.push({ required: true, message: t('validation.required'), trigger: 'blur' });
-    phoneRules.push({ required: true, message: t('validation.required'), trigger: 'blur' });
+    phoneRules.push({ required: true, validator: validatePhone, trigger: 'blur' });
   } else if (currentType === 'walkin') {
-    phoneRules.push({ required: true, message: t('validation.required'), trigger: 'blur' });
+    phoneRules.push({ required: true, validator: validatePhone, trigger: 'blur' });
   } else if (currentType === 'guest') {
     emailRules.push({ required: true, message: t('validation.required'), trigger: 'blur' });
   }
@@ -150,6 +178,7 @@ const loadCustomer = async () => {
       customerType: customerData.customerType,
       isActive: customerData.isActive,
     });
+    displayPhone.value = toLocalPhone(customerData.phone);
   } catch (error) {
     console.error('Failed to load customer:', error);
     loadError.value = t('customers.loadError');
@@ -191,6 +220,7 @@ const resetForm = () => {
         customerType: originalCustomer.value.customerType,
         isActive: originalCustomer.value.isActive,
     });
+    displayPhone.value = toLocalPhone(originalCustomer.value.phone);
   }
 };
 

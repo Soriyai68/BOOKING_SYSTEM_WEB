@@ -57,7 +57,7 @@
         </el-table-column>
         <el-table-column prop="phone" :label="$t('customers.phone')">
           <template #default="{ row }">
-            {{ row.phone || "-" }}
+            {{ toLocalPhone(row.phone) || "-" }}
           </template>
         </el-table-column>
         <el-table-column prop="email" :label="$t('customers.email')">
@@ -142,6 +142,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Search } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
 import { debounce } from "lodash-es";
+import { toLocalPhone } from "@/utils/formatters";
 
 const appStore = useAppStore();
 const router = useRouter();
@@ -238,11 +239,6 @@ const deleteCustomer = async (id) => {
       ElMessage.error(t("customers.deleteError"));
     }
   }
-};
-
-const formatDate = (dateString) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleDateString();
 };
 
 const getCustomerTypeTag = (type) => {

@@ -24,8 +24,6 @@
 }
 
 /* Dark Theme Colors */
-/*
-[data-theme="dark"],
 .dark {
   --bg-color-primary: #1d1d1f;
   --bg-color-secondary: #2d2d30;
@@ -42,7 +40,6 @@
   --danger-color: #f56c6c;
   --info-color: #909399;
 }
-*/
 /* Global Theme Application */
 html {
     background-color: var(--bg-color-secondary);

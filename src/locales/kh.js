@@ -21,7 +21,7 @@ export default {
     loginTitle: "គ្រប់គ្រងរោងកុន",
     loginSubtitle: "ចូលក្នុងគណនីរបស់អ្នក",
     phone: "លេខទូរស័ព្ទ",
-    phonePlaceholder: "លេខទូរស័ព្p (+855...)",
+    phonePlaceholder: "លេខទូរស័ព្ទ",
     emailPlaceholder: "បញ្ចូលអ៊ីមែលរបស់អ្នក",
     password: "លេខសម្ងាត់",
     passwordPlaceholder: "លេខសម្ងាត់",
@@ -30,6 +30,9 @@ export default {
     loginSuccess: "ចូលដោយជោគជ័យ!",
     loginFailed: "ចូលមិនបាន",
     invalidCredentials: "លេខទូរស័ព្ទ ឬលេខសម្ងាត់មិនត្រឹមត្រូវ",
+    brandingTitle: "ប្រព័ន្ធគ្រប់គ្រងការកក់",
+    brandingSubtitle:
+      "ដំណោះស្រាយរួមសម្រាប់គ្រប់គ្រងរោងកុន ម៉ោងបញ្ចាំង និងការកក់របស់អ្នក។",
     demoMode: "មុខងារសាកល្បង",
     apiConnected: "ភ្ជាប់ API បាន",
     demoCredentials: "សាកល្បង: +855123456789 / password123",

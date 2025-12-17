@@ -140,7 +140,7 @@
                 style="display: flex; align-items: center; gap: 4px"
               >
                 <el-icon><Phone /></el-icon>
-                <span>{{ row.customer.phone }}</span>
+                <span>{{ toLocalPhone(row.customer.phone) }}</span>
               </div>
               <div
                 v-if="row.customer.email"
@@ -171,9 +171,7 @@
           <template #default="{ row }">
             <div v-if="row.hall">{{ row.hall.hall_name }}</div>
             <small v-if="row.showtime" class="text-muted"
-              >{{
-                new Date(row.showtime.show_date).toLocaleString().slice(0, 10)
-              }}
+              >{{ formatDate(row.showtime.show_date) }}
               {{ row.showtime.start_time }}</small
             >
           </template>
@@ -371,6 +369,7 @@ import { bookingService } from "@/services/bookingService";
 import { showtimeService } from "@/services/showtimeService";
 import { paymentService } from "@/services/paymentService";
 import { useAppStore } from "@/stores/app";
+import { formatDate, formatCurrency, toLocalPhone } from "@/utils/formatters";
 import {
   Delete,
   Edit,
@@ -629,14 +628,6 @@ const handleCreatePayment = async () => {
   } finally {
     loading.payment = false;
   }
-};
-
-const formatCurrency = (value) => {
-  if (typeof value !== "number") return "";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(value);
 };
 
 const getStatusType = (options, status) => {

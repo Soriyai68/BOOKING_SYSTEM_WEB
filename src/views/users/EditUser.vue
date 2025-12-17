@@ -65,10 +65,10 @@
 
         <el-form-item :label="$t('users.phone')" prop="phone">
           <el-input
-            v-model="form.phone"
+            v-model="displayPhone"
             :placeholder="$t('auth.phonePlaceholder')"
             @input="formatPhoneNumber"
-            maxlength="13"
+            maxlength="10"
           />
         </el-form-item>
 
@@ -156,6 +156,7 @@ import { ArrowLeft } from "@element-plus/icons-vue";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import { userService } from "@/services/userService";
+import { toLocalPhone, toInternationalPhone, formatDateTime } from "@/utils/formatters";
 
 const route = useRoute();
 const router = useRouter();
@@ -168,6 +169,7 @@ const loading = ref(false);
 const pageLoading = ref(false);
 const loadError = ref("");
 const originalUser = ref(null);
+const displayPhone = ref("");
 
 // Static roles (backend roles model removed)
 const roleOptions = ref([
@@ -275,6 +277,7 @@ const loadUser = async () => {
       isActive: userData.status === "active",
       isVerified: userData.isVerified,
     });
+    displayPhone.value = toLocalPhone(userData.phone);
   } catch (error) {
     console.error("Load user error:", error);
     loadError.value =
@@ -290,19 +293,16 @@ watch(() => form.role, () => {
 });
 
 // Format phone number
-const formatPhoneNumber = (value) => {
-  let cleaned = value.replace(/[^+\d]/g, "");
+const formatPhoneNumber = (inputValue) => {
+  let cleanedDisplay = inputValue.replace(/\D/g, '');
 
-  if (cleaned && !cleaned.startsWith("+855")) {
-    if (cleaned.startsWith("855")) {
-      cleaned = "+" + cleaned;
-    } else if (cleaned.startsWith("0")) {
-      cleaned = "+855" + cleaned.substring(1);
-    } else if (!cleaned.startsWith("+")) {
-      cleaned = "+855" + cleaned;
-    }
+  if (cleanedDisplay.startsWith('855') && cleanedDisplay.length > 3) {
+      cleanedDisplay = '0' + cleanedDisplay.substring(3);
+  } else if (!cleanedDisplay.startsWith('0') && cleanedDisplay.length > 0 && cleanedDisplay.length < 10) {
+      cleanedDisplay = '0' + cleanedDisplay;
   }
-  form.phone = cleaned;
+  displayPhone.value = cleanedDisplay.substring(0, 10);
+  form.phone = toInternationalPhone(displayPhone.value);
 };
 
 // Submit form
@@ -374,23 +374,12 @@ const resetForm = () => {
       isActive: originalUser.value.status === "active",
       isVerified: originalUser.value.isVerified,
     });
+    displayPhone.value = toLocalPhone(originalUser.value.phone);
   }
 
   if (formRef.value) {
     formRef.value.clearValidate();
   }
-};
-
-// Format date utility
-const formatDate = (dateString) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleDateString();
-};
-
-// Format date and time
-const formatDateTime = (dateString) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleString();
 };
 
 onMounted(async () => {
