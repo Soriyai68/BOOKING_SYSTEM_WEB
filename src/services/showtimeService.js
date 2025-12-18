@@ -1,4 +1,5 @@
 import api from "@/utils/api";
+import { formatDateTime, formatDate } from "@/utils/formatters";
 import { movieService } from "./movieService"; // Added this import
 
 export const showtimeService = {
@@ -399,9 +400,9 @@ export const showtimeService = {
     if (response && response.data) {
       return response.data.map((s) => ({
         value: s.id,
-        label: `${s.movie_title || "N/A"} - ${s.theater_name || "N/A"} (${
-          s.hall_name || "N/A"
-        }) - ${s.show_date} - ${s.start_time}`,
+        label: `${s.movie_title || "N/A"} (${s.hall_name || "N/A"}) - ${
+          s.start_time
+        }`,
       }));
     }
 

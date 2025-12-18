@@ -189,6 +189,7 @@ import { promotionService } from '@/services/promotionService';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Plus, Search } from '@element-plus/icons-vue';
 import { debounce } from 'lodash-es';
+import { formatDate } from '@/utils/formatters';
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -318,13 +319,6 @@ const getStatusTagType = (status) => {
       return '';
   }
 };
-
-const formatDate = (val) => {
-  if (!val) return '-';
-  const d = new Date(val);
-  return d.toLocaleDateString();
-};
-
 onMounted(() => {
   appStore.setBreadcrumbs([
     { title: t('nav.dashboard'), path: '/admin/dashboard' },

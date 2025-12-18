@@ -35,11 +35,11 @@
           </el-descriptions-item>
 
           <el-descriptions-item :label="$t('movies.releaseDate')">
-            {{ movie.release_date_formatted }}
+            {{ formatDate(movie.release_date) }}
           </el-descriptions-item>
 
           <el-descriptions-item :label="$t('movies.releaseDate')">
-            {{ movie.end_date }}
+            {{ formatDate(movie.end_date) }}
           </el-descriptions-item>
 
           <el-descriptions-item :label="$t('movies.rating')">
@@ -114,11 +114,11 @@
           </el-descriptions-item>
 
           <el-descriptions-item :label="$t('common.createdAt')">
-            {{ formatDateTime(movie.created_at) }}
+            {{ formatDate(movie.created_at) }}
           </el-descriptions-item>
 
           <el-descriptions-item :label="$t('common.updatedAt')">
-            {{ formatDateTime(movie.updated_at) }}
+            {{ formatDate(movie.updated_at) }}
           </el-descriptions-item>
         </el-descriptions>
 
@@ -152,6 +152,7 @@ import { useAppStore } from "@/stores/app";
 import { movieService } from "@/services/movieService";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { ArrowLeft } from "@element-plus/icons-vue";
+import { formatDate } from "@/utils/formatters";
 
 const route = useRoute();
 const router = useRouter();

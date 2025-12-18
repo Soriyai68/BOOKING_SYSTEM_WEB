@@ -196,26 +196,6 @@ const rules = computed(() => {
   };
 });
 
-// // Auto-reset fields when type changes
-// watch(
-//   () => form.customerType,
-//   (newType) => {
-//     formRef.value?.clearValidate();
-
-//     if (newType === "walkin") {
-//       form.email = "";
-//       form.username = "";
-//       form.name = "";
-//     } else if (newType === "guest") {
-//       form.name = "";
-//       form.phone = "";
-//       form.username = "";
-//     } else if (newType === "member") {
-//       form.email = "";
-//     }
-//   }
-// );
-
 const handleSubmit = async () => {
   if (!formRef.value) return;
 

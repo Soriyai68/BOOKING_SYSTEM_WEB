@@ -53,11 +53,11 @@
           </el-descriptions-item>
 
           <el-descriptions-item label="Created At">
-            {{ formatDateTime(promotion.created_at) }}
+            {{ formatDate(promotion.created_at) }}
           </el-descriptions-item>
 
           <el-descriptions-item label="Updated At">
-            {{ formatDateTime(promotion.updated_at) }}
+            {{ formatDate(promotion.updated_at) }}
           </el-descriptions-item>
         </el-descriptions>
 
@@ -90,6 +90,8 @@ import { useAppStore } from "@/stores/app";
 import { promotionService } from "@/services/promotionService";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { ArrowLeft } from "@element-plus/icons-vue";
+import { useI18n } from "vue-i18n";
+import { formatDate } from "@/utils/formatters";  
 
 const route = useRoute();
 const router = useRouter();
@@ -147,10 +149,6 @@ const statusTagType = (status) => {
       return "";
   }
 };
-
-const formatDate = (str) => (str ? new Date(str).toLocaleDateString() : "-");
-const formatDateTime = (str) => (str ? new Date(str).toLocaleString() : "-");
-
 onMounted(async () => {
   await load();
   appStore.setBreadcrumbs([

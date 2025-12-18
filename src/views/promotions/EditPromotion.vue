@@ -10,18 +10,10 @@
 
     <el-card v-loading="pageLoading">
       <div v-if="loadError" class="error-state">
-        <el-result
-          icon="error"
-          title="Error"
-          :sub-title="loadError"
-        >
+        <el-result icon="error" title="Error" :sub-title="loadError">
           <template #extra>
-            <el-button type="primary" @click="load">
-              Refresh
-            </el-button>
-            <el-button @click="$router.back()">
-              Back
-            </el-button>
+            <el-button type="primary" @click="load"> Refresh </el-button>
+            <el-button @click="$router.back()"> Back </el-button>
           </template>
         </el-result>
       </div>
@@ -92,12 +84,8 @@
           >
             Update
           </el-button>
-          <el-button @click="resetForm">
-            Reset
-          </el-button>
-          <el-button @click="$router.back()">
-            Cancel
-          </el-button>
+          <el-button @click="resetForm"> Reset </el-button>
+          <el-button @click="$router.back()"> Cancel </el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -111,11 +99,13 @@ import { useAppStore } from "@/stores/app";
 import { promotionService } from "@/services/promotionService";
 import { ElMessage } from "element-plus";
 import { ArrowLeft } from "@element-plus/icons-vue";
+import { useI18n } from "vue-i18n";
 import ImageUpload from "@/components/common/ImageUpload.vue";
 
 const route = useRoute();
 const router = useRouter();
 const appStore = useAppStore();
+const { t } = useI18n();
 
 const formRef = ref();
 const loading = ref(false);
@@ -136,9 +126,7 @@ const rules = {
   code: [
     { required: true, message: "Promotion code is required", trigger: "blur" },
   ],
-  title: [
-    { required: true, message: "Title is required", trigger: "blur" },
-  ],
+  title: [{ required: true, message: "Title is required", trigger: "blur" }],
   start_date: [
     { required: true, message: "Start date is required", trigger: "change" },
   ],

@@ -169,7 +169,9 @@
               >
                 <el-input
                   :placeholder="$t('auth.phonePlaceholder')"
-                  v-model="walkinCustomer.phone"
+                  v-model="displayPhone"
+                  maxlength="10"
+                  @input="formatPhoneNumber"
                 />
               </el-form-item>
             </el-form>
@@ -246,7 +248,7 @@
         @paid="onPaymentPaid"
         @close="onPaymentDialogClose"
         @regenerate="handleRegenerateQR"
-        style="margin: 0 auto;"
+        style="margin: 0 auto"
       />
     </el-dialog>
   </div>
@@ -265,7 +267,13 @@ import { seatBookingService } from "@/services/seatBookingService";
 import { customerService } from "@/services/customerService";
 import { bookingService } from "@/services/bookingService";
 import { paymentService } from "@/services/paymentService";
+import {
+  toInternationalPhone,
+  formatCurrency,
+  formatDate,
+} from "@/utils/formatters";
 import BakongQrPayment from "@/components/payments/BakongQRPayment.vue";
+import { toLocalPhone } from "../../utils/formatters";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -298,6 +306,7 @@ const selectedSeats = ref(new Set());
 const customerOptions = ref([]);
 const selectedCustomerId = ref(null);
 const customerSelectionMode = ref("search"); // 'search' or 'walkin' or 'guest'
+const displayPhone = ref("");
 const walkinCustomer = reactive({
   phone: "",
 });
@@ -309,18 +318,29 @@ const paymentMethods = paymentService.PAYMENT_METHODS.filter((p) =>
 );
 const selectedPaymentMethod = ref("Cash");
 
+const formatPhoneNumber = (inputValue) => {
+  let cleanedDisplay = inputValue.replace(/\D/g, ""); // only digits
+  if (cleanedDisplay.startsWith("855")) {
+    cleanedDisplay = "0" + cleanedDisplay.substring(3);
+  } else if (!cleanedDisplay.startsWith("0") && cleanedDisplay.length > 1) {
+    cleanedDisplay = "0" + cleanedDisplay;
+  }
+  displayPhone.value = cleanedDisplay.substring(0, 10);
+  walkinCustomer.phone = toInternationalPhone(displayPhone.value);
+};
+
 const getCustomerLabel = (customer) => {
   if (customer.customerType === "walkin") {
-    return `Walk-in Customer (${
-      customer.phone || customer.name || customer.id
-    })`;
+    return `Walk-in Customer - ${
+      toLocalPhone(customer.phone) || customer.name || customer.id
+    }`;
   }
   if (customer.customerType === "guest") {
-    return `Guest Customer (${customer.email || customer.name || customer.id})`;
+    return `Guest Customer - ${customer.email || customer.name || customer.id}`;
   }
   // Default for member or other types
   if (customer.name && customer.phone) {
-    return `${customer.name} (${customer.phone})`;
+    return `${customer.name} - ${toLocalPhone(customer.phone)}`;
   }
   if (customer.name) {
     return customer.name;
@@ -447,7 +467,7 @@ const bookingSummary = computed(() => {
   return {
     movie: selectedShowtime.value.movie_title,
     hall: selectedShowtime.value.hall_name,
-    showDate: new Date(selectedShowtime.value.show_date).toLocaleDateString(),
+    showDate: formatDate(selectedShowtime.value.show_date),
     startTime: selectedShowtime.value.start_time,
     seats: selectedSeatDetails.map((s) => `${s.seat_identifier}`).join(", "),
     totalPrice: totalPrice,
@@ -625,15 +645,6 @@ const onPaymentDialogClose = async (paidStatus) => {
   bakongPaymentData.value = null;
   currentBookingId.value = null;
 };
-
-const formatCurrency = (value) => {
-  if (typeof value !== "number") return "N/A";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(value);
-};
-
 onMounted(() => {
   loadShowtimes();
   appStore.setBreadcrumbs([
@@ -673,7 +684,9 @@ onMounted(() => {
   width: 80%;
   padding: 10px;
   margin-bottom: 30px;
-  background-color: var(--el-color-info-dark-2); /* Use a darker info color for screen */
+  background-color: var(
+    --el-color-info-dark-2
+  ); /* Use a darker info color for screen */
   color: var(--el-color-white);
   text-align: center;
   border-radius: 5px;
@@ -712,11 +725,15 @@ onMounted(() => {
 }
 
 .seat.available {
-  background-color: var(--el-fill-color-blank); /* Use Element Plus blank fill color */
+  background-color: var(
+    --el-fill-color-blank
+  ); /* Use Element Plus blank fill color */
   color: var(--el-text-color-primary); /* Ensure text color adapts */
 }
 .seat.available:hover {
-  background-color: var(--el-fill-color-light); /* Use Element Plus light fill color */
+  background-color: var(
+    --el-fill-color-light
+  ); /* Use Element Plus light fill color */
 }
 .seat.selected {
   background-color: var(--el-color-primary);
@@ -724,7 +741,9 @@ onMounted(() => {
   border-color: var(--el-color-primary);
 }
 .seat.booked {
-  background-color: var(--el-color-info-light-3); /* Use Element Plus info color for booked */
+  background-color: var(
+    --el-color-info-light-3
+  ); /* Use Element Plus info color for booked */
   color: var(--el-color-white);
   cursor: not-allowed;
   border-color: var(--el-color-info-light-3);

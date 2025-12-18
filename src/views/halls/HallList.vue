@@ -189,6 +189,7 @@ import { theaterService } from "@/services/theaterService";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Search } from "@element-plus/icons-vue";
 import { debounce } from "lodash-es";
+import { formatDate } from "@/utils/formatters";
 import CreateHall from "./CreateHall.vue";
 import EditHall from "./EditHall.vue";
 
@@ -372,7 +373,7 @@ const statusTagType = (status) => {
   }
 };
 
-const formatDate = (str) => (str ? new Date(str).toLocaleDateString() : "-");
+// const formatDate = (str) => (str ? new Date(str).toLocaleDateString() : "-");
 
 onMounted(async () => {
   appStore.setBreadcrumbs([

@@ -3,12 +3,12 @@
     <div class="page-header">
       <h2>{{ $t("movies.title") }}</h2>
       <el-button
-          v-permission="'movies.create'"
-          type="primary"
-          @click="$router.push('/admin/movies/create')"
+        v-permission="'movies.create'"
+        type="primary"
+        @click="$router.push('/admin/movies/create')"
       >
         <el-icon>
-          <Plus/>
+          <Plus />
         </el-icon>
         {{ $t("movies.addMovie") }}
       </el-button>
@@ -17,92 +17,97 @@
     <el-card class="filter-card" shadow="never">
       <div class="toolbar">
         <el-input
-            v-model="searchText"
-            :placeholder="$t('movies.searchMovies')"
-            class="search-input"
-            :prefix-icon="Search"
-            clearable
-            style="width: 200px"
-            @input="debouncedSearch"
+          v-model="searchText"
+          :placeholder="$t('movies.searchMovies')"
+          class="search-input"
+          :prefix-icon="Search"
+          clearable
+          style="width: 200px"
+          @input="debouncedSearch"
         />
         <el-select
-            v-model="statusFilter"
-            :placeholder="$t('movies.filterByStatus')"
-            clearable
-            @change="load"
-            class="filter-select"
+          v-model="statusFilter"
+          :placeholder="$t('movies.filterByStatus')"
+          clearable
+          @change="load"
+          class="filter-select"
         >
-          <el-option :label="$t('table.selectAll')" value=""/>
+          <el-option :label="$t('table.selectAll')" value="" />
           <el-option
-              v-for="opt in movieService.MOVIE_STATUSES"
-              :key="opt.value"
-              :label="opt.label"
-              :value="opt.value"
+            v-for="opt in movieService.MOVIE_STATUSES"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
           />
         </el-select>
         <el-select
-            v-model="genreFilter"
-            :placeholder="$t('movies.filterByGenre')"
-            clearable
-            @change="load"
-            class="filter-select"
+          v-model="genreFilter"
+          :placeholder="$t('movies.filterByGenre')"
+          clearable
+          @change="load"
+          class="filter-select"
         >
-          <el-option :label="$t('table.selectAll')" value=""/>
+          <el-option :label="$t('table.selectAll')" value="" />
           <el-option
-              v-for="opt in movieService.MOVIE_GENRES"
-              :key="opt.value"
-              :label="opt.label"
-              :value="opt.value"
+            v-for="opt in movieService.MOVIE_GENRES"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
           />
         </el-select>
         <el-select
-            v-model="sortBy"
-            :placeholder="$t('movies.sortBy')"
-            @change="load"
-            class="filter-select"
+          v-model="sortBy"
+          :placeholder="$t('movies.sortBy')"
+          @change="load"
+          class="filter-select"
         >
           <el-option
-              v-for="opt in movieService.SORT_OPTIONS"
-              :key="opt.value"
-              :label="opt.label"
-              :value="opt.value"
+            v-for="opt in movieService.SORT_OPTIONS"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
           />
         </el-select>
       </div>
     </el-card>
 
     <el-card shadow="never">
-      <el-table :data="rows" v-loading="loading" style="width: 100%" ref="movieTable"
-                @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55"/>
+      <el-table
+        :data="rows"
+        v-loading="loading"
+        style="width: 100%"
+        ref="movieTable"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" />
         <el-table-column
-            prop="title"
-            :label="$t('movies.movieTitle')"
-            min-width="250"
+          prop="title"
+          :label="$t('movies.movieTitle')"
+          min-width="250"
         >
           <template #default="{ row }">
             <div class="movie-title-cell">
               <img
-                  v-if="row.poster_url"
-                  :src="row.poster_url"
-                  class="movie-poster-thumb"
+                v-if="row.poster_url"
+                :src="row.poster_url"
+                class="movie-poster-thumb"
               />
               <span>{{ row.title }}</span>
             </div>
           </template>
         </el-table-column>
         <el-table-column
-            prop="director"
-            :label="$t('movies.director')"
-            width="140"
+          prop="director"
+          :label="$t('movies.director')"
+          width="140"
         />
         <el-table-column prop="genres" :label="$t('movies.genres')" width="180">
           <template #default="{ row }">
             <el-tag
-                v-for="genre in row.genres"
-                :key="genre"
-                size="small"
-                style="margin: 2px"
+              v-for="genre in row.genres"
+              :key="genre"
+              size="small"
+              style="margin: 2px"
             >
               {{ $t(`movies.genreTypes.${genre}`) }}
             </el-tag>
@@ -110,27 +115,35 @@
           </template>
         </el-table-column>
         <el-table-column
-            prop="duration_display"
-            :label="$t('movies.duration')"
-            width="100"
+          prop="duration_display"
+          :label="$t('movies.duration')"
+          width="100"
         />
         <el-table-column
-            prop="release_date_formatted"
-            :label="$t('movies.releaseDate')"
-            width="160"
-        />
+          prop="release_date_formatted"
+          :label="$t('movies.releaseDate')"
+          width="160"
+        >
+          <template #default="{ row }">
+            {{ formatDate(row.release_date) }}
+          </template>
+        </el-table-column>
         <el-table-column
-            prop="end_date"
-            :label="$t('movies.endDate')"
-            width="140"
-        ></el-table-column>
+          prop="end_date"
+          :label="$t('movies.endDate')"
+          width="140"
+        >
+          <template #default="{ row }">
+            {{ formatDate(row.end_date) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="rating" :label="$t('movies.rating')" width="150">
           <template #default="{ row }">
             <el-rate
-                v-model="row.rating"
-                disabled
-                :max="10"
-                style="height: 20px"
+              v-model="row.rating"
+              disabled
+              :max="10"
+              style="height: 20px"
             />
           </template>
         </el-table-column>
@@ -142,35 +155,35 @@
           </template>
         </el-table-column>
         <el-table-column
-            :label="$t('common.actions')"
-            width="220"
-            fixed="right"
+          :label="$t('common.actions')"
+          width="220"
+          fixed="right"
         >
           <template #default="{ row }">
             <el-button
-                v-permission="'movies.view'"
-                size="small"
-                link
-                type="primary"
-                @click="viewMovie(row.id)"
+              v-permission="'movies.view'"
+              size="small"
+              link
+              type="primary"
+              @click="viewMovie(row.id)"
             >
               {{ $t("actions.view") }}
             </el-button>
             <el-button
-                v-permission="'movies.edit'"
-                size="small"
-                link
-                type="primary"
-                @click="editMovie(row.id)"
+              v-permission="'movies.edit'"
+              size="small"
+              link
+              type="primary"
+              @click="editMovie(row.id)"
             >
               {{ $t("actions.edit") }}
             </el-button>
             <el-button
-                v-permission="'movies.delete'"
-                size="small"
-                link
-                type="danger"
-                @click="deleteMovie(row.id)"
+              v-permission="'movies.delete'"
+              size="small"
+              link
+              type="danger"
+              @click="deleteMovie(row.id)"
             >
               {{ $t("actions.delete") }}
             </el-button>
@@ -179,14 +192,11 @@
       </el-table>
 
       <!-- Bulk Actions -->
-      <div
-          class="bulk-actions"
-          v-if="selectedMovies.length > 0"
-      >
+      <div class="bulk-actions" v-if="selectedMovies.length > 0">
         <el-button
-            type="danger"
-            @click="bulkDeleteMovies"
-            v-permission="'movies.delete'"
+          type="danger"
+          @click="bulkDeleteMovies"
+          v-permission="'movies.delete'"
         >
           {{ $t("actions.deleteSelected") }} ({{ selectedMovies.length }})
         </el-button>
@@ -197,13 +207,13 @@
 
       <div class="pagination">
         <el-pagination
-            v-model:current-page="currentPage"
-            v-model:page-size="pageSize"
-            :page-sizes="[10, 20, 50, 100]"
-            :total="total"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
         />
       </div>
     </el-card>
@@ -211,18 +221,19 @@
 </template>
 
 <script setup>
-import {onMounted, ref} from "vue";
-import {useRouter} from "vue-router";
-import {useI18n} from "vue-i18n";
-import {useAppStore} from "@/stores/app";
-import {movieService} from "@/services/movieService";
-import {ElMessage, ElMessageBox} from "element-plus";
-import {Plus, Search} from "@element-plus/icons-vue";
-import {debounce} from "lodash-es";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useAppStore } from "@/stores/app";
+import { movieService } from "@/services/movieService";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { Plus, Search } from "@element-plus/icons-vue";
+import { debounce } from "lodash-es";
+import { formatDate } from "@/utils/formatters";
 
 const router = useRouter();
 const appStore = useAppStore();
-const {t} = useI18n();
+const { t } = useI18n();
 
 const loading = ref(false);
 const rows = ref([]);
@@ -250,13 +261,13 @@ const cancelSelection = () => {
 const bulkDeleteMovies = async () => {
   try {
     await ElMessageBox.confirm(
-        `Are you sure you want to delete ${selectedMovies.value.length} movies?`,
-        "Delete Movies",
-        {
-          confirmButtonText: "Delete",
-          cancelButtonText: "Cancel",
-          type: "warning",
-        }
+      `Are you sure you want to delete ${selectedMovies.value.length} movies?`,
+      "Delete Movies",
+      {
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        type: "warning",
+      }
     );
 
     const ids = selectedMovies.value.map((movie) => movie.id);
@@ -264,7 +275,7 @@ const bulkDeleteMovies = async () => {
     await movieService.bulkDeleteMovies(ids);
 
     ElMessage.success(
-        `${selectedMovies.value.length} movies deleted successfully`
+      `${selectedMovies.value.length} movies deleted successfully`
     );
     cancelSelection();
     load(); // Reload the list
@@ -321,9 +332,9 @@ const editMovie = (id) => router.push(`/admin/movies/${id}/edit`);
 const deleteMovie = async (id) => {
   try {
     await ElMessageBox.confirm(
-        t("movies.confirmDelete"),
-        t("movies.deleteMovie"),
-        {type: "warning"}
+      t("movies.confirmDelete"),
+      t("movies.deleteMovie"),
+      { type: "warning" }
     );
     await movieService.deleteMovie(id);
     ElMessage.success(t("movies.deleteSuccess"));
@@ -354,9 +365,9 @@ const getStatusTagType = (status) => {
 
 onMounted(() => {
   appStore.setBreadcrumbs([
-    {title: t("nav.dashboard"), path: "/admin/dashboard"},
-    {title: t("movies.title"), path: "/admin/movies"},
-    {title: t("movies.allMovies"), path: "/admin/movies"},
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("movies.title"), path: "/admin/movies" },
+    { title: t("movies.allMovies"), path: "/admin/movies" },
   ]);
   load();
 });

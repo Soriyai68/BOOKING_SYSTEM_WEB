@@ -62,7 +62,7 @@
           }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item :label="$t('users.created')">{{
-          formatDateTime(hall?.created_at)
+          formatDate(hall?.created_at)
         }}</el-descriptions-item>
         <el-descriptions-item :label="$t('halls.notes')" :span="2">{{
           hall?.notes || "-"
@@ -83,6 +83,7 @@ import { useI18n } from "vue-i18n";
 import { hallService } from "@/services/hallService";
 import { theaterService } from "@/services/theaterService";
 import { ArrowRight, ArrowLeft } from "@element-plus/icons-vue";
+import { formatDate } from "@/utils/formatters";
 import EditHall from "./EditHall.vue";
 
 const route = useRoute();
@@ -142,9 +143,7 @@ const statusTagType = (status) => {
     default:
       return "";
   }
-};
-
-const formatDateTime = (str) => (str ? new Date(str).toLocaleString() : "-");
+}
 
 onMounted(async () => {
   await load();

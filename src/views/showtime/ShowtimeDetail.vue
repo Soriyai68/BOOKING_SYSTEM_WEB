@@ -34,23 +34,23 @@
           <el-descriptions-item :label="$t('showtimes.theater_province')">{{
             showtime.theater_province
           }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('showtimes.showDate')">
-            {{ showtime.show_date }}
-          </el-descriptions-item>
           <el-descriptions-item :label="$t('showtimes.startTime')">{{
             showtime.start_time
           }}</el-descriptions-item>
           <el-descriptions-item :label="$t('showtimes.endTime')">{{
             showtime.end_time
           }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('showtimes.showDate')">
+            {{ formatDate(showtime.show_date) }}
+          </el-descriptions-item>
           <el-descriptions-item :label="$t('showtimes.status')">
             <el-tag :type="getStatusTagType(showtime.status)">{{
               showtime.status
             }}</el-tag>
           </el-descriptions-item>
-          <el-descriptions-item :label="$t('showtimes.created_at')">{{
-            formatDateTime(showtime.created_at)
-          }}</el-descriptions-item>
+          <!-- <el-descriptions-item :label="$t('showtimes.created_at')">{{
+            formatDate(showtime.created_at)
+          }}</el-descriptions-item> -->
         </el-descriptions>
       </div>
       <div class="actions">
@@ -75,6 +75,7 @@ import { useAppStore } from "@/stores/app";
 import { showtimeService } from "@/services/showtimeService";
 import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";
+import { formatDate } from "@/utils/formatters";
 
 const route = useRoute();
 const router = useRouter();
@@ -99,11 +100,6 @@ const loadShowtime = async () => {
 
 const editShowtime = () => {
   router.push(`/admin/showtimes/${route.params.id}/edit`);
-};
-
-const formatDateTime = (dateTimeString) => {
-  if (!dateTimeString) return "-";
-  return new Date(dateTimeString).toLocaleString();
 };
 
 const getStatusTagType = (status) => {
