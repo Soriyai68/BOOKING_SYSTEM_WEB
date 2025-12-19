@@ -38,6 +38,18 @@
         <template #title>{{ $t("bookings.title") }}</template>
       </el-menu-item>
 
+      <!-- Payment Management -->
+      <el-menu-item
+        v-if="isSuperAdmin || canViewPayments"
+        index="/admin/payments"
+      >
+        <el-icon>
+          <CreditCard />
+        </el-icon>
+        <template #title>{{ $t("payments.paymentList") }}</template>
+      </el-menu-item>
+
+
       <el-sub-menu v-if="isSuperAdmin || canViewSeats" index="seats">
         <template #title>
           <el-icon>
@@ -321,6 +333,7 @@ import {
   UserCog,
   Users,
   History,
+  CreditCard, // Added CreditCard icon
 } from "lucide-vue-next";
 
 const route = useRoute();
@@ -342,6 +355,7 @@ const {
   canViewShowtimes,
   canCreateShowtimes,
   canViewBookings,
+  canViewPayments, // Added canViewPayments
   isSuperAdmin,
 } = usePermissions();
 

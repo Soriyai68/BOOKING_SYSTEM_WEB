@@ -437,6 +437,18 @@ const routes = [
           titleKey: "seats.seatBookingHistory",
         },
       },
+
+      // payments
+      {
+        path: "payments",
+        name: "PaymentList",
+        component: () => import("@/views/payments/PaymentList.vue"),
+        meta: {
+          title: "Payment List",
+          titleKey: "payments.paymentList",
+          ...createPermissionMeta(PERMISSIONS.PAYMENTS_VIEW),
+        },
+      },
       // system
       {
         path: "system/permissions",

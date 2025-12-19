@@ -569,18 +569,26 @@ export default {
       "ការទូទាត់មិនទាន់បានបញ្ចប់ទេ។ ស្ថានភាពនៃការកក់ត្រូវបានកំណត់ទៅជាកំពុងរង់ចាំ។",
   },
   payments: {
+    amount: "ចំនួនទឹកប្រាក់",
     bakongPayment: "ការទូទាត់តាម Bakong",
     cashPayment: "ការទូទាត់ជាសាច់ប្រាក់",
     createPayment: "បង្កើតការបង់ប្រាក់",
     paymentDetails: "ព័ត៌មានលម្អិតការបង់ប្រាក់",
     paymentMethod: "វិធីសាស្រ្តបង់ប្រាក់",
-    amount: "ចំនួនទឹកប្រាក់",
-    scanToPay: "ស្កេនដើម្បីបង់ប្រាក់",
-    bakongInstructions:
-      "សូមស្កេន QR កូដជាមួយកម្មវិធី Bakong របស់អ្នកដើម្បីធ្វើការទូទាត់។",
-    cashInstructions: "សូមបង់ប្រាក់ជាសាច់ប្រាក់នៅបញ្ជរ។",
     expiresIn: "ផុតកំណត់ក្នុង",
     paymentExpired: "ការទូទាត់បានផុតកំណត់",
+    paymentList: "បញ្ជីទូទាត់",
+    fetchError: "បរាជ័យក្នុងការទាញយកការទូទាត់៖ ",
+    customerName: "ឈ្មោះអតិថិជន",
+    fromAccount: "ពីគណនី",
+    toAccount: "ទៅគណនី",
+    paymentDate: "កាលបរិច្ឆេទទូទាត់",
+    paidAt: "បង់ប្រាក់នៅ",
+    currency: "រូបិយប័ណ្ណ",
+    paid: "បានបង់",
+    unpaid: "មិនទាន់បង់ប្រាក់",
+    description: "ការពិពណ៌នា",
+    searchPayments: "ស្វែងរកការទូទាត់...",
   },
   // System Management
   system: {
@@ -725,6 +733,8 @@ export default {
     deletedAt: "បានលុបនៅ",
     actions: "សកម្មភាព",
     loading: "កំពុងដំណើរការ",
+    yes: "បាទ/ចាស",
+    no: "ទេ",
   },
 
   // Upload

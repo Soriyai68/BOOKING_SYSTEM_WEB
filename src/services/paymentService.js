@@ -36,21 +36,17 @@ export const paymentService = {
           booking: payment.bookingId || {},
           amount: payment.amount,
           payment_method: payment.payment_method,
+          fromAccount_id: payment.fromAccount_id,
+          toAccount_id: payment.toAccount_id,
           currency: payment.currency,
           status: payment.status,
+          paid: payment.paid,
           description: payment.description,
           payment_date: payment.payment_date,
           created_at: payment.createdAt,
           updated_at: payment.updatedAt,
           deleted_at: payment.deletedAt,
           is_deleted: !!payment.deletedAt,
-          status_display: payment.status
-            ? payment.status.charAt(0).toUpperCase() + payment.status.slice(1)
-            : "-",
-          payment_method_display: payment.payment_method
-            ? payment.payment_method.charAt(0).toUpperCase() +
-              payment.payment_method.slice(1)
-            : "-",
         })),
         total: pagination.totalCount,
         current_page: pagination.currentPage,
@@ -84,8 +80,6 @@ export const paymentService = {
     }
     return response.data;
   },
-
-
 
   // Get all payments for a specific booking
   async getPaymentsByBookingId(bookingId) {
@@ -210,19 +204,19 @@ export const paymentService = {
 
   // Constants
   PAYMENT_METHODS: [
-    { value: "Bakong", label: "Bakong" },
-    { value: "Cash", label: "Cash" },
-    { value: "PayAtCinema", label: "Pay At Cinema" },
-    { value: "Card", label: "Card" },
-    { value: "Mobile Banking", label: "Mobile Banking" },
-    { value: "Bank Transfer", label: "Bank Transfer" },
+    { value: "Bakong", label: "Bakong", type: "success" },
+    { value: "Cash", label: "Cash", type: "primary" },
+    { value: "PayAtCinema", label: "Pay At Cinema", type: "info" },
+    { value: "Card", label: "Card", type: "warning" },
+    { value: "Mobile Banking", label: "Mobile Banking", type: "success" },
+    { value: "Bank Transfer", label: "Bank Transfer", type: "primary" },
   ],
 
   PAYMENT_STATUSES: [
-    { value: "Pending", label: "Pending", color: "#E6A23C" },
-    { value: "Completed", label: "Completed", color: "#67C23A" },
-    { value: "Failed", label: "Failed", color: "#F56C6C" },
-    { value: "Refunded", label: "Refunded", color: "#909399" },
+    { value: "Pending", label: "Pending", type: "warning" },
+    { value: "Completed", label: "Completed", type: "success" },
+    { value: "Failed", label: "Failed", type: "danger" },
+    { value: "Refunded", label: "Refunded", type: "info" },
   ],
 
   CURRENCIES: [
@@ -238,5 +232,3 @@ export const paymentService = {
     { value: "createdAt", label: "Created Date" },
   ],
 };
-
-

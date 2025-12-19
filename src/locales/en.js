@@ -244,7 +244,8 @@ export default {
     seatBookingHistory: "Seat Booking History",
     // Duplicate seats
     duplicateToHall: "Duplicate to Hall",
-    duplicateSelectedInfo: "Duplicate {count} selected seat(s) to another hall.",
+    duplicateSelectedInfo:
+      "Duplicate {count} selected seat(s) to another hall.",
     selectedSeats: "Selected Seats",
     fromHall: "From Hall",
     targetHall: "Target Hall",
@@ -595,11 +596,13 @@ export default {
     deleteFailed: "Failed to delete booking",
     paymentAndBookingSuccess: "Payment successful and booking created!",
     bookingCreatedPendingPayment: "Booking created and is now pending payment.",
-    bakongPaymentFailed: "Booking created, but failed to initiate Bakong payment.",
+    bakongPaymentFailed:
+      "Booking created, but failed to initiate Bakong payment.",
     regenerateQRFailed: "Failed to regenerate QR code.",
     regenerateQRError: "Error regenerating QR code.",
     missingBookingForQR: "Cannot regenerate QR code: Booking ID is missing.",
-    paymentPendingMessage: "Payment not completed. Booking status set to Pending.",
+    paymentPendingMessage:
+      "Payment not completed. Booking status set to Pending.",
   },
   payments: {
     bakongPayment: "Bakong Payment",
@@ -610,6 +613,18 @@ export default {
     expiresIn: "Expires In",
     paymentDetails: "Payment Details",
     paymentExpired: "Payment Expired",
+    paymentList: "Payment List",
+    fetchError: "Failed to fetch payments: ",
+    customerName: "Customer Name",
+    fromAccount: "From Account",
+    toAccount: "To Account",
+    paymentDate: "Payment Date",
+    paidAt: "Paid At",
+    currency: "Currency",
+    paid: "Paid",
+    unpaid: "Unpaid",
+    description: "Description",
+    searchPayments: "Search payments...",
   },
 
   // System Management
@@ -753,6 +768,8 @@ export default {
     deletedAt: "Deleted At",
     actions: "Actions",
     loading: "Loading",
+    yes: "Yes",
+    no: "No",
   },
 
   // Upload
