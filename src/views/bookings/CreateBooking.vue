@@ -119,20 +119,20 @@
       <div v-if="activeStep === 3" class="step-content">
         <el-form style="margin-top: 20px" label-position="top">
           <el-form-item :label="$t('customers.customer')">
-            <el-radio-group
-              v-model="customerSelectionMode"
-              style="margin-bottom: 10px"
-            >
-              <el-radio-button label="search">{{
+            <!-- <el-radio-group -->
+            <!-- v-model="customerSelectionMode" -->
+            <!-- style="margin-bottom: 10px" -->
+            <!-- > -->
+            <!-- <el-radio-button label="search">{{
                 $t("customers.searchExistingCustomer")
-              }}</el-radio-button>
-              <el-radio-button label="walkin">{{
+              }}</el-radio-button> -->
+            <!-- <el-radio-button label="walkin">{{
                 $t("customers.newWalkInCustomer")
-              }}</el-radio-button>
-              <el-radio-button label="guest">{{
+              }}</el-radio-button> -->
+            <!-- <el-radio-button label="guest">{{
                 $t("customers.newGuestCustomer")
-              }}</el-radio-button>
-            </el-radio-group>
+              }}</el-radio-button> -->
+            <!-- </el-radio-group> -->
           </el-form-item>
 
           <div v-if="customerSelectionMode === 'search'">
@@ -156,7 +156,7 @@
             </el-form-item>
           </div>
 
-          <div v-if="customerSelectionMode === 'walkin'">
+          <!-- <div v-if="customerSelectionMode === 'walkin'">
             <el-form
               :model="walkinCustomer"
               label-position="top"
@@ -175,9 +175,9 @@
                 />
               </el-form-item>
             </el-form>
-          </div>
+          </div> -->
 
-          <div v-if="customerSelectionMode === 'guest'">
+          <!-- <div v-if="customerSelectionMode === 'guest'">
             <el-form :model="guestDetails" label-position="top" ref="guestForm">
               <el-form-item
                 :label="$t('customers.email')"
@@ -194,7 +194,7 @@
                 />
               </el-form-item>
             </el-form>
-          </div>
+          </div> -->
           <el-form-item :label="$t('payments.paymentMethod')">
             <el-select v-model="selectedPaymentMethod" style="width: 100%">
               <el-option
@@ -305,7 +305,7 @@ const selectedSeats = ref(new Set());
 // Step 3 & 4
 const customerOptions = ref([]);
 const selectedCustomerId = ref(null);
-const customerSelectionMode = ref("search"); // 'search' or 'walkin' or 'guest'
+const customerSelectionMode = ref("search"); // Always search
 const displayPhone = ref("");
 const walkinCustomer = reactive({
   phone: "",
@@ -331,9 +331,7 @@ const formatPhoneNumber = (inputValue) => {
 
 const getCustomerLabel = (customer) => {
   if (customer.customerType === "walkin") {
-    return `Walk-in Customer - ${
-      toLocalPhone(customer.phone) || customer.name || customer.id
-    }`;
+    return "Walk-in Customer";
   }
   if (customer.customerType === "guest") {
     return `Guest Customer - ${customer.email || customer.name || customer.id}`;
@@ -479,14 +477,7 @@ const isStepValid = computed(() => {
   if (activeStep.value === 1) return selectedSeats.value.size > 0;
   if (activeStep.value === 2) return selectedSeats.value.size > 0;
   if (activeStep.value === 3) {
-    if (customerSelectionMode.value === "search") {
-      return !!selectedCustomerId.value;
-    } else if (customerSelectionMode.value === "walkin") {
-      return !!walkinCustomer.phone;
-    } else if (customerSelectionMode.value === "guest") {
-      const emailRegex = /.+@.+\..+/;
-      return !!(guestDetails.email && emailRegex.test(guestDetails.email));
-    }
+    return !!selectedCustomerId.value;
   }
   return false;
 });

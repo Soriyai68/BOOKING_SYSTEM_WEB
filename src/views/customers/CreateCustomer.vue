@@ -129,11 +129,11 @@ const form = reactive({
 });
 
 const formatPhoneNumber = (inputValue) => {
-  let cleanedDisplay = inputValue.replace(/\D/g, ''); // only digits
-  if (cleanedDisplay.startsWith('855')) {
-    cleanedDisplay = '0' + cleanedDisplay.substring(3);
-  } else if (!cleanedDisplay.startsWith('0') && cleanedDisplay.length > 1) {
-    cleanedDisplay = '0' + cleanedDisplay;
+  let cleanedDisplay = inputValue.replace(/\D/g, ""); // only digits
+  if (cleanedDisplay.startsWith("855")) {
+    cleanedDisplay = "0" + cleanedDisplay.substring(3);
+  } else if (!cleanedDisplay.startsWith("0") && cleanedDisplay.length > 1) {
+    cleanedDisplay = "0" + cleanedDisplay;
   }
   displayPhone.value = cleanedDisplay.substring(0, 10);
   form.phone = toInternationalPhone(displayPhone.value);
@@ -167,12 +167,6 @@ const rules = computed(() => {
       message: t("validation.required"),
       trigger: "blur",
     });
-    phoneRules.push({
-      required: true,
-      validator: validatePhone,
-      trigger: "blur",
-    });
-  } else if (currentType === "walkin") {
     phoneRules.push({
       required: true,
       validator: validatePhone,

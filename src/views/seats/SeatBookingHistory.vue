@@ -385,7 +385,7 @@ const getSeatTypeColor = (type) => {
 };
 // Watchers (autoload when filters change)
 watch(
-  () => [filters.search, filters.action, filters.showtimeId, filters.show_date, filters.start_time],
+  () => [filters.search, filters.action, filters.showtimeId, filters.show_date, filters.start_time, filters.seat_type],
   () => {
     pagination.currentPage = 1;
     loadSeatBookingHistory();

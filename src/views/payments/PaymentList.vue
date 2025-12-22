@@ -204,6 +204,18 @@ const getPaymentMethodType = (method) => {
   return option ? option.type : "info";
 };
 
+// Watchers (autoload when filters change)
+watch(
+  [
+    () => filters.search,
+    () => filters.status,
+  ],
+  () => {
+    pagination.current_page = 1;
+    fetchPayments();
+  }
+);
+
 onMounted(() => {
   fetchPayments();
 });

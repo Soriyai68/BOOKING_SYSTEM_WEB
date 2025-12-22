@@ -298,7 +298,8 @@ watch(
     [
       () => filters.search,
       () => filters.status,
-      () => filters.showtime_id
+      () => filters.showtime_id,
+      () => filters.seat_type
     ],
     () => {
       pagination.current_page = 1;
