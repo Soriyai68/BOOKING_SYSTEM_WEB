@@ -116,7 +116,7 @@
         <el-table-column
           prop="reference_code"
           :label="$t('bookings.referenceCode')"
-          width="180"
+          width="200"
         />
         <el-table-column :label="$t('customers.customer')" width="250">
           <template #default="{ row }">
@@ -164,7 +164,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('showtimes.movie')" width="200">
+        <el-table-column :label="$t('showtimes.movie')" width="220">
           <template #default="{ row }">{{ row.movie?.title }}</template>
         </el-table-column>
         <el-table-column :label="$t('showtimes.showtimeDetails')" width="220">
@@ -190,7 +190,7 @@
             formatCurrency(row.total_price)
           }}</template>
         </el-table-column>
-        <el-table-column :label="$t('bookings.bookingStatus')" width="140">
+        <el-table-column :label="$t('bookings.bookingStatus')" width="160">
           <template #default="{ row }">
             <el-tag
               :type="getStatusType(bookingStatusOptions, row.booking_status)"
@@ -199,7 +199,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('bookings.paymentStatus')" width="140">
+        <el-table-column :label="$t('bookings.paymentStatus')" width="160">
           <template #default="{ row }">
             <el-tag
               :type="getStatusType(paymentStatusOptions, row.payment_status)"

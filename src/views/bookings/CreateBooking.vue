@@ -7,42 +7,97 @@
       }}</el-button>
     </div>
 
-    <el-card>
-      <el-steps
-        :active="activeStep"
-        finish-status="success"
-        align-center
-        style="margin-bottom: 40px"
-      >
+    <el-card shadow="never" class="stepper-card">
+      <el-steps :active="activeStep" finish-status="success" align-center>
         <el-step :title="$t('bookings.steps.selectShowtime')" />
         <el-step :title="$t('bookings.steps.selectSeats')" />
         <el-step :title="$t('bookings.steps.confirm')" />
         <el-step :title="$t('bookings.steps.payment')" />
       </el-steps>
+    </el-card>
 
+    <el-card shadow="never">
       <!-- Step 1: Select Showtime -->
       <div v-if="activeStep === 0" class="step-content">
-        <el-form label-position="top">
-          <el-form-item :label="$t('seats.selectShowtime')">
-            <el-select
-              v-model="selectedShowtimeId"
-              filterable
-              remote
-              :remote-method="loadShowtimes"
-              :loading="loading.showtimes"
-              :placeholder="$t('seats.selectShowtime')"
-              style="width: 100%"
-              @change="handleShowtimeChange"
+        <div class="filter-controls">
+          <el-input
+            style="width: 1200px"
+            v-model="showtimeSearch"
+            :placeholder="$t('bookings.searchByMovie')"
+            clearable
+            @input="debouncedLoadShowtimes"
+          />
+          <div class="date-filter-buttons">
+            <el-button
+              :type="selectedDateFilter === 'today' ? 'primary' : 'default'"
+              @click="selectedDateFilter = 'today'"
             >
-              <el-option
-                v-for="item in showtimeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+              {{ $t("actions.today") }}
+            </el-button>
+            <el-button
+              :type="selectedDateFilter === 'tomorrow' ? 'primary' : 'default'"
+              @click="selectedDateFilter = 'tomorrow'"
+            >
+              {{ $t("actions.tomorrow") }}
+            </el-button>
+          </div>
+        </div>
+
+        <div
+          v-if="loading.showtimes"
+          v-loading="loading.showtimes"
+          style="min-height: 200px"
+        ></div>
+        <div v-else class="showtime-list">
+          <el-card
+            v-for="showtime in showtimeOptions"
+            :key="showtime.id"
+            shadow="hover"
+            class="showtime-card"
+            :class="{ selected: selectedShowtimeId === showtime.id }"
+            @click="selectShowtime(showtime)"
+          >
+            <div class="showtime-card-content">
+              <el-image
+                :src="showtime.movie_poster"
+                alt="Movie Poster"
+                class="showtime-poster"
+                fit="fit"
               />
-            </el-select>
-          </el-form-item>
-        </el-form>
+              <div class="showtime-details">
+                <h4 class="movie-title">{{ showtime.movie_title }}</h4>
+                <p class="flex items-center gap-[5px]">
+                  <MapPin class="w-4 h-4" />{{ showtime.theater_name }} -
+                  {{ showtime.hall_name }}
+                </p>
+                <div class="flex gap-[15px] items-center">
+                  <p class="flex items-center gap-[5px]">
+                    <Calendar class="w-4 h-4" />
+                    {{ formatDate(showtime.show_date) }}
+                  </p>
+                  <p class="flex items-center center gap-[5px]">
+                    <Clock class="w-4 h-4" />
+                    {{ showtime.start_time }}
+                  </p>
+                </div>
+                <div class="occupancy-info">
+                  <el-progress
+                    :percentage="Math.round((showtime.occupancy || 0) * 100)"
+                    :stroke-width="8"
+                  />
+                  <span
+                    >({{ showtime.bookedCount }} /
+                    {{ showtime.totalCount }} seats)</span
+                  >
+                </div>
+              </div>
+            </div>
+          </el-card>
+          <el-empty
+            v-if="!showtimeOptions.length && !loading.showtimes"
+            :description="$t('messages.noData')"
+          ></el-empty>
+        </div>
       </div>
 
       <!-- Step 2: Select Seats -->
@@ -255,11 +310,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from "vue";
+import { ref, reactive, onMounted, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage, ElDialog } from "element-plus";
 import { ArrowLeft } from "@element-plus/icons-vue";
+import { Calendar, Clock, MapPin } from "lucide-vue-next";
 import { useAppStore } from "@/stores/app";
 import { showtimeService } from "@/services/showtimeService";
 import { seatService } from "@/services/seatService";
@@ -296,6 +352,7 @@ const loading = reactive({
 const showtimeOptions = ref([]);
 const selectedShowtimeId = ref(null);
 const selectedShowtime = ref(null);
+const showtimeSearch = ref("");
 
 // Step 2
 const hallSeats = ref([]);
@@ -349,10 +406,72 @@ const getCustomerLabel = (customer) => {
   return customer.id; // fallback
 };
 
-const loadShowtimes = async (query = "") => {
+const selectedDateFilter = ref("today"); // Default to today
+
+const loadShowtimes = async () => {
   loading.showtimes = true;
   try {
-    showtimeOptions.value = await showtimeService.getDropdownShowtimes(query);
+    const params = {
+      search: showtimeSearch.value,
+      forBooking: true,
+      per_page: 10,
+      sort_by: "start_time",
+      sort_order: "asc",
+    };
+
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    if (selectedDateFilter.value === "today") {
+      params.show_date = today.toISOString().split("T")[0];
+    } else if (selectedDateFilter.value === "tomorrow") {
+      params.show_date = tomorrow.toISOString().split("T")[0];
+    }
+    const response = await showtimeService.getShowtimes(params);
+    if (response && response.data) {
+      const showtimesWithOccupancy = await Promise.all(
+        response.data.map(async (showtime) => {
+          try {
+            // Get booked seats count
+            const bookedSeatsResponse =
+              await seatBookingService.getSeatBookings({
+                showtimeId: showtime.id,
+                status: "booked",
+                limit: 1, // We only need the total count
+              });
+            const bookedCount = bookedSeatsResponse.total || 0;
+
+            // Get total seats for the hall
+            const allSeatsResponse = await seatService.getSeatsByHall(
+              showtime.hall_id,
+              { per_page: 100 }
+            );
+            const totalCount = allSeatsResponse.data.length || 0;
+
+            const occupancy = totalCount > 0 ? bookedCount / totalCount : 0;
+            return {
+              ...showtime,
+              occupancy,
+              bookedCount,
+              totalCount,
+            };
+          } catch (e) {
+            console.error(
+              `Failed to load occupancy for showtime ${showtime.id}`,
+              e
+            );
+            return {
+              ...showtime,
+              occupancy: 0,
+              bookedCount: "?",
+              totalCount: "?",
+            };
+          }
+        })
+      );
+      showtimeOptions.value = showtimesWithOccupancy;
+    }
   } catch (error) {
     console.error("Failed to load showtimes:", error);
     ElMessage.error(t("errors.loadDataFailed"));
@@ -361,19 +480,21 @@ const loadShowtimes = async (query = "") => {
   }
 };
 
-const handleShowtimeChange = async (showtimeId) => {
-  if (!showtimeId) {
+let debounceTimer;
+const debouncedLoadShowtimes = () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    loadShowtimes();
+  }, 300);
+};
+
+const selectShowtime = (showtime) => {
+  if (selectedShowtimeId.value === showtime.id) {
+    selectedShowtimeId.value = null;
     selectedShowtime.value = null;
-    return;
-  }
-  try {
-    loading.showtimes = true;
-    selectedShowtime.value = await showtimeService.getShowtime(showtimeId);
-  } catch (error) {
-    console.error("Failed to load showtime details:", error);
-    ElMessage.error(t("errors.loadDataFailed"));
-  } finally {
-    loading.showtimes = false;
+  } else {
+    selectedShowtimeId.value = showtime.id;
+    selectedShowtime.value = showtime;
   }
 };
 
@@ -552,15 +673,37 @@ const submitBooking = async () => {
         router.push("/admin/bookings");
       }
     } else if (selectedPaymentMethod.value === "Cash") {
-      // For Cash, immediately update the status to Completed via a separate call
-      if (currentBookingId.value) {
+      if (!currentBookingId.value) {
+        ElMessage.error(t("bookings.errors.cashPaymentFailed"));
+        router.push("/admin/bookings");
+        return;
+      }
+
+      // Create a payment record for Cash
+      const paymentResponse = await paymentService.createPayment({
+        bookingId: currentBookingId.value,
+        payment_method: "Cash",
+        amount: bookingSummary.value.totalPrice,
+        currency: "USD",
+        payment_status: "Completed", // Mark cash payment as completed immediately
+      });
+
+      if (paymentResponse.success) {
+        // Now update the booking status
         await bookingService.updateBooking(currentBookingId.value, {
           booking_status: "Completed",
           payment_status: "Completed",
         });
+        ElMessage.success(t("bookings.createSuccess"));
+        router.push("/admin/bookings");
+      } else {
+        ElMessage.error(
+          paymentResponse.message || t("bookings.errors.cashPaymentFailed")
+        );
+        // If payment creation failed, we might want to still redirect or handle this
+        // For now, redirect to bookings list
+        router.push("/admin/bookings");
       }
-      ElMessage.success(t("bookings.createSuccess"));
-      router.push("/admin/bookings");
     } else {
       // For other methods like 'PayAtCinema' which remain pending
       ElMessage.success(t("bookings.createSuccess"));
@@ -636,6 +779,10 @@ const onPaymentDialogClose = async (paidStatus) => {
   bakongPaymentData.value = null;
   currentBookingId.value = null;
 };
+watch(selectedDateFilter, () => {
+  loadShowtimes();
+});
+
 onMounted(() => {
   loadShowtimes();
   appStore.setBreadcrumbs([
@@ -652,6 +799,10 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+}
+
+.stepper-card {
+  margin-bottom: 20px;
 }
 
 .step-content {
@@ -769,5 +920,80 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   margin: 20px 0;
+}
+
+.showtime-list {
+  display: flex;
+  flex-direction: column; /* Changed from grid to flex column */
+  gap: 10px;
+}
+
+.showtime-card {
+  cursor: pointer;
+  border: 2px solid re;
+  transition: border-color 0.3s;
+}
+
+.showtime-card.selected {
+  border-color: var(--el-color-primary);
+}
+
+.showtime-card-content {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.showtime-poster {
+  width: 100px;
+  height: 100px;
+}
+
+.showtime-details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.showtime-details .movie-title {
+  margin: 0 0 10px 0;
+  font-size: 1.1em;
+}
+
+.showtime-details p {
+  margin: 5px 0 0 0; /* Adjusted margins for tighter vertical spacing */
+  font-size: 0.9em;
+  color: var(--el-text-color-secondary);
+}
+.inline-icon {
+  vertical-align: middle;
+  margin-right: 4px;
+  color: var(--el-text-color-secondary);
+  font-size: 1.1em; /* Added for relative sizing */
+}
+
+.occupancy-info {
+  margin-top: 10px;
+  font-size: 0.8em;
+  color: var(--el-text-color-secondary);
+}
+.occupancy-info span {
+  display: block;
+  text-align: right;
+  margin-top: 2px;
+}
+
+.filter-controls {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.date-filter-buttons {
+  display: flex;
 }
 </style>

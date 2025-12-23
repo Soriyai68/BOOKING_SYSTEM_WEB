@@ -298,10 +298,20 @@ const pagination = reactive({
 });
 
 // Load filter data
-const loadShowtimes = async (query = "") => {
+const loadShowtimes = async ({
+  per_page = 10,
+  status = "scheduled",
+  forBooking = false,
+  search = "",
+} = {}) => {
   loading.showtimes = true;
   try {
-    showtimeOptions.value = await showtimeService.getDropdownShowtimes(query);
+    showtimeOptions.value = await showtimeService.getDropdownShowtimes({
+      per_page,
+      status,
+      forBooking,
+      search,
+    });
   } catch (error) {
     console.error("Failed to load showtimes:", error);
     ElMessage.error(t("errors.loadDataFailed"));
@@ -309,6 +319,7 @@ const loadShowtimes = async (query = "") => {
     loading.showtimes = false;
   }
 };
+
 // Main data loading
 const loadSeatBookingHistory = async () => {
   loading.seatBookingHistory = true;
@@ -385,7 +396,14 @@ const getSeatTypeColor = (type) => {
 };
 // Watchers (autoload when filters change)
 watch(
-  () => [filters.search, filters.action, filters.showtimeId, filters.show_date, filters.start_time, filters.seat_type],
+  () => [
+    filters.search,
+    filters.action,
+    filters.showtimeId,
+    filters.show_date,
+    filters.start_time,
+    filters.seat_type,
+  ],
   () => {
     pagination.currentPage = 1;
     loadSeatBookingHistory();

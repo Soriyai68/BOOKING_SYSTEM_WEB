@@ -90,6 +90,7 @@
         </el-table-column>
         <el-table-column
           prop="description"
+          width="250"
           :label="$t('payments.description')"
         ></el-table-column>
         <el-table-column
@@ -115,7 +116,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive,watch } from "vue";
 import { paymentService } from "@/services/paymentService"; // Destructure paymentService
 import { ElMessage, ElTag } from "element-plus";
 import { useI18n } from "vue-i18n"; // Import useI18n

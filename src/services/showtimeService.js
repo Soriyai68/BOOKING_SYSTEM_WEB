@@ -16,6 +16,7 @@ export const showtimeService = {
       show_date: params.show_date,
       dateFrom: params.date_from,
       dateTo: params.date_to,
+      forBooking: params.forBooking,
       includeDeleted: params.include_deleted || false,
       sortBy: params.sort_by || "start_time",
       sortOrder: params.sort_order || "asc",
@@ -382,20 +383,18 @@ export const showtimeService = {
   ],
 
   // Get showtimes for dropdown
-  async getDropdownShowtimes(search = "", limit = 10, status = "scheduled") {
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-    const day = String(today.getDate()).padStart(2, "0");
-    const todayDateString = `${year}-${month}-${day}`;
+  async getDropdownShowtimes(filters = {}) {
+    const params = {
+      per_page: filters.limit ?? 10,
+      search: filters.search ?? "",
+      status: filters.status ?? "scheduled",
+      forBooking: filters.forBooking ?? true,
+      sort_by: filters.sort_by ?? "start_time",
+      sort_order: filters.sort_order ?? "asc",
+      ...filters,
+    };
 
-    const response = await this.getShowtimes({
-      per_page: limit,
-      search: search,
-      status: status,
-      dateFrom: todayDateString,
-    });
+    const response = await this.getShowtimes(params);
 
     if (response && response.data) {
       return response.data.map((s) => ({

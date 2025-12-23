@@ -3,7 +3,7 @@
     <!-- Logo -->
     <div class="logo">
       <div class="logo-content" :class="{ collapsed: sidebarCollapsed }">
-        <img src="@/assets/ek.jpg" alt="Logo" class="logo-image" />
+        <img src="../../assets/rsb-cinema.png" alt="Logo" class="logo-image" />
         <span v-show="!sidebarCollapsed" class="logo-text">Ninja Booking</span>
         <!-- Optional text if sidebar not collapsed -->
       </div>
@@ -433,7 +433,7 @@ const theme = computed(() => appStore.theme);
 }
 
 .logo-image {
-  height: 36px; /* keeps it compact */
+  height: 50px; /* keeps it compact */
   width: auto;
   margin-right: 10px;
   border-radius: 8px; /* smooth rounded corners */

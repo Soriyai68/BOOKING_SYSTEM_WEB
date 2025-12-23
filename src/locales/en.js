@@ -1,3 +1,4 @@
+import { toHandlerKey } from "vue";
 import SeatBookingHistory from "../views/seats/SeatBookingHistory.vue";
 
 export default {
@@ -538,10 +539,12 @@ export default {
     bookingSummary: "Booking Summary",
     details: "Details",
     allBookings: "All Bookings",
+    searchByMovie: "Search by movie title...",
     searchBookings: "Search bookings...",
     searchByCode: "Search by reference code...",
     bookingId: "Booking ID",
     referenceCode: "Reference Code",
+    failed: "Failed",
     customer: "Customer",
     user: "User",
     username: "Username",
@@ -577,7 +580,6 @@ export default {
     paid: "Paid",
     unpaid: "Unpaid",
     refunded: "Refunded",
-    failed: "Failed",
     filterByStatus: "Filter by Booking Status",
     filterByPayment: "Filter by Payment Status",
     sortOrder: "Sort Order",
@@ -712,6 +714,8 @@ export default {
     duplicate: "Duplicate",
     bulkUpdate: "Bulk Update",
     regenerate: "Regenerate",
+    today: "Today",
+    tomorrow: "Tomorrow",
   },
 
   // Status Messages

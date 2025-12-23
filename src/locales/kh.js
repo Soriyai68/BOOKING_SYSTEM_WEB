@@ -501,6 +501,7 @@ export default {
     details: "ព័ត៌មានលម្អិត",
     allBookings: "ការកក់ទាំងអស់",
     searchBookings: "ស្វែងរកការកក់...",
+    searchByMovie: "ស្វែងរកតាមភាពយន្ត...",
     searchByCode: "ស្វែងរកតាមលេខយោង...",
     bookingId: "លេខកក់",
     referenceCode: "លេខយោង",
@@ -677,6 +678,8 @@ export default {
     duplicateSelected: "ចម្លងជួរដែលបានជ្រើសរើស",
     duplicate: "ចម្លង",
     regenerate: "បង្កើតឡើងវិញ",
+    today: "ថ្ងៃនេះ",
+    tomorrow: "ថ្ងៃស្អែក",
   },
 
   // Status Messages
