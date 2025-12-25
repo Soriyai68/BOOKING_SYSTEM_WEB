@@ -568,6 +568,11 @@ export default {
     missingBookingForQR: "មិនអាចបង្កើត QR code ឡើងវិញទេ៖ រកមិនឃើញ Booking ID។",
     paymentPendingMessage:
       "ការទូទាត់មិនទាន់បានបញ្ចប់ទេ។ ស្ថានភាពនៃការកក់ត្រូវបានកំណត់ទៅជាកំពុងរង់ចាំ។",
+    noShowtimesFound: "រកមិនឃើញម៉ោងបញ្ចាំងទេ",
+    tryAdjustingFilters: "សាកល្បងកែសម្រួលការស្វែងរក ឬតម្រងរបស់អ្នក",
+    clearAllFilters: "សម្អាតតម្រងទាំងអស់",
+    occupancy: "អត្រាការបំពេញកៅអី",
+    full: "ពេញ",
   },
   payments: {
     amount: "ចំនួនទឹកប្រាក់",

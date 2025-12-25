@@ -605,6 +605,11 @@ export default {
     missingBookingForQR: "Cannot regenerate QR code: Booking ID is missing.",
     paymentPendingMessage:
       "Payment not completed. Booking status set to Pending.",
+    noShowtimesFound: "No showtimes found",
+    tryAdjustingFilters: "Try adjusting your search or filters",
+    clearAllFilters: "Clear all filters",
+    occupancy: "Occupancy",
+    full: "Full",
   },
   payments: {
     bakongPayment: "Bakong Payment",
