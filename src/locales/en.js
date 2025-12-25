@@ -610,6 +610,7 @@ export default {
     clearAllFilters: "Clear all filters",
     occupancy: "Occupancy",
     full: "Full",
+    sellingFast: "Selling Fast",
   },
   payments: {
     bakongPayment: "Bakong Payment",

@@ -573,6 +573,7 @@ export default {
     clearAllFilters: "សម្អាតតម្រងទាំងអស់",
     occupancy: "អត្រាការបំពេញកៅអី",
     full: "ពេញ",
+    sellingFast: "កំពុងលក់លឿន",
   },
   payments: {
     amount: "ចំនួនទឹកប្រាក់",
