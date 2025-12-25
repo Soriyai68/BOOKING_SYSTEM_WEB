@@ -10,202 +10,205 @@
     </div>
 
     <!-- Navigation Menu -->
-    <el-menu
-      :default-active="activeMenu"
-      class="sidebar-menu"
-      :collapse="sidebarCollapsed"
-      :unique-opened="true"
-      router
-    >
-      <el-menu-item
-        v-if="isSuperAdmin || canViewDashboard"
-        index="/admin/dashboard"
+    <el-scrollbar class="sidebar-scroll">
+      <el-menu
+        :default-active="activeMenu"
+        class="sidebar-menu"
+        :collapse="sidebarCollapsed"
+        :unique-opened="true"
+        router
       >
-        <el-icon>
-          <LayoutDashboard />
-        </el-icon>
-        <template #title>{{ $t("nav.dashboard") }}</template>
-      </el-menu-item>
-
-      <!-- Booking Management -->
-      <el-menu-item
-        v-if="isSuperAdmin || canViewBookings"
-        index="/admin/bookings"
-      >
-        <el-icon>
-          <BookOpen />
-        </el-icon>
-        <template #title>{{ $t("bookings.title") }}</template>
-      </el-menu-item>
-
-      <!-- Payment Management -->
-      <el-menu-item
-        v-if="isSuperAdmin || canViewPayments"
-        index="/admin/payments"
-      >
-        <el-icon>
-          <CreditCard />
-        </el-icon>
-        <template #title>{{ $t("payments.paymentList") }}</template>
-      </el-menu-item>
-
-
-      <el-sub-menu v-if="isSuperAdmin || canViewSeats" index="seats">
-        <template #title>
+        <el-menu-item
+          v-if="isSuperAdmin || canViewDashboard"
+          index="/admin/dashboard"
+        >
           <el-icon>
-            <Armchair />
+            <LayoutDashboard />
           </el-icon>
-          <span>{{ $t("seats.title") }}</span>
-        </template>
-        <el-menu-item index="/admin/seats">
-          <el-icon>
-            <Armchair />
-          </el-icon>
-          <template #title>{{ $t("seats.allSeats") }}</template>
+          <template #title>{{ $t("nav.dashboard") }}</template>
         </el-menu-item>
+
+        <!-- Booking Management -->
         <el-menu-item
           v-if="isSuperAdmin || canViewBookings"
-          index="/admin/seat-booking"
+          index="/admin/bookings"
         >
           <el-icon>
             <BookOpen />
           </el-icon>
-          <template #title>{{ $t("seats.seatBooking") }}</template>
+          <template #title>{{ $t("bookings.title") }}</template>
         </el-menu-item>
-        <el-menu-item v-if="true" index="/admin/seat-booking-history">
+
+        <!-- Payment Management -->
+        <el-menu-item
+          v-if="isSuperAdmin || canViewPayments"
+          index="/admin/payments"
+        >
           <el-icon>
-            <History />
+            <CreditCard />
           </el-icon>
-          <template #title>{{ $t("seats.seatBookingHistory") }}</template>
+          <template #title>{{ $t("payments.paymentList") }}</template>
         </el-menu-item>
-        <!-- <el-menu-item v-if="isSuperAdmin || canCreateSeats" index="/admin/seats/create">
+
+        <el-sub-menu v-if="isSuperAdmin || canViewSeats" index="seats">
+          <template #title>
+            <el-icon>
+              <Armchair />
+            </el-icon>
+            <span>{{ $t("seats.title") }}</span>
+          </template>
+          <el-menu-item index="/admin/seats">
+            <el-icon>
+              <Armchair />
+            </el-icon>
+            <template #title>{{ $t("seats.allSeats") }}</template>
+          </el-menu-item>
+          <el-menu-item
+            v-if="isSuperAdmin || canViewBookings"
+            index="/admin/seat-booking"
+          >
+            <el-icon>
+              <BookOpen />
+            </el-icon>
+            <template #title>{{ $t("seats.seatBooking") }}</template>
+          </el-menu-item>
+          <el-menu-item v-if="true" index="/admin/seat-booking-history">
+            <el-icon>
+              <History />
+            </el-icon>
+            <template #title>{{ $t("seats.seatBookingHistory") }}</template>
+          </el-menu-item>
+          <!-- <el-menu-item v-if="isSuperAdmin || canCreateSeats" index="/admin/seats/create">
           <el-icon>
             <Plus/>
           </el-icon>
           <template #title>{{ $t("seats.addSeat") }}</template>
         </el-menu-item> -->
-      </el-sub-menu>
+        </el-sub-menu>
 
-      <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="halls">
-        <template #title>
-          <el-icon>
-            <Monitor />
-          </el-icon>
-          <span>{{ $t("halls.title") }}</span>
-        </template>
-        <el-menu-item index="/admin/halls">
-          <el-icon>
-            <Monitor />
-          </el-icon>
-          <template #title>{{ $t("halls.allHalls") }}</template>
-        </el-menu-item>
-        <!-- <el-menu-item v-if="isSuperAdmin || canCreateHalls" @click="openCreateHallDialog">
+        <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="halls">
+          <template #title>
+            <el-icon>
+              <Monitor />
+            </el-icon>
+            <span>{{ $t("halls.title") }}</span>
+          </template>
+          <el-menu-item index="/admin/halls">
+            <el-icon>
+              <Monitor />
+            </el-icon>
+            <template #title>{{ $t("halls.allHalls") }}</template>
+          </el-menu-item>
+          <!-- <el-menu-item v-if="isSuperAdmin || canCreateHalls" @click="openCreateHallDialog">
           <el-icon>
             <Plus/>
           </el-icon>
           <template #title>{{ $t("halls.addHall") }}</template>
         </el-menu-item> -->
-      </el-sub-menu>
+        </el-sub-menu>
 
-      <el-sub-menu v-if="isSuperAdmin || canViewTheaters" index="theaters">
-        <template #title>
-          <el-icon>
-            <Projector />
-          </el-icon>
-          <span>{{ $t("theaters.title") }}</span>
-        </template>
-        <el-menu-item index="/admin/theaters">
-          <el-icon>
-            <Projector />
-          </el-icon>
-          <template #title>{{ $t("theaters.allTheaters") }}</template>
-        </el-menu-item>
-        <!-- <el-menu-item v-if="isSuperAdmin || canCreateTheaters" index="/admin/theaters/create">
+        <el-sub-menu v-if="isSuperAdmin || canViewTheaters" index="theaters">
+          <template #title>
+            <el-icon>
+              <Projector />
+            </el-icon>
+            <span>{{ $t("theaters.title") }}</span>
+          </template>
+          <el-menu-item index="/admin/theaters">
+            <el-icon>
+              <Projector />
+            </el-icon>
+            <template #title>{{ $t("theaters.allTheaters") }}</template>
+          </el-menu-item>
+          <!-- <el-menu-item v-if="isSuperAdmin || canCreateTheaters" index="/admin/theaters/create">
           <el-icon>
             <Plus/>
           </el-icon>
           <template #title>{{ $t("theaters.addTheater") }}</template>
         </el-menu-item> -->
-      </el-sub-menu>
+        </el-sub-menu>
 
-      <el-sub-menu v-if="isSuperAdmin || canViewMovies" index="movies">
-        <template #title>
-          <el-icon>
-            <Film />
-          </el-icon>
-          <span>{{ $t("movies.title") }}</span>
-        </template>
-        <el-menu-item index="/admin/movies">
-          <el-icon>
-            <Clapperboard />
-          </el-icon>
-          <template #title>{{ $t("movies.allMovies") }}</template>
-        </el-menu-item>
-        <el-menu-item
-          v-if="isSuperAdmin || canCreateMovies"
-          index="/admin/movies/create"
+        <el-sub-menu v-if="isSuperAdmin || canViewMovies" index="movies">
+          <template #title>
+            <el-icon>
+              <Film />
+            </el-icon>
+            <span>{{ $t("movies.title") }}</span>
+          </template>
+          <el-menu-item index="/admin/movies">
+            <el-icon>
+              <Clapperboard />
+            </el-icon>
+            <template #title>{{ $t("movies.allMovies") }}</template>
+          </el-menu-item>
+          <el-menu-item
+            v-if="isSuperAdmin || canCreateMovies"
+            index="/admin/movies/create"
+          >
+            <el-icon>
+              <Plus />
+            </el-icon>
+            <template #title>{{ $t("movies.addMovie") }}</template>
+          </el-menu-item>
+        </el-sub-menu>
+
+        <!-- Promotions -->
+        <el-sub-menu
+          v-if="isSuperAdmin || canViewPromotions"
+          index="promotions"
         >
-          <el-icon>
-            <Plus />
-          </el-icon>
-          <template #title>{{ $t("movies.addMovie") }}</template>
-        </el-menu-item>
-      </el-sub-menu>
+          <template #title>
+            <el-icon>
+              <Tag />
+            </el-icon>
+            <span>{{ $t("promotions.title") }}</span>
+          </template>
+          <el-menu-item index="/admin/promotions">
+            <el-icon>
+              <Tag />
+            </el-icon>
+            <template #title>{{
+              $t("promotions.allPromotions") || "All Promotions"
+            }}</template>
+          </el-menu-item>
+          <el-menu-item
+            v-if="isSuperAdmin || canCreatePromotions"
+            index="/admin/promotions/create"
+          >
+            <el-icon>
+              <Plus />
+            </el-icon>
+            <template #title>{{
+              $t("promotions.addPromotion") || "Add Promotion"
+            }}</template>
+          </el-menu-item>
+        </el-sub-menu>
 
-      <!-- Promotions -->
-      <el-sub-menu v-if="isSuperAdmin || canViewPromotions" index="promotions">
-        <template #title>
-          <el-icon>
-            <Tag />
-          </el-icon>
-          <span>{{ $t("promotions.title") }}</span>
-        </template>
-        <el-menu-item index="/admin/promotions">
-          <el-icon>
-            <Tag />
-          </el-icon>
-          <template #title>{{
-            $t("promotions.allPromotions") || "All Promotions"
-          }}</template>
-        </el-menu-item>
-        <el-menu-item
-          v-if="isSuperAdmin || canCreatePromotions"
-          index="/admin/promotions/create"
-        >
-          <el-icon>
-            <Plus />
-          </el-icon>
-          <template #title>{{
-            $t("promotions.addPromotion") || "Add Promotion"
-          }}</template>
-        </el-menu-item>
-      </el-sub-menu>
+        <el-sub-menu v-if="isSuperAdmin || canViewShowtimes" index="showtimes">
+          <template #title>
+            <el-icon>
+              <Ticket />
+            </el-icon>
+            <span>{{ $t("showtimes.title") }}</span>
+          </template>
+          <el-menu-item index="/admin/showtimes">
+            <el-icon>
+              <Ticket />
+            </el-icon>
+            <template #title>{{ $t("showtimes.allShowtimes") }}</template>
+          </el-menu-item>
+          <el-menu-item
+            v-if="isSuperAdmin || canCreateShowtimes"
+            index="/admin/showtimes/create"
+          >
+            <el-icon>
+              <Plus />
+            </el-icon>
+            <template #title>{{ $t("showtimes.addShowtime") }}</template>
+          </el-menu-item>
+        </el-sub-menu>
 
-      <el-sub-menu v-if="isSuperAdmin || canViewShowtimes" index="showtimes">
-        <template #title>
-          <el-icon>
-            <Ticket />
-          </el-icon>
-          <span>{{ $t("showtimes.title") }}</span>
-        </template>
-        <el-menu-item index="/admin/showtimes">
-          <el-icon>
-            <Ticket />
-          </el-icon>
-          <template #title>{{ $t("showtimes.allShowtimes") }}</template>
-        </el-menu-item>
-        <el-menu-item
-          v-if="isSuperAdmin || canCreateShowtimes"
-          index="/admin/showtimes/create"
-        >
-          <el-icon>
-            <Plus />
-          </el-icon>
-          <template #title>{{ $t("showtimes.addShowtime") }}</template>
-        </el-menu-item>
-      </el-sub-menu>
-
-      <!-- <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="bookings">
+        <!-- <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="bookings">
         <template #title>
           <el-icon>
             <BookOpen />
@@ -220,8 +223,8 @@
         </el-menu-item>
       </el-sub-menu> -->
 
-      <!-- report  -->
-      <!-- <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="bookings">
+        <!-- report  -->
+        <!-- <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="bookings">
         <template #title>
           <el-icon>
            <ClipboardCheck />
@@ -247,68 +250,75 @@
           <template #title>All Payments</template>
         </el-menu-item>
       </el-sub-menu> -->
-      <!-- Customer Management -->
-      <el-sub-menu v-if="isSuperAdmin || canViewUsers || canCreateUsers" index="customers">
-        <template #title>
+        <!-- Customer Management -->
+        <el-sub-menu
+          v-if="isSuperAdmin || canViewUsers || canCreateUsers"
+          index="customers"
+        >
+          <template #title>
+            <el-icon>
+              <Users />
+            </el-icon>
+            <span>{{ $t("customers.title") }}</span>
+          </template>
+          <el-menu-item index="/admin/customers">
+            <el-icon>
+              <Users />
+            </el-icon>
+            <template #title>{{ $t("customers.allCustomers") }}</template>
+          </el-menu-item>
+          <el-menu-item
+            v-if="isSuperAdmin || canCreateUsers"
+            index="/admin/customers/create"
+          >
+            <el-icon>
+              <Plus />
+            </el-icon>
+            <template #title>{{ $t("customers.createCustomer") }}</template>
+          </el-menu-item>
+        </el-sub-menu>
+
+        <!-- User Management (Dialog-based create) -->
+        <el-menu-item v-if="isSuperAdmin || canViewUsers" index="/admin/users">
           <el-icon>
             <Users />
           </el-icon>
-          <span>{{ $t("customers.title") }}</span>
-        </template>
-        <el-menu-item index="/admin/customers">
-          <el-icon>
-            <Users />
-          </el-icon>
-          <template #title>{{ $t("customers.allCustomers") }}</template>
+          <template #title>{{ $t("users.title") }}</template>
         </el-menu-item>
-        <el-menu-item v-if="isSuperAdmin || canCreateUsers" index="/admin/customers/create">
-          <el-icon>
-            <Plus />
-          </el-icon>
-          <template #title>{{ $t("customers.createCustomer") }}</template>
-        </el-menu-item>
-      </el-sub-menu>
 
-      <!-- User Management (Dialog-based create) -->
-      <el-menu-item v-if="isSuperAdmin || canViewUsers" index="/admin/users">
-        <el-icon>
-          <Users />
-        </el-icon>
-        <template #title>{{ $t("users.title") }}</template>
-      </el-menu-item>
+        <!-- System Management (SuperAdmin Only) -->
+        <el-sub-menu v-if="isSuperAdmin" index="system">
+          <template #title>
+            <el-icon>
+              <Shield />
+            </el-icon>
+            <span>{{ $t("system.title") }}</span>
+          </template>
+          <el-menu-item index="/admin/system/permissions">
+            <el-icon>
+              <Shield />
+            </el-icon>
+            <template #title>{{ $t("system.permissions") }}</template>
+          </el-menu-item>
+          <el-menu-item index="/admin/system/role-permissions">
+            <el-icon>
+              <UserCog />
+            </el-icon>
+            <template #title>{{ $t("system.rolePermissions") }}</template>
+          </el-menu-item>
+        </el-sub-menu>
 
-      <!-- System Management (SuperAdmin Only) -->
-      <el-sub-menu v-if="isSuperAdmin" index="system">
-        <template #title>
+        <el-menu-item
+          v-if="isSuperAdmin || canViewSettings"
+          index="/admin/settings"
+        >
           <el-icon>
-            <Shield />
+            <Settings />
           </el-icon>
-          <span>{{ $t("system.title") }}</span>
-        </template>
-        <el-menu-item index="/admin/system/permissions">
-          <el-icon>
-            <Shield />
-          </el-icon>
-          <template #title>{{ $t("system.permissions") }}</template>
+          <template #title>{{ $t("nav.settings") }}</template>
         </el-menu-item>
-        <el-menu-item index="/admin/system/role-permissions">
-          <el-icon>
-            <UserCog />
-          </el-icon>
-          <template #title>{{ $t("system.rolePermissions") }}</template>
-        </el-menu-item>
-      </el-sub-menu>
-
-      <el-menu-item
-        v-if="isSuperAdmin || canViewSettings"
-        index="/admin/settings"
-      >
-        <el-icon>
-          <Settings />
-        </el-icon>
-        <template #title>{{ $t("nav.settings") }}</template>
-      </el-menu-item>
-    </el-menu>
+      </el-menu>
+    </el-scrollbar>
   </div>
 </template>
 
@@ -450,5 +460,9 @@ const theme = computed(() => appStore.theme);
 .logo-image:hover {
   transform: scale(1.05);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+.sidebar-scroll {
+  flex: 1;
+  height: calc(100vh - 60px); /* subtract logo height */
 }
 </style>
