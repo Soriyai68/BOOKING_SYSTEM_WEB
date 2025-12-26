@@ -1,9 +1,14 @@
 <template>
-  <div class="step-content">
-    <el-form style="margin-top: 20px" label-position="top">
-      <el-form-item :label="$t('customers.customer')"></el-form-item>
-      <div>
-        <el-form-item>
+  <div class="payment-step">
+    <el-card shadow="never" class="payment-card">
+      <template #header>
+        <div class="card-header">
+          <span class="flex gap-[10px] items-center"><Wallet :size="18" /> {{ $t("payments.paymentDetails") }}</span>
+        </div>
+      </template>
+
+      <el-form label-position="top">
+        <el-form-item :label="$t('customers.customer')">
           <el-select
             :model-value="customerId"
             @update:modelValue="$emit('update:customerId', $event)"
@@ -13,7 +18,9 @@
             :loading="loading.customers"
             :placeholder="$t('customers.searchAndSelectCustomer')"
             style="width: 100%"
+            size="large"
           >
+            <template #prefix><User :size="18" /></template>
             <el-option
               v-for="customer in customerOptions"
               :key="customer.id"
@@ -22,48 +29,70 @@
             />
           </el-select>
         </el-form-item>
-      </div>
-      <el-form-item :label="$t('payments.paymentMethod')">
-        <el-select
-          :model-value="paymentMethod"
-          @update:modelValue="$emit('update:paymentMethod', $event)"
-          style="width: 100%"
-        >
-          <el-option
-            v-for="method in paymentMethods"
-            :key="method.value"
-            :label="method.label"
-            :value="method.value"
-          />
-        </el-select>
-      </el-form-item>
-      <div v-if="paymentMethod === 'Cash'" class="payment-details">
-        <h4>{{ $t("payments.cashInstructions") }}</h4>
-      </div>
-    </el-form>
+
+        <el-form-item :label="$t('payments.paymentMethod')">
+          <el-radio-group
+            :model-value="paymentMethod"
+            @update:modelValue="$emit('update:paymentMethod', $event)"
+            size="large"
+            style="width: 100%"
+          >
+            <el-radio-button
+              v-for="method in paymentMethods"
+              :key="method.value"
+              :label="method.value"
+            >
+              <div class="payment-method-option">
+                <component
+                  :is="getPaymentMethodIcon(method.value)"
+                  :size="20"
+                />
+                <span>{{ method.label }}</span>
+              </div>
+            </el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+
+        <div v-if="paymentMethod" class="payment-instructions">
+          <el-alert
+            :title="
+              $t(`payments.${paymentMethod.toLowerCase()}InstructionsTitle`)
+            "
+            type="info"
+            show-icon
+            :closable="false"
+          >
+            <p>
+              {{ $t(`payments.${paymentMethod.toLowerCase()}Instructions`) }}
+            </p>
+          </el-alert>
+        </div>
+      </el-form>
+    </el-card>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { ElMessage } from 'element-plus';
-import { customerService } from '@/services/customerService';
-import { paymentService } from '@/services/paymentService';
-import { toLocalPhone } from '@/utils/formatters';
+import { ref, reactive, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
+import { customerService } from "@/services/customerService";
+import { paymentService } from "@/services/paymentService";
+import { toLocalPhone } from "@/utils/formatters";
+import { CircleDollarSign , Wallet, User, Store, CreditCard } from "lucide-vue-next";
 
-const props = defineProps({
+defineProps({
   customerId: {
     type: String,
-    default: null
+    default: null,
   },
   paymentMethod: {
     type: String,
-    default: 'Cash'
-  }
+    default: "Cash",
+  },
 });
 
-defineEmits(['update:customerId', 'update:paymentMethod']);
+defineEmits(["update:customerId", "update:paymentMethod"]);
 
 const { t } = useI18n();
 
@@ -72,9 +101,22 @@ const loading = reactive({
 });
 const customerOptions = ref([]);
 
-const paymentMethods = paymentService.PAYMENT_METHODS.filter(p =>
-  ['Cash', 'Bakong', 'PayAtCinema'].includes(p.value)
+const paymentMethods = paymentService.PAYMENT_METHODS.filter((p) =>
+  ["Cash", "Bakong", "PayAtCinema"].includes(p.value)
 );
+
+const getPaymentMethodIcon = (method) => {
+  switch (method) {
+    case "Cash":
+      return CircleDollarSign ;
+    case "Bakong":
+      return CreditCard;
+    case "PayAtCinema":
+      return Store;
+    default:
+      return DollarSign;
+  }
+};
 
 const getCustomerLabel = (customer) => {
   if (customer.customerType === "walkin") {
@@ -95,14 +137,17 @@ const getCustomerLabel = (customer) => {
   return customer.id;
 };
 
-const loadCustomers = async (query = '') => {
+const loadCustomers = async (query = "") => {
   loading.customers = true;
   try {
-    const response = await customerService.getCustomers({ search: query, limit: 20 });
+    const response = await customerService.getCustomers({
+      search: query,
+      limit: 20,
+    });
     customerOptions.value = response.data;
   } catch (error) {
-    console.error('Failed to load customers:', error);
-    ElMessage.error(t('errors.loadDataFailed'));
+    console.error("Failed to load customers:", error);
+    ElMessage.error(t("errors.loadDataFailed"));
   } finally {
     loading.customers = false;
   }
@@ -114,14 +159,41 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.step-content {
-  margin: 20px 0;
-  padding: 0 40px;
+.payment-card {
+  border: none;
+  background-color: transparent;
 }
-.payment-details {
+.card-header {
+  font-size: 1.2em;
+  font-weight: 600;
+  display: flex;;
+  align-items: center;
+  gap: 8px;
+  color: var(--el-text-color-primary);
+}
+.payment-method-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+.payment-instructions {
   margin-top: 20px;
-  padding: 20px;
-  border: 1px solid #ebeef5;
-  border-radius: 4px;
+}
+
+.el-radio-group {
+  display: flex;
+}
+
+.el-radio-button {
+  flex: 1;
+}
+
+:deep(.el-radio-button__inner) {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

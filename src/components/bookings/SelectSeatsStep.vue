@@ -1,34 +1,70 @@
 <template>
-  <div class="step-content">
-    <div v-if="loading.seats" v-loading="loading.seats" style="min-height: 200px"></div>
+  <div class="select-seats-step">
+    <el-alert :title="$t('bookings.selectSeatsInstruction')" type="info" show-icon :closable="false" style="margin-bottom: 20px;"></el-alert>
+    <div v-if="loading.seats" v-loading="loading.seats" style="min-height: 300px; width: 100%;"></div>
     <div v-else class="seat-map-container">
-      <div class="screen">{{ $t("bookings.screen") }}</div>
+      <div class="screen-container">
+        <div class="screen-arc"></div>
+        <div class="screen-text">{{ $t("bookings.screen") }}</div>
+      </div>
+
       <div class="seat-map">
-        <div v-for="row in seatRows" :key="row.row" class="seat-row">
+        <div v-for="row in seatLayout" :key="row.row" class="seat-row">
           <div class="row-label">{{ row.row }}</div>
-          <div
-            v-for="seat in row.seats"
-            :key="seat.id"
-            class="seat"
-            :class="getSeatClass(seat)"
-            @click="toggleSeat(seat)"
-          >
-            {{ seat.seat_number }}
+          <div class="seats-container">
+            <div class="seats-section" v-if="row.sections.left.length">
+              <div
+                  v-for="seat in row.sections.left"
+                  :key="seat.id"
+                  class="seat"
+                  :class="getSeatClass(seat)"
+                  @click="toggleSeat(seat)"
+                  :title="`${seat.row}${seat.seat_number}`"
+              >
+                <span class="seat-number">{{ seat.seat_number }}</span>
+              </div>
+            </div>
+            <div class="seats-section" v-if="row.sections.middle.length">
+              <div
+                  v-for="seat in row.sections.middle"
+                  :key="seat.id"
+                  class="seat"
+                  :class="getSeatClass(seat)"
+                  @click="toggleSeat(seat)"
+                  :title="`${seat.row}${seat.seat_number}`"
+              >
+                <span class="seat-number">{{ seat.seat_number }}</span>
+              </div>
+            </div>
+            <div class="seats-section" v-if="row.sections.right.length">
+              <div
+                  v-for="seat in row.sections.right"
+                  :key="seat.id"
+                  class="seat"
+                  :class="getSeatClass(seat)"
+                  @click="toggleSeat(seat)"
+                  :title="`${seat.row}${seat.seat_number}`"
+              >
+                <span class="seat-number">{{ seat.seat_number }}</span>
+              </div>
+            </div>
           </div>
+          <div class="row-label">{{ row.row }}</div>
         </div>
       </div>
+
       <div class="legend">
         <div class="legend-item">
-          <span class="seat available"></span>
-          {{ $t("seats.statuses.available") }}
+          <div class="seat available"><span class="seat-number"></span></div>
+          <span>{{ $t("seats.statuses.available") }}</span>
         </div>
         <div class="legend-item">
-          <span class="seat selected"></span>
-          {{ $t("seats.statuses.selected") }}
+          <div class="seat selected"><span class="seat-number"></span></div>
+          <span>{{ $t("seats.statuses.selected") }}</span>
         </div>
         <div class="legend-item">
-          <span class="seat booked"></span>
-          {{ $t("seats.statuses.booked") }}
+          <div class="seat booked"><span class="seat-number"></span></div>
+          <span>{{ $t("seats.statuses.booked") }}</span>
         </div>
       </div>
     </div>
@@ -72,7 +108,7 @@ const loadSeatData = async () => {
 
     hallSeats.value = seatResponse.data;
     bookedSeats.value = bookings.seatBookings.map((b) => b.seatId?._id.toString());
-    
+
     // After loading seat data, we can emit the details of any already selected seats.
     const newSelectedSeats = new Set(props.modelValue);
     const selectedDetails = hallSeats.value.filter(s => newSelectedSeats.has(s.id?.toString()));
@@ -100,6 +136,39 @@ const seatRows = computed(() => {
   return Object.values(rows).sort((a, b) => a.row.localeCompare(b.row));
 });
 
+const seatLayout = computed(() => {
+  if (!seatRows.value.length) return [];
+
+  return seatRows.value.map(row => {
+    const seats = row.seats;
+    const totalSeats = seats.length;
+
+    let leftSeats = [], middleSeats = [], rightSeats = [];
+
+    if (totalSeats < 7) { // For small rows, display as a single block
+      middleSeats = seats;
+    } else if (totalSeats < 13) { // For medium rows, split into two blocks
+      const splitPoint = Math.ceil(totalSeats / 2);
+      leftSeats = seats.slice(0, splitPoint);
+      rightSeats = seats.slice(splitPoint);
+    } else { // For large rows, split into three blocks
+      const sideSize = Math.floor(totalSeats / 4);
+      leftSeats = seats.slice(0, sideSize);
+      middleSeats = seats.slice(sideSize, totalSeats - sideSize);
+      rightSeats = seats.slice(totalSeats - sideSize);
+    }
+
+    return {
+      ...row,
+      sections: {
+        left: leftSeats,
+        middle: middleSeats,
+        right: rightSeats,
+      }
+    };
+  });
+});
+
 const getSeatClass = (seat) => {
   const seatId = seat.id?.toString();
   if (bookedSeats.value.includes(seatId)) return "booked";
@@ -124,108 +193,161 @@ const toggleSeat = (seat) => {
 };
 
 watch(() => props.showtime, (newShowtime) => {
-  if (newShowtime) {
-    loadSeatData();
-  }
-}, { immediate: true });
+      if (newShowtime) {
+        loadSeatData();
+      }
+    }, { immediate: true });
 
 </script>
 
 <style scoped>
-.step-content {
-  margin: 20px 0;
-  padding: 0 40px;
+.select-seats-step {
+  margin: 0 auto;
+  padding: 20px 40px;
+  max-width: 11000px;
+  outline: 1px solid var(--el-border-color-lighter);
 }
+
 .seat-map-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: var(--el-fill-color-lighter);
+  padding: 40px;
+  border-radius: 8px;
 }
 
-.screen {
-  width: 80%;
-  padding: 10px;
-  margin-bottom: 30px;
-  background-color: var(
-    --el-color-info-dark-2
-  ); 
-  color: var(--el-color-white);
+.screen-container {
+  width: 100%;
   text-align: center;
-  border-radius: 5px;
+  margin-bottom: 40px;
+  position: relative;
+  height: 50px; /* Made thinner */
+}
+
+.screen-arc {
+  width: 80%;
+  height: 100px;
+  border:  4px solid var(--el-fill-color-light);
+  border-color: var(--el-text-color-primary) transparent transparent transparent;
+  border-radius: 100% / 25px;
+  position: absolute;
+  left: 10%;
+  top: 0;
+  box-sizing: content-box;
+  opacity: 0.2;
+}
+
+.screen-text {
+  position: relative;
+  top: -25px;
+  color: var(--el-text-color-secondary);
   text-transform: uppercase;
+  font-weight: bold;
 }
 
 .seat-map {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  width: 100%;
 }
 
 .seat-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 20px;
 }
 
 .row-label {
-  width: 20px;
+  width: 25px;
   font-weight: bold;
-  color: var(--el-text-color-regular); 
+  color: var(--el-text-color-secondary);
+  text-align: center;
 }
 
-.seat {
-  width: 30px;
-  height: 30px;
+.seats-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid var(--el-border-color); 
-  border-radius: 5px;
+  gap: 36px;
+}
+
+.seats-section {
+  display: flex;
+  gap: 12px;
+}
+
+.seat {
+  width: 25px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px 6px 2px 2px;
   cursor: pointer;
-  font-size: 12px;
   user-select: none;
+  transition: all 0.2s ease-in-out;
+  font-weight: 600;
+  position: relative;
+}
+
+.seat-number {
+  font-size: 12px;
 }
 
 .seat.available {
-  background-color: var(
-    --el-fill-color-blank
-  ); 
-  color: var(--el-text-color-primary); 
+  background-color: var(--el-color-info-light-7);
+  color: var(--el-text-color-regular);
 }
 .seat.available:hover {
-  background-color: var(
-    --el-fill-color-light
-  ); 
+  background-color: var(--el-color-info-light-5);
+  transform: scale(1.1);
 }
+
 .seat.selected {
   background-color: var(--el-color-primary);
-  color: var(--el-color-white);
-  border-color: var(--el-color-primary);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 0 12px var(--el-color-primary-light-3);
 }
+
 .seat.booked {
-  background-color: var(
-    --el-color-info-light-3
-  ); 
+  background-color: var(--el-color-info);
   color: var(--el-color-white);
   cursor: not-allowed;
-  border-color: var(--el-color-info-light-3);
 }
 
 .legend {
-  margin-top: 20px;
+  margin-top: 50px;
   display: flex;
-  gap: 20px;
+  gap: 25px;
+  padding: 10px 10px;
+  background: var(--el-bg-color-overlay);
+  border-radius: 6px;
+  box-shadow: var(--el-box-shadow-light);
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  font-size: 14px;
 }
 
 .legend-item .seat {
-  width: 20px;
-  height: 20px;
+  width: 13px;
+  height: 15px;
   cursor: default;
+  transform: scale(1);
+  box-shadow: none;
 }
+.legend-item .seat:hover {
+  transform: none;
+}
+.legend-item .seat .seat-number {
+  display: none;
+}
+
 </style>

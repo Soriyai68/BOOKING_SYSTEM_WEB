@@ -135,6 +135,7 @@ export default {
       reserved: "បានបម្រុង",
       expired: "ផុតកំណត់",
       canceled: "បានលុបចោល",
+      selected: "បានជ្រើសរើស",
     },
     deleteSelectedConfirm:
       "តើអ្នកប្រាកដទេថាចង់លុបកៅអីដែលបានជ្រើសរើស {count} មែនទេ?",

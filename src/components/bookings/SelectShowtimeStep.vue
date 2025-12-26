@@ -2,7 +2,7 @@
   <div class="step-content">
     <div class="filter-controls">
       <el-input
-        style="width: 1200px"
+        style="width: 650px"
         v-model="showtimeSearch"
         :placeholder="$t('bookings.searchByMovie')"
         clearable
@@ -277,8 +277,9 @@ onMounted(() => {
 
 <style scoped>
 .step-content {
-  margin: 20px 0;
-  padding: 0 40px;
+  margin: 0px;
+  padding: 30px 40px;
+  outline: 1px solid var(--el-border-color-lighter);
 }
 
 /* Showtime List Styles */
@@ -364,7 +365,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 2rem;
 }
 
 .details-header {
@@ -376,6 +377,7 @@ onMounted(() => {
 .movie-title {
   font-size: 1.25rem;
   font-weight: bold;
+  margin-bottom: 15px;
   color: var(--el-text-color-primary);
   transition: color 0.3s;
 }
@@ -388,7 +390,7 @@ onMounted(() => {
   margin-top: 0.5rem;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.25rem 1rem;
+  gap: 1rem 1rem;
   font-size: 0.875rem;
   color: var(--el-text-color-secondary);
 }
@@ -419,7 +421,7 @@ onMounted(() => {
 .occupancy-progress-container {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: .75rem;
 }
 
 .occupancy-labels {
@@ -497,7 +499,7 @@ onMounted(() => {
   flex-grow: 1;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   flex-wrap: wrap;
   gap: 10px;
 }
