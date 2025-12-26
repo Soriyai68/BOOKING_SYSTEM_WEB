@@ -120,22 +120,16 @@
           width="100"
         />
         <el-table-column
-          prop="release_date_formatted"
+          prop="release_date"
           :label="$t('movies.releaseDate')"
           width="160"
         >
-          <template #default="{ row }">
-            {{ formatDate(row.release_date) }}
-          </template>
         </el-table-column>
         <el-table-column
           prop="end_date"
           :label="$t('movies.endDate')"
           width="140"
         >
-          <template #default="{ row }">
-            {{ formatDate(row.end_date) }}
-          </template>
         </el-table-column>
         <el-table-column prop="rating" :label="$t('movies.rating')" width="150">
           <template #default="{ row }">

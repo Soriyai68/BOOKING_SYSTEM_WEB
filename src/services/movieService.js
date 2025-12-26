@@ -1,4 +1,5 @@
 import api from "@/utils/api";
+import { formatDate } from "../utils/formatters";
 
 export const movieService = {
   // Constants
@@ -77,13 +78,8 @@ export const movieService = {
           duration_display:
             movie.duration_display ||
             this.formatDuration(movie.duration_minutes),
-          release_date: movie.release_date,
-          release_date_formatted:
-            movie.release_date_formatted ||
-            (movie.release_date
-              ? new Date(movie.release_date).toLocaleDateString()
-              : ""),
-          end_date: new Date(movie.end_date).toLocaleDateString(),
+          release_date: formatDate(movie.release_date),
+          end_date: formatDate(movie.end_date),
           rating: movie.rating || 0,
           poster_url: movie.poster_url,
           trailer_url: movie.trailer_url,
@@ -125,13 +121,8 @@ export const movieService = {
         duration_minutes: movie.duration_minutes,
         duration_display:
           movie.duration_display || this.formatDuration(movie.duration_minutes),
-        release_date: movie.release_date,
-        release_date_formatted:
-          movie.release_date_formatted ||
-          (movie.release_date
-            ? new Date(movie.release_date).toLocaleDateString()
-            : ""),
-        end_date: new Date(movie.end_date).toLocaleDateString(),
+        release_date: formatDate(movie.release_date),
+        end_date: formatDate(movie.end_date),
         rating: movie.rating || 0,
         poster_url: movie.poster_url,
         trailer_url: movie.trailer_url,

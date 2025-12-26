@@ -35,7 +35,10 @@
           v-for="showtime in showtimeOptions"
           :key="showtime.id"
           @click="selectShowtime(showtime)"
-          :class="['showtime-card', { selected: modelValue?.id === showtime.id }]"
+          :class="[
+            'showtime-card',
+            { selected: modelValue?.id === showtime.id },
+          ]"
         >
           <div class="showtime-card-content-wrapper">
             <!-- Poster Image -->
@@ -63,11 +66,14 @@
                 <div class="showtime-meta-grid">
                   <div class="showtime-meta-item">
                     <MapPin class="meta-icon" />
-                    <span>{{ showtime.theater_name }} • {{ showtime.hall_name }}</span>
+                    <span
+                      >{{ showtime.theater_name }} •
+                      {{ showtime.hall_name }}</span
+                    >
                   </div>
                   <div class="showtime-meta-item">
                     <Calendar class="meta-icon" />
-                    <span>{{ formatDate(showtime.show_date) }}</span>
+                    <span>{{ showtime.show_date }}</span>
                   </div>
                   <div class="showtime-meta-item">
                     <Clock class="meta-icon" />
@@ -75,7 +81,10 @@
                   </div>
                   <div class="showtime-meta-item">
                     <Ticket class="meta-icon" />
-                    <span>{{ showtime.bookedCount }} / {{ showtime.totalCount }} {{ $t("bookings.seats") }}</span>
+                    <span
+                      >{{ showtime.bookedCount }} / {{ showtime.totalCount }}
+                      {{ $t("bookings.seats") }}</span
+                    >
                   </div>
                 </div>
               </div>
@@ -83,11 +92,17 @@
               <!-- Progress Bar -->
               <div class="occupancy-progress-container">
                 <div class="occupancy-labels">
-                  <span class="occupancy-text">{{ $t("bookings.occupancy") }}</span>
+                  <span class="occupancy-text">{{
+                    $t("bookings.occupancy")
+                  }}</span>
                   <span
-                    :class="['occupancy-percentage', { 'high-occupancy': showtime.occupancy > 0.9 }]"
+                    :class="[
+                      'occupancy-percentage',
+                      { 'high-occupancy': showtime.occupancy > 0.9 },
+                    ]"
                   >
-                    {{ Math.round(showtime.occupancy * 100) }}% {{ $t("bookings.full") }}
+                    {{ Math.round(showtime.occupancy * 100) }}%
+                    {{ $t("bookings.full") }}
                   </span>
                 </div>
                 <div class="progress-bar-background">
@@ -109,7 +124,9 @@
           <el-icon :size="40"><Search /></el-icon>
         </div>
         <h3 class="placeholder-title">{{ $t("bookings.noShowtimesFound") }}</h3>
-        <p class="placeholder-subtitle">{{ $t("bookings.tryAdjustingFilters") }}</p>
+        <p class="placeholder-subtitle">
+          {{ $t("bookings.tryAdjustingFilters") }}
+        </p>
         <el-button
           link
           type="primary"
@@ -199,9 +216,13 @@ const loadShowtimes = async () => {
               totalCount,
             };
           } catch (e) {
-            console.error(`Failed to load occupancy for showtime ${showtime.id}`, e);
+            console.error(
+              `Failed to load occupancy for showtime ${showtime.id}`,
+              e
+            );
             return {
               ...showtime,
+              show_date: formatDate(showtime.start_time),
               occupancy: 0,
               bookedCount: "?",
               totalCount: "?",
@@ -261,7 +282,7 @@ onMounted(() => {
 }
 
 /* Showtime List Styles */
-.showtime-list { 
+.showtime-list {
   width: 100%;
 }
 
@@ -271,7 +292,7 @@ onMounted(() => {
   gap: 1rem;
 }
 
-.showtime-card { 
+.showtime-card {
   position: relative;
   overflow: hidden;
   border-radius: 1rem;
@@ -295,11 +316,11 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
-  padding: .75rem;
+  padding: 0.75rem;
 }
 
 @media (min-width: 640px) {
-  .showtime-card-content-wrapper { 
+  .showtime-card-content-wrapper {
     flex-direction: row;
   }
 }
@@ -324,7 +345,7 @@ onMounted(() => {
   }
 }
 
-.selling-fast-badge { 
+.selling-fast-badge {
   position: absolute;
   top: 0.5rem;
   left: 0.5rem;
@@ -352,18 +373,18 @@ onMounted(() => {
   align-items: flex-start;
 }
 
-.movie-title { 
+.movie-title {
   font-size: 1.25rem;
   font-weight: bold;
   color: var(--el-text-color-primary);
   transition: color 0.3s;
 }
 
-.showtime-card:hover .movie-title { 
+.showtime-card:hover .movie-title {
   color: var(--el-color-primary);
 }
 
-.showtime-meta-grid { 
+.showtime-meta-grid {
   margin-top: 0.5rem;
   display: grid;
   grid-template-columns: 1fr;
@@ -373,18 +394,18 @@ onMounted(() => {
 }
 
 @media (min-width: 640px) {
-  .showtime-meta-grid { 
+  .showtime-meta-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.showtime-meta-item { 
+.showtime-meta-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.meta-icon { 
+.meta-icon {
   width: 1rem;
   height: 1rem;
   color: var(--el-color-primary);
@@ -395,13 +416,13 @@ onMounted(() => {
   color: var(--el-text-color-regular);
 }
 
-.occupancy-progress-container { 
+.occupancy-progress-container {
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
 }
 
-.occupancy-labels { 
+.occupancy-labels {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
