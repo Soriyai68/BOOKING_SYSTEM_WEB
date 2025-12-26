@@ -218,7 +218,7 @@ const submitBooking = async () => {
 
       if (paymentResponse.success) {
         await bookingService.updateBooking(currentBookingId.value, {
-          booking_status: "Completed",
+          booking_status: "Confirmed",
           payment_status: "Completed",
         });
         ElMessage.success(t("bookings.createSuccess"));
