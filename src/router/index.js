@@ -428,6 +428,19 @@ const routes = [
         },
       },
 
+      // booking tickets
+      {
+        path: "booking-tickets",
+        name: "BookingTickets",
+        component: () =>
+          import("@/views/bookingTicket/BookingTicketList.vue"),
+        meta: {
+          title: "Booking Tickets Management",
+          titleKey: "bookingTickets.title",
+          ...createPermissionMeta(PERMISSIONS.BOOKING_TICKETS_VIEW),
+        },
+      },
+
       {
         path: "seat-booking-history",
         name: "AdminSeatBookingHistory",

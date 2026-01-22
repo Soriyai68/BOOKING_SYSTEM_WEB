@@ -81,6 +81,12 @@ export function usePermissions() {
     canDeleteBookingDetails: permissionStore.canDeleteBookingDetails,
     canManageBookingDetails: permissionStore.canManageBookingDetails,
 
+    canViewBookingTickets: permissionStore.canViewBookingTickets,
+    canCreateBookingTickets: permissionStore.canCreateBookingTickets,
+    canEditBookingTickets: permissionStore.canEditBookingTickets,
+    canDeleteBookingTickets: permissionStore.canDeleteBookingTickets,
+    canManageBookingTickets: permissionStore.canManageBookingTickets,
+
     canViewInvoices: permissionStore.canViewInvoices,
     canCreateInvoices: permissionStore.canCreateInvoices,
     canEditInvoices: permissionStore.canEditInvoices,
@@ -177,6 +183,13 @@ export const PERMISSIONS = {
   BOOKING_DETAILS_EDIT: 'bookingDetails.edit',
   BOOKING_DETAILS_DELETE: 'bookingDetails.delete',
   BOOKING_DETAILS_MANAGE: 'bookingDetails.manage',
+
+  // Booking Tickets
+  BOOKING_TICKETS_VIEW: 'bookingTickets.view',
+  BOOKING_TICKETS_CREATE: 'bookingTickets.create',
+  BOOKING_TICKETS_EDIT: 'bookingTickets.edit',
+  BOOKING_TICKETS_DELETE: 'bookingTickets.delete',
+  BOOKING_TICKETS_MANAGE: 'bookingTickets.manage',
 
   // Promotions
   PROMOTION_VIEW: 'promotions.view',

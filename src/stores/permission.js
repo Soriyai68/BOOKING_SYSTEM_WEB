@@ -118,11 +118,29 @@ export const usePermissionStore = defineStore("permission", () => {
   const canDeleteBookings = computed(() => canDelete('bookings'));
   const canManageBookings = computed(() => canManage('bookings'));
 
+  const canViewBookingTickets = computed(() => canView('bookingTickets'));
+  const canCreateBookingTickets = computed(() => canCreate('bookingTickets'));
+  const canEditBookingTickets = computed(() => canEdit('bookingTickets'));
+  const canDeleteBookingTickets = computed(() => canDelete('bookingTickets'));
+  const canManageBookingTickets = computed(() => canManage('bookingTickets'));
+
   const canViewPromotions = computed(() => canView('promotions'));
   const canCreatePromotions = computed(() => canCreate('promotions'));
   const canEditPromotions = computed(() => canEdit('promotions'));
   const canDeletePromotions = computed(() => canDelete('promotions'));
   const canManagePromotions = computed(() => canManage('promotions'));
+
+  const canViewInvoices = computed(() => canView('invoices'));
+  const canCreateInvoices = computed(() => canCreate('invoices'));
+  const canEditInvoices = computed(() => canEdit('invoices'));
+  const canDeleteInvoices = computed(() => canDelete('invoices'));
+  const canManageInvoices = computed(() => canManage('invoices'));
+
+  const canViewPayments = computed(() => canView('payments'));
+  const canCreatePayments = computed(() => canCreate('payments'));
+  const canEditPayments = computed(() => canEdit('payments'));
+  const canDeletePayments = computed(() => canDelete('payments'));
+  const canManagePayments = computed(() => canManage('payments'));
 
 
   // Actions
@@ -293,11 +311,29 @@ export const usePermissionStore = defineStore("permission", () => {
     canDeleteBookings,
     canManageBookings,
 
+    canViewBookingTickets,
+    canCreateBookingTickets,
+    canEditBookingTickets,
+    canDeleteBookingTickets,
+    canManageBookingTickets,
+
     canViewPromotions,
     canCreatePromotions,
     canEditPromotions,
     canDeletePromotions,
     canManagePromotions,
+
+    canViewInvoices,
+    canCreateInvoices,
+    canEditInvoices,
+    canDeleteInvoices,
+    canManageInvoices,
+
+    canViewPayments,
+    canCreatePayments,
+    canEditPayments,
+    canDeletePayments,
+    canManagePayments,
 
     canViewDashboard,
     canViewAnalytics,

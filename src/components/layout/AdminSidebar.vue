@@ -29,15 +29,35 @@
         </el-menu-item>
 
         <!-- Booking Management -->
-        <el-menu-item
-          v-if="isSuperAdmin || canViewBookings"
-          index="/admin/bookings"
+        <el-sub-menu
+          v-if="isSuperAdmin || canViewBookings || canViewBookingTickets"
+          index="bookings"
         >
-          <el-icon>
-            <BookOpen />
-          </el-icon>
-          <template #title>{{ $t("bookings.title") }}</template>
-        </el-menu-item>
+          <template #title>
+            <el-icon>
+              <BookOpen />
+            </el-icon>
+            <span>{{ $t("bookings.title") }}</span>
+          </template>
+          <el-menu-item
+            v-if="isSuperAdmin || canViewBookings"
+            index="/admin/bookings"
+          >
+            <el-icon>
+              <BookOpen />
+            </el-icon>
+            <template #title>{{ $t("bookings.title") }}</template>
+          </el-menu-item>
+          <el-menu-item
+            v-if="isSuperAdmin || canViewBookingTickets"
+            index="/admin/booking-tickets"
+          >
+            <el-icon>
+              <Ticket />
+            </el-icon>
+            <template #title>{{ $t("bookingTickets.title") }}</template>
+          </el-menu-item>
+        </el-sub-menu>
 
         <!-- Payment Management -->
         <el-menu-item
@@ -365,6 +385,7 @@ const {
   canViewShowtimes,
   canCreateShowtimes,
   canViewBookings,
+  canViewBookingTickets,
   canViewPayments, // Added canViewPayments
   isSuperAdmin,
 } = usePermissions();
