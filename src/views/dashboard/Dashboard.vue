@@ -61,102 +61,7 @@
           </div>
         </el-card>
       </el-col>
-    </el-row>
-
-    <!-- Charts and Tables Row -->
-    <el-row :gutter="24" class="content-row">
-      <el-col :xs="24" :lg="16">
-        <el-card class="chart-card">
-          <template #header>
-            <div class="card-header">
-              <span>Booking Trends</span>
-              <el-select
-                v-model="chartPeriod"
-                size="small"
-                style="width: 120px"
-              >
-                <el-option label="This Week" value="week" />
-                <el-option label="This Month" value="month" />
-                <el-option label="This Year" value="year" />
-              </el-select>
-            </div>
-          </template>
-          <div class="chart-placeholder">
-            <p>Chart will be displayed here</p>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :lg="8">
-        <el-card class="activity-card">
-          <template #header>
-            <span>Recent Activities</span>
-          </template>
-          <div class="activity-list">
-            <div
-              v-for="activity in recentActivities"
-              :key="activity.id"
-              class="activity-item"
-            >
-              <div class="activity-icon">
-                <el-icon><Bell /></el-icon>
-              </div>
-              <div class="activity-content">
-                <p class="activity-text">{{ activity.text }}</p>
-                <span class="activity-time">{{ activity.time }}</span>
-              </div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <!-- Recent Bookings Table -->
-    <el-card class="table-card">
-      <template #header>
-        <div class="card-header">
-          <span>Recent Bookings</span>
-          <el-button
-            v-permission="'bookings.view'"
-            type="primary"
-            size="small"
-            @click="$router.push('/admin/bookings')"
-          >
-            View All
-          </el-button>
-        </div>
-      </template>
-
-      <el-table :data="recentBookings" style="width: 100%" v-loading="loading">
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="user_name" label="User" />
-        <el-table-column prop="movie_title" label="Movie" />
-        <el-table-column prop="show_date" label="Show Date" />
-        <el-table-column prop="seats" label="Seats" width="80" />
-        <el-table-column prop="total_amount" label="Amount" width="100">
-          <template #default="{ row }"> ${{ row.total_amount }} </template>
-        </el-table-column>
-        <el-table-column prop="status" label="Status" width="120">
-          <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)">
-              {{ row.status }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="Actions" width="100">
-          <template #default="{ row }">
-            <el-button
-              type="primary"
-              size="small"
-              link
-              @click="viewBooking(row.id)"
-            >
-              View
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
+    </el-row> 
   </div>
 </template>
 
@@ -172,6 +77,7 @@ import {
   Money,
   Bell,
 } from "@element-plus/icons-vue";
+import reportService from "@/services/reportService";
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -181,10 +87,10 @@ const loading = ref(false);
 const chartPeriod = ref("month");
 
 // Statistics
-const totalUsers = ref(1234);
-const totalMovies = ref(45);
-const totalBookings = ref(5678);
-const totalRevenue = ref("89,420");
+const totalUsers = ref(0);
+const totalMovies = ref(0);
+const totalBookings = ref(0);
+const totalRevenue = ref(0);
 
 // i18n for translations
 const { t } = useI18n();
@@ -258,15 +164,22 @@ const viewBooking = (id) => {
 const loadDashboardData = async () => {
   loading.value = true;
   try {
-    // TODO: Replace with actual API calls
-    // const response = await api.get('/dashboard/stats')
-    // Update statistics with response data
-    setTimeout(() => {
-      loading.value = false;
-    }, 1000);
+    const [customersData, bookingsData, revenueData, moviesData] =
+      await Promise.all([
+        reportService.getTotalCustomers(),
+        reportService.getTotalBookings(),
+        reportService.getTotalRevenue(),
+        reportService.getTotalMovies(),
+      ]);
+
+    totalUsers.value = customersData.totalCustomers;
+    totalBookings.value = bookingsData.totalBookings;
+    totalRevenue.value = revenueData.totalRevenue;
+    totalMovies.value = moviesData.totalMovies;
   } catch (error) {
-    loading.value = false;
     console.error("Failed to load dashboard data:", error);
+  } finally {
+    loading.value = false;
   }
 };
 

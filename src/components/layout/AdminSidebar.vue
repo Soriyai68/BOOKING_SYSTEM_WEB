@@ -243,33 +243,6 @@
         </el-menu-item>
       </el-sub-menu> -->
 
-        <!-- report  -->
-        <!-- <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="bookings">
-        <template #title>
-          <el-icon>
-           <ClipboardCheck />
-          </el-icon>
-          <span>Reports Management</span>
-        </template>
-        <el-menu-item index="/admin/bookings">
-          <el-icon>
-            <BookOpen />
-          </el-icon>
-          <template #title>All Reports</template>
-        </el-menu-item>
-        <el-menu-item index="/admin/bookings">
-          <el-icon>
-            <BookOpen />
-          </el-icon>
-          <template #title>All Bookings</template>
-        </el-menu-item>
-        <el-menu-item index="/admin/bookings">
-          <el-icon>
-            <BookOpen />
-          </el-icon>
-          <template #title>All Payments</template>
-        </el-menu-item>
-      </el-sub-menu> -->
         <!-- Customer Management -->
         <el-sub-menu
           v-if="isSuperAdmin || canViewUsers || canCreateUsers"
@@ -295,6 +268,34 @@
               <Plus />
             </el-icon>
             <template #title>{{ $t("customers.createCustomer") }}</template>
+          </el-menu-item>
+        </el-sub-menu>
+
+        <!-- report  -->
+        <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="bookings">
+          <template #title>
+            <el-icon>
+              <ClipboardCheck />
+            </el-icon>
+            <span>Reports Management</span>
+          </template>
+          <el-menu-item index="/admin/bookings">
+            <el-icon>
+              <BookOpen />
+            </el-icon>
+            <template #title>All Reports</template>
+          </el-menu-item>
+          <el-menu-item index="/admin/bookings">
+            <el-icon>
+              <BookOpen />
+            </el-icon>
+            <template #title>All Bookings</template>
+          </el-menu-item>
+          <el-menu-item index="/admin/bookings">
+            <el-icon>
+              <BookOpen />
+            </el-icon>
+            <template #title>All Payments</template>
           </el-menu-item>
         </el-sub-menu>
 
@@ -328,6 +329,7 @@
           </el-menu-item>
         </el-sub-menu>
 
+        <!-- Settings -->
         <el-menu-item
           v-if="isSuperAdmin || canViewSettings"
           index="/admin/settings"
@@ -364,6 +366,7 @@ import {
   Users,
   History,
   CreditCard, // Added CreditCard icon
+  ClipboardCheck,
 } from "lucide-vue-next";
 
 const route = useRoute();
