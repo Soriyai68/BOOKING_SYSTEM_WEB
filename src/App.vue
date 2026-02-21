@@ -57,14 +57,11 @@ onMounted(async () => {
 }
 
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
   font-family: "Inter", "Siemreap", sans-serif;
 }
 
 body {
-  margin: 0;
   background-color: #f5f7fa;
 }
 </style>

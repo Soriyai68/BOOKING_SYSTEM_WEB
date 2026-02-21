@@ -60,7 +60,7 @@ html {
 body {
     background-color: var(--bg-color-secondary);
     color: var(--text-color-primary);
-    margin: 0;
+    /* margin: 0; */
     transition: background-color 0.3s, color 0.3s;
     min-height: 100vh; /* Ensure body takes full viewport height */
 }
@@ -73,124 +73,12 @@ canvas,
 svg {
   display: block;
   max-width: 100%;
-  height: auto; /* Maintain aspect ratio */
 }
 
 .page-header h2 {
     margin: 0;
     color: var(--el-text-color-primary);
 }
-
-/* Element Plus Dark Theme Override */
-/*
-.dark .el-card {
-  background-color: var(--bg-color-primary) !important;
-  border-color: var(--border-color) !important;
-  color: var(--text-color-primary) !important;
-}
-
-.dark .el-input__wrapper {
-  background-color: var(--bg-color-tertiary) !important;
-  border-color: var(--border-color) !important;
-  color: var(--text-color-primary) !important;
-}
-
-.dark .el-input__inner {
-  background-color: transparent !important;
-  color: var(--text-color-primary) !important;
-}
-
-.dark .el-menu {
-  background-color: var(--bg-color-primary) !important;
-  border-color: var(--border-color) !important;
-}
-
-.dark .el-menu-item {
-  color: var(--text-color-secondary) !important;
-}
-
-.dark .el-menu-item:hover {
-  background-color: var(--bg-color-tertiary) !important;
-  color: var(--text-color-primary) !important;
-}
-
-.dark .el-menu-item.is-active {
-  color: var(--primary-color) !important;
-  background-color: var(--bg-color-tertiary) !important;
-}
-
-.dark .el-table {
-  background-color: var(--bg-color-primary) !important;
-  color: var(--text-color-primary) !important;
-}
-
-.dark .el-table th.el-table__cell {
-  background-color: var(--bg-color-secondary) !important;
-  color: var(--text-color-primary) !important;
-  border-color: var(--border-color) !important;
-}
-
-.dark .el-table td.el-table__cell {
-  border-color: var(--border-color) !important;
-}
-
-.dark .el-table tr {
-  background-color: var(--bg-color-primary) !important;
-}
-
-.dark
-  .el-table--striped
-  .el-table__body
-  tr.el-table__row--striped
-  td.el-table__cell {
-  background-color: var(--bg-color-tertiary) !important;
-}
-
-.dark .el-button {
-  border-color: var(--border-color) !important;
-}
-
-.dark .el-button--default {
-  background-color: var(--bg-color-primary) !important;
-  color: var(--text-color-primary) !important;
-  border-color: var(--border-color) !important;
-}
-
-.dark .el-button--default:hover {
-  background-color: var(--bg-color-tertiary) !important;
-  border-color: var(--primary-color) !important;
-  color: var(--primary-color) !important;
-}
-
-.dark .el-select {
-  background-color: var(--bg-color-primary) !important;
-}
-
-.dark .el-select .el-input__wrapper {
-  background-color: var(--bg-color-tertiary) !important;
-  border-color: var(--border-color) !important;
-}
-
-.dark .el-popper {
-  background-color: var(--bg-color-primary) !important;
-  border-color: var(--border-color) !important;
-  color: var(--text-color-primary) !important;
-}
-
-.dark .el-dropdown-menu {
-  background-color: var(--bg-color-primary) !important;
-  border-color: var(--border-color) !important;
-}
-
-.dark .el-dropdown-menu__item {
-  color: var(--text-color-primary) !important;
-}
-
-.dark .el-dropdown-menu__item:hover {
-  background-color: var(--bg-color-tertiary) !important;
-  color: var(--primary-color) !important;
-}
-*/
 
 /* Custom Theme Classes */
 .theme-bg-primary {

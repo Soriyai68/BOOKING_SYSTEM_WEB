@@ -3,12 +3,11 @@
     <header>
       <!-- Client Header - You can customize this -->
       <nav>
-        <router-link to="/">Home</router-link> |
-        <router-link to="/register">Register</router-link>
+        <router-link to="/"></router-link>
       </nav>
     </header>
     <main>
-      <router-view />
+      <router-view/>
     </main>
     <footer>
       <!-- Client Footer -->

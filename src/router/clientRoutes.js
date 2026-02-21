@@ -1,32 +1,50 @@
-import ClientLayout from "@/layouts/ClientLayout.vue"; // Assuming you have a ClientLayout
-import {
-  checkRoutePermissions,
-  createPermissionMeta,
-  PERMISSIONS,
-} from "@/composables/usePermissions"; // Keep if permissions are also used on client side
+import ClientLayout from "@/layouts/ClientLayout.vue";
 
 const clientRoutes = [
+  // Login — standalone (no layout wrapper)
   {
     path: "/",
-    component: ClientLayout, // Use a client-specific layout
+    name: "Login Page",
+    component: () => import("@/views/clientPage/auth/Login.vue"),
+    meta: {
+      title: "Login Page",
+    },
+  },
+
+  // Authenticated pages — wrapped in ClientLayout
+  {
+    path: "/layout",
+    component: ClientLayout,
     children: [
       {
         path: "",
-        name: "ClientHome",
-        component: () => import("@/views/clientPage/HomePage.vue"), // A client home page
+        redirect: { name: "Showtime Page" },
+      },
+      {
+        path: "showtimes",
+        name: "Showtime Page",
+        component: () => import("@/views/clientPage/showtime/Showtime.vue"),
         meta: {
-          title: "Home",
+          title: "Showtime Page",
         },
       },
       {
-        path: "register",
-        name: "ClientRegister",
-        component: () => import("@/views/clientPage/RegisterPage.vue"),
+        path: "seats",
+        name: "Seat Selection",
+        component: () => import("@/views/clientPage/seats/Seats.vue"),
         meta: {
-          title: "Register",
+          title: "Select Seats",
         },
       },
-      // Add other client-specific routes here
+      {
+        path: "settings",
+        name: "Settings",
+        component: () => import("@/views/clientPage/settings/Settings.vue"),
+        meta: {
+          title: "Settings",
+        },
+      },
+    
     ],
   },
 ];
