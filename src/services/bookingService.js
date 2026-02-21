@@ -70,25 +70,38 @@ export const bookingService = {
     if (response.data?.success && response.data?.data?.booking) {
       const booking = response.data.data.booking;
       return {
-        id: booking._id,
-        customer: booking.customerId,
-        showtime: booking.showtimeId,
-        movie: booking.showtimeId?.movie_id,
-        hall: booking.showtimeId?.hall_id,
-        seats: booking.seats,
-        reference_code: booking.reference_code,
-        total_price: booking.total_price,
-        booking_status: booking.booking_status,
-        payment_status: booking.payment_status,
-        payment_id: booking.payment_id,
-        booking_date: booking.booking_date,
-        expired_at: booking.expired_at,
-        noted: booking.noted,
-        seat_count: booking.seat_count,
-        created_at: booking.createdAt,
-        updated_at: booking.updatedAt,
+        success: true,
+        data: {
+          id: booking._id,
+          customerId: booking.customerId?._id, // Extract customer ID
+          showtime: { // Flatten showtime details
+            id: booking.showtimeId?._id,
+            show_date: booking.showtimeId?.show_date,
+            start_time: booking.showtimeId?.start_time,
+            end_time: booking.showtimeId?.end_time,
+            movie_id: booking.showtimeId?.movie_id?._id,
+            movie_title: booking.showtimeId?.movie_id?.title,
+            hall_id: booking.showtimeId?.hall_id?._id,
+            hall_name: booking.showtimeId?.hall_id?.hall_name,
+            price: booking.showtimeId?.price, // Assuming showtime has price
+          },
+          seats: booking.seats || [], // Ensure seats is an array
+          reference_code: booking.reference_code,
+          total_price: booking.total_price,
+          booking_status: booking.booking_status,
+          payment_status: booking.payment_status,
+          payment_method: booking.payment_method, // Added payment_method
+          payment_id: booking.payment_id,
+          booking_date: booking.booking_date,
+          expired_at: booking.expired_at,
+          noted: booking.noted,
+          seat_count: booking.seat_count,
+          created_at: booking.createdAt,
+          updated_at: booking.updatedAt,
+        }
       };
     }
+    // Return original response if not successful or data is missing
     return response.data;
   },
 
@@ -120,6 +133,11 @@ export const bookingService = {
    */
   async cancelBooking(id) {
     const response = await api.patch(`/bookings/${id}/cancel`);
+    return response.data;
+  },
+
+  async changeSeats(id, data) {
+    const response = await api.patch(`/bookings/${id}/change-seat`, data);
     return response.data;
   },
 

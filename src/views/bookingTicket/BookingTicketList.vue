@@ -46,6 +46,17 @@
             {{ formatDate(row.issuedAt) }}
           </template>
         </el-table-column>
+        <el-table-column :label="$t('table.actions')" width="120">
+          <template #default="{ row }">
+            <el-button
+              type="primary"
+              size="small"
+              @click="printTicket(row._id)"
+            >
+              {{ $t('actions.print') }}
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
 
       <div class="pagination">
@@ -66,6 +77,7 @@
 
 <script setup>
 import { onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import { bookingTicketService } from "@/services/bookingTicketService";
 import { ElMessage } from "element-plus";
@@ -75,6 +87,7 @@ import { debounce } from "lodash-es";
 import { formatDate } from "@/utils/formatters";
 
 const appStore = useAppStore();
+const router = useRouter();
 
 const loading = ref(false);
 const searchText = ref("");
@@ -128,6 +141,14 @@ const handleSizeChange = (newSize) => {
 const handleCurrentChange = (newPage) => {
   currentPage.value = newPage;
   loadBookingTickets();
+};
+
+const printTicket = (ticketId) => {
+  const routeData = router.resolve({
+    name: 'PrintBookingTicket',
+    params: { id: ticketId },
+  });
+  window.open(routeData.href, '_blank');
 };
 
 onMounted(() => {
