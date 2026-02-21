@@ -118,12 +118,11 @@ export const usePermissionStore = defineStore("permission", () => {
   const canDeleteBookings = computed(() => canDelete('bookings'));
   const canManageBookings = computed(() => canManage('bookings'));
 
-  const canViewBookingTickets = computed(() => canView('bookingTickets'));
-  const canCreateBookingTickets = computed(() => canCreate('bookingTickets'));
-  const canEditBookingTickets = computed(() => canEdit('bookingTickets'));
-  const canDeleteBookingTickets = computed(() => canDelete('bookingTickets'));
-  const canManageBookingTickets = computed(() => canManage('bookingTickets'));
-
+      const canViewBookingTickets = computed(() => canView('booking-tickets'));
+    const canCreateBookingTickets = computed(() => canCreate('booking-tickets'));
+    const canEditBookingTickets = computed(() => canEdit('booking-tickets'));
+    const canDeleteBookingTickets = computed(() => canDelete('booking-tickets'));
+    const canManageBookingTickets = computed(() => canManage('booking-tickets'));
   const canViewPromotions = computed(() => canView('promotions'));
   const canCreatePromotions = computed(() => canCreate('promotions'));
   const canEditPromotions = computed(() => canEdit('promotions'));

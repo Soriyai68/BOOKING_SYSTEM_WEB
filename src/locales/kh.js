@@ -706,6 +706,7 @@ export default {
     regenerate: "បង្កើតឡើងវិញ",
     today: "ថ្ងៃនេះ",
     tomorrow: "ថ្ងៃស្អែក",
+    print: "បោះពុម្ព",
   },
 
   // Status Messages

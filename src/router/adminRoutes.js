@@ -414,6 +414,16 @@ const adminRoutes = [
           ...createPermissionMeta(PERMISSIONS.BOOKINGS_VIEW),
         },
       },
+      {
+        path: "bookings/:id/edit",
+        name: "EditBooking",
+        component: () => import("@/views/bookings/UpdateBooking.vue"),
+        meta: {
+          title: "Edit Booking",
+          titleKey: "bookings.editBooking",
+          ...createPermissionMeta(PERMISSIONS.BOOKINGS_EDIT),
+        },
+      },
 
       // booking tickets
       {
@@ -425,6 +435,17 @@ const adminRoutes = [
           title: "Booking Tickets Management",
           titleKey: "bookingTickets.title",
           ...createPermissionMeta(PERMISSIONS.BOOKING_TICKETS_VIEW),
+        },
+      },
+      {
+        path: "booking-tickets/:id/print",
+        name: "PrintBookingTicket",
+        component: () => import("@/views/bookingTicket/PrintTicket.vue"),
+        meta: {
+          title: "Print Booking Ticket",
+          titleKey: "bookingTickets.printTicket",
+          ...createPermissionMeta(PERMISSIONS.BOOKING_TICKETS_VIEW),
+          hideInMenu: true,
         },
       },
 

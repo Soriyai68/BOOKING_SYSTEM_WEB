@@ -611,6 +611,9 @@ export default {
     occupancy: "Occupancy",
     full: "Full",
     sellingFast: "Selling Fast",
+    changeSeat: "Change Seat",
+    changeSeatSuccess: "Seats updated successfully!",
+    changeSeatFailed: "Failed to update seats.",
   },
   bookingTickets: {
     title: "Booking Tickets",
@@ -741,6 +744,7 @@ export default {
     regenerate: "Regenerate",
     today: "Today",
     tomorrow: "Tomorrow",
+    print: "Print",
   },
 
   // Status Messages

@@ -185,11 +185,11 @@ export const PERMISSIONS = {
   BOOKING_DETAILS_MANAGE: 'bookingDetails.manage',
 
   // Booking Tickets
-  BOOKING_TICKETS_VIEW: 'bookingTickets.view',
-  BOOKING_TICKETS_CREATE: 'bookingTickets.create',
-  BOOKING_TICKETS_EDIT: 'bookingTickets.edit',
-  BOOKING_TICKETS_DELETE: 'bookingTickets.delete',
-  BOOKING_TICKETS_MANAGE: 'bookingTickets.manage',
+  BOOKING_TICKETS_VIEW: 'booking-tickets.view',
+  BOOKING_TICKETS_CREATE: 'booking-tickets.create',
+  BOOKING_TICKETS_EDIT: 'booking-tickets.edit',
+  BOOKING_TICKETS_DELETE: 'booking-tickets.delete',
+  BOOKING_TICKETS_MANAGE: 'booking-tickets.manage',
 
   // Promotions
   PROMOTION_VIEW: 'promotions.view',
