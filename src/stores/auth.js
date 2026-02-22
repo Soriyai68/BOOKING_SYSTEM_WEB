@@ -58,7 +58,7 @@ export const useAuthStore = defineStore("auth", () => {
     isLoading.value = true;
     try {
       const response = await api.post("/auth/admin-login", {
-        phone: credentials.phone,
+        username: credentials.username,
         password: credentials.password,
         remember: credentials.remember,
       });

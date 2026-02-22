@@ -29,14 +29,13 @@
             class="login-form"
             @submit.prevent="handleLogin"
           >
-            <el-form-item prop="phone">
+            <el-form-item prop="username">
               <el-input
-                v-model="displayPhone"
-                :placeholder="$t('auth.phonePlaceholder')"
+                v-model="loginForm.username"
+                :placeholder="$t('auth.usernamePlaceholder')"
                 size="large"
                 :prefix-icon="User"
-                @input="formatPhoneNumber"
-                maxlength="10"
+                @keyup.enter="handleLogin"
               />
             </el-form-item>
 
@@ -86,7 +85,6 @@ import { useAuthStore } from "@/stores/auth";
 import { Film, User, Lock, Sunny, Moon } from "@element-plus/icons-vue";
 import api from "@/utils/api";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher.vue";
-import { toInternationalPhone, toLocalPhone } from "@/utils/formatters";
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -104,26 +102,20 @@ const apiStatus = ref({
 });
 
 const loginForm = reactive({
-  phone: "", // International format for backend, initialized in onMounted
-  password: "superadmin123",
+  username: "",
+  password: "",
   remember: false,
 });
-const displayPhone = ref(""); // Local format for display
-
-const validatePhone = (rule, value, callback) => {
-  // Validate loginForm.phone (international format)
-  if (!value) {
-    callback(new Error(t("validation.phoneRequired")));
-  } else if (!/^\+855[0-9]{8,9}$/.test(value)) {
-    callback(new Error(t("validation.phoneInvalid")));
-  } else {
-    callback();
-  }
-};
 
 const loginRules = {
-  // Rule applies to loginForm.phone (international), but displayPhone is what user sees
-  phone: [{ required: true, validator: validatePhone, trigger: "blur" }],
+  username: [
+    {
+      required: true,
+      message: t("validation.usernameRequired"),
+      trigger: "blur",
+    },
+    { min: 2, message: t("validation.usernameMin"), trigger: "blur" },
+  ],
   password: [
     {
       required: true,
@@ -143,7 +135,7 @@ const handleLogin = async () => {
     loading.value = true;
 
     await authStore.login({
-      phone: loginForm.phone,
+      username: loginForm.username,
       password: loginForm.password,
       remember: loginForm.remember,
     });
@@ -198,23 +190,6 @@ const handleLogin = async () => {
   }
 };
 
-const formatPhoneNumber = (inputValue) => {
-  // 1. Clean input for local display (allow non-digits for initial typing, but strip them later)
-  let cleanedDisplay = inputValue.replace(/\D/g, '');
-
-  // If user types '855...' directly, convert to local '0' for display consistency
-  if (cleanedDisplay.startsWith('855') && cleanedDisplay.length > 3) {
-      cleanedDisplay = '0' + cleanedDisplay.substring(3);
-  } else if (!cleanedDisplay.startsWith('0') && cleanedDisplay.length > 0 && cleanedDisplay.length < 10) {
-      // If user starts typing without 0, prepend 0 for local display consistency
-      // But only if it's not too long already (e.g. pasted international number)
-      cleanedDisplay = '0' + cleanedDisplay;
-  }
-  displayPhone.value = cleanedDisplay.substring(0, 10); // Max 10 chars (0 + 9 digits)
-
-  // 2. Update the hidden loginForm.phone with international format
-  loginForm.phone = toInternationalPhone(displayPhone.value);
-};
 
 const checkApiConnection = async () => {
   try {
@@ -234,11 +209,6 @@ const checkApiConnection = async () => {
 };
 
 onMounted(() => {
-  // Initialize loginForm.phone (e.g., from stored user data or a default)
-  const initialInternationalPhone = "+85581218840"; // Example initial value
-  loginForm.phone = initialInternationalPhone;
-  displayPhone.value = toLocalPhone(initialInternationalPhone);
-
   checkApiConnection();
 });
 </script>
