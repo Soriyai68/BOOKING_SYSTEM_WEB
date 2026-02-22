@@ -272,30 +272,18 @@
         </el-sub-menu>
 
         <!-- report  -->
-        <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="bookings">
+        <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="reports">
           <template #title>
             <el-icon>
               <ClipboardCheck />
             </el-icon>
             <span>Reports Management</span>
           </template>
-          <el-menu-item index="/admin/bookings">
+          <el-menu-item index="/admin/reports/customer-frequency">
             <el-icon>
-              <BookOpen />
+              <Users />
             </el-icon>
-            <template #title>All Reports</template>
-          </el-menu-item>
-          <el-menu-item index="/admin/bookings">
-            <el-icon>
-              <BookOpen />
-            </el-icon>
-            <template #title>All Bookings</template>
-          </el-menu-item>
-          <el-menu-item index="/admin/bookings">
-            <el-icon>
-              <BookOpen />
-            </el-icon>
-            <template #title>All Payments</template>
+            <template #title>Booking Frequency</template>
           </el-menu-item>
         </el-sub-menu>
 

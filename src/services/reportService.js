@@ -36,6 +36,15 @@ const reportService = {
       throw error.response?.data || error.message;
     }
   },
+
+  getCustomerBookingFrequency: async () => {
+    try {
+      const response = await api.get("/reports/customer-booking-frequency");
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
 };
 
 export default reportService;

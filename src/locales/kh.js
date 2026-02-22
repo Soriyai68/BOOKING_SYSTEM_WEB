@@ -249,6 +249,7 @@ export default {
     searchUsers: "ស្វែងរកអ្នកប្រើប្រាស់...",
     filterByStatus: "ចម្រាញ់តាមស្ថានភាព",
     name: "ឈ្មោះ",
+    username: "ឈ្មោះអ្នកប្រើប្រាស់",
     email: "អ៊ីមែល",
     phone: "លេខទូរស័ព្ទ",
     role: "តួនាទី",
@@ -272,7 +273,7 @@ export default {
     inactive: "មិនសកម្ម",
     admin: "អ្នកគ្រប់គ្រង",
     superadmin: "អ្នកគ្រប់គ្រងខ្ពស់",
-    user: "អ្នកប្រើប្រាស់",
+    cashier: "អ្នកលក់",
     updated: "បានកែ",
     customerDetails: "ព័ត៌មានលម្អិតអតិថិជន",
   },
@@ -671,6 +672,22 @@ export default {
     cancel: "បោះបង់",
   },
 
+  // Profile
+  profile: {
+    title: "ប្រវត្តិរូប",
+    accountSettings: "ការកំណត់គណនី",
+    profileInfo: "ព័ត៌មានប្រវត្តិរូប",
+    usernameCannotChange: "មិនអាចផ្លាស់ប្តូរឈ្មោះអ្នកប្រើបានទេ",
+    phoneCannotChange: "មិនអាចផ្លាស់ប្តូរលេខទូរស័ព្ទបានទេ",
+    profileUpdated: "ធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូបបានជោគជ័យ",
+    updateFailed: "បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូប",
+    passwordChanged: "ផ្លាស់ប្តូរលេខសម្ងាត់បានជោគជ័យ",
+    passwordChangeFailed: "បរាជ័យក្នុងការផ្លាស់ប្តូរលេខសម្ងាត់",
+    passwordsDoNotMatch: "លេខសម្ងាត់មិនត្រូវគ្នាទេ",
+    photoUpdated: "ធ្វើបច្ចុប្បន្នភាពរូបភាពប្រវត្តិរូបបានជោគជ័យ",
+    photoUploadFailed: "បរាជ័យក្នុងការផ្ទុកឡើងរូបភាពប្រវត្តិរូប",
+  },
+
   // Common Actions
   actions: {
     title: "សកម្មភាព",
@@ -761,6 +778,18 @@ export default {
     minutesAgo: "{count} នាទីមុន",
     hoursAgo: "{count} ម៉ោងមុន",
     daysAgo: "{count} ថ្ងៃមុន",
+  },
+
+  // Reports
+  reports: {
+    title: "របាយការណ៍",
+    customerFrequency: "ប្រេកង់ការកក់របស់អតិថិជន",
+    customerName: "ឈ្មោះអតិថិជន",
+    phone: "លេខទូរស័ព្ទ",
+    email: "អ៊ីមែល",
+    totalBookings: "ការកក់សរុប",
+    totalSpend: "ចំណាយសរុប",
+    noDataAvailable: "មិនមានទិន្នន័យការកក់របស់អតិថិជនទេ",
   },
 
   // Common Fields

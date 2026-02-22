@@ -470,6 +470,18 @@ const adminRoutes = [
           ...createPermissionMeta(PERMISSIONS.PAYMENTS_VIEW),
         },
       },
+
+      // reports
+      {
+        path: "reports/customer-frequency",
+        name: "CustomerBookingFrequency",
+        component: () => import("@/views/reports/Customerfrequency.vue"),
+        meta: {
+          title: "Customer Booking Frequency",
+          titleKey: "reports.customerFrequency",
+          ...createPermissionMeta(PERMISSIONS.REPORTS_VIEW),
+        },
+      },
       // system
       {
         path: "system/permissions",
@@ -497,6 +509,15 @@ const adminRoutes = [
           title: "Settings",
           titleKey: "settings.title",
           ...createPermissionMeta(PERMISSIONS.SETTINGS_VIEW),
+        },
+      },
+      {
+        path: "profile",
+        name: "Profile",
+        component: () => import("@/views/profile/profile.vue"),
+        meta: {
+          title: "Profile",
+          titleKey: "profile.title",
         },
       },
     ],

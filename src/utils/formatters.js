@@ -1,8 +1,3 @@
-/**
- * Converts an international phone number (e.g., +85512345678) to a local format (e.g., 012345678).
- * @param {string|null|undefined} internationalNum The phone number in international format.
- * @returns {string} The phone number in local format. Returns original string if format is not recognized.
- */
 export const toLocalPhone = (internationalNum) => {
   if (!internationalNum) return '';
   if (internationalNum.startsWith('+855')) {
@@ -15,12 +10,6 @@ export const toLocalPhone = (internationalNum) => {
   return internationalNum;
 };
 
-/**
- * Converts a local phone number (e.g., 012345678) to international format (e.g., +85512345678).
- * Handles numbers with or without leading 0.
- * @param {string|null|undefined} localNum The phone number in local format.
- * @returns {string} The phone number in international format. Returns original string if format is not recognized.
- */
 export const toInternationalPhone = (localNum) => {
   if (!localNum) return '';
   const cleaned = String(localNum).replace(/\D/g, ''); // Remove non-digit characters
@@ -38,21 +27,11 @@ export const toInternationalPhone = (localNum) => {
 };
 
 
-/**
- * Formats a numeric value into a USD currency string.
- * @param {number|null|undefined} value - The numeric value to format.
- * @returns {string} The formatted currency string (e.g., "$1,234.56"), or an empty string if input is invalid.
- */
 export const formatCurrency = (value) => {
   if (typeof value !== 'number') return '';
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 };
 
-/**
- * Formats a date-time string or Date object into a standardized 'YYYY-MM-DD HH:mm:ss' format.
- * @param {string|Date|null|undefined} value - The date value to format.
- * @returns {string} The formatted date-time string, or an empty string if input is invalid.
- */
 export const formatDateTime = (value) => {
   if (!value) return '';
   try {
@@ -72,11 +51,6 @@ export const formatDateTime = (value) => {
   }
 };
 
-/**
- * Formats a date-time string or Date object into a 'YYYY-MM-DD' format.
- * @param {string|Date|null|undefined} dateString - The date value to format.
- * @returns {string} The formatted date string, or an empty string if input is invalid.
- */
 export const formatDate = (dateString) => {
   if (!dateString) return '';
   try {
@@ -88,11 +62,6 @@ export const formatDate = (dateString) => {
   }
 };
 
-/**
- * Calculates the relative time from now for a given date string.
- * @param {string|Date|null|undefined} dateString - The date value.
- * @returns {string} The relative time (e.g., "Just now", "5m ago"), or an empty string if input is invalid.
- */
 export const getRelativeTime = (dateString) => {
   if (!dateString) return "";
   try {

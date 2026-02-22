@@ -22,12 +22,19 @@
         />
       </el-form-item>
 
-      <el-form-item :label="$t('users.phone')" prop="phone">
+      <el-form-item :label="$t('users.username')" prop="username">
         <el-input
-            v-model="form.phone"
-            :placeholder="$t('auth.phonePlaceholder')"
-            @input="formatPhoneNumber"
-            maxlength="13"
+            v-model="form.username"
+            :placeholder="$t('users.username')"
+            maxlength="30"
+        />
+      </el-form-item>
+
+      <el-form-item :label="$t('users.email')" prop="email">
+        <el-input
+            v-model="form.email"
+            :placeholder="$t('users.email')"
+            type="email"
         />
       </el-form-item>
 
@@ -134,24 +141,24 @@ const roleOptions = ref([
   {name: "superadmin", displayName: "Super Admin", isSystem: true},
   {name: "admin", displayName: "Admin", isSystem: true},
   {name: "cashier", displayName: "Cashier", isSystem: true},
-  {name: "user", displayName: "User", isSystem: true},
 ]);
 
 const form = reactive({
   name: "",
-  phone: "",
-  role: "user",
+  username: "",
+  email: "",
+  role: "cashier",
   password: "",
   isActive: true,
   isVerified: true,
 });
 
-// Require password only when promoting from user -> non-user
+// Require password only when promoting from cashier -> admin/superadmin
 const passwordRequired = computed(() => {
   if (!originalUser.value || !isEditMode.value) {
-    return form.role && form.role !== "user";
+    return !!form.role;
   }
-  return originalUser.value.role === "user" && form.role !== "user";
+  return originalUser.value.role === "cashier" && form.role !== "cashier";
 });
 
 const passwordPlaceholder = computed(() => {
@@ -163,12 +170,23 @@ const passwordPlaceholder = computed(() => {
       : t("settings.changePassword");
 });
 
-// Phone number validation
-const validatePhone = (rule, value, callback) => {
+// Username validation
+const validateUsername = (rule, value, callback) => {
   if (!value) {
-    callback(new Error(t("validation.phoneRequired")));
-  } else if (!/^\+855[0-9]{8,9}$/.test(value)) {
-    callback(new Error(t("validation.phoneInvalid")));
+    callback(new Error(t("validation.usernameRequired")));
+  } else if (!/^[a-zA-Z0-9_]{3,30}$/.test(value)) {
+    callback(new Error("Username must be 3-30 characters (letters, numbers, underscore only)"));
+  } else {
+    callback();
+  }
+};
+
+// Email validation
+const validateEmail = (rule, value, callback) => {
+  if (!value) {
+    callback(new Error(t("validation.emailRequired")));
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+    callback(new Error(t("validation.emailInvalid")));
   } else {
     callback();
   }
@@ -199,27 +217,12 @@ const rules = {
       trigger: "blur",
     },
   ],
-  phone: [{required: true, validator: validatePhone, trigger: "blur"}],
+  username: [{required: true, validator: validateUsername, trigger: "blur"}],
+  email: [{required: true, validator: validateEmail, trigger: "blur"}],
   role: [
     {required: true, message: t("validation.required"), trigger: "change"},
   ],
   password: [{validator: validatePassword, trigger: "blur"}],
-};
-
-// Format phone number
-const formatPhoneNumber = (value) => {
-  let cleaned = value.replace(/[^+\d]/g, "");
-
-  if (cleaned && !cleaned.startsWith("+855")) {
-    if (cleaned.startsWith("855")) {
-      cleaned = "+" + cleaned;
-    } else if (cleaned.startsWith("0")) {
-      cleaned = "+855" + cleaned.substring(1);
-    } else if (!cleaned.startsWith("+")) {
-      cleaned = "+855" + cleaned;
-    }
-  }
-  form.phone = cleaned;
 };
 
 // Load user data for edit mode
@@ -234,7 +237,8 @@ const loadUser = async () => {
     // Populate form
     Object.assign(form, {
       name: userData.name,
-      phone: userData.phone,
+      username: userData.username,
+      email: userData.email,
       role: userData.role,
       password: "",
       isActive: userData.status === "active",
@@ -261,7 +265,8 @@ const handleSubmit = async () => {
       // Update user
       const updateData = {
         name: form.name,
-        phone: form.phone,
+        username: form.username,
+        email: form.email,
         role: form.role,
         status: form.isActive ? "active" : "inactive",
         isVerified: form.isVerified,
@@ -275,7 +280,17 @@ const handleSubmit = async () => {
       ElMessage.success(t("users.updateSuccess") || "User updated successfully");
     } else {
       // Create user
-      await userService.createUser(form);
+      const createData = {
+        name: form.name,
+        username: form.username,
+        email: form.email,
+        role: form.role,
+        password: form.password,
+        isActive: form.isActive,
+        isVerified: form.isVerified,
+      };
+      
+      await userService.createUser(createData);
       ElMessage.success(t("users.createSuccess") || "User created successfully");
     }
 
@@ -303,8 +318,9 @@ const handleClosed = () => {
   }
   Object.assign(form, {
     name: "",
-    phone: "",
-    role: "user",
+    username: "",
+    email: "",
+    role: "cashier",
     password: "",
     isActive: true,
     isVerified: true,

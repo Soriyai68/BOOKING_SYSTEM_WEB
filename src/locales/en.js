@@ -90,6 +90,7 @@ export default {
     searchUsers: "Search users...",
     filterByStatus: "Filter by status",
     name: "Name",
+    username: "Username",
     email: "Email",
     phone: "Phone Number",
     role: "Role",
@@ -113,7 +114,6 @@ export default {
     inactive: "Inactive",
     admin: "Admin",
     superadmin: "Super Admin",
-    user: "User",
     cashier: "Cashier",
     updated: "Updated",
   },
@@ -710,6 +710,22 @@ export default {
     cancel: "Cancel",
   },
 
+  // Profile
+  profile: {
+    title: "Profile",
+    accountSettings: "Account Settings",
+    profileInfo: "Profile Information",
+    usernameCannotChange: "Username cannot be changed",
+    phoneCannotChange: "Phone number cannot be changed",
+    profileUpdated: "Profile updated successfully",
+    updateFailed: "Failed to update profile",
+    passwordChanged: "Password changed successfully",
+    passwordChangeFailed: "Failed to change password",
+    passwordsDoNotMatch: "Passwords do not match",
+    photoUpdated: "Profile photo updated successfully",
+    photoUploadFailed: "Failed to upload profile photo",
+  },
+
   // Common Actions
   actions: {
     create: "Create",
@@ -799,6 +815,18 @@ export default {
     minutesAgo: "{count} minutes ago",
     hoursAgo: "{count} hours ago",
     daysAgo: "{count} days ago",
+  },
+
+  // Reports
+  reports: {
+    title: "Reports",
+    customerFrequency: "Customer Booking Frequency",
+    customerName: "Customer Name",
+    phone: "Phone",
+    email: "Email",
+    totalBookings: "Total Bookings",
+    totalSpend: "Total Spend",
+    noDataAvailable: "No customer booking data available",
   },
 
   // Common Fields

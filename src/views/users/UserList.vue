@@ -48,11 +48,8 @@
         <el-table-column type="selection" width="55"/>
         <!-- <el-table-column prop="id" label="ID" width="80" /> -->
         <el-table-column prop="name" :label="$t('users.name')"/>
-        <el-table-column :label="$t('users.phone')">
-          <template #default="{ row }">
-            {{ toLocalPhone(row.phone) }}
-          </template>
-        </el-table-column>
+       <el-table-column prop="username" :label="$t('users.username')"/>
+        <el-table-column prop="email" :label="$t('users.email')"/>
         <el-table-column prop="role" :label="$t('users.role')" width="150">
           <template #default="{ row }">
             <el-tag
@@ -73,15 +70,11 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
             prop="created_at"
             :label="$t('users.created')"
-            width="120"
-        >
-          <template #default="{ row }">
-            {{ formatDate(row.created_at) }}
-          </template>
-        </el-table-column>
+            width="160"
+        /> -->
         <el-table-column :label="$t('users.actions')" width="140">
           <template #default="{ row }">
             <el-button
@@ -149,7 +142,6 @@ import {Plus, Search} from "@element-plus/icons-vue";
 import {useI18n} from "vue-i18n";
 import {debounce} from "lodash-es";
 import UserFormDialog from "@/components/users/UserFormDialog.vue";
-import { formatDate, toLocalPhone } from "@/utils/formatters";
 
 const appStore = useAppStore();
 
@@ -306,6 +298,7 @@ const bulkDeleteUsers = async () => {
   }
 };
 
+console.log(users.value);
 // Initialize component
 onMounted(() => {
   appStore.setBreadcrumbs([

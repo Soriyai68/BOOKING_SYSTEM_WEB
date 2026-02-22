@@ -212,6 +212,10 @@ export const PERMISSIONS = {
   PAYMENTS_DELETE: 'payments.delete',
   PAYMENTS_MANAGE: 'payments.manage',
 
+  // Reports
+  REPORTS_VIEW: 'reports.view',
+  REPORTS_CUSTOMER_FREQUENCY: 'reports.customer-frequency.view',
+
   // System
   DASHBOARD_VIEW: 'dashboard.view',
   ANALYTICS_VIEW: 'analytics.view',

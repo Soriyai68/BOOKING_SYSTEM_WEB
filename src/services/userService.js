@@ -1,7 +1,7 @@
 import api from '@/utils/api'
 
-const ALLOWED_ROLES = ['superadmin', 'admin', 'cashier', 'user']
-const sanitizeRole = (role, fallback = 'user') => {
+const ALLOWED_ROLES = ['superadmin', 'admin', 'cashier']
+const sanitizeRole = (role, fallback = 'cashier') => {
   if (!role) return fallback
   const r = String(role).toLowerCase()
   return ALLOWED_ROLES.includes(r) ? r : fallback
@@ -29,7 +29,7 @@ export const userService = {
     })
 
     const response = await api.get('/users', { params: backendParams })
-    
+
     // Backend returns: { success: true, data: { users, pagination } }
     if (response.data?.success && response.data?.data) {
       const { users, pagination } = response.data.data
@@ -37,6 +37,7 @@ export const userService = {
         data: users.map(user => ({
           id: user._id,
           name: user.name,
+          username: user.username,
           phone: user.phone,
           email: user.email || user.phone, // Use phone as email if no email
           role: user.role,
@@ -54,19 +55,20 @@ export const userService = {
         has_prev_page: pagination.hasPrevPage
       }
     }
-    
+
     return response.data
   },
 
   // Get single user by ID
   async getUser(id) {
     const response = await api.get(`/users/${id}`)
-    
+
     if (response.data?.success && response.data?.data?.user) {
       const user = response.data.data.user
       return {
         id: user._id,
         name: user.name,
+        username: user.username,
         phone: user.phone,
         email: user.email || user.phone,
         role: user.role,
@@ -78,7 +80,7 @@ export const userService = {
         provider: user.provider
       }
     }
-    
+
     return response.data
   },
 
@@ -88,12 +90,12 @@ export const userService = {
     const backendData = {
       name: userData.name,
       phone: userData.phone,
-      role: sanitizeRole(userData.role, 'user'),
+      role: sanitizeRole(userData.role, 'cashier'),
       password: userData.password,
       isVerified: userData.isVerified ?? true,
       isActive: userData.isActive ?? true
     }
-    
+
     const response = await api.post('/users', backendData)
     return response.data
   },
@@ -105,15 +107,26 @@ export const userService = {
       name: userData.name,
       phone: userData.phone,
       role: userData.role ? sanitizeRole(userData.role) : undefined,
-      isActive: userData.status === 'active',
       isVerified: userData.isVerified
     }
-    
+
+    // Only include isActive if status is explicitly provided
+    if (userData.status !== undefined) {
+      backendData.isActive = userData.status === 'active'
+    }
+
     // Only include password if provided
     if (userData.password) {
       backendData.password = userData.password
     }
-    
+
+    // Remove undefined values
+    Object.keys(backendData).forEach(key => {
+      if (backendData[key] === undefined) {
+        delete backendData[key]
+      }
+    })
+
     const response = await api.put(`/users/${id}`, backendData)
     return response.data
   },

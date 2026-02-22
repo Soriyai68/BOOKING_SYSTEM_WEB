@@ -43,7 +43,7 @@
       <!-- User menu -->
       <el-dropdown @command="handleUserMenuCommand" class="user-dropdown">
         <span class="user-info">
-          <el-avatar :size="32" class="user-avatar">
+          <el-avatar :size="32" class="user-avatar" :src="user?.photoUrl">
             <el-icon><User /></el-icon>
           </el-avatar>
           <span class="username">{{ user?.name || "Admin" }}</span>
@@ -122,7 +122,7 @@ const handleUserMenuCommand = async (command) => {
   let loadingInstance = null;
 
   if (command === "profile") {
-    ElMessage.info("Profile page coming soon!");
+    router.push("/admin/profile");
     return;
   }
 
@@ -231,6 +231,11 @@ const handleUserMenuCommand = async (command) => {
 
 .user-avatar {
   background-color: var(--el-color-primary);
+  flex-shrink: 0;
+}
+
+.user-avatar img {
+  object-fit: cover;
 }
 
 .username {
