@@ -12,6 +12,7 @@ export default {
     settings: "ការកំណត់",
     logout: "ចាកចេញ",
     profile: "ប្រវត្តិរូប",
+    reportsManagement: "គ្រប់គ្រងរបាយការណ៍",
   },
 
   // Authentication

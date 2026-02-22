@@ -11,6 +11,7 @@ export default {
     settings: "Settings",
     logout: "Logout",
     profile: "Profile",
+    reportsManagement: "Reports Management",
   },
 
   // Authentication

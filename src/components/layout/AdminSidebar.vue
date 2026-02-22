@@ -277,13 +277,13 @@
             <el-icon>
               <ClipboardCheck />
             </el-icon>
-            <span>Reports Management</span>
+            <span>{{ $t('nav.reportsManagement') }}</span>
           </template>
           <el-menu-item index="/admin/reports/customer-frequency">
             <el-icon>
               <Users />
             </el-icon>
-            <template #title>Booking Frequency</template>
+            <template #title>{{ $t('reports.customerFrequency') }}</template>
           </el-menu-item>
         </el-sub-menu>
 
