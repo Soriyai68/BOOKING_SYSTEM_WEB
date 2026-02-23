@@ -23,7 +23,7 @@ export const showtimeService = {
     };
 
     Object.keys(backendParams).forEach(
-      (k) => backendParams[k] === undefined && delete backendParams[k]
+      (k) => backendParams[k] === undefined && delete backendParams[k],
     );
 
     const { data } = await api.get("/showtimes", { params: backendParams });
@@ -120,14 +120,14 @@ export const showtimeService = {
         const movie = await movieService.getMovie(backendData.movie_id);
         if (movie && movie.duration_minutes) {
           const showDateTime = new Date(
-            `${backendData.show_date}T${backendData.start_time}`
+            `${backendData.show_date}T${backendData.start_time}`,
           );
           showDateTime.setMinutes(
-            showDateTime.getMinutes() + movie.duration_minutes
+            showDateTime.getMinutes() + movie.duration_minutes,
           );
           backendData.end_time = `${String(showDateTime.getHours()).padStart(
             2,
-            "0"
+            "0",
           )}:${String(showDateTime.getMinutes()).padStart(2, "0")}`;
         }
       } catch (error) {
@@ -137,7 +137,7 @@ export const showtimeService = {
     }
 
     Object.keys(backendData).forEach(
-      (k) => backendData[k] === undefined && delete backendData[k]
+      (k) => backendData[k] === undefined && delete backendData[k],
     );
     const { data } = await api.post("/showtimes", backendData);
     return data;
@@ -171,30 +171,30 @@ export const showtimeService = {
             const movie = await movieService.getMovie(data.movie_id);
             if (movie && movie.duration_minutes) {
               const showDateTime = new Date(
-                `${data.show_date}T${data.start_time}`
+                `${data.show_date}T${data.start_time}`,
               );
               showDateTime.setMinutes(
-                showDateTime.getMinutes() + movie.duration_minutes
+                showDateTime.getMinutes() + movie.duration_minutes,
               );
               data.end_time = `${String(showDateTime.getHours()).padStart(
                 2,
-                "0"
+                "0",
               )}:${String(showDateTime.getMinutes()).padStart(2, "0")}`;
             }
           } catch (error) {
             console.error(
               `Error calculating end_time for bulk showtime (movie_id: ${data.movie_id}):`,
-              error
+              error,
             );
           }
         }
 
         // Remove undefined fields
         Object.keys(data).forEach(
-          (k) => data[k] === undefined && delete data[k]
+          (k) => data[k] === undefined && delete data[k],
         );
         return data;
-      })
+      }),
     );
 
     const backendData = {
@@ -230,14 +230,14 @@ export const showtimeService = {
         const movie = await movieService.getMovie(backendData.movie_id);
         if (movie && movie.duration_minutes) {
           const showDateTime = new Date(
-            `${backendData.show_date}T${backendData.start_time}`
+            `${backendData.show_date}T${backendData.start_time}`,
           );
           showDateTime.setMinutes(
-            showDateTime.getMinutes() + movie.duration_minutes
+            showDateTime.getMinutes() + movie.duration_minutes,
           );
           backendData.end_time = `${String(showDateTime.getHours()).padStart(
             2,
-            "0"
+            "0",
           )}:${String(showDateTime.getMinutes()).padStart(2, "0")}`;
         }
       } catch (error) {
@@ -246,7 +246,7 @@ export const showtimeService = {
     }
 
     Object.keys(backendData).forEach(
-      (k) => backendData[k] === undefined && delete backendData[k]
+      (k) => backendData[k] === undefined && delete backendData[k],
     );
     const { data } = await api.put(`/showtimes/${id}`, backendData);
     return data;
@@ -282,25 +282,25 @@ export const showtimeService = {
             const movie = await movieService.getMovie(data.movie_id);
             if (movie && movie.duration_minutes) {
               const showDateTime = new Date(
-                `${data.show_date}T${data.start_time}`
+                `${data.show_date}T${data.start_time}`,
               );
               showDateTime.setMinutes(
-                showDateTime.getMinutes() + movie.duration_minutes
+                showDateTime.getMinutes() + movie.duration_minutes,
               );
               data.end_time = `${String(showDateTime.getHours()).padStart(
                 2,
-                "0"
+                "0",
               )}:${String(showDateTime.getMinutes()).padStart(2, "0")}`;
             }
           } catch (error) {
             console.error(
               `Error calculating end_time for bulk duplicated showtime (movie_id: ${data.movie_id}):`,
-              error
+              error,
             );
           }
         }
         return data;
-      })
+      }),
     );
 
     const backendData = {
@@ -400,8 +400,8 @@ export const showtimeService = {
       return response.data.map((s) => ({
         value: s.id,
         label: `${s.movie_title || "N/A"} (${s.hall_name || "N/A"}) - ${
-          s.start_time
-        }`,
+          s.show_date
+        } ${s.start_time}`,
       }));
     }
 

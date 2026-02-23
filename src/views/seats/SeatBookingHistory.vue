@@ -119,8 +119,8 @@
                     (row.booking.phone
                       ? "Walk-in Customer"
                       : row.booking.email
-                      ? "Guest Customer"
-                      : "-")
+                        ? "Guest Customer"
+                        : "-")
                   }}
                 </strong>
               </div>
@@ -159,20 +159,36 @@
           :label="$t('movies.movieTitle')"
           width="250"
         />
-        <el-table-column
-          prop="seat.seat_identifier"
-          :label="$t('seats.indentifier')"
-          width="150"
-        />
-        <el-table-column
-          prop="seat.seat_type"
-          :label="$t('seats.type')"
-          width="150"
-        >
+        <el-table-column :label="$t('seats.indentifier')" width="150">
           <template #default="{ row }">
-            <el-tag :type="getSeatTypeColor(row.seat_type)">
-              {{ $t(`seats.types.${row.seat.seat_type}`) }}
-            </el-tag>
+            <div class="seat-tags">
+              <el-tag
+                v-for="seat in row.seats"
+                :key="seat._id"
+                size="small"
+                effect="plain"
+                class="seat-tag"
+              >
+                {{ seat.seat_identifier }}
+              </el-tag>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('seats.type')" width="180">
+          <template #default="{ row }">
+            <div class="seat-types">
+              <el-tag
+                v-for="(type, index) in [
+                  ...new Set(row.seats.map((s) => s.seat_type)),
+                ]"
+                :key="index"
+                :type="getSeatTypeColor(type)"
+                size="small"
+                class="type-tag"
+              >
+                {{ $t(`seats.types.${type}`) }}
+              </el-tag>
+            </div>
           </template>
         </el-table-column>
         <el-table-column
@@ -299,15 +315,15 @@ const pagination = reactive({
 
 // Load filter data
 const loadShowtimes = async ({
-  per_page = 10,
+  limit = 100,
   status = "scheduled",
-  forBooking = false,
+  forBooking = true,
   search = "",
 } = {}) => {
   loading.showtimes = true;
   try {
     showtimeOptions.value = await showtimeService.getDropdownShowtimes({
-      per_page,
+      limit,
       status,
       forBooking,
       search,
@@ -350,7 +366,7 @@ const loadSeatBookingHistory = async () => {
   } catch (error) {
     console.error("Load seat booking history error:", error);
     ElMessage.error(
-      error.response?.data?.message || t("errors.loadDataFailed")
+      error.response?.data?.message || t("errors.loadDataFailed"),
     );
     seatBookingHistory.value = [];
     Object.assign(pagination, { currentPage: 1, perPage: 10, total: 0 });
@@ -408,7 +424,7 @@ watch(
     pagination.currentPage = 1;
     loadSeatBookingHistory();
   },
-  { deep: true }
+  { deep: true },
 );
 
 // Lifecycle
@@ -444,6 +460,22 @@ onMounted(async () => {
   margin-bottom: 0;
 }
 
+.seat-tags,
+.seat-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.seat-tag {
+  background-color: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
+  border-color: var(--el-color-primary-light-8);
+}
+
+.type-tag {
+  font-weight: 500;
+}
 .pagination-wrapper {
   margin-top: 16px;
   display: flex;

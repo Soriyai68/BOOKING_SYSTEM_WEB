@@ -31,12 +31,12 @@
         </el-form-item>
         <el-form-item>
           <el-select
-            v-model="filters.showtime_id"
+            v-model="filters.showtimeId"
             filterable
             clearable
             :placeholder="$t('seats.selectShowtime')"
             @change="handleFilterChange"
-            style="width: 500px"
+            style="width: 400px"
             :loading="loading.showtimes"
           >
             <el-option
@@ -128,8 +128,8 @@
                     (row.customer.phone
                       ? "Walk-in Customer"
                       : row.customer.email
-                      ? "Guest Customer"
-                      : "-")
+                        ? "Guest Customer"
+                        : "-")
                   }}
                 </strong>
               </div>
@@ -249,6 +249,19 @@
                     </el-icon>
                     {{ $t("payments.createPayment") }}
                   </el-dropdown-item>
+                  <el-dropdown-item
+                    v-if="
+                      row.payment_status !== 'Completed' &&
+                      row.booking_status !== 'Cancelled'
+                    "
+                    command="editSeats"
+                    class="text-primary"
+                  >
+                    <el-icon>
+                      <Armchair />
+                    </el-icon>
+                    {{ $t("seats.editSeats") }}
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -357,11 +370,97 @@
         </el-button>
       </template>
     </el-dialog>
+
+    <!-- Bakong Payment Dialog -->
+    <el-dialog
+      v-model="showBakongDialog"
+      :title="$t('payments.bakongPayment')"
+      width="400px"
+      :show-close="false"
+      @closed="onPaymentDialogClose"
+    >
+      <bakong-qr-payment
+        v-if="bakongPaymentData"
+        :payment="bakongPaymentData"
+        @paid="onPaymentPaid"
+        @close="onPaymentDialogClose"
+        @regenerate="handleRegenerateQR"
+        style="margin: 0 auto"
+      />
+    </el-dialog>
+
+    <!-- Edit Seats Dialog -->
+    <el-dialog
+      v-model="editSeatsDialogVisible"
+      :title="$t('seats.editSeats')"
+      width="1000px"
+      :close-on-click-modal="false"
+      destroy-on-close
+    >
+      <div v-if="editingBooking" class="edit-seats-container">
+        <el-alert
+          :title="$t('bookings.editSeatsWarning')"
+          type="warning"
+          show-icon
+          :closable="false"
+          style="margin-bottom: 20px"
+        />
+
+        <SelectSeatsStep
+          :showtime="editingBooking.showtime"
+          v-model="newSelectedSeatIds"
+          :exclude-booking-id="editingBooking.id"
+          @update:selectedSeatDetails="onSeatsUpdated"
+        />
+
+        <div class="edit-seats-summary mt-4">
+          <div
+            class="flex justify-between items-center p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
+          >
+            <div>
+              <p
+                class="text-xs text-gray-500 font-bold uppercase tracking-wider"
+              >
+                {{ $t("bookings.selectedSeats") }}
+              </p>
+              <p class="text-lg font-bold text-primary">
+                {{ selectedSeatLabels }}
+              </p>
+            </div>
+            <div class="text-right">
+              <p
+                class="text-xs text-gray-500 font-bold uppercase tracking-wider"
+              >
+                {{ $t("bookings.totalPrice") }}
+              </p>
+              <p class="text-2xl font-black text-primary">
+                {{ formatCurrency(calculatedTotalPrice) }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="editSeatsDialogVisible = false">{{
+            $t("actions.cancel")
+          }}</el-button>
+          <el-button
+            type="primary"
+            :loading="loading.updatingSeats"
+            :disabled="newSelectedSeatIds.size === 0"
+            @click="confirmSeatUpdate"
+          >
+            {{ $t("actions.save") }}
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -378,7 +477,11 @@ import {
   Wallet,
   Phone,
   ChatLineSquare,
-} from "@element-plus/icons-vue"; // Import icons
+  Plus,
+} from "@element-plus/icons-vue";
+import { Armchair } from "lucide-vue-next";
+import BakongQrPayment from "@/components/payments/BakongQRPayment.vue";
+import SelectSeatsStep from "@/components/bookings/SelectSeatsStep.vue";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -389,6 +492,7 @@ const loading = reactive({
   showtimes: false,
   edit: false,
   payment: false,
+  updatingSeats: false,
 });
 const bookings = ref([]);
 const showtimeOptions = ref([]);
@@ -397,7 +501,7 @@ const filters = reactive({
   search: "",
   booking_status: "",
   payment_status: "",
-  showtime_id: "",
+  showtimeId: "",
   show_date: "",
   dateRange: [],
 });
@@ -426,6 +530,31 @@ const paymentForm = reactive({
   description: "",
 });
 
+const showBakongDialog = ref(false);
+const bakongPaymentData = ref(null);
+
+// Edit Seats State
+const editSeatsDialogVisible = ref(false);
+const editingBooking = ref(null);
+const newSelectedSeatIds = ref(new Set());
+const selectedSeatDetails = ref([]);
+
+const selectedSeatLabels = computed(() => {
+  return (
+    selectedSeatDetails.value
+      .map((s) => `${s.row}${s.seat_number}`)
+      .join(", ") || t("common.none")
+  );
+});
+
+const calculatedTotalPrice = computed(() => {
+  if (!editingBooking.value) return 0;
+  // Use current price per seat if possible
+  const seatCount = editingBooking.value.seat_count || 1;
+  const currentPricePerSeat = editingBooking.value.total_price / seatCount;
+  return newSelectedSeatIds.value.size * currentPricePerSeat;
+});
+
 const getCustomerTypeTag = (type) => {
   switch (type) {
     case "member":
@@ -451,7 +580,7 @@ const loadBookings = async () => {
       search: filters.search,
       booking_status: filters.booking_status,
       payment_status: filters.payment_status,
-      showtime_id: filters.showtime_id,
+      showtimeId: filters.showtimeId,
       show_date: filters.show_date || undefined,
       date_from: filters.dateRange?.[0]
         ? new Date(filters.dateRange[0]).toISOString()
@@ -479,10 +608,20 @@ const loadBookings = async () => {
   }
 };
 
-const loadShowtimes = async (query = "") => {
+const loadShowtimes = async ({
+  limit = 100,
+  status = "scheduled",
+  forBooking = true,
+  search = "",
+} = {}) => {
   loading.showtimes = true;
   try {
-    showtimeOptions.value = await showtimeService.getDropdownShowtimes(query);
+    showtimeOptions.value = await showtimeService.getDropdownShowtimes({
+      limit,
+      status,
+      forBooking,
+      search,
+    });
   } catch (error) {
     console.error("Failed to load showtimes:", error);
   } finally {
@@ -500,7 +639,8 @@ const resetFilters = () => {
     search: "",
     booking_status: "",
     payment_status: "",
-    showtime_id: "",
+    showtimeId: "",
+    show_date: "",
     dateRange: [],
   });
   handleFilterChange();
@@ -544,8 +684,73 @@ const handleCommand = (command, row) => {
     case "createPayment":
       openCreatePaymentDialog(row);
       break;
+    case "editSeats":
+      handleEditSeats(row);
+      break;
     default:
       break;
+  }
+};
+
+const handleEditSeats = (booking) => {
+  // Ensure the showtime object has all the required info for the seat map
+  // and normalize IDs (prefer _id if coming from backend aggregation)
+  const showtimeInfo = {
+    ...(booking.showtime || {}),
+    id:
+      booking.showtimeId?._id ||
+      booking.showtimeId ||
+      booking.showtime?._id ||
+      booking.showtime?.id,
+    hall_id:
+      booking.hall_id ||
+      (booking.hall ? booking.hall._id || booking.hall.id : null) ||
+      booking.showtime?.hall_id ||
+      booking.showtime?.hall_id?._id,
+  };
+  editingBooking.value = { ...booking, showtime: showtimeInfo };
+
+  // Initialize with current seats
+  const currentSeatIds = (booking.seats || []).map((s) => {
+    if (typeof s === "object") {
+      return (s._id || s.id)?.toString();
+    }
+    return s?.toString();
+  });
+  newSelectedSeatIds.value = new Set(currentSeatIds.filter((id) => id));
+  editSeatsDialogVisible.value = true;
+};
+
+const onSeatsUpdated = (details) => {
+  selectedSeatDetails.value = details;
+};
+
+const confirmSeatUpdate = async () => {
+  if (!editingBooking.value) return;
+
+  loading.updatingSeats = true;
+  try {
+    const seatIds = Array.from(newSelectedSeatIds.value);
+    const response = await bookingService.updateBooking(
+      editingBooking.value.id,
+      {
+        seats: seatIds,
+        total_price: calculatedTotalPrice.value,
+      },
+    );
+
+    if (response.success) {
+      ElMessage.success(t("messages.updateSuccess"));
+      editSeatsDialogVisible.value = false;
+      await loadBookings(); // Refresh the list
+    } else {
+      ElMessage.error(response.message || t("errors.updateFailed"));
+    }
+  } catch (error) {
+    console.error("Update seats error:", error);
+    ElMessage.error(error.response?.data?.message || t("errors.updateFailed"));
+  } finally {
+    loading.updatingSeats = false;
   }
 };
 
@@ -587,7 +792,7 @@ const cancelBooking = async (id) => {
         confirmButtonText: t("actions.delete"),
         cancelButtonText: t("actions.cancel"),
         type: "warning",
-      }
+      },
     );
     const response = await bookingService.cancelBooking(id);
     if (response.success) {
@@ -616,14 +821,48 @@ const handleCreatePayment = async () => {
   try {
     const response = await paymentService.createPayment(paymentForm);
     if (response.success) {
-      ElMessage.success(t("payments.createSuccess"));
-      paymentDialogVisible.value = false;
-      await loadBookings();
+      if (paymentForm.payment_method === "Bakong") {
+        bakongPaymentData.value = response.data.payment;
+        paymentDialogVisible.value = false;
+        showBakongDialog.value = true;
+      } else {
+        ElMessage.success(t("payments.createSuccess"));
+        paymentDialogVisible.value = false;
+        await loadBookings();
+      }
     } else {
       ElMessage.error(response.message || t("errors.createFailed"));
     }
   } catch (error) {
     ElMessage.error(error?.message || t("errors.createFailed"));
+    console.error(error);
+  } finally {
+    loading.payment = false;
+  }
+};
+
+const onPaymentPaid = async () => {
+  ElMessage.success(t("payments.paymentSuccess"));
+  showBakongDialog.value = false;
+  await loadBookings();
+};
+
+const onPaymentDialogClose = () => {
+  showBakongDialog.value = false;
+  loadBookings();
+};
+
+const handleRegenerateQR = async () => {
+  // Similar to create payment but with existing booking
+  loading.payment = true;
+  try {
+    const response = await paymentService.createPayment(paymentForm);
+    if (response.success) {
+      bakongPaymentData.value = response.data.payment;
+    } else {
+      ElMessage.error(response.message || t("errors.createFailed"));
+    }
+  } catch (error) {
     console.error(error);
   } finally {
     loading.payment = false;
@@ -636,17 +875,18 @@ const getStatusType = (options, status) => {
 };
 
 watch(
-  [
-    () => filters.search,
-    () => filters.booking_status,
-    () => filters.payment_status,
-    () => filters.showtime_id,
-    () => filters.show_date,
+  () => [
+    filters.search,
+    filters.booking_status,
+    filters.payment_status,
+    filters.showtimeId,
+    filters.show_date,
   ],
   () => {
     pagination.current_page = 1;
     loadBookings();
-  }
+  },
+  { deep: true },
 );
 onMounted(() => {
   loadBookings();

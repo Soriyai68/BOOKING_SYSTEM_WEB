@@ -1,7 +1,17 @@
 <template>
   <div class="select-seats-step">
-    <el-alert :title="$t('bookings.selectSeatsInstruction')" type="info" show-icon :closable="false" style="margin-bottom: 20px;"></el-alert>
-    <div v-if="loading.seats" v-loading="loading.seats" style="min-height: 300px; width: 100%;"></div>
+    <el-alert
+      :title="$t('bookings.selectSeatsInstruction')"
+      type="info"
+      show-icon
+      :closable="false"
+      style="margin-bottom: 20px"
+    ></el-alert>
+    <div
+      v-if="loading.seats"
+      v-loading="loading.seats"
+      style="min-height: 300px; width: 100%"
+    ></div>
     <div v-else class="seat-map-container">
       <div class="screen-container">
         <div class="screen-arc"></div>
@@ -14,36 +24,36 @@
           <div class="seats-container">
             <div class="seats-section" v-if="row.sections.left.length">
               <div
-                  v-for="seat in row.sections.left"
-                  :key="seat.id"
-                  class="seat"
-                  :class="getSeatClass(seat)"
-                  @click="toggleSeat(seat)"
-                  :title="`${seat.row}${seat.seat_number}`"
+                v-for="seat in row.sections.left"
+                :key="seat.id"
+                class="seat"
+                :class="getSeatClass(seat)"
+                @click="toggleSeat(seat)"
+                :title="`${seat.row}${seat.seat_number}`"
               >
                 <span class="seat-number">{{ seat.seat_number }}</span>
               </div>
             </div>
             <div class="seats-section" v-if="row.sections.middle.length">
               <div
-                  v-for="seat in row.sections.middle"
-                  :key="seat.id"
-                  class="seat"
-                  :class="getSeatClass(seat)"
-                  @click="toggleSeat(seat)"
-                  :title="`${seat.row}${seat.seat_number}`"
+                v-for="seat in row.sections.middle"
+                :key="seat.id"
+                class="seat"
+                :class="getSeatClass(seat)"
+                @click="toggleSeat(seat)"
+                :title="`${seat.row}${seat.seat_number}`"
               >
                 <span class="seat-number">{{ seat.seat_number }}</span>
               </div>
             </div>
             <div class="seats-section" v-if="row.sections.right.length">
               <div
-                  v-for="seat in row.sections.right"
-                  :key="seat.id"
-                  class="seat"
-                  :class="getSeatClass(seat)"
-                  @click="toggleSeat(seat)"
-                  :title="`${seat.row}${seat.seat_number}`"
+                v-for="seat in row.sections.right"
+                :key="seat.id"
+                class="seat"
+                :class="getSeatClass(seat)"
+                @click="toggleSeat(seat)"
+                :title="`${seat.row}${seat.seat_number}`"
               >
                 <span class="seat-number">{{ seat.seat_number }}</span>
               </div>
@@ -85,6 +95,10 @@ const props = defineProps({
     type: Set,
     required: true,
   },
+  excludeBookingId: {
+    type: String,
+    default: null,
+  },
 });
 
 const emit = defineEmits(["update:modelValue", "update:selectedSeatDetails"]);
@@ -95,6 +109,17 @@ const loading = reactive({
 
 const hallSeats = ref([]);
 const bookedSeats = ref([]);
+
+const isSameId = (id1, id2) => {
+  if (!id1 || !id2) return false;
+  const s1 = (
+    typeof id1 === "object" ? id1._id || id1.id || id1 : id1
+  ).toString();
+  const s2 = (
+    typeof id2 === "object" ? id2._id || id2.id || id2 : id2
+  ).toString();
+  return s1 === s2;
+};
 
 const loadSeatData = async () => {
   if (!props.showtime?.hall_id) return;
@@ -107,19 +132,42 @@ const loadSeatData = async () => {
     ]);
 
     hallSeats.value = seatResponse.data;
-    bookedSeats.value = bookings.seatBookings.map((b) => b.seatId?._id.toString());
+
+    // Normalize bookings data to handle both object and array formats
+    const rawBookings =
+      bookings?.seatBookings || (Array.isArray(bookings) ? bookings : []);
+
+    // Filter out seats that are booked by the current booking we are editing
+    bookedSeats.value = rawBookings
+      .filter((b) => {
+        const bookingId = b.bookingId?._id || b.bookingId;
+        return !isSameId(bookingId, props.excludeBookingId);
+      })
+      .map((b) => (b.seatId?._id || b.seatId)?.toString());
 
     // After loading seat data, we can emit the details of any already selected seats.
     const newSelectedSeats = new Set(props.modelValue);
-    const selectedDetails = hallSeats.value.filter(s => newSelectedSeats.has(s.id?.toString()));
-    emit('update:selectedSeatDetails', selectedDetails);
-
+    const selectedDetails = hallSeats.value.filter((s) => {
+      const sId = (s._id || s.id)?.toString();
+      return newSelectedSeats.has(sId);
+    });
+    emit("update:selectedSeatDetails", selectedDetails);
   } catch (error) {
     console.error("Failed to load seat data:", error);
   } finally {
     loading.seats = false;
   }
 };
+
+watch(
+  [() => props.showtime, () => props.excludeBookingId],
+  ([newShowtime]) => {
+    if (newShowtime) {
+      loadSeatData();
+    }
+  },
+  { immediate: true },
+);
 
 const seatRows = computed(() => {
   if (!hallSeats.value) return [];
@@ -139,19 +187,24 @@ const seatRows = computed(() => {
 const seatLayout = computed(() => {
   if (!seatRows.value.length) return [];
 
-  return seatRows.value.map(row => {
+  return seatRows.value.map((row) => {
     const seats = row.seats;
     const totalSeats = seats.length;
 
-    let leftSeats = [], middleSeats = [], rightSeats = [];
+    let leftSeats = [],
+      middleSeats = [],
+      rightSeats = [];
 
-    if (totalSeats < 7) { // For small rows, display as a single block
+    if (totalSeats < 7) {
+      // For small rows, display as a single block
       middleSeats = seats;
-    } else if (totalSeats < 13) { // For medium rows, split into two blocks
+    } else if (totalSeats < 13) {
+      // For medium rows, split into two blocks
       const splitPoint = Math.ceil(totalSeats / 2);
       leftSeats = seats.slice(0, splitPoint);
       rightSeats = seats.slice(splitPoint);
-    } else { // For large rows, split into three blocks
+    } else {
+      // For large rows, split into three blocks
       const sideSize = Math.floor(totalSeats / 4);
       leftSeats = seats.slice(0, sideSize);
       middleSeats = seats.slice(sideSize, totalSeats - sideSize);
@@ -164,20 +217,20 @@ const seatLayout = computed(() => {
         left: leftSeats,
         middle: middleSeats,
         right: rightSeats,
-      }
+      },
     };
   });
 });
 
 const getSeatClass = (seat) => {
-  const seatId = seat.id?.toString();
+  const seatId = (seat._id || seat.id)?.toString();
   if (bookedSeats.value.includes(seatId)) return "booked";
   if (props.modelValue.has(seatId)) return "selected";
   return "available";
 };
 
 const toggleSeat = (seat) => {
-  const seatId = seat.id?.toString();
+  const seatId = (seat._id || seat.id)?.toString();
   if (bookedSeats.value.includes(seatId)) return;
 
   const newSelectedSeats = new Set(props.modelValue);
@@ -188,16 +241,12 @@ const toggleSeat = (seat) => {
   }
   emit("update:modelValue", newSelectedSeats);
 
-  const selectedDetails = hallSeats.value.filter(s => newSelectedSeats.has(s.id?.toString()));
-  emit('update:selectedSeatDetails', selectedDetails);
+  const selectedDetails = hallSeats.value.filter((s) => {
+    const sId = (s._id || s.id)?.toString();
+    return newSelectedSeats.has(sId);
+  });
+  emit("update:selectedSeatDetails", selectedDetails);
 };
-
-watch(() => props.showtime, (newShowtime) => {
-      if (newShowtime) {
-        loadSeatData();
-      }
-    }, { immediate: true });
-
 </script>
 
 <style scoped>
@@ -228,7 +277,7 @@ watch(() => props.showtime, (newShowtime) => {
 .screen-arc {
   width: 80%;
   height: 100px;
-  border:  4px solid var(--el-fill-color-light);
+  border: 4px solid var(--el-fill-color-light);
   border-color: var(--el-text-color-primary) transparent transparent transparent;
   border-radius: 100% / 25px;
   position: absolute;
@@ -349,5 +398,4 @@ watch(() => props.showtime, (newShowtime) => {
 .legend-item .seat .seat-number {
   display: none;
 }
-
 </style>

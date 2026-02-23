@@ -1,12 +1,18 @@
-a<template>
+<template>
   <div class="booking-detail">
     <div class="page-header">
-      <h2>{{ $t('bookings.bookingDetails') }}</h2>
-      <el-button @click="$router.back()" :icon="ArrowLeft">{{ $t('actions.back') }}</el-button>
+      <h2>{{ $t("bookings.bookingDetails") }}</h2>
+      <el-button @click="$router.back()" :icon="ArrowLeft">{{
+        $t("actions.back")
+      }}</el-button>
     </div>
 
-    <el-card v-if="loading" v-loading="loading" :element-loading-text="$t('common.loading')"
-             style="min-height: 200px;"></el-card>
+    <el-card
+      v-if="loading"
+      v-loading="loading"
+      :element-loading-text="$t('common.loading')"
+      style="min-height: 200px"
+    ></el-card>
 
     <el-row :gutter="20" v-else-if="booking">
       <el-col :span="16">
@@ -14,26 +20,32 @@ a<template>
         <el-card class="details-card">
           <template #header>
             <div class="card-header">
-              <span>{{ $t('bookings.bookingSummary') }}</span>
+              <span>{{ $t("bookings.bookingSummary") }}</span>
             </div>
           </template>
           <el-descriptions :column="2" border>
-            <el-descriptions-item :label="$t('bookings.referenceCode')">{{
-                booking.reference_code
-              }}
+            <el-descriptions-item :label="$t('bookings.referenceCode')"
+              >{{ booking.reference_code }}
             </el-descriptions-item>
-            <el-descriptions-item :label="$t('bookings.bookingDate')">{{
-                formatDateTime(booking.booking_date)
-              }}
+            <el-descriptions-item :label="$t('bookings.bookingDate')"
+              >{{ formatDateTime(booking.booking_date) }}
             </el-descriptions-item>
 
             <el-descriptions-item :label="$t('bookings.bookingStatus')">
-              <el-tag :type="getStatusType(bookingStatusOptions, booking.booking_status)">
+              <el-tag
+                :type="
+                  getStatusType(bookingStatusOptions, booking.booking_status)
+                "
+              >
                 {{ booking.booking_status }}
               </el-tag>
             </el-descriptions-item>
             <el-descriptions-item :label="$t('bookings.paymentStatus')">
-              <el-tag :type="getStatusType(paymentStatusOptions, booking.payment_status)">
+              <el-tag
+                :type="
+                  getStatusType(paymentStatusOptions, booking.payment_status)
+                "
+              >
                 {{ booking.payment_status }}
               </el-tag>
             </el-descriptions-item>
@@ -44,18 +56,21 @@ a<template>
         <el-card class="details-card">
           <template #header>
             <div class="card-header">
-              <span>{{ $t('showtimes.title') }}</span>
+              <span>{{ $t("showtimes.title") }}</span>
             </div>
           </template>
           <el-descriptions :column="2" border>
-            <el-descriptions-item :label="$t('showtimes.movie')">{{ booking.movie?.title }}</el-descriptions-item>
-            <el-descriptions-item :label="$t('showtimes.hall')">{{ booking.hall?.hall_name }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('showtimes.movie')">{{
+              booking.movie?.title
+            }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('showtimes.hall')">{{
+              booking.hall?.hall_name
+            }}</el-descriptions-item>
             <el-descriptions-item :label="$t('showtimes.showDate')">
               {{ formatDate(booking.showtime?.show_date) }}
             </el-descriptions-item>
-            <el-descriptions-item :label="$t('showtimes.startTime')">{{
-                booking.showtime?.start_time
-              }}
+            <el-descriptions-item :label="$t('showtimes.startTime')"
+              >{{ booking.showtime?.start_time }}
             </el-descriptions-item>
           </el-descriptions>
         </el-card>
@@ -64,18 +79,23 @@ a<template>
         <el-card class="details-card">
           <template #header>
             <div class="card-header">
-              <span>{{ $t('seats.title') }} ({{ booking.seat_count }})</span>
+              <span>{{ $t("seats.title") }} ({{ booking.seat_count }})</span>
             </div>
           </template>
           <el-table :data="booking.seats" stripe>
-            <el-table-column prop="seat_identifier" :label="$t('seats.indentifier')"/>
+            <el-table-column
+              prop="seat_identifier"
+              :label="$t('seats.indentifier')"
+            />
             <el-table-column prop="seat_type" :label="$t('seats.type')">
               <template #default="{ row }">
-                <el-tag size="small">{{ $t(`seats.types.${row.seat_type}`) }}</el-tag>
+                <el-tag size="small">{{
+                  $t(`seats.types.${row.seat_type}`)
+                }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="row" :label="$t('seats.row')"/>
-            <el-table-column prop="seat_number" :label="$t('seats.number')"/>
+            <el-table-column prop="row" :label="$t('seats.row')" />
+            <el-table-column prop="seat_number" :label="$t('seats.number')" />
           </el-table>
         </el-card>
       </el-col>
@@ -84,20 +104,32 @@ a<template>
         <el-card class="details-card">
           <template #header>
             <div class="card-header">
-              <span>{{ $t('customers.customerDetails') }}</span>
+              <span>{{ $t("customers.customerDetails") }}</span>
             </div>
           </template>
           <el-descriptions direction="vertical" :column="1" border>
-            <el-descriptions-item :label="$t('customers.customerType')" v-if="booking.customer?.customerType">
+            <el-descriptions-item
+              :label="$t('customers.customerType')"
+              v-if="booking.customer?.customerType"
+            >
               <el-tag>{{ booking.customer.customerType }}</el-tag>
             </el-descriptions-item>
-            <el-descriptions-item :label="$t('customers.name')" v-if="booking.customer?.name">
+            <el-descriptions-item
+              :label="$t('customers.name')"
+              v-if="booking.customer?.name"
+            >
               {{ booking.customer.name }}
             </el-descriptions-item>
-            <el-descriptions-item :label="$t('customers.phone')" v-if="booking.customer?.phone">
+            <el-descriptions-item
+              :label="$t('customers.phone')"
+              v-if="booking.customer?.phone"
+            >
               {{ toLocalPhone(booking.customer.phone) }}
             </el-descriptions-item>
-            <el-descriptions-item :label="$t('customers.email')" v-if="booking.customer?.email">
+            <el-descriptions-item
+              :label="$t('customers.email')"
+              v-if="booking.customer?.email"
+            >
               {{ booking.customer.email }}
             </el-descriptions-item>
           </el-descriptions>
@@ -106,33 +138,40 @@ a<template>
         <el-card class="details-card">
           <template #header>
             <div class="card-header">
-              <span>{{ $t('bookings.pricing') }}</span>
+              <span>{{ $t("bookings.pricing") }}</span>
             </div>
           </template>
           <el-descriptions direction="vertical" :column="1" border>
             <el-descriptions-item :label="$t('bookings.totalPrice')">
-              <span class="total-price">{{ formatCurrency(booking.total_price) }}</span>
+              <span class="total-price">{{
+                formatCurrency(booking.total_price)
+              }}</span>
             </el-descriptions-item>
           </el-descriptions>
         </el-card>
       </el-col>
     </el-row>
 
-    <el-empty v-else :description="$t('messages.noData')"/>
+    <el-empty v-else :description="$t('messages.noData')" />
   </div>
 </template>
 
 <script setup>
-import {onMounted, ref} from 'vue';
-import {useRoute} from 'vue-router';
-import {useI18n} from 'vue-i18n';
-import {ElMessage} from 'element-plus';
-import {ArrowLeft} from '@element-plus/icons-vue'
-import {bookingService} from '@/services/bookingService';
-import {useAppStore} from '@/stores/app';
-import { formatDate, formatDateTime, formatCurrency, toLocalPhone } from "@/utils/formatters";
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
+import { ArrowLeft } from "@element-plus/icons-vue";
+import { bookingService } from "@/services/bookingService";
+import { useAppStore } from "@/stores/app";
+import {
+  formatDate,
+  formatDateTime,
+  formatCurrency,
+  toLocalPhone,
+} from "@/utils/formatters";
 
-const {t} = useI18n();
+const { t } = useI18n();
 const route = useRoute();
 const appStore = useAppStore();
 
@@ -146,31 +185,34 @@ const loadBookingDetails = async () => {
   loading.value = true;
   try {
     const response = await bookingService.getBookingById(route.params.id);
-    if (response) {
-      booking.value = response;
-      console.log("Loaded booking details:", response);
+    if (response?.success && response.data) {
+      booking.value = response.data;
+      console.log("Loaded booking details:", response.data);
     } else {
-      ElMessage.error(t('errors.loadDataFailed'));
+      ElMessage.error(t("errors.loadDataFailed"));
     }
   } catch (error) {
     console.error("Failed to load booking details:", error);
-    ElMessage.error(error.message || t('errors.loadDataFailed'));
+    ElMessage.error(error.message || t("errors.loadDataFailed"));
   } finally {
     loading.value = false;
   }
 };
 
 const getStatusType = (options, status) => {
-  const option = options.find(opt => opt.value === status);
-  return option ? option.type : 'info'; // Default to 'info' type if not found
+  const option = options.find((opt) => opt.value === status);
+  return option ? option.type : "info"; // Default to 'info' type if not found
 };
 
 onMounted(() => {
   loadBookingDetails();
   appStore.setBreadcrumbs([
-    {title: t("nav.dashboard"), path: "/admin/dashboard"},
-    {title: t("bookings.title"), path: "/admin/bookings"},
-    {title: t('bookings.bookingDetails'), path: `/admin/bookings/${route.params.id}`},
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("bookings.title"), path: "/admin/bookings" },
+    {
+      title: t("bookings.bookingDetails"),
+      path: `/admin/bookings/${route.params.id}`,
+    },
   ]);
 });
 </script>

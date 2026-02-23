@@ -145,7 +145,7 @@ const bookingSummary = computed(() => {
 
   const totalPrice = bookingState.selectedSeatDetails.reduce(
     (total, seat) => total + (seat?.price || 0),
-    0
+    0,
   );
 
   return {
@@ -223,10 +223,32 @@ const submitBooking = async () => {
       return;
     }
 
-    currentBookingId.value = bookingResponse.data.booking?._id;
+    const booking = bookingResponse.data.booking;
+    currentBookingId.value = booking?._id;
 
-    ElMessage.success(t("bookings.createSuccess"));
-    router.push("/admin/bookings");
+    if (bookingState.paymentMethod === "Bakong") {
+      // Initiate Bakong payment
+      const paymentResponse = await paymentService.createPayment({
+        bookingId: booking._id,
+        amount: booking.total_price,
+        payment_method: "Bakong",
+        currency: "USD", // Default to USD
+        description: `Payment for booking ${booking.reference_code}`,
+      });
+
+      if (paymentResponse.success) {
+        bakongPaymentData.value = paymentResponse.data.payment;
+        showBakongDialog.value = true;
+      } else {
+        ElMessage.error(
+          paymentResponse.message || t("payments.initiateFailed"),
+        );
+        router.push("/admin/bookings");
+      }
+    } else {
+      ElMessage.success(t("bookings.createSuccess"));
+      router.push("/admin/bookings");
+    }
   } catch (error) {
     ElMessage.error(error.message || t("bookings.createFailed"));
   } finally {
@@ -237,9 +259,59 @@ const submitBooking = async () => {
 /* ============ */
 /* OTHER FUNCTIONS */
 /* ============ */
-const handleRegenerateQR = async () => {};
-const onPaymentPaid = async () => {};
-const onPaymentDialogClose = async () => {};
+const handleRegenerateQR = async () => {
+  if (!currentBookingId.value) return;
+
+  loading.regeneratingQR = true;
+  try {
+    const booking = bookingState.showtime
+      ? {
+          _id: currentBookingId.value,
+          total_price: bookingSummary.value.totalPrice,
+          reference_code: "", // Will be handled by backend
+        }
+      : null;
+
+    if (!booking) return;
+
+    const paymentResponse = await paymentService.createPayment({
+      bookingId: booking._id,
+      amount: booking.total_price,
+      payment_method: "Bakong",
+      currency: "USD",
+      description: `Payment for booking`,
+    });
+
+    if (paymentResponse.success) {
+      bakongPaymentData.value = paymentResponse.data.payment;
+    } else {
+      ElMessage.error(
+        paymentResponse.message || t("payments.regenerateFailed"),
+      );
+    }
+  } catch (error) {
+    console.error("Failed to regenerate QR:", error);
+    ElMessage.error(t("errors.actionFailed"));
+  } finally {
+    loading.regeneratingQR = false;
+  }
+};
+
+const onPaymentPaid = async () => {
+  ElMessage.success(t("payments.paymentSuccess"));
+  showBakongDialog.value = false;
+  router.push("/admin/bookings");
+};
+
+const onPaymentDialogClose = (paid) => {
+  showBakongDialog.value = false;
+  if (paid) {
+    router.push("/admin/bookings");
+  } else {
+    // If not paid, we still redirect but maybe with a different message or just redirect to list
+    router.push("/admin/bookings");
+  }
+};
 
 /* ===================== */
 /* LIFECYCLE HOOKS */

@@ -19,7 +19,7 @@ export const seatBookingService = {
     };
 
     Object.keys(backendParams).forEach(
-      (k) => backendParams[k] === undefined && delete backendParams[k]
+      (k) => backendParams[k] === undefined && delete backendParams[k],
     );
 
     const { data } = await api.get("/seatBookings", { params: backendParams });
@@ -28,19 +28,16 @@ export const seatBookingService = {
       return {
         data: seatBookings.map((sb) => ({
           id: sb._id,
-          seat_id: sb.seatId?._id,
-          seat_number: sb.seatId?.seat_number,
-          row: sb.seatId?.row,
-          seat_type: sb.seatId?.seat_type,
-          price: sb.seatId?.price,
-          seat_identifier: sb.seatId?.seat_identifier,
-          showtime_id: sb.showtimeId?._id,
-          movie_title: sb.showtimeId?.movie_id?.title,
-          start_time: sb.showtimeId?.start_time,
-          booking_id: sb.bookingId?._id,
+          reference_code: sb.bookingId?.reference_code || "N/A",
+          customer_name: sb.bookingId?.customer?.name || "N/A",
+          phone: sb.bookingId?.customer?.phone || "N/A",
           status: sb.status,
-          reference_code: sb.bookingId?.reference_code,
-          phone: sb.bookingId?.userId?.phone,
+          seats: sb.seats || [],
+          showtime: {
+            movie_title: sb.showtimeId?.movie_id?.title,
+            start_time: sb.showtimeId?.start_time,
+            show_date: sb.showtimeId?.show_date,
+          },
           created_at: sb.createdAt,
         })),
         total: pagination.totalCount,
@@ -57,7 +54,7 @@ export const seatBookingService = {
       throw new Error("showtimeId is required");
     }
     const response = await api.get(
-      `/seatBookings/showtime/${showtimeId}/status`
+      `/seatBookings/showtime/${showtimeId}/status`,
     );
 
     if (response.data?.success && Array.isArray(response.data.data)) {

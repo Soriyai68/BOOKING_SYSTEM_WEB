@@ -1,7 +1,3 @@
-import { last } from "lodash-es";
-import SeatBookingHistory from "../views/seats/SeatBookingHistory.vue";
-import { all } from "axios";
-
 export default {
   // Navigation and Layout
   nav: {
@@ -90,6 +86,7 @@ export default {
     addSeat: "បន្ថែមកៅអី",
     createSeat: "បង្កើតកៅអី",
     editSeat: "កែសម្រួលកៅអី",
+    editSeats: "កែសម្រួលកៅអី",
     seatNumberRange: "ជួរលេខកៅអី",
     seatRangeStart: "ចាប់ផ្តើម (ឧ. 1)",
     seatRangeEnd: "បញ្ចប់ (ឧ. 10)",
@@ -580,6 +577,10 @@ export default {
     occupancy: "អត្រាការបំពេញកៅអី",
     full: "ពេញ",
     sellingFast: "កំពុងលក់លឿន",
+    editSeatsWarning:
+      "ការផ្លាស់ប្តូរកៅអីអាចប៉ះពាល់ដល់តម្លៃសរុប។ ភាពខុសគ្នានឹងត្រូវបានគណនាដោយផ្អែកលើតម្លៃកៅអីថ្មី។",
+    selectSeatsInstruction: "សូមជ្រើសរើសកៅអីថ្មីពីប្លង់ខាងក្រោម។",
+    selectedSeats: "កៅអីដែលបានជ្រើសរើស",
   },
   bookingTickets: {
     title: "សំបុត្រកុន",
@@ -802,6 +803,7 @@ export default {
     loading: "កំពុងដំណើរការ",
     yes: "បាទ/ចាស",
     no: "ទេ",
+    none: "គ្មាន",
   },
 
   // Upload

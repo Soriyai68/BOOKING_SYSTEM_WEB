@@ -1,6 +1,3 @@
-import { toHandlerKey } from "vue";
-import SeatBookingHistory from "../views/seats/SeatBookingHistory.vue";
-
 export default {
   // Navigation and Layout
   nav: {
@@ -175,6 +172,7 @@ export default {
     deleteSeat: "Delete Seat",
     updateSeat: "Update Seat",
     editSeat: "Edit Seat",
+    editSeats: "Edit Seats",
     searchSeats: "Search Seat",
     selectType: "Select Seat Type",
     allSeats: "All Seats",
@@ -618,6 +616,10 @@ export default {
     changeSeat: "Change Seat",
     changeSeatSuccess: "Seats updated successfully!",
     changeSeatFailed: "Failed to update seats.",
+    editSeatsWarning:
+      "Changing seats may affect the total price. Difference will be calculated based on new seat prices.",
+    selectSeatsInstruction: "Please select new seats from the map below.",
+    selectedSeats: "Selected Seats",
   },
   bookingTickets: {
     title: "Booking Tickets",
@@ -839,6 +841,7 @@ export default {
     loading: "Loading",
     yes: "Yes",
     no: "No",
+    none: "None",
   },
 
   // Upload

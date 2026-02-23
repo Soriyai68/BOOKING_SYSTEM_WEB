@@ -13,7 +13,7 @@ export const bookingService = {
       search: params.search,
       booking_status: params.booking_status,
       payment_status: params.payment_status,
-      showtimeId: params.showtime_id,
+      showtimeId: params.showtimeId || params.showtime_id,
       show_date: params.show_date,
       dateFrom: params.date_from,
       dateTo: params.date_to,
@@ -24,7 +24,7 @@ export const bookingService = {
     Object.keys(backendParams).forEach(
       (k) =>
         (backendParams[k] === undefined || backendParams[k] === "") &&
-        delete backendParams[k]
+        delete backendParams[k],
     );
 
     const response = await api.get("/bookings", { params: backendParams });
@@ -74,7 +74,8 @@ export const bookingService = {
         data: {
           id: booking._id,
           customerId: booking.customerId?._id, // Extract customer ID
-          showtime: { // Flatten showtime details
+          showtime: {
+            // Flatten showtime details
             id: booking.showtimeId?._id,
             show_date: booking.showtimeId?.show_date,
             start_time: booking.showtimeId?.start_time,
@@ -98,7 +99,7 @@ export const bookingService = {
           seat_count: booking.seat_count,
           created_at: booking.createdAt,
           updated_at: booking.updatedAt,
-        }
+        },
       };
     }
     // Return original response if not successful or data is missing

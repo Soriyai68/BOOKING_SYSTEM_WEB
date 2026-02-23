@@ -35,7 +35,7 @@
           style="width: 100%"
           :empty-text="$t('messages.noData')"
       >
-        <el-table-column prop="ticket_code" :label="$t('bookingTickets.ticketCode')" width="180" />
+        <el-table-column prop="ticket_code" :label="$t('bookingTickets.ticketCode')" width="250" />
         <el-table-column prop="customer_id.name" :label="$t('bookingTickets.user')" />
         <el-table-column prop="booking_id.reference_code" :label="$t('bookingTickets.bookingId')" />
         <el-table-column prop="showtime_id.movie_id.title" :label="$t('bookingTickets.movie')" />
