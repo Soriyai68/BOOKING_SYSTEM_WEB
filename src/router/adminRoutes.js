@@ -1,5 +1,8 @@
 import AdminLayout from "@/layouts/AdminLayout.vue";
-import { createPermissionMeta, PERMISSIONS } from "@/composables/usePermissions";
+import {
+  createPermissionMeta,
+  PERMISSIONS,
+} from "@/composables/usePermissions";
 
 const adminRoutes = [
   {
@@ -429,25 +432,24 @@ const adminRoutes = [
       {
         path: "booking-tickets",
         name: "BookingTickets",
-        component: () =>
-          import("@/views/bookingTicket/BookingTicketList.vue"),
+        component: () => import("@/views/bookingTicket/BookingTicketList.vue"),
         meta: {
           title: "Booking Tickets Management",
           titleKey: "bookingTickets.title",
           ...createPermissionMeta(PERMISSIONS.BOOKING_TICKETS_VIEW),
         },
       },
-      // {
-      //   path: "booking-tickets/:id/print",
-      //   name: "PrintBookingTicket",
-      //   component: () => import("@/views/bookingTicket/PrintTicket.vue"),
-      //   meta: {
-      //     title: "Print Booking Ticket",
-      //     titleKey: "bookingTickets.printTicket",
-      //     ...createPermissionMeta(PERMISSIONS.BOOKING_TICKETS_VIEW),
-      //     hideInMenu: true,
-      //   },
-      // },
+      {
+        path: "booking-tickets/:id/print",
+        name: "PrintBookingTicket",
+        component: () => import("@/views/bookingTicket/PrintTicket.vue"),
+        meta: {
+          title: "Print Booking Ticket",
+          titleKey: "bookingTickets.printTicket",
+          ...createPermissionMeta(PERMISSIONS.BOOKING_TICKETS_VIEW),
+          hideInMenu: true,
+        },
+      },
 
       {
         path: "seat-booking-history",

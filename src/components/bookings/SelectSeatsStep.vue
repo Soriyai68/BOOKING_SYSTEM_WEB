@@ -29,7 +29,7 @@
                 class="seat"
                 :class="getSeatClass(seat)"
                 @click="toggleSeat(seat)"
-                :title="`${seat.row}${seat.seat_number}`"
+                :title="`${seat.row}-${seat.seat_number}`"
               >
                 <span class="seat-number">{{ seat.seat_number }}</span>
               </div>
@@ -41,7 +41,7 @@
                 class="seat"
                 :class="getSeatClass(seat)"
                 @click="toggleSeat(seat)"
-                :title="`${seat.row}${seat.seat_number}`"
+                :title="`${seat.row}-${seat.seat_number}`"
               >
                 <span class="seat-number">{{ seat.seat_number }}</span>
               </div>

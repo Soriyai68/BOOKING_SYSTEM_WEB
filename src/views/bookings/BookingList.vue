@@ -542,7 +542,7 @@ const selectedSeatDetails = ref([]);
 const selectedSeatLabels = computed(() => {
   return (
     selectedSeatDetails.value
-      .map((s) => `${s.row}${s.seat_number}`)
+      .map((s) => `${s.row}-${s.seat_number}`)
       .join(", ") || t("common.none")
   );
 });
