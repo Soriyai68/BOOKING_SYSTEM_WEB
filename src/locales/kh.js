@@ -600,6 +600,20 @@ export default {
     confirmDelete: "តើអ្នកប្រាកដថាចង់លុបសំបុត្រកក់នេះមែនទេ?",
     deleteSuccess: "លុបសំបុត្រកក់បានជោគជ័យ",
     load_error: "Failed to load booking tickets",
+    printTicket: "បោះពុម្ពសំបុត្រ",
+    notFound: "រកមិនឃើញសំបុត្រ",
+    loadError: "បរាជ័យក្នុងការផ្ទុកសំបុត្រ",
+    date: "កាលបរិច្ឆេទ",
+    time: "ពេលវេលា",
+    hall: "សាលា",
+    customer: "អតិថិជន",
+    payment: "ការទូទាត់",
+    price: "តម្លៃ",
+    issued: "ចេញនៅ",
+    termsAndConditions: "លក្ខខណ្ឌ",
+    noRefund: "មិនអាចសងប្រាក់វិញ ឬប្តូរសំបុត្របានទេ បន្ទាប់ពីទិញរួច",
+    arriveEarly: "សូមមកដល់មុនពេលចាក់ភាពយន្ត 15 នាទី",
+    validOnce: "សំបុត្រនេះត្រឹមតែប្រើបានម្តងប៉ុណ្ណោះ",
   },
   payments: {
     amount: "ចំនួនទឹកប្រាក់",
@@ -716,6 +730,7 @@ export default {
     view: "មើល",
     watch: "មើល",
     download: "ទាញយក",
+    downloadPNG: "ទាញយករូបភាព PNG",
     upload: "បញ្ជូន",
     more: "ផ្សេងៗ",
     remove: "យកចេញ",
@@ -749,6 +764,8 @@ export default {
     deleteFailed: "បរាជ័យក្នុងការលុប",
     updateFailed: "បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាព",
     createFailed: "បរាជ័យក្នុងការបង្កើត",
+    downloadSuccess: "ទាញយកបានជោគជ័យ",
+    downloadFailed: "បរាជ័យក្នុងការទាញយក",
   },
 
   // Table and Pagination
@@ -766,6 +783,7 @@ export default {
     sortBy: "តម្រៀបតាម",
     selectAll: "ជ្រើសរើសទាំងអស់",
     selected: "បានជ្រើសរើស",
+    actions: "សកម្មភាព",
   },
 
   // Date and Time

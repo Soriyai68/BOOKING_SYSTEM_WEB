@@ -19,6 +19,7 @@
     "axios": "^1.12.0",
     "bakong-khqr": "^1.0.20",
     "element-plus": "^2.11.4",
+    "html2canvas": "^1.4.1",
     "lodash-es": "^4.17.21",
     "lucide-vue-next": "^0.544.0",
     "pinia": "^3.0.3",
