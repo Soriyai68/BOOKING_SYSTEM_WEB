@@ -431,12 +431,23 @@ const adminRoutes = [
       // booking tickets
       {
         path: "booking-tickets",
-        name: "BookingTickets",
+        name: "BookingTicketList",
         component: () => import("@/views/bookingTicket/BookingTicketList.vue"),
         meta: {
-          title: "Booking Tickets Management",
+          title: "Booking Tickets",
           titleKey: "bookingTickets.title",
           ...createPermissionMeta(PERMISSIONS.BOOKING_TICKETS_VIEW),
+        },
+      },
+      {
+        path: "booking-tickets/:id/print",
+        name: "PrintBookingTicket",
+        component: () => import("@/views/bookingTicket/PrintTicket.vue"),
+        meta: {
+          title: "Print Booking Ticket",
+          titleKey: "bookingTickets.printTicket",
+          ...createPermissionMeta(PERMISSIONS.BOOKING_TICKETS_VIEW),
+          hideInMenu: true,
         },
       },
 

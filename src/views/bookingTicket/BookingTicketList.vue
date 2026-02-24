@@ -206,7 +206,6 @@ const printTicket = (row) => {
 const handleDialogPrint = () => {
   window.print();
 };
-
 onMounted(() => {
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },
