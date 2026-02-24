@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import api from "@/utils/api";
 import {
   MapPin,
   Clock,
@@ -16,7 +17,18 @@ const searchActive = ref(false);
 const searchQuery = ref("");
 
 const router = useRouter();
+const userProfile = ref(null);
 
+onMounted(async () => {
+  try {
+    const res = await api.get("/customer/auth/profile");
+    if (res.data?.success && res.data?.data?.customer) {
+      userProfile.value = res.data.data.customer;
+    }
+  } catch (error) {
+    console.error("Failed to fetch customer profile:", error);
+  }
+});
 const dates = ref([
   { dayName: "Thu", dayNum: "12", day: "12", month: "Jun", active: true },
   { dayName: "Fri", dayNum: "13", day: "13", month: "Jun", active: false },
@@ -166,12 +178,41 @@ const handleReserveSeats = () => {
           </div>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div
+          class="flex items-center gap-3 cursor-pointer group"
+          @click="toggleSettings"
+        >
+          <!-- User Name -->
+          <div class="hidden sm:block text-right cursor-pointer">
+            <p class="text-[12px] font-bold text-white transition-colors">
+              {{ userProfile?.name?.split(" ")[0] || "Customer" }}
+            </p>
+            <p class="text-[10px] text-neutral-400">My Account</p>
+          </div>
+
+          <!-- Avatar -->
           <button
-            @click="toggleSettings"
-            class="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] overflow-hidden cursor-pointer hover:border-white/20"
+            class="w-9 h-9 rounded-xl border border-white/[0.08] overflow-hidden transition-colors flex items-center justify-center p-0 cursor-pointer"
+            :class="
+              userProfile?.photoUrl
+                ? 'bg-transparent'
+                : 'bg-gradient-to-tr from-sky-500 to-indigo-500'
+            "
           >
             <img
+              v-if="userProfile?.photoUrl"
+              :src="userProfile.photoUrl"
+              alt="Profile"
+              class="w-full h-full object-cover"
+            />
+            <span
+              v-else-if="userProfile?.name"
+              class="text-sm font-bold text-white uppercase"
+            >
+              {{ userProfile.name.charAt(0) }}
+            </span>
+            <img
+              v-else
               src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
               alt="Profile"
               class="w-full h-full object-cover"
@@ -185,7 +226,7 @@ const handleReserveSeats = () => {
         <p
           class="text-[11px] text-sky-400 font-semibold uppercase tracking-[0.2em] mb-2"
         >
-          Welcome back, Alex
+          Welcome back, {{ userProfile?.name?.split(" ")[0] || "Customer" }}
         </p>
         <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">
           Today's <span class="showtime-gradient-text">Showtime</span>

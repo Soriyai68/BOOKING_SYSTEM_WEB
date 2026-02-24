@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
-import adminRoutes from "./adminRoutes";
+import adminRoutes, { adminRoutesChildren } from "./adminRoutes";
 import clientRoutes from "./clientRoutes";
+import AdminLayout from "@/layouts/AdminLayout.vue";
 import {
   checkRoutePermissions,
   PERMISSIONS,
@@ -22,27 +23,42 @@ const sharedLoginRoute = {
 };
 
 if (IS_ADMIN_APP) {
+  // On the admin subdomain, we want the admin routes at the root
   allRoutes = [
     sharedLoginRoute,
     {
-      path: "/cashier/login", // Alias moved here, redirect to the main login path
-      redirect: "/login",
-      meta: { requiresGuest: true },
+      path: "/",
+      component: AdminLayout,
+      meta: { requiresAuth: true, requiresAdmin: true },
+      children: [
+        {
+          path: "",
+          redirect: "/dashboard",
+        },
+        ...adminRoutesChildren,
+      ],
     },
-    ...adminRoutes,
+    // Also include a redirect for anyone following an old /admin link
+    {
+      path: "/admin/:pathMatch(.*)*",
+      redirect: (to) => {
+        return { path: `/${to.params.pathMatch}` };
+      },
+    },
   ];
-  defaultRedirect = "/login"; // Admin app should redirect to login if not specified
+  defaultRedirect = "/login";
 } else {
+  // On main domain, keep client routes at root, but allow /admin access
   allRoutes = [
-    sharedLoginRoute, // Client might also have a login or a different one. For now, sharing.
+    sharedLoginRoute,
     ...clientRoutes,
+    ...adminRoutes, // This includes /admin path
   ];
-  defaultRedirect = "/"; // Client app should redirect to home
+  defaultRedirect = "/";
 }
 
 const finalRoutes = [
   ...allRoutes,
-  { path: "/", redirect: defaultRedirect },
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
@@ -74,7 +90,8 @@ router.beforeEach(async (to, from, next) => {
       authStore.setToken(null);
       authStore.setRefreshToken(null);
       authStore.setUser(null);
-      return next({ path: "/login", query: { redirect: to.fullPath } });
+      const loginPath = IS_ADMIN_APP ? "/login" : "/";
+      return next({ path: loginPath, query: { redirect: to.fullPath } });
     }
 
     // --- Admin specific checks ---
@@ -92,7 +109,9 @@ router.beforeEach(async (to, from, next) => {
       }
 
       if (to.matched.some((r) => r.meta.requiresAdmin) && !authStore.isAdmin) {
-        return next({ name: "NotFound" });
+        // If they are on the admin app but aren't an admin, let them stay on login or redirect to home
+        if (to.path === "/login") return next();
+        return next({ path: "/login", query: { redirect: to.fullPath } });
       }
 
       if (to.matched.some((r) => r.meta.requiresPermission)) {
@@ -110,11 +129,16 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.matched.some((record) => record.meta.requiresGuest)) {
     if (authStore.isAuthenticated) {
-      // Redirect authenticated users away from guest-only routes
       if (IS_ADMIN_APP) {
-        return next({ name: "AdminDashboard" });
+        // On admin app, only redirect away from login if they ARE an admin
+        if (authStore.isAdmin) {
+          return next({ name: "AdminDashboard" });
+        }
+        // If they are a customer on the admin app, let them stay on login (or we could logout)
+        return next();
       } else {
-        return next({ name: "ClientHome" }); // Redirect to client home if authenticated
+        // On client app, redirect to home if authenticated
+        return next({ path: "/layout" });
       }
     }
   }

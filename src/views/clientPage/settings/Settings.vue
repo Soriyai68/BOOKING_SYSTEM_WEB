@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import api from "@/utils/api";
 import {
   ArrowLeft,
-  User,
+  User as UserIcon,
   AtSign,
   Shield,
   Bell,
@@ -15,31 +16,71 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-// Mock user data — will be replaced with real Telegram auth data
+// Real user data from API
 const user = ref({
-  first_name: "Sokha",
-  last_name: "Chan",
-  username: "sokha_chan",
-  telegram_id: 123456789,
+  first_name: "",
+  last_name: "",
+  username: "",
+  telegram_id: null,
   photo_url: "",
-  auth_date: "2026-02-18",
+  auth_date: "",
 });
 
-const fullName = ref(`${user.value.first_name} ${user.value.last_name}`);
+const fullName = ref("");
+const isLoading = ref(true);
+
+onMounted(async () => {
+  try {
+    const res = await api.get("/customer/auth/profile");
+    if (res.data?.success && res.data?.data?.customer) {
+      const customerData = res.data.data.customer;
+
+      const nameParts = (customerData.name || "").split(" ");
+      user.value = {
+        first_name: nameParts[0] || "",
+        last_name: nameParts.slice(1).join(" ") || "",
+        username: customerData.username || "",
+        telegram_id: customerData.telegramId || null,
+        photo_url: customerData.photoUrl || "",
+        auth_date: customerData.createdAt || "",
+      };
+      fullName.value = customerData.name || "Customer";
+    }
+  } catch (error) {
+    console.error("Failed to fetch customer profile:", error);
+  } finally {
+    isLoading.value = false;
+  }
+});
 
 // Menu sections
 const menuItems = [
   {
     label: "Account",
     items: [
-      { icon: User, title: "Personal Info", subtitle: "Name, Telegram account", route: null },
-      { icon: Shield, title: "Privacy & Security", subtitle: "Data & permissions", route: null },
+      {
+        icon: UserIcon,
+        title: "Personal Info",
+        subtitle: "Name, Telegram account",
+        route: null,
+      },
+      {
+        icon: Shield,
+        title: "Privacy & Security",
+        subtitle: "Data & permissions",
+        route: null,
+      },
     ],
   },
   {
     label: "Preferences",
     items: [
-      { icon: Bell, title: "Notifications", subtitle: "Booking alerts, promotions", route: null },
+      {
+        icon: Bell,
+        title: "Notifications",
+        subtitle: "Booking alerts, promotions",
+        route: null,
+      },
       { icon: Globe, title: "Language", subtitle: "English", route: null },
     ],
   },
@@ -53,7 +94,9 @@ const menuItems = [
 
     <div class="relative z-10 min-h-screen flex flex-col">
       <!-- Header -->
-      <header class="py-3 px-5 flex items-center justify-between border-b border-white/[0.05]">
+      <header
+        class="py-3 px-5 flex items-center justify-between border-b border-white/[0.05]"
+      >
         <div class="flex items-center gap-3">
           <button
             @click="router.back()"
@@ -69,7 +112,9 @@ const menuItems = [
       <div class="flex-1 overflow-y-auto">
         <!-- Profile Preview Card -->
         <div class="px-5 py-6">
-          <div class="settings-profile-card rounded-2xl border border-white/[0.06] p-6">
+          <div
+            class="settings-profile-card rounded-2xl border border-white/[0.06] p-6"
+          >
             <div class="flex items-center gap-4">
               <!-- Avatar -->
               <div class="relative">
@@ -88,7 +133,8 @@ const menuItems = [
                   class="settings-avatar w-16 h-16 rounded-2xl flex items-center justify-center border-2 border-white/[0.1]"
                 >
                   <span class="text-xl font-bold text-white">
-                    {{ user.first_name.charAt(0) }}{{ user.last_name.charAt(0) }}
+                    {{ user.first_name.charAt(0)
+                    }}{{ user.last_name.charAt(0) }}
                   </span>
                 </div>
                 <!-- Edit badge -->
@@ -110,12 +156,17 @@ const menuItems = [
                 </div>
                 <div class="flex items-center gap-1.5 mt-1.5">
                   <!-- Telegram icon -->
-                  <svg viewBox="0 0 24 24" class="h-3 w-3 fill-neutral-500 flex-shrink-0">
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="h-3 w-3 fill-neutral-500 flex-shrink-0"
+                  >
                     <path
                       d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.13 7.19c-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59l2.76-2.69c.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02l-5.54 3.69c-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.78-1.64 6.3-2.73 7.55-3.26 3.58-1.51 4.34-1.77 4.83-1.77.11 0 .35.03.5.15.13.1.17.24.18.33 0 .06 0 .16-.02.2z"
                     />
                   </svg>
-                  <span class="text-[11px] text-neutral-500">Telegram Connected</span>
+                  <span class="text-[11px] text-neutral-500"
+                    >Telegram Connected</span
+                  >
                 </div>
               </div>
             </div>
@@ -124,7 +175,9 @@ const menuItems = [
             <div class="mt-5 pt-4 border-t border-white/[0.04]">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <div class="w-7 h-7 rounded-lg bg-sky-500/10 flex items-center justify-center">
+                  <div
+                    class="w-7 h-7 rounded-lg bg-sky-500/10 flex items-center justify-center"
+                  >
                     <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-sky-400">
                       <path
                         d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.13 7.19c-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59l2.76-2.69c.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02l-5.54 3.69c-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.78-1.64 6.3-2.73 7.55-3.26 3.58-1.51 4.34-1.77 4.83-1.77.11 0 .35.03.5.15.13.1.17.24.18.33 0 .06 0 .16-.02.2z"
@@ -132,12 +185,20 @@ const menuItems = [
                     </svg>
                   </div>
                   <div>
-                    <p class="text-[11px] font-semibold text-neutral-300">Username</p>
-                    <p class="text-[11px] text-sky-400 font-medium">@{{ user.username }}</p>
+                    <p class="text-[11px] font-semibold text-neutral-300">
+                      Username
+                    </p>
+                    <p class="text-[11px] text-sky-400 font-medium">
+                      @{{ user.username }}
+                    </p>
                   </div>
                 </div>
-                <div class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                  <span class="text-[10px] font-semibold text-emerald-400">Verified</span>
+                <div
+                  class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20"
+                >
+                  <span class="text-[10px] font-semibold text-emerald-400"
+                    >Verified</span
+                  >
                 </div>
               </div>
             </div>
@@ -147,10 +208,14 @@ const menuItems = [
         <!-- Menu Sections -->
         <div class="px-5 space-y-6 pb-6">
           <div v-for="section in menuItems" :key="section.label">
-            <h3 class="text-[10px] uppercase tracking-widest font-semibold text-neutral-600 mb-3 px-1">
+            <h3
+              class="text-[10px] uppercase tracking-widest font-semibold text-neutral-600 mb-3 px-1"
+            >
               {{ section.label }}
             </h3>
-            <div class="rounded-2xl border border-white/[0.06] overflow-hidden divide-y divide-white/[0.04]">
+            <div
+              class="rounded-2xl border border-white/[0.06] overflow-hidden divide-y divide-white/[0.04]"
+            >
               <button
                 v-for="item in section.items"
                 :key="item.title"
@@ -159,13 +224,22 @@ const menuItems = [
                 <div
                   class="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0"
                 >
-                  <component :is="item.icon" :size="16" class="text-neutral-400" />
+                  <component
+                    :is="item.icon"
+                    :size="16"
+                    class="text-neutral-400"
+                  />
                 </div>
                 <div class="flex-1 text-left min-w-0">
                   <p class="text-sm font-semibold">{{ item.title }}</p>
-                  <p class="text-[11px] text-neutral-500 mt-0.5">{{ item.subtitle }}</p>
+                  <p class="text-[11px] text-neutral-500 mt-0.5">
+                    {{ item.subtitle }}
+                  </p>
                 </div>
-                <ChevronRight :size="16" class="text-neutral-600 flex-shrink-0" />
+                <ChevronRight
+                  :size="16"
+                  class="text-neutral-600 flex-shrink-0"
+                />
               </button>
             </div>
           </div>
@@ -199,13 +273,25 @@ const menuItems = [
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(14, 165, 233, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 40% at 80% 100%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
+    radial-gradient(
+      ellipse 80% 50% at 50% 0%,
+      rgba(14, 165, 233, 0.04) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 80% 100%,
+      rgba(139, 92, 246, 0.03) 0%,
+      transparent 50%
+    );
   pointer-events: none;
 }
 
 .settings-profile-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.03),
+    rgba(255, 255, 255, 0.01)
+  );
 }
 
 .settings-avatar {

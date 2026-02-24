@@ -90,6 +90,7 @@ import { useRoute, useRouter } from "vue-router";
 import { ElMessage, ElMessageBox, ElLoading } from "element-plus";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
+import { usePath } from "@/composables/usePath";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher.vue";
 import { useI18n } from "vue-i18n";
 import {
@@ -109,6 +110,7 @@ const route = useRoute();
 const router = useRouter();
 const appStore = useAppStore();
 const authStore = useAuthStore();
+const { getAdminPath } = usePath();
 const { t } = useI18n();
 
 const notificationCount = ref(3); // Mock notification count
@@ -134,19 +136,19 @@ const showNotifications = () => {
 };
 
 const goToCreateBooking = () => {
-  router.push("/admin/booking/create");
+  router.push(getAdminPath("/booking/create"));
 };
 
 const handleUserMenuCommand = async (command) => {
   let loadingInstance = null;
 
   if (command === "profile") {
-    router.push("/admin/profile");
+    router.push(getAdminPath("/profile"));
     return;
   }
 
   if (command === "settings") {
-    router.push("/admin/settings");
+    router.push(getAdminPath("/settings"));
     return;
   }
 
@@ -159,7 +161,7 @@ const handleUserMenuCommand = async (command) => {
           confirmButtonText: t("auth.logoutConfirm.confirmButton"),
           cancelButtonText: t("actions.cancel"),
           type: "warning",
-        }
+        },
       );
 
       loadingInstance = ElLoading.service({ fullscreen: false });
@@ -239,13 +241,18 @@ const handleUserMenuCommand = async (command) => {
 }
 
 .booking-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
   transition: left 0.5s;
 }
 
@@ -276,7 +283,7 @@ const handleUserMenuCommand = async (command) => {
   .booking-btn-text {
     display: none;
   }
-  
+
   .booking-btn {
     padding: 8px 12px;
     width: 36px;

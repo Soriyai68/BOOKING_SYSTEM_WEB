@@ -20,7 +20,7 @@
       >
         <el-menu-item
           v-if="isSuperAdmin || canViewDashboard"
-          index="/admin/dashboard"
+          :index="pathPrefix + '/dashboard'"
         >
           <el-icon>
             <LayoutDashboard />
@@ -41,7 +41,7 @@
           </template>
           <el-menu-item
             v-if="isSuperAdmin || canViewBookings"
-            index="/admin/bookings"
+            :index="pathPrefix + '/bookings'"
           >
             <el-icon>
               <BookOpen />
@@ -50,7 +50,7 @@
           </el-menu-item>
           <el-menu-item
             v-if="isSuperAdmin || canViewBookingTickets"
-            index="/admin/booking-tickets"
+            :index="pathPrefix + '/booking-tickets'"
           >
             <el-icon>
               <Ticket />
@@ -62,7 +62,7 @@
         <!-- Payment Management -->
         <el-menu-item
           v-if="isSuperAdmin || canViewPayments"
-          index="/admin/payments"
+          :index="pathPrefix + '/payments'"
         >
           <el-icon>
             <CreditCard />
@@ -77,7 +77,7 @@
             </el-icon>
             <span>{{ $t("seats.title") }}</span>
           </template>
-          <el-menu-item index="/admin/seats">
+          <el-menu-item :index="pathPrefix + '/seats'">
             <el-icon>
               <Armchair />
             </el-icon>
@@ -85,14 +85,17 @@
           </el-menu-item>
           <el-menu-item
             v-if="isSuperAdmin || canViewBookings"
-            index="/admin/seat-booking"
+            :index="pathPrefix + '/seat-booking'"
           >
             <el-icon>
               <BookOpen />
             </el-icon>
             <template #title>{{ $t("seats.seatBooking") }}</template>
           </el-menu-item>
-          <el-menu-item v-if="true" index="/admin/seat-booking-history">
+          <el-menu-item
+            v-if="true"
+            :index="pathPrefix + '/seat-booking-history'"
+          >
             <el-icon>
               <History />
             </el-icon>
@@ -113,7 +116,7 @@
             </el-icon>
             <span>{{ $t("halls.title") }}</span>
           </template>
-          <el-menu-item index="/admin/halls">
+          <el-menu-item :index="pathPrefix + '/halls'">
             <el-icon>
               <Monitor />
             </el-icon>
@@ -134,7 +137,7 @@
             </el-icon>
             <span>{{ $t("theaters.title") }}</span>
           </template>
-          <el-menu-item index="/admin/theaters">
+          <el-menu-item :index="pathPrefix + '/theaters'">
             <el-icon>
               <Projector />
             </el-icon>
@@ -155,7 +158,7 @@
             </el-icon>
             <span>{{ $t("movies.title") }}</span>
           </template>
-          <el-menu-item index="/admin/movies">
+          <el-menu-item :index="pathPrefix + '/movies'">
             <el-icon>
               <Clapperboard />
             </el-icon>
@@ -163,7 +166,7 @@
           </el-menu-item>
           <el-menu-item
             v-if="isSuperAdmin || canCreateMovies"
-            index="/admin/movies/create"
+            :index="pathPrefix + '/movies/create'"
           >
             <el-icon>
               <Plus />
@@ -183,7 +186,7 @@
             </el-icon>
             <span>{{ $t("promotions.title") }}</span>
           </template>
-          <el-menu-item index="/admin/promotions">
+          <el-menu-item :index="pathPrefix + '/promotions'">
             <el-icon>
               <Tag />
             </el-icon>
@@ -193,7 +196,7 @@
           </el-menu-item>
           <el-menu-item
             v-if="isSuperAdmin || canCreatePromotions"
-            index="/admin/promotions/create"
+            :index="pathPrefix + '/promotions/create'"
           >
             <el-icon>
               <Plus />
@@ -211,7 +214,7 @@
             </el-icon>
             <span>{{ $t("showtimes.title") }}</span>
           </template>
-          <el-menu-item index="/admin/showtimes">
+          <el-menu-item :index="pathPrefix + '/showtimes'">
             <el-icon>
               <Ticket />
             </el-icon>
@@ -219,7 +222,7 @@
           </el-menu-item>
           <el-menu-item
             v-if="isSuperAdmin || canCreateShowtimes"
-            index="/admin/showtimes/create"
+            :index="pathPrefix + '/showtimes/create'"
           >
             <el-icon>
               <Plus />
@@ -254,7 +257,7 @@
             </el-icon>
             <span>{{ $t("customers.title") }}</span>
           </template>
-          <el-menu-item index="/admin/customers">
+          <el-menu-item :index="pathPrefix + '/customers'">
             <el-icon>
               <Users />
             </el-icon>
@@ -262,7 +265,7 @@
           </el-menu-item>
           <el-menu-item
             v-if="isSuperAdmin || canCreateUsers"
-            index="/admin/customers/create"
+            :index="pathPrefix + '/customers/create'"
           >
             <el-icon>
               <Plus />
@@ -277,18 +280,21 @@
             <el-icon>
               <ClipboardCheck />
             </el-icon>
-            <span>{{ $t('nav.reportsManagement') }}</span>
+            <span>{{ $t("nav.reportsManagement") }}</span>
           </template>
-          <el-menu-item index="/admin/reports/customer-frequency">
+          <el-menu-item :index="pathPrefix + '/reports/customer-frequency'">
             <el-icon>
               <Users />
             </el-icon>
-            <template #title>{{ $t('reports.customerFrequency') }}</template>
+            <template #title>{{ $t("reports.customerFrequency") }}</template>
           </el-menu-item>
         </el-sub-menu>
 
         <!-- User Management (Dialog-based create) -->
-        <el-menu-item v-if="isSuperAdmin || canViewUsers" index="/admin/users">
+        <el-menu-item
+          v-if="isSuperAdmin || canViewUsers"
+          :index="pathPrefix + '/users'"
+        >
           <el-icon>
             <Users />
           </el-icon>
@@ -303,13 +309,13 @@
             </el-icon>
             <span>{{ $t("system.title") }}</span>
           </template>
-          <el-menu-item index="/admin/system/permissions">
+          <el-menu-item :index="pathPrefix + '/system/permissions'">
             <el-icon>
               <Shield />
             </el-icon>
             <template #title>{{ $t("system.permissions") }}</template>
           </el-menu-item>
-          <el-menu-item index="/admin/system/role-permissions">
+          <el-menu-item :index="pathPrefix + '/system/role-permissions'">
             <el-icon>
               <UserCog />
             </el-icon>
@@ -320,7 +326,7 @@
         <!-- Settings -->
         <el-menu-item
           v-if="isSuperAdmin || canViewSettings"
-          index="/admin/settings"
+          :index="pathPrefix + '/settings'"
         >
           <el-icon>
             <Settings />
@@ -336,6 +342,7 @@
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
+import { usePath } from "@/composables/usePath";
 import { usePermissions } from "@/composables/usePermissions";
 import {
   Armchair,
@@ -360,6 +367,7 @@ import {
 const route = useRoute();
 const router = useRouter();
 const appStore = useAppStore();
+const { pathPrefix } = usePath();
 const {
   canViewUsers,
   canViewDashboard,

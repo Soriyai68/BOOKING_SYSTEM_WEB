@@ -15,20 +15,22 @@ export const useAuthStore = defineStore("auth", () => {
   const user = ref(getUserFromStorage());
   const token = ref(
     localStorage.getItem(
-      import.meta.env.VITE_AUTH_TOKEN_KEY || "cinema_auth_token"
-    ) || null
+      import.meta.env.VITE_AUTH_TOKEN_KEY || "cinema_auth_token",
+    ) || null,
   );
   const refreshToken = ref(
     localStorage.getItem(
-      import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY || "cinema_refresh_token"
-    ) || null
+      import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY || "cinema_refresh_token",
+    ) || null,
   );
   const isLoading = ref(false);
   const isInitialized = ref(false);
 
   const isAuthenticated = computed(() => !!token.value);
   const userRole = computed(() => user.value?.role || "user");
-  const isAdmin = computed(() => ["admin", "superadmin", "cashier"].includes(userRole.value));
+  const isAdmin = computed(() =>
+    ["admin", "superadmin", "cashier"].includes(userRole.value),
+  );
   const isSuperAdmin = computed(() => userRole.value === "superadmin");
   const isRegularAdmin = computed(() => userRole.value === "admin");
   const isCashier = computed(() => userRole.value === "cashier");
@@ -43,7 +45,8 @@ export const useAuthStore = defineStore("auth", () => {
 
   const setRefreshToken = (newRefreshToken) => {
     refreshToken.value = newRefreshToken;
-    const refreshTokenKey = import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY || "cinema_refresh_token";
+    const refreshTokenKey =
+      import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY || "cinema_refresh_token";
     if (newRefreshToken) localStorage.setItem(refreshTokenKey, newRefreshToken);
     else localStorage.removeItem(refreshTokenKey);
   };
@@ -89,6 +92,54 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
+  const telegramLogin = async (telegramData) => {
+    isLoading.value = true;
+    try {
+      const response = await api.post(
+        "/customer/auth/telegram-login",
+        telegramData,
+      );
+      const responseData = response.data;
+
+      if (responseData.success && responseData.data) {
+        const data = responseData.data;
+        setToken(data.accessToken);
+        if (data.refreshToken) setRefreshToken(data.refreshToken);
+        setUser(data.customer);
+        return responseData;
+      }
+      return responseData;
+    } catch (error) {
+      throw error;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const telegramWebAppLogin = async (initData, phone_number) => {
+    isLoading.value = true;
+    try {
+      const response = await api.post("/customer/auth/telegram-webapp-login", {
+        initData,
+        phone_number,
+      });
+      const responseData = response.data;
+
+      if (responseData.success && responseData.data) {
+        const data = responseData.data;
+        setToken(data.accessToken);
+        if (data.refreshToken) setRefreshToken(data.refreshToken);
+        setUser(data.customer);
+        return responseData;
+      }
+      return responseData;
+    } catch (error) {
+      throw error;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   const logout = async () => {
     const wasAuthenticated = !!token.value;
 
@@ -98,14 +149,24 @@ export const useAuthStore = defineStore("auth", () => {
     isInitialized.value = false;
 
     if (wasAuthenticated && import.meta.env.VITE_API_BASE_URL) {
-      api.post("/auth/logout").catch(() => { });
+      // Determine if logging out of customer or admin
+      const isCustomer =
+        user.value && ("customerType" in user.value || !("role" in user.value));
+      const logoutEndpoint = isCustomer
+        ? "/customer/auth/logout"
+        : "/auth/logout";
+      api.post(logoutEndpoint).catch(() => {});
     }
   };
 
   const fetchUserProfile = async () => {
     if (!token.value) return;
     try {
-      const response = await api.get("/auth/profile");
+      // Determine if the user is a customer or an admin staff
+      const isCustomer =
+        user.value && ("customerType" in user.value || !("role" in user.value));
+      const endpoint = isCustomer ? "/customer/auth/profile" : "/auth/profile";
+      const response = await api.get(endpoint);
 
       let userData;
       if (response.data?.success && response.data?.data?.user) {
@@ -188,6 +249,8 @@ export const useAuthStore = defineStore("auth", () => {
     isCashier,
     userPermissions,
     login,
+    telegramLogin,
+    telegramWebAppLogin,
     logout,
     fetchUserProfile,
     updateProfile,

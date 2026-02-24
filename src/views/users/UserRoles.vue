@@ -11,7 +11,10 @@
               </div>
               <div class="title-text">
                 <h1 class="page-title">User Roles Management</h1>
-                <p class="page-description">Manage user roles, permissions, and access levels across the system</p>
+                <p class="page-description">
+                  Manage user roles, permissions, and access levels across the
+                  system
+                </p>
               </div>
             </div>
             <div class="header-stats">
@@ -49,7 +52,7 @@
             </el-input>
           </div>
         </div>
-        
+
         <div class="filters-group">
           <div class="filter-item">
             <label class="filter-label">Role Filter</label>
@@ -69,14 +72,18 @@
                 :value="role.value"
               >
                 <div class="role-option">
-                  <el-tag :type="getRoleTagType(role.value)" size="small" class="role-tag">
+                  <el-tag
+                    :type="getRoleTagType(role.value)"
+                    size="small"
+                    class="role-tag"
+                  >
                     {{ role.label }}
                   </el-tag>
                 </div>
               </el-option>
             </el-select>
           </div>
-          
+
           <div class="filter-item">
             <label class="filter-label">Status Filter</label>
             <el-select
@@ -133,9 +140,15 @@
         <el-table-column prop="name" label="User" min-width="200">
           <template #default="{ row }">
             <div class="user-info-enhanced">
-              <div class="user-avatar-enhanced" :class="getUserStatusClass(row)">
+              <div
+                class="user-avatar-enhanced"
+                :class="getUserStatusClass(row)"
+              >
                 {{ row.name.charAt(0).toUpperCase() }}
-                <div class="status-indicator" :class="{ active: row.isActive }"></div>
+                <div
+                  class="status-indicator"
+                  :class="{ active: row.isActive }"
+                ></div>
               </div>
               <div class="user-details-enhanced">
                 <div class="user-name">{{ row.name }}</div>
@@ -143,7 +156,7 @@
                   <el-icon class="contact-icon"><Phone /></el-icon>
                   {{ toLocalPhone(row.phone) }}
                   <span v-if="row.email" class="user-email">
-                    <el-icon><Message /></el-icon>
+                    <el-icon><Mail /></el-icon>
                     {{ row.email }}
                   </span>
                 </div>
@@ -154,14 +167,18 @@
 
         <el-table-column prop="role" label="Role" width="140">
           <template #default="{ row }">
-            <el-tag 
-              :type="getRoleTagType(row.role)" 
-              size="small" 
+            <el-tag
+              :type="getRoleTagType(row.role)"
+              size="small"
               class="role-tag-enhanced"
               effect="dark"
             >
-              <el-icon v-if="row.role === 'superadmin'" class="tag-icon"><Star /></el-icon>
-              <el-icon v-else-if="row.role === 'admin'" class="tag-icon"><Setting /></el-icon>
+              <el-icon v-if="row.role === 'superadmin'" class="tag-icon"
+                ><Star
+              /></el-icon>
+              <el-icon v-else-if="row.role === 'admin'" class="tag-icon"
+                ><Settings
+              /></el-icon>
               {{ getRoleDisplayName(row.role) }}
             </el-tag>
           </template>
@@ -169,7 +186,10 @@
 
         <el-table-column prop="isActive" label="Status" width="120">
           <template #default="{ row }">
-            <div class="status-badge" :class="row.isActive ? 'active' : 'inactive'">
+            <div
+              class="status-badge"
+              :class="row.isActive ? 'active' : 'inactive'"
+            >
               <div class="status-dot"></div>
               <span>{{ row.isActive ? "Active" : "Inactive" }}</span>
             </div>
@@ -195,7 +215,9 @@
             <div class="date-info-enhanced">
               <el-icon class="date-icon"><Calendar /></el-icon>
               <div class="date-content">
-                <div class="date-main">{{ formatDate(row.createdAt, true) }}</div>
+                <div class="date-main">
+                  {{ formatDate(row.createdAt, true) }}
+                </div>
                 <div class="date-relative">
                   {{ getRelativeTime(row.createdAt) }}
                 </div>
@@ -213,10 +235,10 @@
                 placement="top"
               >
                 <span>
-                  <el-button 
-                    type="primary" 
-                    size="small" 
-                    :icon="UserCog" 
+                  <el-button
+                    type="primary"
+                    size="small"
+                    :icon="UserCog"
                     disabled
                     class="action-btn"
                   >
@@ -278,9 +300,15 @@
     >
       <div v-if="selectedUser" class="role-dialog-content-enhanced">
         <div class="user-summary-enhanced">
-          <div class="user-avatar-enhanced large" :class="getUserStatusClass(selectedUser)">
+          <div
+            class="user-avatar-enhanced large"
+            :class="getUserStatusClass(selectedUser)"
+          >
             {{ selectedUser.name.charAt(0).toUpperCase() }}
-            <div class="status-indicator" :class="{ active: selectedUser.isActive }"></div>
+            <div
+              class="status-indicator"
+              :class="{ active: selectedUser.isActive }"
+            ></div>
           </div>
           <div class="user-info-details-enhanced">
             <h3>{{ selectedUser.name }}</h3>
@@ -290,7 +318,11 @@
             </p>
             <div class="current-role-section">
               <span class="current-role-label">Current Role:</span>
-              <el-tag :type="getRoleTagType(selectedUser.role)" size="small" effect="dark">
+              <el-tag
+                :type="getRoleTagType(selectedUser.role)"
+                size="small"
+                effect="dark"
+              >
                 {{ getRoleDisplayName(selectedUser.role) }}
               </el-tag>
             </div>
@@ -307,23 +339,23 @@
               :key="role.value"
               class="role-option-card"
               :class="{
-                'selected': newRole === role.value,
-                'disabled': role.disabled
+                selected: newRole === role.value,
+                disabled: role.disabled,
               }"
               @click="!role.disabled && (newRole = role.value)"
             >
               <div class="role-option-header">
-                <el-radio 
-                  v-model="newRole" 
-                  :value="role.value" 
+                <el-radio
+                  v-model="newRole"
+                  :value="role.value"
                   :disabled="role.disabled"
                   class="role-radio"
                 />
                 <div class="role-title">
                   <span class="role-name">{{ role.label }}</span>
-                  <el-tag 
-                    :type="getRoleTagType(role.value)" 
-                    size="small" 
+                  <el-tag
+                    :type="getRoleTagType(role.value)"
+                    size="small"
                     class="role-badge"
                   >
                     {{ role.value }}
@@ -344,7 +376,9 @@
           class="permission-preview-enhanced"
         >
           <el-divider class="custom-divider" />
-          <label class="form-label-enhanced">New Role Permissions Preview</label>
+          <label class="form-label-enhanced"
+            >New Role Permissions Preview</label
+          >
           <div class="permissions-preview-content">
             <div class="permissions-count">
               {{ (rolePermissions[newRole] || []).length }} permissions
@@ -378,7 +412,7 @@
             class="confirm-btn"
           >
             <template #loading>
-              <el-icon class="is-loading"><Loading /></el-icon>
+              <el-icon class="is-loading"><Loader2 /></el-icon>
               Updating...
             </template>
             Confirm Role Change
@@ -396,9 +430,15 @@
     >
       <div v-if="selectedUser" class="permissions-dialog-content-enhanced">
         <div class="user-summary-enhanced">
-          <div class="user-avatar-enhanced large" :class="getUserStatusClass(selectedUser)">
+          <div
+            class="user-avatar-enhanced large"
+            :class="getUserStatusClass(selectedUser)"
+          >
             {{ selectedUser.name.charAt(0).toUpperCase() }}
-            <div class="status-indicator" :class="{ active: selectedUser.isActive }"></div>
+            <div
+              class="status-indicator"
+              :class="{ active: selectedUser.isActive }"
+            ></div>
           </div>
           <div class="user-info-details-enhanced">
             <h3>{{ selectedUser.name }}</h3>
@@ -408,7 +448,11 @@
             </p>
             <div class="current-role-section">
               <span class="current-role-label">Role:</span>
-              <el-tag :type="getRoleTagType(selectedUser.role)" size="small" effect="dark">
+              <el-tag
+                :type="getRoleTagType(selectedUser.role)"
+                size="small"
+                effect="dark"
+              >
                 {{ getRoleDisplayName(selectedUser.role) }}
               </el-tag>
             </div>
@@ -440,10 +484,13 @@
                 </el-tag>
               </div>
             </div>
-            
-            <div v-if="userPermissions.length === 0" class="no-permissions-enhanced">
-              <el-empty 
-                description="No permissions assigned to this role" 
+
+            <div
+              v-if="userPermissions.length === 0"
+              class="no-permissions-enhanced"
+            >
+              <el-empty
+                description="No permissions assigned to this role"
                 :image-size="100"
               >
                 <el-button type="primary" @click="openRoleDialog(selectedUser)">
@@ -470,7 +517,9 @@
                     class="permission-item"
                   >
                     <el-icon class="permission-icon"><Check /></el-icon>
-                    <span class="permission-name">{{ permission.displayName }}</span>
+                    <span class="permission-name">{{
+                      permission.displayName
+                    }}</span>
                   </div>
                 </div>
               </div>
@@ -485,20 +534,20 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { 
-  UserCog, 
-  Shield, 
-  RefreshCcw, 
-  Search, 
-  Clock, 
+import {
+  UserCog,
+  Shield,
+  RefreshCcw,
+  Search,
+  Clock,
   Calendar,
   Phone,
-  Message,
+  Mail,
   Star,
-  Setting,
+  Settings,
   Lock,
   Check,
-  Loading
+  Loader2,
 } from "lucide-vue-next";
 import api from "@/utils/api";
 import { usePermissions } from "@/composables/usePermissions";
@@ -537,7 +586,7 @@ const availableRoles = computed(() => [
 ]);
 
 const activeUsersCount = computed(() => {
-  return users.value.filter(user => user.isActive).length;
+  return users.value.filter((user) => user.isActive).length;
 });
 
 const filteredUsers = computed(() => {
@@ -548,9 +597,9 @@ const filteredUsers = computed(() => {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(
       (user) =>
-        user.name.toLowerCase().includes(query) || 
+        user.name.toLowerCase().includes(query) ||
         user.phone.includes(query) ||
-        (user.email && user.email.toLowerCase().includes(query))
+        (user.email && user.email.toLowerCase().includes(query)),
     );
   }
 
@@ -561,8 +610,8 @@ const filteredUsers = computed(() => {
 
   // Status filter
   if (selectedStatus.value) {
-    filtered = filtered.filter((user) => 
-      selectedStatus.value === 'active' ? user.isActive : !user.isActive
+    filtered = filtered.filter((user) =>
+      selectedStatus.value === "active" ? user.isActive : !user.isActive,
     );
   }
 
@@ -603,7 +652,8 @@ const loadUsers = async () => {
     if (response.data && response.data.success) {
       const userData = response.data.data;
       users.value = userData.users || userData || [];
-      totalUsers.value = userData.total || userData.length || users.value.length;
+      totalUsers.value =
+        userData.total || userData.length || users.value.length;
     } else {
       users.value = Array.isArray(response.data) ? response.data : [];
       totalUsers.value = users.value.length;
@@ -694,7 +744,7 @@ const getRoleDisplayName = (role) => {
 };
 
 const getUserStatusClass = (user) => {
-  return user.isActive ? 'status-active' : 'status-inactive';
+  return user.isActive ? "status-active" : "status-inactive";
 };
 
 const canChangeRole = (user) => {
@@ -716,7 +766,8 @@ const getAvailableRoles = (user) => {
     {
       value: "user",
       label: "User",
-      description: "Regular user with basic access and no administrative privileges",
+      description:
+        "Regular user with basic access and no administrative privileges",
       disabled: false,
     },
     {
@@ -728,13 +779,15 @@ const getAvailableRoles = (user) => {
     {
       value: "admin",
       label: "Admin",
-      description: "Administrator with management permissions for users and content",
+      description:
+        "Administrator with management permissions for users and content",
       disabled: !isSuperAdmin.value && user.role !== "user",
     },
     {
       value: "superadmin",
       label: "Super Admin",
-      description: "Full system access with all permissions and administrative rights",
+      description:
+        "Full system access with all permissions and administrative rights",
       disabled: !isSuperAdmin.value,
     },
   ];
@@ -753,7 +806,11 @@ const handleDialogClose = () => {
 };
 
 const confirmRoleChange = async () => {
-  if (!selectedUser.value || !newRole.value || newRole.value === selectedUser.value.role) {
+  if (
+    !selectedUser.value ||
+    !newRole.value ||
+    newRole.value === selectedUser.value.role
+  ) {
     ElMessage.warning("Please select a different role");
     return;
   }
@@ -761,14 +818,14 @@ const confirmRoleChange = async () => {
   try {
     await ElMessageBox.confirm(
       `Change ${selectedUser.value.name}'s role from ${getRoleDisplayName(
-        selectedUser.value.role
+        selectedUser.value.role,
       )} to ${getRoleDisplayName(newRole.value)}?`,
       "Confirm Role Change",
       {
         confirmButtonText: "Change Role",
         cancelButtonText: "Cancel",
         type: "warning",
-      }
+      },
     );
 
     updating.value = true;
@@ -784,7 +841,7 @@ const confirmRoleChange = async () => {
       });
 
       const userIndex = users.value.findIndex(
-        (u) => u._id === selectedUser.value._id
+        (u) => u._id === selectedUser.value._id,
       );
       if (userIndex !== -1) {
         users.value[userIndex].role = newRole.value;
@@ -801,7 +858,10 @@ const confirmRoleChange = async () => {
   } catch (error) {
     if (error !== "cancel") {
       console.error("Error updating user role:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Failed to update user role";
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to update user role";
       ElMessage({
         message: errorMessage,
         type: "error",
@@ -842,7 +902,9 @@ const formatPermissionName = (permission) => {
 };
 
 const formatModuleName = (module) => {
-  return module.charAt(0).toUpperCase() + module.slice(1).replace(/([A-Z])/g, ' $1');
+  return (
+    module.charAt(0).toUpperCase() + module.slice(1).replace(/([A-Z])/g, " $1")
+  );
 };
 
 // Watchers
@@ -1539,44 +1601,44 @@ onMounted(() => {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .header-stats {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .filters-container {
     flex-direction: column;
   }
-  
+
   .search-section,
   .filters-group {
     width: 100%;
   }
-  
+
   .filters-group {
     flex-direction: column;
   }
-  
+
   .pagination-container-enhanced {
     flex-direction: column;
     gap: 16px;
     align-items: stretch;
   }
-  
+
   .permission-list-enhanced {
     grid-template-columns: 1fr;
   }
-  
+
   .user-summary-enhanced {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .role-option-card {
     padding: 16px;
   }
-  
+
   .role-title {
     flex-direction: column;
     align-items: flex-start;
@@ -1588,17 +1650,17 @@ onMounted(() => {
   .header-content {
     padding: 0 16px;
   }
-  
+
   .filter-card,
   .table-card {
     margin: -20px 16px 16px 16px;
   }
-  
+
   .stat-card {
     min-width: 100px;
     padding: 12px 16px;
   }
-  
+
   .stat-value {
     font-size: 24px;
   }

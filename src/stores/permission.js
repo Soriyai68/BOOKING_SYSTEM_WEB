@@ -29,7 +29,7 @@ export const usePermissionStore = defineStore("permission", () => {
 
     if (Array.isArray(permission)) {
       // If array provided, user needs ANY of the permissions
-      return permission.some(p => permissions.value.includes(p));
+      return permission.some((p) => permissions.value.includes(p));
     }
 
     return permissions.value.includes(permission);
@@ -45,7 +45,9 @@ export const usePermissionStore = defineStore("permission", () => {
       return hasPermission(permissionList);
     }
 
-    return permissionList.every(permission => permissions.value.includes(permission));
+    return permissionList.every((permission) =>
+      permissions.value.includes(permission),
+    );
   };
 
   const hasAnyPermission = (permissionList) => {
@@ -58,7 +60,9 @@ export const usePermissionStore = defineStore("permission", () => {
       return hasPermission(permissionList);
     }
 
-    return permissionList.some(permission => permissions.value.includes(permission));
+    return permissionList.some((permission) =>
+      permissions.value.includes(permission),
+    );
   };
 
   // Module-based permission checking
@@ -69,78 +73,77 @@ export const usePermissionStore = defineStore("permission", () => {
   const canManage = (module) => hasPermission(`${module}.manage`);
 
   // Specific module permissions
-  const canViewDashboard = computed(() => hasPermission('dashboard.view'));
-  const canViewAnalytics = computed(() => hasPermission('analytics.view'));
-  const canViewSettings = computed(() => hasPermission('settings.view'));
-  const canEditSettings = computed(() => hasPermission('settings.edit'));
-  const canManageSettings = computed(() => hasPermission('settings.manage'));
-  const canManageSystem = computed(() => hasPermission('system.manage'));
+  const canViewDashboard = computed(() => hasPermission("dashboard.view"));
+  const canViewAnalytics = computed(() => hasPermission("analytics.view"));
+  const canViewSettings = computed(() => hasPermission("settings.view"));
+  const canEditSettings = computed(() => hasPermission("settings.edit"));
+  const canManageSettings = computed(() => hasPermission("settings.manage"));
+  const canManageSystem = computed(() => hasPermission("system.manage"));
 
-  const canViewUsers = computed(() => canView('users'));
-  const canCreateUsers = computed(() => canCreate('users'));
-  const canEditUsers = computed(() => canEdit('users'));
-  const canDeleteUsers = computed(() => canDelete('users'));
-  const canManageUsers = computed(() => canManage('users'));
+  const canViewUsers = computed(() => canView("users"));
+  const canCreateUsers = computed(() => canCreate("users"));
+  const canEditUsers = computed(() => canEdit("users"));
+  const canDeleteUsers = computed(() => canDelete("users"));
+  const canManageUsers = computed(() => canManage("users"));
 
-  const canViewTheaters = computed(() => canView('theaters'));
-  const canCreateTheaters = computed(() => canCreate('theaters'));
-  const canEditTheaters = computed(() => canEdit('theaters'));
-  const canDeleteTheaters = computed(() => canDelete('theaters'));
-  const canManageTheaters = computed(() => canManage('theaters'));
+  const canViewTheaters = computed(() => canView("theaters"));
+  const canCreateTheaters = computed(() => canCreate("theaters"));
+  const canEditTheaters = computed(() => canEdit("theaters"));
+  const canDeleteTheaters = computed(() => canDelete("theaters"));
+  const canManageTheaters = computed(() => canManage("theaters"));
 
-  const canViewHalls = computed(() => canView('halls'));
-  const canCreateHalls = computed(() => canCreate('halls'));
-  const canEditHalls = computed(() => canEdit('halls'));
-  const canDeleteHalls = computed(() => canDelete('halls'));
-  const canManageHalls = computed(() => canManage('halls'));
+  const canViewHalls = computed(() => canView("halls"));
+  const canCreateHalls = computed(() => canCreate("halls"));
+  const canEditHalls = computed(() => canEdit("halls"));
+  const canDeleteHalls = computed(() => canDelete("halls"));
+  const canManageHalls = computed(() => canManage("halls"));
 
-  const canViewSeats = computed(() => canView('seats'));
-  const canCreateSeats = computed(() => canCreate('seats'));
-  const canEditSeats = computed(() => canEdit('seats'));
-  const canDeleteSeats = computed(() => canDelete('seats'));
-  const canManageSeats = computed(() => canManage('seats'));
+  const canViewSeats = computed(() => canView("seats"));
+  const canCreateSeats = computed(() => canCreate("seats"));
+  const canEditSeats = computed(() => canEdit("seats"));
+  const canDeleteSeats = computed(() => canDelete("seats"));
+  const canManageSeats = computed(() => canManage("seats"));
 
-  const canViewMovies = computed(() => canView('movies'));
-  const canCreateMovies = computed(() => canCreate('movies'));
-  const canEditMovies = computed(() => canEdit('movies'));
-  const canDeleteMovies = computed(() => canDelete('movies'));
-  const canManageMovies = computed(() => canManage('movies'));
+  const canViewMovies = computed(() => canView("movies"));
+  const canCreateMovies = computed(() => canCreate("movies"));
+  const canEditMovies = computed(() => canEdit("movies"));
+  const canDeleteMovies = computed(() => canDelete("movies"));
+  const canManageMovies = computed(() => canManage("movies"));
 
-  const canViewShowtimes = computed(() => canView('showtimes'));
-  const canCreateShowtimes = computed(() => canCreate('showtimes'));
-  const canEditShowtimes = computed(() => canEdit('showtimes'));
-  const canDeleteShowtimes = computed(() => canDelete('showtimes'));
-  const canManageShowtimes = computed(() => canManage('showtimes'));
+  const canViewShowtimes = computed(() => canView("showtimes"));
+  const canCreateShowtimes = computed(() => canCreate("showtimes"));
+  const canEditShowtimes = computed(() => canEdit("showtimes"));
+  const canDeleteShowtimes = computed(() => canDelete("showtimes"));
+  const canManageShowtimes = computed(() => canManage("showtimes"));
 
-  const canViewBookings = computed(() => canView('bookings'));
-  const canCreateBookings = computed(() => canCreate('bookings'));
-  const canEditBookings = computed(() => canEdit('bookings'));
-  const canDeleteBookings = computed(() => canDelete('bookings'));
-  const canManageBookings = computed(() => canManage('bookings'));
+  const canViewBookings = computed(() => canView("bookings"));
+  const canCreateBookings = computed(() => canCreate("bookings"));
+  const canEditBookings = computed(() => canEdit("bookings"));
+  const canDeleteBookings = computed(() => canDelete("bookings"));
+  const canManageBookings = computed(() => canManage("bookings"));
 
-      const canViewBookingTickets = computed(() => canView('booking-tickets'));
-    const canCreateBookingTickets = computed(() => canCreate('booking-tickets'));
-    const canEditBookingTickets = computed(() => canEdit('booking-tickets'));
-    const canDeleteBookingTickets = computed(() => canDelete('booking-tickets'));
-    const canManageBookingTickets = computed(() => canManage('booking-tickets'));
-  const canViewPromotions = computed(() => canView('promotions'));
-  const canCreatePromotions = computed(() => canCreate('promotions'));
-  const canEditPromotions = computed(() => canEdit('promotions'));
-  const canDeletePromotions = computed(() => canDelete('promotions'));
-  const canManagePromotions = computed(() => canManage('promotions'));
+  const canViewBookingTickets = computed(() => canView("booking-tickets"));
+  const canCreateBookingTickets = computed(() => canCreate("booking-tickets"));
+  const canEditBookingTickets = computed(() => canEdit("booking-tickets"));
+  const canDeleteBookingTickets = computed(() => canDelete("booking-tickets"));
+  const canManageBookingTickets = computed(() => canManage("booking-tickets"));
+  const canViewPromotions = computed(() => canView("promotions"));
+  const canCreatePromotions = computed(() => canCreate("promotions"));
+  const canEditPromotions = computed(() => canEdit("promotions"));
+  const canDeletePromotions = computed(() => canDelete("promotions"));
+  const canManagePromotions = computed(() => canManage("promotions"));
 
-  const canViewInvoices = computed(() => canView('invoices'));
-  const canCreateInvoices = computed(() => canCreate('invoices'));
-  const canEditInvoices = computed(() => canEdit('invoices'));
-  const canDeleteInvoices = computed(() => canDelete('invoices'));
-  const canManageInvoices = computed(() => canManage('invoices'));
+  const canViewInvoices = computed(() => canView("invoices"));
+  const canCreateInvoices = computed(() => canCreate("invoices"));
+  const canEditInvoices = computed(() => canEdit("invoices"));
+  const canDeleteInvoices = computed(() => canDelete("invoices"));
+  const canManageInvoices = computed(() => canManage("invoices"));
 
-  const canViewPayments = computed(() => canView('payments'));
-  const canCreatePayments = computed(() => canCreate('payments'));
-  const canEditPayments = computed(() => canEdit('payments'));
-  const canDeletePayments = computed(() => canDelete('payments'));
-  const canManagePayments = computed(() => canManage('payments'));
-
+  const canViewPayments = computed(() => canView("payments"));
+  const canCreatePayments = computed(() => canCreate("payments"));
+  const canEditPayments = computed(() => canEdit("payments"));
+  const canDeletePayments = computed(() => canDelete("payments"));
+  const canManagePayments = computed(() => canManage("payments"));
 
   // Actions
   const fetchUserPermissions = async (force = false) => {
@@ -150,8 +153,22 @@ export const usePermissionStore = defineStore("permission", () => {
       return;
     }
 
+    // Customers don't have admin permissions, skip fetch to avoid 401 Unauthorized
+    const isCustomer =
+      authStore.user &&
+      ("customerType" in authStore.user || !("role" in authStore.user));
+    if (isCustomer) {
+      permissions.value = [];
+      permissionDetails.value = [];
+      isInitialized.value = true;
+      lastFetched.value = Date.now();
+      return;
+    }
+
     // Check if we need to fetch (not initialized, forced, or stale data)
-    const shouldFetch = !isInitialized.value || force ||
+    const shouldFetch =
+      !isInitialized.value ||
+      force ||
       (lastFetched.value && Date.now() - lastFetched.value > 5 * 60 * 1000); // 5 minutes
 
     if (!shouldFetch) {
@@ -161,7 +178,7 @@ export const usePermissionStore = defineStore("permission", () => {
     isLoading.value = true;
 
     try {
-      const response = await api.get('/permissions/me');
+      const response = await api.get("/permissions/me");
 
       if (response.data.success) {
         const data = response.data.data;
@@ -177,7 +194,7 @@ export const usePermissionStore = defineStore("permission", () => {
         // });
       }
     } catch (error) {
-      console.error('Error fetching user permissions:', error);
+      console.error("Error fetching user permissions:", error);
       // Don't throw error, just log it
       clearPermissions();
     } finally {
@@ -190,14 +207,14 @@ export const usePermissionStore = defineStore("permission", () => {
     if (isSuperAdmin.value) return true;
 
     try {
-      const response = await api.post('/permissions/check', {
+      const response = await api.post("/permissions/check", {
         permissions: permissionList,
-        requireAll
+        requireAll,
       });
 
       return response.data.success && response.data.data.hasPermission;
     } catch (error) {
-      console.error('Error checking permission via API:', error);
+      console.error("Error checking permission via API:", error);
       return false;
     }
   };
@@ -226,7 +243,7 @@ export const usePermissionStore = defineStore("permission", () => {
   const getPermissionsByModule = computed(() => {
     const grouped = {};
 
-    permissionDetails.value.forEach(permission => {
+    permissionDetails.value.forEach((permission) => {
       if (!grouped[permission.module]) {
         grouped[permission.module] = [];
       }
@@ -238,7 +255,7 @@ export const usePermissionStore = defineStore("permission", () => {
 
   // Get available modules
   const getAvailableModules = computed(() => {
-    return [...new Set(permissionDetails.value.map(p => p.module))];
+    return [...new Set(permissionDetails.value.map((p) => p.module))];
   });
 
   return {
@@ -346,6 +363,6 @@ export const usePermissionStore = defineStore("permission", () => {
     checkPermissionAPI,
     clearPermissions,
     refreshPermissions,
-    initializePermissions
+    initializePermissions,
   };
 });

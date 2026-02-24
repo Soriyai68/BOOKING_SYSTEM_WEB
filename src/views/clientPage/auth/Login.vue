@@ -1,4 +1,170 @@
 <script setup>
+import { ref, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import { ElMessage } from "element-plus";
+
+const router = useRouter();
+const authStore = useAuthStore();
+
+const isWebApp = ref(false);
+const firstName = ref("");
+const isLoading = ref(false);
+
+// Environment Detection logic from previous project
+const detectIsTG = () => {
+  const tg = window.Telegram?.WebApp;
+  const isTG =
+    (tg && (tg.initData || tg.platform !== "unknown")) ||
+    window.location.hash.includes("tgWebAppData") ||
+    window.location.search.includes("tgWebAppData") ||
+    /Telegram/i.test(navigator.userAgent);
+
+  if (isTG) {
+    isWebApp.value = true;
+    sessionStorage.setItem("isWebApp", "true");
+    if (tg?.initDataUnsafe?.user?.first_name) {
+      firstName.value = tg.initDataUnsafe.user.first_name;
+    }
+    if (tg?.expand) tg.expand();
+    console.log("[Mini App] Detected via Simple Method");
+    return true;
+  }
+  return false;
+};
+
+// Handle Browser Widget Auth
+const handleWidgetAuth = async (userData) => {
+  console.log("[Widget] Auth data received:", userData);
+  try {
+    isLoading.value = true;
+    const res = await authStore.telegramLogin(userData);
+    const customerName = res?.data?.customer?.name;
+    if (res?.success) {
+      ElMessage.success(`Welcome back, ${customerName}!`);
+      router.push("/layout");
+    }
+  } catch (error) {
+    console.error("[Widget] Auth error:", error);
+    ElMessage.error(error?.response?.data?.message || "Telegram login failed.");
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Handle Native Mini App Login (One-tap)
+const handleWebAppLogin = async () => {
+  try {
+    isLoading.value = true;
+    const tg = window.Telegram?.WebApp;
+    const initData = tg?.initData;
+
+    if (!initData) {
+      ElMessage.error("Telegram data not found. Please open in Telegram.");
+      isLoading.value = false;
+      return;
+    }
+
+    console.log("[Mini App] Requesting contact...");
+
+    const processCapture = async (phone_number) => {
+      // 1. Clean number: Remove all non-digits (keeps + if you want, but backend preferred digits)
+      // Strip everything except numbers. If it starts with +855 or 855, replace with 0
+      let cleaned = (phone_number || "").replace(/\D/g, "");
+      if (cleaned.startsWith("855")) {
+        cleaned = "0" + cleaned.slice(3);
+      } else if (!cleaned.startsWith("0") && cleaned.length > 6) {
+        cleaned = "0" + cleaned; // Assume local if no leading 0
+      }
+
+      try {
+        const res = await authStore.telegramWebAppLogin(initData, cleaned);
+        const customerName = res?.data?.customer?.name;
+        if (res?.success) {
+          ElMessage.success(`Welcome back, ${customerName}!`);
+          router.push("/layout");
+        }
+      } catch (err) {
+        console.error("[Mini App] Login request failed:", err);
+        ElMessage.error("Server authentication failed.");
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
+    // Use requestContact (modern SDK way)
+    tg.requestContact((callbackData) => {
+      if (callbackData?.status === "sent") {
+        const num =
+          callbackData.response?.contact?.phone_number ||
+          callbackData.contact?.phone_number;
+        processCapture(num);
+      } else {
+        // Fallback: Try login WITHOUT phone number (Backend supports it for existing users)
+        console.warn(
+          "[Mini App] Phone sharing skipped, trying ID-only login...",
+        );
+        processCapture(null);
+      }
+    });
+  } catch (error) {
+    console.error("[Mini App] Login flow failed:", error);
+    ElMessage.error("Something went wrong with Telegram SDK.");
+    isLoading.value = false;
+  }
+};
+
+let widgetTimer = null;
+
+onMounted(() => {
+  // Check if already logged in
+  if (authStore.isAuthenticated) {
+    router.push("/layout");
+    return;
+  }
+
+  const isTG = detectIsTG();
+
+  // Browser Widget Initialization
+  if (!isTG) {
+    widgetTimer = setTimeout(() => {
+      // Expose globally for Telegram Widget
+      window.onTelegramAuth = (user) => {
+        handleWidgetAuth(user);
+      };
+
+      const widgetContainer = document.getElementById("telegram-login-widget");
+      if (widgetContainer) {
+        const script = document.createElement("script");
+        script.src = "https://telegram.org/js/telegram-widget.js?22";
+        script.async = true;
+        script.setAttribute(
+          "data-telegram-login",
+          import.meta.env.VITE_TELEGRAM_BOT_NAME || "RSB_Cinema_bot",
+        );
+        script.setAttribute("data-size", "large");
+        script.setAttribute("data-onauth", "onTelegramAuth(user)");
+        script.setAttribute("data-radius", "16");
+        widgetContainer.appendChild(script);
+      }
+    }, 1000);
+  }
+
+  // Anti-freeze recovery logic from previous project
+  const purgeLocks = () => {
+    document.body.style.pointerEvents = "auto";
+    document.body.style.overflow = "auto";
+    document.body.style.userSelect = "auto";
+    document.documentElement.style.pointerEvents = "auto";
+    document.documentElement.style.overflow = "auto";
+  };
+  purgeLocks();
+});
+
+onUnmounted(() => {
+  if (widgetTimer) clearTimeout(widgetTimer);
+  delete window.onTelegramAuth;
+});
 </script>
 
 <template>
@@ -9,92 +175,156 @@
     <div class="login-bg-layer"></div>
 
     <!-- Header / Nav Bar -->
-    <header
-      class="relative z-10 py-3 px-5 flex items-center justify-between border-b border-white/[0.05]"
-    >
+    <header class="relative z-10 py-5 px-6 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <img
           src="@/assets/rsb-cinema.png"
           alt="RSB Cinema Logo"
-          class="w-14 h-16 object-contain"
+          class="w-16 h-18 object-contain"
         />
         <div>
-          <h1 class="text-[12px] font-bold leading-snug">
+          <h1 class="text-sm font-bold leading-snug">
             រោងភាពយន្ត អ័រ អេស ប៊ី​ ឯកភ្នំ
           </h1>
-          <p class="text-[10px] font-semibold text-neutral-500 mt-0.5 tracking-wide uppercase">
+          <p
+            class="text-[10px] font-semibold text-neutral-500 mt-0.5 tracking-wider uppercase"
+          >
             RSB CINEMA EK PHNOM
           </p>
         </div>
       </div>
-      <div></div>
     </header>
 
     <!-- Content -->
-    <div class="relative z-10 flex-1 flex flex-col items-center justify-center px-6">
-      <div class="w-full max-w-[360px]">
-        <div class="text-center mb-4">
-          <h2 class="text-2xl font-bold tracking-tight text-white mb-2">
-            Welcome Back
+    <div
+      class="relative z-10 flex-1 flex flex-col items-center justify-center px-6 -mt-10"
+    >
+      <div class="w-full max-w-[380px] space-y-8">
+        <div class="text-center space-y-3">
+          <h2 class="text-3xl font-extrabold tracking-tight text-white">
+            {{ isWebApp ? `Welcome, ${firstName || "User"}!` : "Welcome Back" }}
           </h2>
-          <p class="text-sm text-neutral-400 leading-relaxed">
-            Sign in with your Telegram account to<br />
-            book your favorite movie tickets.
+          <p
+            class="text-sm text-neutral-400 leading-relaxed max-w-[280px] mx-auto"
+          >
+            {{
+              isWebApp
+                ? "Please share your contact to continue booking your tickets."
+                : "Sign in with your Telegram account to explore and book favorite movies."
+            }}
           </p>
         </div>
 
-        <!-- Cinema illustration icons -->
-        <div class="flex items-center justify-center gap-6 my-8 text-neutral-600">
-          <div>
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-2.625 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-1.5A1.125 1.125 0 0118 18.375M20.625 4.5H3.375m17.25 0c.621 0 1.125.504 1.125 1.125M20.625 4.5h-1.5C18.504 4.5 18 5.004 18 5.625m3.75 0v1.5c0 .621-.504 1.125-1.125 1.125M3.375 4.5c-.621 0-1.125.504-1.125 1.125M3.375 4.5h1.5C5.496 4.5 6 5.004 6 5.625m-3.75 0v1.5c0 .621.504 1.125 1.125 1.125m0 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m1.5-3.75C5.496 8.25 6 7.746 6 7.125v-1.5M4.875 8.25C5.496 8.25 6 8.754 6 9.375v1.5m0-5.25v5.25m0-5.25C6 5.004 6.504 4.5 7.125 4.5h9.75c.621 0 1.125.504 1.125 1.125m1.125 2.625h1.5m-1.5 0A1.125 1.125 0 0118 7.125v-1.5m1.125 2.625c-.621 0-1.125.504-1.125 1.125v1.5m2.625-2.625c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125M18 5.625v5.25M7.125 12h9.75m-9.75 0A1.125 1.125 0 016 10.875M7.125 12C6.504 12 6 12.504 6 13.125m0-2.25C6 11.496 5.496 12 4.875 12M18 10.875c0 .621-.504 1.125-1.125 1.125M18 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m-12 5.25v-5.25m0 5.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125m-12 0v-1.5c0-.621-.504-1.125-1.125-1.125M18 18.375v-5.25m0 5.25v-1.5c0-.621.504-1.125 1.125-1.125M18 13.125v1.5c0 .621.504 1.125 1.125 1.125M18 13.125c0-.621.504-1.125 1.125-1.125M6 13.125v1.5c0 .621-.504 1.125-1.125 1.125M6 13.125C6 12.504 5.496 12 4.875 12m-1.5 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M19.125 12h1.5m0 0c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h1.5m14.25 0h1.5" />
-            </svg>
+        <!-- Cinema Icons -->
+        <div
+          class="flex items-center justify-center gap-8 text-neutral-700 my-10"
+        >
+          <svg
+            class="w-10 h-10"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
+            />
+          </svg>
+          <svg
+            class="w-10 h-10"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z"
+            />
+          </svg>
+          <svg
+            class="w-10 h-10"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z"
+            />
+          </svg>
+        </div>
+
+        <!-- Action Section -->
+        <div class="flex flex-col items-center gap-6">
+          <div v-if="isWebApp" class="w-full">
+            <button
+              @click="handleWebAppLogin"
+              :disabled="isLoading"
+              class="login-telegram-btn w-full flex items-center justify-center gap-4 rounded-2xl px-6 py-4 text-[15px] font-bold text-white transition-all active:scale-95 disabled:opacity-70"
+            >
+              <div class="login-telegram-icon-wrap">
+                <svg viewBox="0 0 24 24" class="h-6 w-6 fill-white">
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.13 7.19c-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59l2.76-2.69c.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02l-5.54 3.69c-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.78-1.64 6.3-2.73 7.55-3.26 3.58-1.51 4.34-1.77 4.83-1.77.11 0 .35.03.5.15.13.1.17.24.18.33 0 .06 0 .16-.02.2z"
+                  />
+                </svg>
+              </div>
+              <span>{{
+                firstName ? `Log in as ${firstName}` : "Login with Telegram"
+              }}</span>
+            </button>
           </div>
-          <div>
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
-            </svg>
+
+          <div
+            v-else
+            id="telegram-login-widget"
+            class="min-h-[50px] flex items-center justify-center"
+          >
+            <!-- Widget injects here -->
           </div>
-          <div>
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />
-            </svg>
+
+          <div v-if="isLoading" class="mt-4">
+            <div class="loading-dots">
+              <span></span><span></span><span></span>
+            </div>
           </div>
         </div>
 
-        <!-- Telegram Login Button -->
-        <button
-          type="button"
-          class="login-telegram-btn w-full flex items-center justify-center gap-3 rounded-2xl px-6 py-4 text-sm font-semibold text-white cursor-pointer"
-        >
-          <div class="login-telegram-icon-wrap">
-            <svg viewBox="0 0 24 24" class="h-5 w-5 fill-white">
-              <path
-                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.13 7.19c-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59l2.76-2.69c.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02l-5.54 3.69c-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.78-1.64 6.3-2.73 7.55-3.26 3.58-1.51 4.34-1.77 4.83-1.77.11 0 .35.03.5.15.13.1.17.24.18.33 0 .06 0 .16-.02.2z"
-              />
-            </svg>
-          </div>
-          <span class="tracking-wide">Sign in with Telegram</span>
-        </button>
-
-        <!-- Additional info -->
-        <div class="mt-6 text-center">
-          <p class="text-[11px] text-neutral-600 leading-relaxed">
+        <!-- Additional Info -->
+        <div class="text-center pt-4">
+          <p class="text-[11px] text-neutral-600 font-medium">
             Fast, secure login powered by Telegram.<br />
-            No password needed.
+            No password or registration required.
           </p>
         </div>
       </div>
     </div>
 
     <!-- Footer -->
-    <footer class="relative z-10 px-8 py-5 border-t border-white/[0.05]">
-      <p class="text-center text-[11px] text-neutral-500">
-        By signing in, you agree to our
-        <a href="#" class="text-sky-400/80 hover:text-sky-400">Terms</a>
-        and
-        <a href="#" class="text-sky-400/80 hover:text-sky-400">Privacy Policy</a>.
+    <footer class="relative z-10 px-8 py-8">
+      <p
+        class="text-center text-[11px] text-neutral-500 font-medium leading-relaxed"
+      >
+        By continuing, you agree to our<br />
+        <a href="#" class="text-sky-500/80 hover:text-sky-400"
+          >Terms of Service</a
+        >
+        &
+        <a href="#" class="text-sky-500/80 hover:text-sky-400"
+          >Privacy Policy</a
+        >
       </p>
     </footer>
   </div>
@@ -102,33 +332,71 @@
 
 <style scoped>
 .login-page {
-  background: #0a0a0c;
+  background: #050505;
 }
 
 .login-bg-layer {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(14, 165, 233, 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+    radial-gradient(
+      circle at 50% -20%,
+      rgba(14, 165, 233, 0.15) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 80% 100%,
+      rgba(139, 92, 246, 0.08) 0%,
+      transparent 50%
+    );
   pointer-events: none;
 }
 
 .login-telegram-btn {
-  background: linear-gradient(135deg, #0088cc, #0ea5e9);
-}
-
-.login-telegram-btn:active {
-  transform: scale(0.98);
+  background: linear-gradient(135deg, #0088cc, #049bd4);
+  box-shadow: 0 10px 25px -5px rgba(0, 136, 204, 0.3);
 }
 
 .login-telegram-icon-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.15);
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.loading-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.loading-dots span {
+  width: 6px;
+  height: 6px;
+  background: #0ea5e9;
+  border-radius: 50%;
+  animation: dot-pulse 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes dot-pulse {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 </style>
