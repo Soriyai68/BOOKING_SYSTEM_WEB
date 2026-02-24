@@ -15,6 +15,20 @@
 
     <!-- Right side -->
     <div class="header-right">
+      <!-- Quick Booking Button -->
+      <el-tooltip :content="$t('bookings.addBooking')" placement="bottom">
+        <el-button
+          :icon="TicketPlus"
+          @click="goToCreateBooking"
+          class="booking-btn"
+          round
+        >
+          <span class="booking-btn-text">{{ $t("bookings.addBooking") }}</span>
+        </el-button>
+      </el-tooltip>
+
+      <el-divider direction="vertical" class="header-divider" />
+
       <!-- Language switcher -->
       <LanguageSwitcher />
 
@@ -88,6 +102,7 @@ import {
   ChevronDown,
   Settings,
   LogOut,
+  TicketPlus,
 } from "lucide-vue-next";
 
 const route = useRoute();
@@ -116,6 +131,10 @@ const toggleTheme = () => {
 
 const showNotifications = () => {
   ElMessage.info("Notifications feature coming soon!");
+};
+
+const goToCreateBooking = () => {
+  router.push("/admin/booking/create");
 };
 
 const handleUserMenuCommand = async (command) => {
@@ -198,7 +217,70 @@ const handleUserMenuCommand = async (command) => {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
+}
+
+.header-divider {
+  height: 24px;
+  margin: 0;
+}
+
+.booking-btn {
+  font-weight: 500;
+  padding: 8px 20px;
+  height: 36px;
+  background: var(--el-text-color-primary);
+  color: var(--el-bg-color);
+  border: 2px solid var(--el-text-color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.booking-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transition: left 0.5s;
+}
+
+.booking-btn:hover::before {
+  left: 100%;
+}
+
+.booking-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  background: var(--el-bg-color);
+  color: var(--el-text-color-primary);
+  border-color: var(--el-text-color-primary);
+}
+
+.booking-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.booking-btn-text {
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+
+/* Responsive: Hide text on smaller screens */
+@media (max-width: 768px) {
+  .booking-btn-text {
+    display: none;
+  }
+  
+  .booking-btn {
+    padding: 8px 12px;
+    width: 36px;
+  }
 }
 
 .header-btn {

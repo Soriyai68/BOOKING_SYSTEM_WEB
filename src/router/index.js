@@ -29,6 +29,17 @@ if (IS_ADMIN_APP) {
       redirect: "/login",
       meta: { requiresGuest: true },
     },
+    // Print ticket route (outside admin layout for clean printing)
+    {
+      path: "/print/booking-ticket/:id",
+      name: "PrintBookingTicket",
+      component: () => import("@/views/bookingTicket/PrintBookingTicket.vue"),
+      meta: {
+        requiresAuth: true,
+        title: "Print Booking Ticket",
+        titleKey: "bookingTickets.printTicket",
+      },
+    },
     ...adminRoutes,
   ];
   defaultRedirect = "/login"; // Admin app should redirect to login if not specified

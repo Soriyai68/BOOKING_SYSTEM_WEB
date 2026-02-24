@@ -437,17 +437,6 @@ const adminRoutes = [
           ...createPermissionMeta(PERMISSIONS.BOOKING_TICKETS_VIEW),
         },
       },
-      // {
-      //   path: "booking-tickets/:id/print",
-      //   name: "PrintBookingTicket",
-      //   component: () => import("@/views/bookingTicket/PrintTicket.vue"),
-      //   meta: {
-      //     title: "Print Booking Ticket",
-      //     titleKey: "bookingTickets.printTicket",
-      //     ...createPermissionMeta(PERMISSIONS.BOOKING_TICKETS_VIEW),
-      //     hideInMenu: true,
-      //   },
-      // },
 
       {
         path: "seat-booking-history",

@@ -639,6 +639,20 @@ export default {
     confirmDelete: "Are you sure you want to delete this booking ticket?",
     deleteSuccess: "Booking ticket deleted successfully",
     load_error: "Failed to load booking tickets",
+    printTicket: "Print Ticket",
+    notFound: "Ticket not found",
+    loadError: "Failed to load ticket",
+    date: "Date",
+    time: "Time",
+    hall: "Hall",
+    customer: "Customer",
+    payment: "Payment",
+    price: "Price",
+    issued: "Issued",
+    termsAndConditions: "Terms & Conditions",
+    noRefund: "No refunds or exchanges allowed once ticket is purchased",
+    arriveEarly: "Please arrive 15 minutes before showtime",
+    validOnce: "This ticket is valid for one-time entry only",
   },
   payments: {
     bakongPayment: "Bakong Payment",
@@ -754,6 +768,7 @@ export default {
     view: "View",
     watch: "Watch",
     download: "Download",
+    downloadPNG: "Download PNG",
     upload: "Upload",
     more: "More",
     remove: "Remove",
@@ -787,6 +802,8 @@ export default {
     deleteFailed: "Failed to delete",
     updateFailed: "Failed to update",
     createFailed: "Failed to create",
+    downloadSuccess: "Downloaded successfully",
+    downloadFailed: "Failed to download",
   },
 
   // Table and Pagination
@@ -804,6 +821,7 @@ export default {
     sortBy: "Sort by",
     selectAll: "Select all",
     selected: "selected",
+    actions: "Actions",
   },
 
   // Date and Time
