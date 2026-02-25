@@ -47,7 +47,7 @@ const goToDashboard = () => {
     if (IS_ADMIN_APP) {
       router.push("/login");
     } else {
-      router.push("/");
+      router.push({ name: "Login Page" });
     }
   }
 };

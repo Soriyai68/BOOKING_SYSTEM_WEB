@@ -1,33 +1,47 @@
 <script setup>
 import { ref } from "vue";
-import { Ticket, MapPin, Clock, Phone, Star, ChevronRight } from "lucide-vue-next";
+import { useI18n } from "vue-i18n";
+import {
+  Ticket,
+  MapPin,
+  Clock,
+  Phone,
+  Star,
+  ChevronRight,
+} from "lucide-vue-next";
+
+const { t } = useI18n();
 
 const featuredMovies = ref([
   {
     id: 1,
     title: "Avatar: Way of Water",
-    poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=600",
+    poster:
+      "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=600",
     genre: "Sci-Fi",
     rating: 4.8,
   },
   {
     id: 2,
     title: "Inception",
-    poster: "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=600",
+    poster:
+      "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=600",
     genre: "Thriller",
     rating: 4.9,
   },
   {
     id: 3,
     title: "Interstellar",
-    poster: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=600",
+    poster:
+      "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=600",
     genre: "Sci-Fi",
     rating: 4.7,
   },
   {
     id: 4,
     title: "Dune: Part Two",
-    poster: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?w=600",
+    poster:
+      "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?w=600",
     genre: "Adventure",
     rating: 4.6,
   },
@@ -59,49 +73,63 @@ const featuredMovies = ref([
               to="/showtime"
               class="text-xs text-neutral-400 hover:text-white font-medium px-4 py-2 rounded-lg hover:bg-white/[0.05]"
             >
-              Showtimes
+              {{ t("client.nav.showtimes") }}
             </router-link>
             <router-link
               to="/"
               class="home-login-btn text-xs font-semibold px-5 py-2.5 rounded-xl cursor-pointer"
             >
-              Sign In
+              {{ t("client.nav.signIn") }}
             </router-link>
           </div>
         </div>
       </nav>
 
       <!-- Hero Section -->
-      <section class="relative px-4 sm:px-6 lg:px-8 pt-16 pb-20 sm:pt-24 sm:pb-28">
+      <section
+        class="relative px-4 sm:px-6 lg:px-8 pt-16 pb-20 sm:pt-24 sm:pb-28"
+      >
         <div class="max-w-6xl mx-auto text-center">
-          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] mb-8">
+          <div
+            class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] mb-8"
+          >
             <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
-            <span class="text-[11px] text-neutral-400 font-medium">Now Showing — 5 Movies</span>
+            <span class="text-[11px] text-neutral-400 font-medium">{{
+              t("client.home.nowShowingCount", { count: 5 })
+            }}</span>
           </div>
 
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight mb-6">
-            Your Cinema<br />
-            <span class="home-hero-gradient">Experience Awaits</span>
+          <h1
+            class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight mb-6"
+          >
+            {{ t("client.home.heroTitle1") }}<br />
+            <span
+              class="home-hero-gradient"
+              v-html="t('client.home.heroTitle2')"
+            ></span>
           </h1>
 
-          <p class="text-base sm:text-lg text-neutral-400 max-w-lg mx-auto mb-10 leading-relaxed">
-            Book your favorite movie tickets instantly at RSB Cinema Erk Phnom.
-            Premium seats, latest movies.
+          <p
+            class="text-base sm:text-lg text-neutral-400 max-w-lg mx-auto mb-10 leading-relaxed"
+          >
+            {{ t("client.home.heroDesc") }}
           </p>
 
-          <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div
+            class="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
             <router-link
               to="/showtime"
               class="home-cta-primary group flex items-center gap-2 px-8 py-4 rounded-2xl text-sm font-bold cursor-pointer"
             >
               <Ticket :size="18" />
-              Book Now
+              {{ t("client.home.bookNow") }}
             </router-link>
             <router-link
               to="/showtime"
               class="flex items-center gap-2 px-8 py-4 rounded-2xl text-sm font-medium text-neutral-300 bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] cursor-pointer"
             >
-              Browse Movies
+              {{ t("client.home.browseMovies") }}
             </router-link>
           </div>
         </div>
@@ -112,25 +140,33 @@ const featuredMovies = ref([
         <div class="max-w-6xl mx-auto">
           <div class="flex items-center justify-between mb-8">
             <div>
-              <h2 class="text-xl sm:text-2xl font-bold">Now Showing</h2>
-              <p class="text-sm text-neutral-500 mt-1">Don't miss out</p>
+              <h2 class="text-xl sm:text-2xl font-bold">
+                {{ t("client.home.nowShowing") }}
+              </h2>
+              <p class="text-sm text-neutral-500 mt-1">
+                {{ t("client.home.dontMissOut") }}
+              </p>
             </div>
             <router-link
               to="/showtime"
               class="text-xs text-sky-400 hover:text-sky-300 font-medium flex items-center gap-1"
             >
-              View All
+              {{ t("client.home.viewAll") }}
               <ChevronRight :size="14" />
             </router-link>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div
+            class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
+          >
             <div
               v-for="movie in featuredMovies"
               :key="movie.id"
               class="group cursor-pointer"
             >
-              <div class="relative rounded-2xl overflow-hidden mb-3 aspect-[2/3]">
+              <div
+                class="relative rounded-2xl overflow-hidden mb-3 aspect-[2/3]"
+              >
                 <img
                   :src="movie.poster"
                   :alt="movie.title"
@@ -156,7 +192,9 @@ const featuredMovies = ref([
                 </div>
               </div>
 
-              <h3 class="text-sm font-bold leading-tight group-hover:text-sky-400">
+              <h3
+                class="text-sm font-bold leading-tight group-hover:text-sky-400"
+              >
                 {{ movie.title }}
               </h3>
             </div>
@@ -178,10 +216,13 @@ const featuredMovies = ref([
                   <MapPin :size="18" class="text-sky-400" />
                 </div>
                 <div>
-                  <h3 class="text-sm font-bold mb-1">Location</h3>
-                  <p class="text-xs text-neutral-500 leading-relaxed">
-                    Erk Phnom, Phnom Penh<br />Cambodia
-                  </p>
+                  <h3 class="text-sm font-bold mb-1">
+                    {{ t("client.home.location") }}
+                  </h3>
+                  <p
+                    class="text-xs text-neutral-500 leading-relaxed"
+                    v-html="t('client.home.locationInfo')"
+                  ></p>
                 </div>
               </div>
 
@@ -192,10 +233,13 @@ const featuredMovies = ref([
                   <Clock :size="18" class="text-emerald-400" />
                 </div>
                 <div>
-                  <h3 class="text-sm font-bold mb-1">Open Hours</h3>
-                  <p class="text-xs text-neutral-500 leading-relaxed">
-                    Daily 9:00 AM – 11:00 PM<br />Weekends open until midnight
-                  </p>
+                  <h3 class="text-sm font-bold mb-1">
+                    {{ t("client.home.openHours") }}
+                  </h3>
+                  <p
+                    class="text-xs text-neutral-500 leading-relaxed"
+                    v-html="t('client.home.openHoursInfo')"
+                  ></p>
                 </div>
               </div>
 
@@ -206,10 +250,13 @@ const featuredMovies = ref([
                   <Phone :size="18" class="text-violet-400" />
                 </div>
                 <div>
-                  <h3 class="text-sm font-bold mb-1">Contact</h3>
-                  <p class="text-xs text-neutral-500 leading-relaxed">
-                    +855 12 345 678<br />info@rsbcinema.com
-                  </p>
+                  <h3 class="text-sm font-bold mb-1">
+                    {{ t("client.home.contact") }}
+                  </h3>
+                  <p
+                    class="text-xs text-neutral-500 leading-relaxed"
+                    v-html="t('client.home.contactInfo')"
+                  ></p>
                 </div>
               </div>
             </div>
@@ -219,14 +266,28 @@ const featuredMovies = ref([
 
       <!-- Footer -->
       <footer class="px-4 sm:px-6 lg:px-8 py-8 border-t border-white/[0.04]">
-        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div
+          class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4"
+        >
           <p class="text-[11px] text-neutral-600">
-            © 2026 RSB Cinema. All rights reserved.
+            {{ t("client.home.rightsReserved", { year: 2026 }) }}
           </p>
           <div class="flex items-center gap-6">
-            <a href="#" class="text-[11px] text-neutral-500 hover:text-neutral-300">Terms</a>
-            <a href="#" class="text-[11px] text-neutral-500 hover:text-neutral-300">Privacy</a>
-            <a href="#" class="text-[11px] text-neutral-500 hover:text-neutral-300">Support</a>
+            <a
+              href="#"
+              class="text-[11px] text-neutral-500 hover:text-neutral-300"
+              >{{ t("client.home.terms") }}</a
+            >
+            <a
+              href="#"
+              class="text-[11px] text-neutral-500 hover:text-neutral-300"
+              >{{ t("client.home.privacy") }}</a
+            >
+            <a
+              href="#"
+              class="text-[11px] text-neutral-500 hover:text-neutral-300"
+              >{{ t("client.home.support") }}</a
+            >
           </div>
         </div>
       </footer>
@@ -243,8 +304,16 @@ const featuredMovies = ref([
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(14, 165, 233, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+    radial-gradient(
+      ellipse 80% 60% at 50% 0%,
+      rgba(14, 165, 233, 0.06) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 80% 100%,
+      rgba(139, 92, 246, 0.04) 0%,
+      transparent 50%
+    );
   pointer-events: none;
 }
 
@@ -287,6 +356,10 @@ const featuredMovies = ref([
 }
 
 .home-info-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(255, 255, 255, 0.01)
+  );
 }
 </style>

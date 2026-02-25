@@ -7,7 +7,7 @@
         <el-button
           v-permission="'bookings.create'"
           type="primary"
-          @click="$router.push('/admin/booking/create')"
+          @click="$router.push({ name: 'CreateBooking' })"
         >
           <el-icon>
             <Plus />
@@ -160,7 +160,9 @@
               </el-tag>
             </div>
             <div v-else>
-              <span class="text-muted">No customer data</span>
+              <span class="text-muted">{{
+                $t("bookings.noCustomerData")
+              }}</span>
             </div>
           </template>
         </el-table-column>

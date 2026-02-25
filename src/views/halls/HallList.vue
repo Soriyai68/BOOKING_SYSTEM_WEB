@@ -2,7 +2,11 @@
   <div class="hall-list">
     <div class="page-header">
       <h2>{{ $t("halls.title") }}</h2>
-      <el-button v-permission="'halls.create'" type="primary" @click="openCreateDialog">
+      <el-button
+        v-permission="'halls.create'"
+        type="primary"
+        @click="openCreateDialog"
+      >
         <el-icon><Plus /></el-icon>
         {{ $t("halls.addHall") }}
       </el-button>
@@ -37,7 +41,6 @@
           :placeholder="$t('halls.filterByStatus')"
           clearable
           style="min-width: 200px"
-
         >
           <el-option :label="$t('table.selectAll')" value="" />
           <el-option
@@ -78,7 +81,13 @@
     </el-card>
 
     <el-card shadow="never">
-      <el-table :data="rows" v-loading="loading" style="width: 100%" ref="hallTable" @selection-change="handleSelectionChange">
+      <el-table
+        :data="rows"
+        v-loading="loading"
+        style="width: 100%"
+        ref="hallTable"
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="hall_name" :label="$t('halls.name')" />
         <el-table-column
@@ -118,21 +127,24 @@
         </el-table-column>
         <el-table-column :label="$t('users.actions')" width="180">
           <template #default="{ row }">
-            <el-button v-permission="'halls.view'"
+            <el-button
+              v-permission="'halls.view'"
               size="small"
               link
               type="primary"
               @click="viewHall(row.id)"
               >{{ $t("actions.view") }}</el-button
             >
-            <el-button v-permission="'halls.edit'"
+            <el-button
+              v-permission="'halls.edit'"
               size="small"
               link
               type="primary"
               @click="editHall(row.id)"
               >{{ $t("actions.edit") }}</el-button
             >
-            <el-button v-permission="'halls.delete'"
+            <el-button
+              v-permission="'halls.delete'"
               size="small"
               link
               type="danger"
@@ -144,14 +156,11 @@
       </el-table>
 
       <!-- Bulk Actions -->
-      <div
-          class="bulk-actions"
-          v-if="selectedHalls.length > 0"
-      >
+      <div class="bulk-actions" v-if="selectedHalls.length > 0">
         <el-button
-            type="danger"
-            @click="bulkDeleteHalls"
-            v-permission="'halls.delete'"
+          type="danger"
+          @click="bulkDeleteHalls"
+          v-permission="'halls.delete'"
         >
           {{ $t("actions.deleteSelected") }} ({{ selectedHalls.length }})
         </el-button>
@@ -174,8 +183,16 @@
     </el-card>
 
     <!-- Dialogs -->
-    <CreateHall v-model="showCreateDialog" :theater-id="selectedTheaterId" @success="handleDialogSuccess" />
-    <EditHall v-model="showEditDialog" :hall-id="selectedHallId" @success="handleDialogSuccess" />
+    <CreateHall
+      v-model="showCreateDialog"
+      :theater-id="selectedTheaterId"
+      @success="handleDialogSuccess"
+    />
+    <EditHall
+      v-model="showEditDialog"
+      :hall-id="selectedHallId"
+      @success="handleDialogSuccess"
+    />
   </div>
 </template>
 
@@ -230,13 +247,13 @@ const cancelSelection = () => {
 const bulkDeleteHalls = async () => {
   try {
     await ElMessageBox.confirm(
-      `Are you sure you want to delete ${selectedHalls.value.length} halls?`,
-      "Delete Halls",
+      t("halls.confirmDeleteMultiple", { count: selectedHalls.value.length }),
+      t("actions.delete"),
       {
-        confirmButtonText: "Delete",
-        cancelButtonText: "Cancel",
+        confirmButtonText: t("actions.delete"),
+        cancelButtonText: t("actions.cancel"),
         type: "warning",
-      }
+      },
     );
 
     const ids = selectedHalls.value.map((hall) => hall.id);
@@ -244,14 +261,14 @@ const bulkDeleteHalls = async () => {
     await hallService.bulkDeleteHalls(ids);
 
     ElMessage.success(
-      `${selectedHalls.value.length} halls deleted successfully`
+      t("halls.deleteMultipleSuccess", { count: selectedHalls.value.length }),
     );
     cancelSelection();
     load(); // Reload the list
   } catch (error) {
     if (error !== "cancel") {
       console.error("Failed to bulk delete halls:", error);
-      ElMessage.error("Failed to delete halls");
+      ElMessage.error(t("halls.deleteMultipleError"));
     }
   }
 };
@@ -303,7 +320,7 @@ const load = async () => {
     total.value = res.total || 0;
   } catch (e) {
     console.error(e);
-    ElMessage.error("Failed to load halls");
+    ElMessage.error(t("halls.loadError"));
   } finally {
     loading.value = false;
   }
@@ -319,7 +336,7 @@ const handleCurrentChange = (page) => {
   load();
 };
 
-const viewHall = (id) => router.push(`/admin/halls/${id}`);
+const viewHall = (id) => router.push({ name: "HallDetail", params: { id } });
 
 const openCreateDialog = () => {
   selectedTheaterId.value = theaterFilter.value || null;
@@ -337,23 +354,19 @@ const handleDialogSuccess = () => {
 
 const deleteHall = async (id) => {
   try {
-    await ElMessageBox.confirm(
-      "Are you sure you want to delete this hall?",
-      "Delete Hall",
-      {
-        type: "warning",
-        confirmButtonText: "Delete",
-        cancelButtonText: "Cancel",
-      }
-    );
+    await ElMessageBox.confirm(t("halls.confirmDelete"), t("actions.delete"), {
+      type: "warning",
+      confirmButtonText: t("actions.delete"),
+      cancelButtonText: t("actions.cancel"),
+    });
     await hallService.deleteHall(id);
-    ElMessage.success("Hall deleted");
+    ElMessage.success(t("halls.deleteSuccess"));
     if (rows.value.length === 1 && currentPage.value > 1) currentPage.value--;
     load();
   } catch (err) {
     if (err !== "cancel") {
       console.error(err);
-      ElMessage.error("Failed to delete hall");
+      ElMessage.error(t("halls.deleteError"));
     }
   }
 };

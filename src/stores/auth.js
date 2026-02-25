@@ -106,6 +106,8 @@ export const useAuthStore = defineStore("auth", () => {
         setToken(data.accessToken);
         if (data.refreshToken) setRefreshToken(data.refreshToken);
         setUser(data.customer);
+        if (data.sessionId)
+          localStorage.setItem("cinema_session_id", data.sessionId);
         return responseData;
       }
       return responseData;
@@ -130,6 +132,8 @@ export const useAuthStore = defineStore("auth", () => {
         setToken(data.accessToken);
         if (data.refreshToken) setRefreshToken(data.refreshToken);
         setUser(data.customer);
+        if (data.sessionId)
+          localStorage.setItem("cinema_session_id", data.sessionId);
         return responseData;
       }
       return responseData;
@@ -142,21 +146,32 @@ export const useAuthStore = defineStore("auth", () => {
 
   const logout = async () => {
     const wasAuthenticated = !!token.value;
-
-    setToken(null);
-    setRefreshToken(null);
-    setUser(null);
-    isInitialized.value = false;
+    const currentUser = user.value;
 
     if (wasAuthenticated && import.meta.env.VITE_API_BASE_URL) {
-      // Determine if logging out of customer or admin
+      // Determine if logging out of customer or admin BEFORE clearing user
       const isCustomer =
-        user.value && ("customerType" in user.value || !("role" in user.value));
+        currentUser &&
+        ("customerType" in currentUser || !("role" in currentUser));
       const logoutEndpoint = isCustomer
         ? "/customer/auth/logout"
         : "/auth/logout";
-      api.post(logoutEndpoint).catch(() => {});
+
+      // Send logout request while token is still present in the store/config
+      // We await it to ensure the interceptor can grab the token before we clear it below
+      try {
+        await api.post(logoutEndpoint);
+      } catch (err) {
+        console.warn("Logout API call failed:", err);
+      }
     }
+
+    // Now clear the local state
+    setToken(null);
+    setRefreshToken(null);
+    setUser(null);
+    localStorage.removeItem("cinema_session_id");
+    isInitialized.value = false;
   };
 
   const fetchUserProfile = async () => {

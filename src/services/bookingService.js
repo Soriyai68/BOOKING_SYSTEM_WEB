@@ -73,7 +73,13 @@ export const bookingService = {
         success: true,
         data: {
           id: booking._id,
-          customerId: booking.customerId?._id, // Extract customer ID
+          customer: {
+            id: booking.customerId?._id,
+            name: booking.customerId?.name,
+            email: booking.customerId?.email,
+            phone: booking.customerId?.phone,
+            customerType: booking.customerId?.customerType,
+          },
           showtime: {
             // Flatten showtime details
             id: booking.showtimeId?._id,
@@ -85,6 +91,15 @@ export const bookingService = {
             hall_id: booking.showtimeId?.hall_id?._id,
             hall_name: booking.showtimeId?.hall_id?.hall_name,
             price: booking.showtimeId?.price, // Assuming showtime has price
+          },
+          movie: {
+            id: booking.showtimeId?.movie_id?._id,
+            title: booking.showtimeId?.movie_id?.title,
+            poster_url: booking.showtimeId?.movie_id?.poster_url,
+          },
+          hall: {
+            id: booking.showtimeId?.hall_id?._id,
+            hall_name: booking.showtimeId?.hall_id?.hall_name,
           },
           seats: booking.seats || [], // Ensure seats is an array
           reference_code: booking.reference_code,

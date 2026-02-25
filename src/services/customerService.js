@@ -12,6 +12,7 @@ export const customerService = {
       customerType: params.customerType,
       sortBy: params.sort_by || "createdAt",
       sortOrder: params.sort_order || "desc",
+      includeDeleted: params.includeDeleted,
     };
 
     // Remove undefined values
@@ -37,6 +38,7 @@ export const customerService = {
           isVerified: customer.isVerified,
           created_at: customer.createdAt,
           updated_at: customer.updatedAt,
+          deleted_at: customer.deletedAt,
         })),
         total: pagination.totalCount,
         current_page: pagination.currentPage,
@@ -67,6 +69,7 @@ export const customerService = {
         isVerified: customer.isVerified,
         created_at: customer.createdAt,
         updated_at: customer.updatedAt,
+        deleted_at: customer.deletedAt,
         lastLogin: customer.lastLogin,
         passwordChangedAt: customer.passwordChangedAt,
         provider: customer.provider,

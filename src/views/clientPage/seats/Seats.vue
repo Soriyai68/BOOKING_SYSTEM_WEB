@@ -1,9 +1,11 @@
 <script setup>
 import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { ArrowLeft, Monitor, Info, Armchair } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
+const { t } = useI18n();
 
 // Mock data — will be replaced with API calls
 const movieTitle = ref("Avatar: The Way of Water");
@@ -133,12 +135,12 @@ function getSeatSelectedBg(seat) {
             />
             <div>
               <h1 class="text-[12px] font-bold leading-snug">
-                រោងភាពយន្ត អ័រ អេស ប៊ី​ ឯកភ្នំ
+                {{ t("client.nav.cinemaNameKH") }}
               </h1>
               <p
                 class="text-[10px] font-semibold text-neutral-500 mt-0.5 tracking-wide uppercase"
               >
-                RSB CINEMA EK PHNOM
+                {{ t("client.nav.cinemaNameEN") }}
               </p>
             </div>
           </div>
@@ -246,23 +248,31 @@ function getSeatSelectedBg(seat) {
               <div
                 class="w-4 h-4 rounded bg-white/[0.04] border border-white/[0.08]"
               ></div>
-              <span class="text-[9px] text-neutral-500">Available</span>
+              <span class="text-[9px] text-neutral-500">{{
+                t("client.seats.available")
+              }}</span>
             </div>
             <div class="flex items-center gap-1.5">
               <div class="w-4 h-4 rounded bg-blue-500"></div>
-              <span class="text-[9px] text-neutral-500">Selected</span>
+              <span class="text-[9px] text-neutral-500">{{
+                t("client.seats.selected")
+              }}</span>
             </div>
             <div class="flex items-center gap-1.5">
               <div
                 class="w-4 h-4 rounded bg-white/[0.06] border border-white/[0.04] opacity-40"
               ></div>
-              <span class="text-[9px] text-neutral-500">Booked</span>
+              <span class="text-[9px] text-neutral-500">{{
+                t("client.seats.booked")
+              }}</span>
             </div>
             <div class="flex items-center gap-1.5">
               <div
                 class="w-4 h-4 rounded bg-red-900/20 border border-red-500/20"
               ></div>
-              <span class="text-[9px] text-neutral-500">Unavailable</span>
+              <span class="text-[9px] text-neutral-500">{{
+                t("client.seats.unavailable")
+              }}</span>
             </div>
           </div>
 
@@ -306,15 +316,20 @@ function getSeatSelectedBg(seat) {
             </span>
           </div>
           <p v-if="selectedSeats.length > 0" class="text-xs text-neutral-400">
-            {{ selectedSeats.length }} seat{{
-              selectedSeats.length > 1 ? "s" : ""
+            {{ selectedSeats.length }}
+            {{
+              selectedSeats.length > 1
+                ? t("client.seats.seats")
+                : t("client.seats.seat")
             }}
             ·
             <span class="font-bold text-white"
               >${{ totalPrice.toFixed(2) }}</span
             >
           </p>
-          <p v-else class="text-xs text-neutral-500">Tap a seat to select</p>
+          <p v-else class="text-xs text-neutral-500">
+            {{ t("client.seats.tapToSelect") }}
+          </p>
         </div>
 
         <button
@@ -326,7 +341,7 @@ function getSeatSelectedBg(seat) {
               : 'text-neutral-600 bg-white/[0.04] border border-white/[0.06] cursor-not-allowed',
           ]"
         >
-          Continue
+          {{ t("client.seats.continue") }}
         </button>
       </div>
     </div>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import api from "@/utils/api";
 import {
   MapPin,
@@ -12,11 +13,11 @@ import {
   Search,
   X,
 } from "lucide-vue-next";
-
 const searchActive = ref(false);
 const searchQuery = ref("");
 
 const router = useRouter();
+const { t } = useI18n();
 const userProfile = ref(null);
 
 onMounted(async () => {
@@ -168,12 +169,12 @@ const handleReserveSeats = () => {
           />
           <div>
             <h1 class="text-[12px] font-bold leading-snug">
-              រោងភាពយន្ត អ័រ អេស ប៊ី​ ឯកភ្នំ
+              {{ t("client.nav.cinemaNameKH") }}
             </h1>
             <p
               class="text-[10px] font-semibold text-neutral-500 mt-0.5 tracking-wide uppercase"
             >
-              RSB CINEMA EK PHNOM
+              {{ t("client.nav.cinemaNameEN") }}
             </p>
           </div>
         </div>
@@ -187,7 +188,9 @@ const handleReserveSeats = () => {
             <p class="text-[12px] font-bold text-white transition-colors">
               {{ userProfile?.name?.split(" ")[0] || "Customer" }}
             </p>
-            <p class="text-[10px] text-neutral-400">My Account</p>
+            <p class="text-[10px] text-neutral-400">
+              {{ t("client.showtime.myAccount") }}
+            </p>
           </div>
 
           <!-- Avatar -->
@@ -226,13 +229,22 @@ const handleReserveSeats = () => {
         <p
           class="text-[11px] text-sky-400 font-semibold uppercase tracking-[0.2em] mb-2"
         >
-          Welcome back, {{ userProfile?.name?.split(" ")[0] || "Customer" }}
+          {{
+            t("client.showtime.welcomeBack", {
+              name: userProfile?.name?.split(" ")[0] || "Customer",
+            })
+          }}
         </p>
         <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">
-          Today's <span class="showtime-gradient-text">Showtime</span>
+          {{ t("client.showtime.todaysShowtime1") }}
+          <span class="showtime-gradient-text">{{
+            t("client.showtime.todaysShowtime2")
+          }}</span>
         </h2>
         <p class="text-sm text-neutral-400 mt-1">
-          {{ currentMovieCount }} sessions available
+          {{
+            t("client.showtime.sessionsAvailable", { count: currentMovieCount })
+          }}
         </p>
       </div>
 
@@ -273,7 +285,7 @@ const handleReserveSeats = () => {
             @focus="searchActive = true"
             @blur="!searchQuery ? (searchActive = false) : null"
             type="text"
-            placeholder="Search movies..."
+            :placeholder="t('client.showtime.searchMovies')"
             class="showtime-search-input"
           />
 
@@ -370,7 +382,8 @@ const handleReserveSeats = () => {
                     class="flex items-center gap-1 text-[11px] text-neutral-400"
                   >
                     <Armchair :size="12" stroke-width="2" />
-                    {{ movie.availableSeats }} / {{ movie.totalSeats }} seats
+                    {{ movie.availableSeats }} / {{ movie.totalSeats }}
+                    {{ t("client.seats.seats") }}
                   </span>
                   <span
                     class="text-[10px] font-bold"
@@ -394,7 +407,7 @@ const handleReserveSeats = () => {
                   class="flex items-center gap-1.5 text-[11px] text-red-400 font-semibold"
                 >
                   <TicketX :size="13" stroke-width="2" />
-                  Sold Out
+                  {{ t("client.showtime.soldOut") }}
                 </span>
               </div>
             </div>
@@ -428,7 +441,9 @@ const handleReserveSeats = () => {
           class="showtime-reserve-btn w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-white font-bold text-sm cursor-pointer active:scale-[0.98]"
         >
           <Ticket :size="20" stroke-width="2" />
-          <span>Reserve Seats — {{ selectedMovie.title }}</span>
+          <span>{{
+            t("client.showtime.reserveSeats", { title: selectedMovie.title })
+          }}</span>
         </button>
       </div>
     </div>

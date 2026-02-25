@@ -4,7 +4,9 @@
     <div class="register-bg"></div>
 
     <!-- Main Container -->
-    <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
+    <div
+      class="relative z-10 min-h-screen flex items-center justify-center p-4"
+    >
       <div class="w-full max-w-4xl">
         <div
           class="register-card-inner rounded-3xl border border-white/[0.08] overflow-hidden relative"
@@ -39,12 +41,12 @@
                   </svg>
                 </div>
                 <h2 class="text-xl font-bold text-white mb-3">
-                  Join RSB Cinema
+                  {{ t("client.register.joinUs") }}
                 </h2>
-                <p class="text-sm text-neutral-400 leading-relaxed">
-                  Create your account and enjoy seamless<br />
-                  movie ticket booking at your fingertips.
-                </p>
+                <p
+                  class="text-sm text-neutral-400 leading-relaxed"
+                  v-html="t('client.register.joinDesc')"
+                ></p>
 
                 <!-- Stats -->
                 <div
@@ -52,32 +54,48 @@
                 >
                   <div class="text-center">
                     <div class="text-lg font-bold text-emerald-400">50+</div>
-                    <div class="text-[10px] text-neutral-500 uppercase tracking-wider">Movies</div>
+                    <div
+                      class="text-[10px] text-neutral-500 uppercase tracking-wider"
+                    >
+                      Movies
+                    </div>
                   </div>
                   <div class="text-center">
                     <div class="text-lg font-bold text-emerald-400">4</div>
-                    <div class="text-[10px] text-neutral-500 uppercase tracking-wider">Halls</div>
+                    <div
+                      class="text-[10px] text-neutral-500 uppercase tracking-wider"
+                    >
+                      Halls
+                    </div>
                   </div>
                   <div class="text-center">
                     <div class="text-lg font-bold text-emerald-400">10K+</div>
-                    <div class="text-[10px] text-neutral-500 uppercase tracking-wider">Users</div>
+                    <div
+                      class="text-[10px] text-neutral-500 uppercase tracking-wider"
+                    >
+                      Users
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Right: Form -->
-            <div class="w-full md:w-1/2 p-8 sm:p-10 flex flex-col justify-center">
+            <div
+              class="w-full md:w-1/2 p-8 sm:p-10 flex flex-col justify-center"
+            >
               <!-- Tab Switcher -->
               <div class="flex items-center gap-6 mb-10">
                 <router-link
                   to="/"
                   class="text-2xl font-bold text-neutral-600 hover:text-neutral-400"
                 >
-                  Log In
+                  {{ t("client.register.logIn") }}
                 </router-link>
                 <div class="relative">
-                  <span class="text-2xl font-bold text-white">Sign Up</span>
+                  <span class="text-2xl font-bold text-white">{{
+                    t("client.register.signUp")
+                  }}</span>
                   <div
                     class="absolute -bottom-2 left-0 w-1/2 h-[3px] bg-emerald-500 rounded-full"
                   ></div>
@@ -85,22 +103,28 @@
               </div>
 
               <p class="text-sm text-neutral-400 mb-8">
-                Enter your phone number to get started
+                {{ t("client.register.enterPhone") }}
               </p>
 
               <!-- Phone Input -->
               <div class="space-y-2 mb-6">
-                <label class="text-[11px] text-neutral-500 block uppercase tracking-wider font-medium">
-                  Phone Number
+                <label
+                  class="text-[11px] text-neutral-500 block uppercase tracking-wider font-medium"
+                >
+                  {{ t("auth.phone") }}
                 </label>
                 <div class="register-input flex items-center rounded-xl p-3.5">
-                  <div class="flex items-center gap-2 pr-3 border-r border-white/[0.08]">
+                  <div
+                    class="flex items-center gap-2 pr-3 border-r border-white/[0.08]"
+                  >
                     <img
                       src="https://flagcdn.com/w20/kh.png"
                       alt="Cambodia"
                       class="rounded-sm w-5"
                     />
-                    <span class="text-sm font-semibold text-neutral-300">+855</span>
+                    <span class="text-sm font-semibold text-neutral-300"
+                      >+855</span
+                    >
                   </div>
                   <input
                     type="tel"
@@ -112,14 +136,16 @@
 
               <!-- Full Name -->
               <div class="space-y-2 mb-8">
-                <label class="text-[11px] text-neutral-500 block uppercase tracking-wider font-medium">
-                  Full Name
+                <label
+                  class="text-[11px] text-neutral-500 block uppercase tracking-wider font-medium"
+                >
+                  {{ t("client.register.fullName") }}
                 </label>
                 <div class="register-input flex items-center rounded-xl p-3.5">
                   <input
                     type="text"
                     class="bg-transparent border-none focus:ring-0 outline-none w-full text-white placeholder-neutral-600 text-sm"
-                    placeholder="Enter your full name"
+                    :placeholder="t('client.register.fullNamePlaceholder')"
                   />
                 </div>
               </div>
@@ -128,13 +154,16 @@
               <button
                 class="register-submit-btn w-full font-bold py-4 rounded-2xl text-sm text-white cursor-pointer active:scale-[0.98]"
               >
-                Create Account
+                {{ t("client.register.createAccount") }}
               </button>
 
               <!-- Divider -->
               <div class="flex items-center gap-4 my-6">
                 <div class="flex-1 h-[1px] bg-white/[0.06]"></div>
-                <span class="text-[10px] text-neutral-600 uppercase tracking-wider">or continue with</span>
+                <span
+                  class="text-[10px] text-neutral-600 uppercase tracking-wider"
+                  >{{ t("client.register.orContinueWith") }}</span
+                >
                 <div class="flex-1 h-[1px] bg-white/[0.06]"></div>
               </div>
 
@@ -170,6 +199,9 @@
 </template>
 
 <script setup>
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 </script>
 
 <style scoped>
@@ -181,19 +213,35 @@
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 70% 50% at 70% 0%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 40% at 10% 100%, rgba(14, 165, 233, 0.03) 0%, transparent 50%);
+    radial-gradient(
+      ellipse 70% 50% at 70% 0%,
+      rgba(16, 185, 129, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 10% 100%,
+      rgba(14, 165, 233, 0.03) 0%,
+      transparent 50%
+    );
   pointer-events: none;
 }
 
 .register-card-inner {
-  background: linear-gradient(145deg, rgba(20, 20, 25, 0.95), rgba(15, 15, 20, 0.98));
+  background: linear-gradient(
+    145deg,
+    rgba(20, 20, 25, 0.95),
+    rgba(15, 15, 20, 0.98)
+  );
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
 }
 
 .register-deco-bg {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.04), rgba(14, 165, 233, 0.02));
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.04),
+    rgba(14, 165, 233, 0.02)
+  );
 }
 
 .register-deco-grid {

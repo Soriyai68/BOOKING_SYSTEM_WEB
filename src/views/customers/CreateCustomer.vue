@@ -200,7 +200,7 @@ const handleSubmit = async () => {
     await customerService.createCustomer(form);
 
     ElMessage.success(t("customers.createSuccess"));
-    router.push("/admin/customers");
+    router.push({ name: "Customers" });
   } catch (error) {
     console.error("Create customer error:", error);
     if (error.response?.data?.message) {
@@ -217,7 +217,6 @@ const resetForm = () => {
   formRef.value?.resetFields();
   displayPhone.value = "";
 };
-
 onMounted(() => {
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },

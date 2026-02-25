@@ -6,7 +6,7 @@
         <el-button
           v-permission="'showtimes.create'"
           type="primary"
-          @click="$router.push('/admin/showtimes/create')"
+          @click="$router.push({ name: 'CreateShowtime' })"
         >
           <el-icon>
             <Plus />
@@ -305,7 +305,7 @@ watch(
   () => {
     pagination.current_page = 1;
     loadShowtimes();
-  }
+  },
 );
 
 // API Calls
@@ -382,8 +382,10 @@ const handleCurrentChange = (newPage) => {
 };
 
 // Actions
-const viewShowtime = (id) => router.push(`/admin/showtimes/${id}`);
-const editShowtime = (id) => router.push(`/admin/showtimes/${id}/edit`);
+const viewShowtime = (id) =>
+  router.push({ name: "ShowtimeDetail", params: { id } });
+const editShowtime = (id) =>
+  router.push({ name: "EditShowtime", params: { id } });
 
 const deleteShowtime = async (id) => {
   try {
@@ -394,7 +396,7 @@ const deleteShowtime = async (id) => {
         confirmButtonText: t("actions.delete"),
         cancelButtonText: t("actions.cancel"),
         type: "warning",
-      }
+      },
     );
     await showtimeService.deleteShowtime(id);
     ElMessage.success(t("showtimes.deleteSuccess"));
@@ -419,14 +421,14 @@ const forceDeleteSelectedShowtimes = async () => {
         cancelButtonText: t("actions.cancel"),
         type: "error",
         dangerouslyUseHTMLString: true,
-      }
+      },
     );
     const ids = selectedShowtimes.value.map((s) => s.id);
     console.log("Force delete showtime IDs:", ids);
     console.log("Number of IDs:", ids.length);
     console.log(
       "ID types:",
-      ids.map((id) => typeof id)
+      ids.map((id) => typeof id),
     );
     await showtimeService.forceDeleteBulkShowtimes(ids);
     ElMessage.success(t("showtimes.forceDeleteSuccess"));
@@ -482,8 +484,8 @@ onMounted(async () => {
   if (filters.theater_id) handleTheaterFilterChange();
 
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("showtimes.title"), path: "/admin/showtimes" },
+    { title: t("nav.dashboard"), path: "/" },
+    { title: t("showtimes.title") },
   ]);
 
   await loadShowtimes();

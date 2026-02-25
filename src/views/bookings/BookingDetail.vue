@@ -60,12 +60,26 @@
             </div>
           </template>
           <el-descriptions :column="2" border>
-            <el-descriptions-item :label="$t('showtimes.movie')">{{
-              booking.movie?.title
-            }}</el-descriptions-item>
-            <el-descriptions-item :label="$t('showtimes.hall')">{{
-              booking.hall?.hall_name
-            }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('showtimes.movie')">
+              <router-link
+                :to="{ name: 'MovieDetail', params: { id: booking.movie.id } }"
+                class="tracking-link"
+                v-if="booking.movie?.id"
+              >
+                {{ booking.movie?.title }}
+              </router-link>
+              <span v-else>{{ booking.movie?.title }}</span>
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('showtimes.hall')">
+              <router-link
+                :to="{ name: 'HallDetail', params: { id: booking.hall.id } }"
+                class="tracking-link"
+                v-if="booking.hall?.id"
+              >
+                {{ booking.hall?.hall_name }}
+              </router-link>
+              <span v-else>{{ booking.hall?.hall_name }}</span>
+            </el-descriptions-item>
             <el-descriptions-item :label="$t('showtimes.showDate')">
               {{ formatDate(booking.showtime?.show_date) }}
             </el-descriptions-item>
@@ -118,7 +132,15 @@
               :label="$t('customers.name')"
               v-if="booking.customer?.name"
             >
-              {{ booking.customer.name }}
+              <router-link
+                :to="{
+                  name: 'CustomerDetail',
+                  params: { id: booking.customer.id },
+                }"
+                class="customer-link"
+              >
+                {{ booking.customer.name }}
+              </router-link>
             </el-descriptions-item>
             <el-descriptions-item
               :label="$t('customers.phone')"
@@ -233,5 +255,16 @@ onMounted(() => {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--primary-color);
+}
+.tracking-link,
+.customer-link {
+  color: var(--el-color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.tracking-link:hover,
+.customer-link:hover {
+  text-decoration: underline;
 }
 </style>

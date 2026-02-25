@@ -2,6 +2,7 @@ import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
 import { ElMessage, ElNotification } from "element-plus";
 import router from "@/router";
+import i18n from "@/i18n";
 
 // Create axios instance
 const api = axios.create({
@@ -55,8 +56,12 @@ api.interceptors.response.use(
     // Don't show error messages for login/logout attempts (let components handle it)
     const isLoginAttempt =
       error.config?.url?.includes("/auth/login") ||
-      error.config?.url?.includes("/auth/admin-login");
-    const isLogoutAttempt = error.config?.url?.includes("/auth/logout");
+      error.config?.url?.includes("/auth/admin-login") ||
+      error.config?.url?.includes("/customer/auth/telegram-login") ||
+      error.config?.url?.includes("/customer/auth/telegram-webapp-login");
+    const isLogoutAttempt =
+      error.config?.url?.includes("/auth/logout") ||
+      error.config?.url?.includes("/customer/auth/logout");
     const isAuthAttempt = isLoginAttempt || isLogoutAttempt;
 
     if (error.response) {
@@ -98,17 +103,30 @@ api.interceptors.response.use(
               isHandling401 = true;
               try {
                 await authStore.logout();
-                ElMessage.error("Session expired. Please login again.");
+
+                // Check for deactivation message from backend
+                const isDeactivated = data?.message
+                  ?.toLowerCase()
+                  .includes("deactivated");
+                const errorMsg = isDeactivated
+                  ? i18n.global.t("messages.accountDeactivated")
+                  : i18n.global.t("messages.sessionExpired");
+
+                ElMessage.error(errorMsg);
 
                 const ADMIN_SUBDOMAIN = "admin";
                 const IS_ADMIN_APP = window.location.hostname.startsWith(
                   `${ADMIN_SUBDOMAIN}.`,
                 );
-                const loginPath = IS_ADMIN_APP ? "/login" : "/";
 
-                const currentPath = router.currentRoute.value.path;
-                if (currentPath !== loginPath) {
-                  router.push(loginPath);
+                // Redirection targets
+                const loginTarget = IS_ADMIN_APP
+                  ? { path: "/login" }
+                  : { name: "Login Page" };
+                const loginRouteName = IS_ADMIN_APP ? "Login" : "Login Page";
+
+                if (router.currentRoute.value.name !== loginRouteName) {
+                  router.push(loginTarget);
                 }
               } finally {
                 isHandling401 = false;

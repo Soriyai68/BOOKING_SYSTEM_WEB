@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/utils/api";
 import {
   ArrowLeft,
@@ -13,8 +14,12 @@ import {
   Pencil,
 } from "lucide-vue-next";
 import { useRouter } from "vue-router";
+import { setLanguage, availableLocales } from "@/i18n";
+import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
+const { t, locale } = useI18n();
+const authStore = useAuthStore();
 
 // Real user data from API
 const user = ref({
@@ -53,38 +58,57 @@ onMounted(async () => {
   }
 });
 
+const handleLogout = async () => {
+  await authStore.logout();
+  router.push({ name: "Login Page" });
+};
+
+const currentLocale = computed({
+  get: () => locale.value,
+  set: (val) => setLanguage(val),
+});
+
 // Menu sections
-const menuItems = [
+const menuItems = computed(() => [
   {
-    label: "Account",
+    label: t("settings.account"),
     items: [
       {
+        id: "personalInfo",
         icon: UserIcon,
-        title: "Personal Info",
-        subtitle: "Name, Telegram account",
-        route: null,
+        title: t("settings.personalInfo"),
+        subtitle: t("settings.personalInfoDesc"),
+        action: () => router.push({ name: "Personal Info" }),
       },
       {
+        id: "privacySecurity",
         icon: Shield,
-        title: "Privacy & Security",
-        subtitle: "Data & permissions",
-        route: null,
+        title: t("settings.privacySecurity"),
+        subtitle: t("settings.privacySecurityDesc"),
+        action: () => router.push({ name: "Privacy Security" }),
       },
     ],
   },
   {
-    label: "Preferences",
+    label: t("settings.preferences"),
     items: [
       {
+        id: "notifications",
         icon: Bell,
-        title: "Notifications",
-        subtitle: "Booking alerts, promotions",
-        route: null,
+        title: t("settings.notifications"),
+        subtitle: t("settings.notificationsDesc"),
+        action: () => router.push({ name: "Notifications Setting" }),
       },
-      { icon: Globe, title: "Language", subtitle: "English", route: null },
+      {
+        id: "language",
+        icon: Globe,
+        title: t("settings.language"),
+        subtitle: t("settings.languageDesc"),
+        type: "dropdown",
+      },
     ],
   },
-];
+]);
 </script>
 
 <template>
@@ -104,7 +128,7 @@ const menuItems = [
           >
             <ArrowLeft :size="18" class="text-neutral-400" />
           </button>
-          <h1 class="text-sm font-bold">Settings</h1>
+          <h1 class="text-sm font-bold">{{ t("settings.title") }}</h1>
         </div>
       </header>
 
@@ -139,6 +163,7 @@ const menuItems = [
                 </div>
                 <!-- Edit badge -->
                 <button
+                  @click="router.push({ name: 'Personal Info' })"
                   class="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-sky-500 flex items-center justify-center border-2 border-[#0a0a0c] cursor-pointer"
                 >
                   <Pencil :size="10" class="text-white" />
@@ -164,9 +189,9 @@ const menuItems = [
                       d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.13 7.19c-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59l2.76-2.69c.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02l-5.54 3.69c-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.78-1.64 6.3-2.73 7.55-3.26 3.58-1.51 4.34-1.77 4.83-1.77.11 0 .35.03.5.15.13.1.17.24.18.33 0 .06 0 .16-.02.2z"
                     />
                   </svg>
-                  <span class="text-[11px] text-neutral-500"
-                    >Telegram Connected</span
-                  >
+                  <span class="text-[11px] text-neutral-500">{{
+                    t("settings.telegramConnected")
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -186,7 +211,7 @@ const menuItems = [
                   </div>
                   <div>
                     <p class="text-[11px] font-semibold text-neutral-300">
-                      Username
+                      {{ t("users.username") }}
                     </p>
                     <p class="text-[11px] text-sky-400 font-medium">
                       @{{ user.username }}
@@ -196,9 +221,9 @@ const menuItems = [
                 <div
                   class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20"
                 >
-                  <span class="text-[10px] font-semibold text-emerald-400"
-                    >Verified</span
-                  >
+                  <span class="text-[10px] font-semibold text-emerald-400">{{
+                    t("validation.verified")
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -218,7 +243,8 @@ const menuItems = [
             >
               <button
                 v-for="item in section.items"
-                :key="item.title"
+                :key="item.id"
+                @click="item.action ? item.action() : null"
                 class="w-full flex items-center gap-3.5 px-4 py-3.5 hover:bg-white/[0.03] cursor-pointer"
               >
                 <div
@@ -236,7 +262,35 @@ const menuItems = [
                     {{ item.subtitle }}
                   </p>
                 </div>
+
+                <div
+                  v-if="item.type === 'dropdown' && item.id === 'language'"
+                  class="flex items-center gap-2"
+                  @click.stop
+                >
+                  <select
+                    v-model="currentLocale"
+                    class="bg-white/[0.05] text-xs font-medium text-neutral-300 outline-none border border-white/[0.05] px-2 py-1 rounded-md cursor-pointer hover:bg-white/[0.08]"
+                  >
+                    <option
+                      v-for="lang in availableLocales"
+                      :key="lang.code"
+                      :value="lang.code"
+                      class="bg-[#0a0a0c] text-white"
+                    >
+                      {{ lang.nativeName }}
+                    </option>
+                  </select>
+                </div>
+                <div v-else-if="item.rightText" class="flex items-center gap-2">
+                  <span
+                    class="text-xs font-medium text-neutral-300 bg-white/[0.05] px-2 py-1 rounded-md"
+                    >{{ item.rightText }}</span
+                  >
+                </div>
+
                 <ChevronRight
+                  v-if="!item.rightText && item.type !== 'dropdown'"
                   :size="16"
                   class="text-neutral-600 flex-shrink-0"
                 />
@@ -247,10 +301,13 @@ const menuItems = [
           <!-- Sign Out -->
           <div>
             <button
+              @click="handleLogout"
               class="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-red-500/10 hover:bg-red-500/[0.04] cursor-pointer"
             >
               <LogOut :size="16" class="text-red-400" />
-              <span class="text-sm font-semibold text-red-400">Sign Out</span>
+              <span class="text-sm font-semibold text-red-400">{{
+                t("client.logout")
+              }}</span>
             </button>
           </div>
 

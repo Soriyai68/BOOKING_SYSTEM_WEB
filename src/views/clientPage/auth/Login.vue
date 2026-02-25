@@ -3,9 +3,11 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { ElMessage } from "element-plus";
+import { useI18n } from "vue-i18n";
 
 const router = useRouter();
 const authStore = useAuthStore();
+const { t } = useI18n();
 
 const isWebApp = ref(false);
 const firstName = ref("");
@@ -184,12 +186,12 @@ onUnmounted(() => {
         />
         <div>
           <h1 class="text-sm font-bold leading-snug">
-            រោងភាពយន្ត អ័រ អេស ប៊ី​ ឯកភ្នំ
+            {{ t("client.nav.cinemaNameKH") }}
           </h1>
           <p
             class="text-[10px] font-semibold text-neutral-500 mt-0.5 tracking-wider uppercase"
           >
-            RSB CINEMA EK PHNOM
+            {{ t("client.nav.cinemaNameEN") }}
           </p>
         </div>
       </div>
@@ -202,15 +204,21 @@ onUnmounted(() => {
       <div class="w-full max-w-[380px] space-y-8">
         <div class="text-center space-y-3">
           <h2 class="text-3xl font-extrabold tracking-tight text-white">
-            {{ isWebApp ? `Welcome, ${firstName || "User"}!` : "Welcome Back" }}
+            {{
+              isWebApp
+                ? firstName
+                  ? t("client.login.welcomeUser", { name: firstName })
+                  : t("client.login.welcomeBack")
+                : t("client.login.welcomeBack")
+            }}
           </h2>
           <p
             class="text-sm text-neutral-400 leading-relaxed max-w-[280px] mx-auto"
           >
             {{
               isWebApp
-                ? "Please share your contact to continue booking your tickets."
-                : "Sign in with your Telegram account to explore and book favorite movies."
+                ? t("client.login.telegramInfo")
+                : t("client.login.signInInfo")
             }}
           </p>
         </div>
@@ -282,7 +290,9 @@ onUnmounted(() => {
                 </svg>
               </div>
               <span>{{
-                firstName ? `Log in as ${firstName}` : "Login with Telegram"
+                firstName
+                  ? t("client.login.loginAsUser", { name: firstName })
+                  : t("client.login.loginWithTelegram")
               }}</span>
             </button>
           </div>
@@ -304,10 +314,10 @@ onUnmounted(() => {
 
         <!-- Additional Info -->
         <div class="text-center pt-4">
-          <p class="text-[11px] text-neutral-600 font-medium">
-            Fast, secure login powered by Telegram.<br />
-            No password or registration required.
-          </p>
+          <p
+            class="text-[11px] text-neutral-600 font-medium"
+            v-html="t('client.login.fastSecure')"
+          ></p>
         </div>
       </div>
     </div>
@@ -317,14 +327,14 @@ onUnmounted(() => {
       <p
         class="text-center text-[11px] text-neutral-500 font-medium leading-relaxed"
       >
-        By continuing, you agree to our<br />
-        <a href="#" class="text-sky-500/80 hover:text-sky-400"
-          >Terms of Service</a
-        >
+        <span v-html="t('client.login.termsAgreement')"></span>
+        <a href="#" class="text-sky-500/80 hover:text-sky-400">{{
+          t("client.login.termsOfService")
+        }}</a>
         &
-        <a href="#" class="text-sky-500/80 hover:text-sky-400"
-          >Privacy Policy</a
-        >
+        <a href="#" class="text-sky-500/80 hover:text-sky-400">{{
+          t("client.login.privacyPolicy")
+        }}</a>
       </p>
     </footer>
   </div>

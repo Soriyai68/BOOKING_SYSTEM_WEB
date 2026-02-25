@@ -1,7 +1,7 @@
 <template>
   <div class="promotion-list">
     <div class="page-header">
-      <h2>{{ $t('promotions.title') }}</h2>
+      <h2>{{ $t("promotions.title") }}</h2>
       <el-button
         v-permission="'promotions.create'"
         type="primary"
@@ -10,7 +10,7 @@
         <el-icon>
           <Plus />
         </el-icon>
-        {{ $t('promotions.addPromotion') || 'Add Promotion' }}
+        {{ $t("promotions.addPromotion") || "Add Promotion" }}
       </el-button>
     </div>
 
@@ -18,7 +18,9 @@
       <div class="toolbar">
         <el-input
           v-model="searchText"
-          :placeholder="$t('promotions.searchPromotions') || 'Search by code or title'"
+          :placeholder="
+            $t('promotions.searchPromotions') || 'Search by code or title'
+          "
           class="search-input"
           :prefix-icon="Search"
           clearable
@@ -82,7 +84,7 @@
                 :src="row.image_url"
                 class="promotion-image-thumb"
               />
-              <span>{{ row.title || '-' }}</span>
+              <span>{{ row.title || "-" }}</span>
             </div>
           </template>
         </el-table-column>
@@ -111,7 +113,7 @@
         >
           <template #default="{ row }">
             <el-tag size="small" :type="getStatusTagType(row.status)">
-              {{ row.status_display || row.status || '-' }}
+              {{ row.status_display || row.status || "-" }}
             </el-tag>
           </template>
         </el-table-column>
@@ -128,7 +130,7 @@
               type="primary"
               @click="viewPromotion(row.id)"
             >
-              {{ $t('actions.view') || 'View' }}
+              {{ $t("actions.view") || "View" }}
             </el-button>
             <el-button
               v-permission="'promotions.edit'"
@@ -137,7 +139,7 @@
               type="primary"
               @click="editPromotion(row.id)"
             >
-              {{ $t('actions.edit') || 'Edit' }}
+              {{ $t("actions.edit") || "Edit" }}
             </el-button>
             <el-button
               v-permission="'promotions.delete'"
@@ -146,7 +148,7 @@
               type="danger"
               @click="deletePromotion(row.id)"
             >
-              {{ $t('actions.delete') || 'Delete' }}
+              {{ $t("actions.delete") || "Delete" }}
             </el-button>
           </template>
         </el-table-column>
@@ -158,10 +160,12 @@
           type="danger"
           @click="bulkDeletePromotions"
         >
-          {{ $t('actions.deleteSelected') || 'Delete Selected' }} ({{ selectedRows.length }})
+          {{ $t("actions.deleteSelected") || "Delete Selected" }} ({{
+            selectedRows.length
+          }})
         </el-button>
         <el-button type="default" @click="clearSelection">
-          {{ $t('actions.cancel') || 'Cancel' }}
+          {{ $t("actions.cancel") || "Cancel" }}
         </el-button>
       </div>
 
@@ -181,15 +185,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-import { useAppStore } from '@/stores/app';
-import { promotionService } from '@/services/promotionService';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { Plus, Search } from '@element-plus/icons-vue';
-import { debounce } from 'lodash-es';
-import { formatDate } from '@/utils/formatters';
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useAppStore } from "@/stores/app";
+import { promotionService } from "@/services/promotionService";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { Plus, Search } from "@element-plus/icons-vue";
+import { debounce } from "lodash-es";
+import { formatDate } from "@/utils/formatters";
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -200,9 +204,9 @@ const rows = ref([]);
 const total = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(10);
-const searchText = ref('');
-const statusFilter = ref('');
-const sortBy = ref('start_date');
+const searchText = ref("");
+const statusFilter = ref("");
+const sortBy = ref("start_date");
 const tableRef = ref(null);
 const selectedRows = ref([]);
 
@@ -220,12 +224,13 @@ const clearSelection = () => {
 const bulkDeletePromotions = async () => {
   try {
     await ElMessageBox.confirm(
-      t('promotions.confirmBulkDelete') || `Are you sure you want to delete ${selectedRows.value.length} promotions?`,
-      t('promotions.deletePromotions') || 'Delete Promotions',
+      t("promotions.confirmBulkDelete") ||
+        `Are you sure you want to delete ${selectedRows.value.length} promotions?`,
+      t("promotions.deletePromotions") || "Delete Promotions",
       {
-        confirmButtonText: t('actions.delete') || 'Delete',
-        cancelButtonText: t('actions.cancel') || 'Cancel',
-        type: 'warning',
+        confirmButtonText: t("actions.delete") || "Delete",
+        cancelButtonText: t("actions.cancel") || "Cancel",
+        type: "warning",
       },
     );
 
@@ -233,14 +238,17 @@ const bulkDeletePromotions = async () => {
     await promotionService.deleteBulkPromotions(ids);
 
     ElMessage.success(
-      t('promotions.bulkDeleteSuccess') || `${selectedRows.value.length} promotions deleted successfully`,
+      t("promotions.bulkDeleteSuccess") ||
+        `${selectedRows.value.length} promotions deleted successfully`,
     );
     clearSelection();
     load();
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('Failed to bulk delete promotions:', error);
-      ElMessage.error(t('promotions.bulkDeleteFailed') || 'Failed to delete promotions');
+    if (error !== "cancel") {
+      console.error("Failed to bulk delete promotions:", error);
+      ElMessage.error(
+        t("promotions.bulkDeleteFailed") || "Failed to delete promotions",
+      );
     }
   }
 };
@@ -258,15 +266,15 @@ const load = async () => {
       limit: pageSize.value,
       search: searchText.value || undefined,
       status: statusFilter.value || undefined,
-      sort_by: sortBy.value || 'start_date',
-      sort_order: 'desc',
+      sort_by: sortBy.value || "start_date",
+      sort_order: "desc",
     };
     const res = await promotionService.getPromotions(params);
     rows.value = res.data || [];
     total.value = res.total || 0;
   } catch (e) {
     console.error(e);
-    ElMessage.error(t('promotions.loadFailed') || 'Failed to load promotions');
+    ElMessage.error(t("promotions.loadFailed") || "Failed to load promotions");
   } finally {
     loading.value = false;
   }
@@ -283,46 +291,53 @@ const handleCurrentChange = (page) => {
   load();
 };
 
-const viewPromotion = (id) => router.push(`/admin/promotions/${id}`);
-const editPromotion = (id) => router.push(`/admin/promotions/${id}/edit`);
+const viewPromotion = (id) =>
+  router.push({ name: "PromotionDetail", params: { id } });
+const editPromotion = (id) =>
+  router.push({ name: "EditPromotion", params: { id } });
 
 const deletePromotion = async (id) => {
   try {
     await ElMessageBox.confirm(
-      t('promotions.confirmDelete') || 'Are you sure you want to delete this promotion?',
-      t('promotions.deletePromotion') || 'Delete Promotion',
-      { type: 'warning' },
+      t("promotions.confirmDelete") ||
+        "Are you sure you want to delete this promotion?",
+      t("promotions.deletePromotion") || "Delete Promotion",
+      { type: "warning" },
     );
     await promotionService.deletePromotion(id);
-    ElMessage.success(t('promotions.deleteSuccess') || 'Promotion deleted successfully');
+    ElMessage.success(
+      t("promotions.deleteSuccess") || "Promotion deleted successfully",
+    );
     if (rows.value.length === 1 && currentPage.value > 1) {
       currentPage.value--;
     }
     load();
   } catch (err) {
-    if (err !== 'cancel') {
+    if (err !== "cancel") {
       console.error(err);
-      ElMessage.error(t('promotions.deleteFailed') || 'Failed to delete promotion');
+      ElMessage.error(
+        t("promotions.deleteFailed") || "Failed to delete promotion",
+      );
     }
   }
 };
 
 const getStatusTagType = (status) => {
   switch (status) {
-    case 'Active':
-      return 'success';
-    case 'Inactive':
-      return 'info';
-    case 'Expired':
-      return 'warning';
+    case "Active":
+      return "success";
+    case "Inactive":
+      return "info";
+    case "Expired":
+      return "warning";
     default:
-      return '';
+      return "";
   }
 };
 onMounted(() => {
   appStore.setBreadcrumbs([
-    { title: t('nav.dashboard'), path: '/admin/dashboard' },
-    { title: t('promotions.title') || 'Promotions', path: '/admin/promotions' },
+    { title: t("nav.dashboard"), path: "/admin/dashboard" },
+    { title: t("promotions.title") || "Promotions", path: "/admin/promotions" },
   ]);
   load();
 });

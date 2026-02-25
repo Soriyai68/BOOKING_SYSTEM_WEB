@@ -8,6 +8,7 @@ const clientRoutes = [
     component: () => import("@/views/clientPage/auth/Login.vue"),
     meta: {
       title: "Login Page",
+      requiresGuest: true,
     },
   },
 
@@ -15,6 +16,7 @@ const clientRoutes = [
   {
     path: "/layout",
     component: ClientLayout,
+    meta: { requiresAuth: true },
     children: [
       {
         path: "",
@@ -42,6 +44,32 @@ const clientRoutes = [
         component: () => import("@/views/clientPage/settings/Settings.vue"),
         meta: {
           title: "Settings",
+        },
+      },
+      {
+        path: "settings/personal-info",
+        name: "Personal Info",
+        component: () => import("@/views/clientPage/settings/PersonalInfo.vue"),
+        meta: {
+          title: "Personal Info",
+        },
+      },
+      {
+        path: "settings/notifications",
+        name: "Notifications Setting",
+        component: () =>
+          import("@/views/clientPage/settings/Notifications.vue"),
+        meta: {
+          title: "Notifications",
+        },
+      },
+      {
+        path: "settings/privacy-security",
+        name: "Privacy Security",
+        component: () =>
+          import("@/views/clientPage/settings/PrivacySecurity.vue"),
+        meta: {
+          title: "Privacy & Security",
         },
       },
     ],

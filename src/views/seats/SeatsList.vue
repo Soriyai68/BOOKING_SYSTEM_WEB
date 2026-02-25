@@ -957,7 +957,7 @@ const loadSeats = async () => {
     });
   } catch (error) {
     console.error("Load seats error:", error);
-    ElMessage.error(error.response?.data?.message || "Failed to load seats");
+    ElMessage.error(error.response?.data?.message || t("seats.loadError"));
   } finally {
     loading.value = false;
   }
@@ -1245,7 +1245,7 @@ const handleCurrentChange = (val) => {
 };
 
 const viewSeat = (id) => {
-  router.push(`/admin/seats/${id}`);
+  router.push({ name: "SeatDetail", params: { id } });
 };
 
 const deleteSeat = async (id) => {
@@ -1262,7 +1262,7 @@ const deleteSeat = async (id) => {
   } catch (error) {
     if (error !== "cancel") {
       console.error("Delete seat error:", error);
-      ElMessage.error(error.response?.data?.message || "Failed to delete seat");
+      ElMessage.error(error.response?.data?.message || t("seats.deleteError"));
     }
   }
 };

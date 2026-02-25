@@ -95,6 +95,19 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // --- Admin specific checks ---
+    const requiresAdmin = to.matched.some((r) => r.meta.requiresAdmin);
+
+    // If route requires admin, check if user is admin regardless of subdomain
+    if (requiresAdmin && !authStore.isAdmin) {
+      if (IS_ADMIN_APP) {
+        if (to.path === "/login") return next();
+        return next({ path: "/login", query: { redirect: to.fullPath } });
+      } else {
+        // On client app, if they try to access admin route without being admin
+        return next({ path: "/" });
+      }
+    }
+
     if (IS_ADMIN_APP) {
       if (authStore.isSuperAdmin) {
         return next();
@@ -106,12 +119,6 @@ router.beforeEach(async (to, from, next) => {
         } catch (error) {
           // console.error("Permission initialization failed:", error);
         }
-      }
-
-      if (to.matched.some((r) => r.meta.requiresAdmin) && !authStore.isAdmin) {
-        // If they are on the admin app but aren't an admin, let them stay on login or redirect to home
-        if (to.path === "/login") return next();
-        return next({ path: "/login", query: { redirect: to.fullPath } });
       }
 
       if (to.matched.some((r) => r.meta.requiresPermission)) {

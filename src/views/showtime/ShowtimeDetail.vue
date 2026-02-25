@@ -16,15 +16,31 @@
 
         <!-- Details Section -->
         <el-descriptions :column="2" border>
-          <el-descriptions-item :label="$t('showtimes.movie')">
-            <span>{{ showtime.movie_title }}</span>
+          <router-link
+            :to="{ name: 'MovieDetail', params: { id: showtime.movie_id } }"
+            class="tracking-link"
+          >
+            {{ showtime.movie_title }}
+          </router-link>
+          <el-descriptions-item :label="$t('showtimes.theater')">
+            <router-link
+              :to="{
+                name: 'TheaterDetail',
+                params: { id: showtime.theater_id },
+              }"
+              class="tracking-link"
+            >
+              {{ showtime.theater_name }}
+            </router-link>
           </el-descriptions-item>
-          <el-descriptions-item :label="$t('showtimes.theater')">{{
-            showtime.theater_name
-          }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('showtimes.hall')">{{
-            showtime.hall_name
-          }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('showtimes.hall')">
+            <router-link
+              :to="{ name: 'HallDetail', params: { id: showtime.hall_id } }"
+              class="tracking-link"
+            >
+              {{ showtime.hall_name }}
+            </router-link>
+          </el-descriptions-item>
           <el-descriptions-item :label="$t('showtimes.screen_type')">{{
             showtime.screen_type
           }}</el-descriptions-item>
@@ -99,7 +115,7 @@ const loadShowtime = async () => {
 };
 
 const editShowtime = () => {
-  router.push(`/admin/showtimes/${route.params.id}/edit`);
+  router.push({ name: "EditShowtime", params: { id: route.params.id } });
 };
 
 const getStatusTagType = (status) => {
@@ -117,8 +133,8 @@ const getStatusTagType = (status) => {
 
 onMounted(() => {
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("showtimes.title"), path: "/admin/showtimes" },
+    { title: t("nav.dashboard"), path: "/" },
+    { title: t("showtimes.title"), path: "/showtimes" },
     {
       title: t("showtimes.showtimeDetails"),
       path: `/admin/showtimes/${route.params.id}`,
@@ -152,5 +168,15 @@ onMounted(() => {
 
 .actions {
   margin-top: 24px;
+}
+
+.tracking-link {
+  color: var(--el-color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.tracking-link:hover {
+  text-decoration: underline;
 }
 </style>

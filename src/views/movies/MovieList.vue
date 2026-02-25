@@ -5,7 +5,7 @@
       <el-button
         v-permission="'movies.create'"
         type="primary"
-        @click="$router.push('/admin/movies/create')"
+        @click="$router.push({ name: 'CreateMovie' })"
       >
         <el-icon>
           <Plus />
@@ -255,13 +255,13 @@ const cancelSelection = () => {
 const bulkDeleteMovies = async () => {
   try {
     await ElMessageBox.confirm(
-      `Are you sure you want to delete ${selectedMovies.value.length} movies?`,
-      "Delete Movies",
+      t("movies.confirmDeleteMultiple", { count: selectedMovies.value.length }),
+      t("actions.delete"),
       {
-        confirmButtonText: "Delete",
-        cancelButtonText: "Cancel",
+        confirmButtonText: t("actions.delete"),
+        cancelButtonText: t("actions.cancel"),
         type: "warning",
-      }
+      },
     );
 
     const ids = selectedMovies.value.map((movie) => movie.id);
@@ -269,14 +269,14 @@ const bulkDeleteMovies = async () => {
     await movieService.bulkDeleteMovies(ids);
 
     ElMessage.success(
-      `${selectedMovies.value.length} movies deleted successfully`
+      t("movies.deleteMultipleSuccess", { count: selectedMovies.value.length }),
     );
     cancelSelection();
     load(); // Reload the list
   } catch (error) {
     if (error !== "cancel") {
       console.error("Failed to bulk delete movies:", error);
-      ElMessage.error("Failed to delete movies");
+      ElMessage.error(t("movies.deleteMultipleError"));
     }
   }
 };
@@ -303,7 +303,7 @@ const load = async () => {
     total.value = res.total || 0;
   } catch (e) {
     console.error(e);
-    ElMessage.error("Failed to load movies");
+    ElMessage.error(t("movies.loadError"));
   } finally {
     loading.value = false;
   }
@@ -320,15 +320,15 @@ const handleCurrentChange = (page) => {
   load();
 };
 
-const viewMovie = (id) => router.push(`/admin/movies/${id}`);
-const editMovie = (id) => router.push(`/admin/movies/${id}/edit`);
+const viewMovie = (id) => router.push({ name: "MovieDetail", params: { id } });
+const editMovie = (id) => router.push({ name: "EditMovie", params: { id } });
 
 const deleteMovie = async (id) => {
   try {
     await ElMessageBox.confirm(
       t("movies.confirmDelete"),
       t("movies.deleteMovie"),
-      { type: "warning" }
+      { type: "warning" },
     );
     await movieService.deleteMovie(id);
     ElMessage.success(t("movies.deleteSuccess"));
@@ -339,7 +339,7 @@ const deleteMovie = async (id) => {
   } catch (err) {
     if (err !== "cancel") {
       console.error(err);
-      ElMessage.error("Failed to delete movie");
+      ElMessage.error(t("movies.deleteError"));
     }
   }
 };
@@ -359,9 +359,9 @@ const getStatusTagType = (status) => {
 
 onMounted(() => {
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("movies.title"), path: "/admin/movies" },
-    { title: t("movies.allMovies"), path: "/admin/movies" },
+    { title: t("nav.dashboard"), path: "/" },
+    { title: t("movies.title"), path: "/movies" },
+    { title: t("movies.allMovies") },
   ]);
   load();
 });

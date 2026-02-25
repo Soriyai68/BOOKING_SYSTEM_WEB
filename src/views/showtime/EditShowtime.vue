@@ -4,12 +4,12 @@
       <h2>{{ $t("showtimes.editShowtime") }}</h2>
       <el-button @click="$router.back()">
         <el-icon>
-          <ArrowLeft/>
+          <ArrowLeft />
         </el-icon>
         {{ $t("actions.back") }}
       </el-button>
     </div>
-    
+
     <el-card v-loading="loading">
       <MultipleShowtimeCreator
         v-if="!loading"
@@ -74,7 +74,11 @@ const loadShowtime = async () => {
       },
     ];
 
-    await Promise.all([loadMovies(), loadTheaters(), loadHalls(response.theater_id)]);
+    await Promise.all([
+      loadMovies(),
+      loadTheaters(),
+      loadHalls(response.theater_id),
+    ]);
   } catch (error) {
     console.error("Failed to load showtime:", error);
     ElMessage.error(t("showtimes.loadFailed"));
@@ -122,13 +126,13 @@ const loadHalls = async (theaterId) => {
 };
 
 const handleUpdateSuccess = () => {
-  router.push("/admin/showtimes");
+  router.push({ name: "Showtimes" });
 };
 
 onMounted(async () => {
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("showtimes.title"), path: "/admin/showtimes" },
+    { title: t("nav.dashboard"), path: "/" },
+    { title: t("showtimes.title"), path: "/showtimes" },
     {
       title: t("showtimes.editShowtime"),
       path: `/admin/showtimes/${route.params.id}/edit`,

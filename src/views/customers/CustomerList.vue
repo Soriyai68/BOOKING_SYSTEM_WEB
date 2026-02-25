@@ -35,10 +35,19 @@
           clearable
           style="width: 200px"
         >
+          <el-option :label="$t('table.selectAll')" value="" />
           <el-option :label="$t('customers.member')" value="member" />
           <el-option :label="$t('customers.walkin')" value="walkin" />
           <el-option :label="$t('customers.guest')" value="guest" />
         </el-select>
+        <div class="deleted-switch">
+          <span>{{ $t("customers.showDeleted") }}</span>
+          <el-switch
+            v-model="includeDeleted"
+            inline-prompt
+            style="margin-left: 8px"
+          />
+        </div>
       </div>
     </el-card>
 
@@ -68,7 +77,7 @@
         <el-table-column
           prop="customerType"
           :label="$t('customers.customerType')"
-          width="120"
+          width="150"
         >
           <template #default="{ row }">
             <el-tag :type="getCustomerTypeTag(row.customerType)">
@@ -82,18 +91,22 @@
           width="120"
         >
           <template #default="{ row }">
-            <el-tag :type="row.isActive ? 'success' : 'danger'">
+            <el-tag v-if="row.deleted_at" type="danger" size="small">
+              {{ $t("customers.deleted") }}
+            </el-tag>
+            <el-tag v-else :type="row.isActive ? 'success' : 'info'">
               {{ $t(`customers.${row.isActive ? "active" : "inactive"}`) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('actions.title')" width="180">
+        <el-table-column :label="$t('actions.title')" width="200">
           <template #default="{ row }">
             <el-button
               type="info"
               size="small"
               link
               @click="viewCustomer(row.id)"
+              :disabled="!!row.deleted_at"
             >
               {{ $t("actions.view") }}
             </el-button>
@@ -102,16 +115,27 @@
               size="small"
               link
               @click="editCustomer(row.id)"
+              :disabled="!!row.deleted_at"
             >
               {{ $t("actions.edit") }}
             </el-button>
             <el-button
+              v-if="!row.deleted_at"
               type="danger"
               size="small"
               link
               @click="deleteCustomer(row.id)"
             >
               {{ $t("actions.delete") }}
+            </el-button>
+            <el-button
+              v-else
+              type="success"
+              size="small"
+              link
+              @click="restoreCustomer(row.id)"
+            >
+              {{ $t("actions.restore") }}
             </el-button>
           </template>
         </el-table-column>
@@ -134,7 +158,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import { customerService } from "@/services/customerService";
@@ -157,19 +181,22 @@ const pageSize = ref(10);
 const total = ref(0);
 const customers = ref([]);
 const customerTable = ref(null);
+const includeDeleted = ref(false);
 
 const debouncedSearch = debounce(() => {
   currentPage.value = 1;
   loadCustomers();
 }, 500);
 
-watch([statusFilter, customerTypeFilter], () => {
+watch([statusFilter, customerTypeFilter, includeDeleted], () => {
   currentPage.value = 1;
   loadCustomers();
 });
 
-const loadCustomers = async () => {
-  loading.value = true;
+const loadCustomers = async (isBackground = false) => {
+  if (!isBackground) {
+    loading.value = true;
+  }
   try {
     const params = {
       page: currentPage.value,
@@ -177,6 +204,7 @@ const loadCustomers = async () => {
       search: searchText.value || undefined,
       isActive: statusFilter.value !== "" ? statusFilter.value : undefined,
       customerType: customerTypeFilter.value || undefined,
+      includeDeleted: includeDeleted.value ? "only" : undefined,
     };
 
     const response = await customerService.getCustomers(params);
@@ -185,9 +213,13 @@ const loadCustomers = async () => {
     total.value = response.total;
   } catch (error) {
     console.error("Failed to load customers:", error);
-    ElMessage.error(t("customers.loadError"));
+    if (!isBackground) {
+      ElMessage.error(t("customers.loadError"));
+    }
   } finally {
-    loading.value = false;
+    if (!isBackground) {
+      loading.value = false;
+    }
   }
 };
 
@@ -203,15 +235,15 @@ const handleCurrentChange = (newPage) => {
 };
 
 const goToCreatePage = () => {
-  router.push("/admin/customers/create");
+  router.push({ name: "CreateCustomer", params: { id: null } });
 };
 
 const editCustomer = (id) => {
-  router.push(`/admin/customers/${id}/edit`);
+  router.push({ name: "EditCustomer", params: { id } });
 };
 
 const viewCustomer = (id) => {
-  router.push(`/admin/customers/${id}`);
+  router.push({ name: "CustomerDetail", params: { id } });
 };
 
 const deleteCustomer = async (id) => {
@@ -223,7 +255,7 @@ const deleteCustomer = async (id) => {
         confirmButtonText: t("actions.delete"),
         cancelButtonText: t("actions.cancel"),
         type: "warning",
-      }
+      },
     );
 
     await customerService.deleteCustomer(id);
@@ -237,6 +269,33 @@ const deleteCustomer = async (id) => {
     if (error !== "cancel") {
       console.error("Failed to delete customer:", error);
       ElMessage.error(t("customers.deleteError"));
+    }
+  }
+};
+
+const restoreCustomer = async (id) => {
+  try {
+    await ElMessageBox.confirm(
+      t("customers.confirmRestore"),
+      t("customers.restore"),
+      {
+        confirmButtonText: t("actions.restore"),
+        cancelButtonText: t("actions.cancel"),
+        type: "success",
+      },
+    );
+
+    const res = await customerService.restoreCustomer(id);
+    if (res.success) {
+      ElMessage.success(t("customers.restoreSuccess"));
+      loadCustomers();
+    } else {
+      ElMessage.error(res.message || t("customers.restoreError"));
+    }
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("Failed to restore customer:", error);
+      ElMessage.error(t("customers.restoreError"));
     }
   }
 };
@@ -261,6 +320,7 @@ onMounted(() => {
   ]);
   loadCustomers();
 });
+
 </script>
 
 <style scoped>
@@ -286,5 +346,12 @@ onMounted(() => {
 }
 .filter-card {
   margin-bottom: 10px;
+}
+.deleted-switch {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--el-text-color-regular);
 }
 </style>
