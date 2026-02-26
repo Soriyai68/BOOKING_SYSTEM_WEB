@@ -35,6 +35,15 @@
           <el-input v-model="form.title" maxlength="200" show-word-limit />
         </el-form-item>
 
+        <!-- Description -->
+        <el-form-item label="Description" prop="description">
+          <el-input
+            v-model="form.description"
+            type="textarea"
+            :rows="4"
+          />
+        </el-form-item>
+
         <!-- Start Date -->
         <el-form-item label="Start Date" prop="start_date">
           <el-date-picker
@@ -119,6 +128,7 @@ const form = reactive({
   start_date: "",
   end_date: "",
   status: "Inactive",
+  description: "",
   image_url: "",
 });
 
@@ -150,6 +160,7 @@ const load = async () => {
       start_date: data.start_date,
       end_date: data.end_date,
       status: data.status,
+      description: data.description || "",
       image_url: data.image_url || "",
     });
   } catch (e) {
@@ -188,6 +199,7 @@ const resetForm = () => {
     start_date: original.value.start_date,
     end_date: original.value.end_date,
     status: original.value.status,
+    description: original.value.description || "",
     image_url: original.value.image_url || "",
   });
   if (formRef.value) formRef.value.clearValidate();

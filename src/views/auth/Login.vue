@@ -2,7 +2,12 @@
   <div class="login-page">
     <div class="header-controls">
       <LanguageSwitcher />
-      <el-button :icon="isDark ? Sunny : Moon" @click="toggleDark()" text circle />
+      <el-button
+        :icon="isDark ? Sunny : Moon"
+        @click="toggleDark()"
+        text
+        circle
+      />
     </div>
     <div class="login-wrapper">
       <div class="login-branding">
@@ -140,7 +145,13 @@ const handleLogin = async () => {
       remember: loginForm.remember,
     });
 
-    ElMessage.success("Login successful!");
+    ElMessage({
+      message: t("auth.loginSuccess") || "Login successful!",
+      type: "success",
+      customClass: "premium-message",
+      center: true,
+      grouping: true,
+    });
 
     const redirectPath =
       router.currentRoute.value.query.redirect || "/admin/dashboard";
@@ -157,13 +168,18 @@ const handleLogin = async () => {
 
       switch (status) {
         case 401:
-          ElMessage.error(data.message || "Invalid email or password");
+          ElMessage({
+            message: data.message || t("auth.invalidCredentials"),
+            type: "error",
+            customClass: "premium-message",
+            center: true,
+          });
           break;
         case 422:
           if (data.errors) {
             const firstError = Object.values(data.errors)[0];
             ElMessage.error(
-              Array.isArray(firstError) ? firstError[0] : firstError
+              Array.isArray(firstError) ? firstError[0] : firstError,
             );
           } else {
             ElMessage.error(data.message || "Validation failed");
@@ -180,7 +196,7 @@ const handleLogin = async () => {
       }
     } else if (error.request) {
       ElMessage.error(
-        "Network error. Please check your connection and try again."
+        "Network error. Please check your connection and try again.",
       );
     } else {
       ElMessage.error("Invalid email or password");
@@ -189,7 +205,6 @@ const handleLogin = async () => {
     loading.value = false;
   }
 };
-
 
 const checkApiConnection = async () => {
   try {
@@ -304,7 +319,9 @@ onMounted(() => {
   border-radius: 12px;
   padding: 48px;
   box-shadow: 0 10px 30px var(--shadow-color);
-  transition: background-color 0.3s, box-shadow 0.3s;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .login-header {

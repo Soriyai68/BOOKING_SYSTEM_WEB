@@ -1,17 +1,30 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";
+import { CheckCircle, XCircle } from "lucide-vue-next";
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
 const { t } = useI18n();
 
 const isWebApp = ref(false);
 const firstName = ref("");
 const isLoading = ref(false);
+
+// Custom toast message state
+const toast = ref({ show: false, text: "", type: "success" });
+let toastTimer = null;
+
+const showToast = (text, type = "success") => {
+  if (toastTimer) clearTimeout(toastTimer);
+  toast.value = { show: true, text, type };
+  toastTimer = setTimeout(() => {
+    toast.value.show = false;
+  }, 3000);
+};
 
 // Environment Detection logic from previous project
 const detectIsTG = () => {
@@ -43,12 +56,18 @@ const handleWidgetAuth = async (userData) => {
     const res = await authStore.telegramLogin(userData);
     const customerName = res?.data?.customer?.name;
     if (res?.success) {
-      ElMessage.success(`Welcome back, ${customerName}!`);
+      showToast(
+        t("client.login.welcomeBackMsg", { name: customerName }),
+        "success",
+      );
       router.push("/layout");
     }
   } catch (error) {
     console.error("[Widget] Auth error:", error);
-    ElMessage.error(error?.response?.data?.message || "Telegram login failed.");
+    showToast(
+      error?.response?.data?.message || t("client.login.telegramLoginFailed"),
+      "error",
+    );
   } finally {
     isLoading.value = false;
   }
@@ -62,7 +81,7 @@ const handleWebAppLogin = async () => {
     const initData = tg?.initData;
 
     if (!initData) {
-      ElMessage.error("Telegram data not found. Please open in Telegram.");
+      showToast(t("client.login.telegramDataNotFound"), "error");
       isLoading.value = false;
       return;
     }
@@ -83,12 +102,15 @@ const handleWebAppLogin = async () => {
         const res = await authStore.telegramWebAppLogin(initData, cleaned);
         const customerName = res?.data?.customer?.name;
         if (res?.success) {
-          ElMessage.success(`Welcome back, ${customerName}!`);
+          showToast(
+            t("client.login.welcomeBackMsg", { name: customerName }),
+            "success",
+          );
           router.push("/layout");
         }
       } catch (err) {
         console.error("[Mini App] Login request failed:", err);
-        ElMessage.error("Server authentication failed.");
+        showToast(t("client.login.serverAuthFailed"), "error");
       } finally {
         isLoading.value = false;
       }
@@ -111,7 +133,7 @@ const handleWebAppLogin = async () => {
     });
   } catch (error) {
     console.error("[Mini App] Login flow failed:", error);
-    ElMessage.error("Something went wrong with Telegram SDK.");
+    showToast(t("client.login.telegramSdkError"), "error");
     isLoading.value = false;
   }
 };
@@ -126,6 +148,12 @@ onMounted(() => {
   }
 
   const isTG = detectIsTG();
+
+  // Show logout success toast if redirected from Settings
+  if (route.query.loggedOut) {
+    showToast(t("auth.logoutSuccess") || "Logged out successfully", "success");
+    router.replace({ query: {} });
+  }
 
   // Browser Widget Initialization
   if (!isTG) {
@@ -165,6 +193,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (widgetTimer) clearTimeout(widgetTimer);
+  if (toastTimer) clearTimeout(toastTimer);
   delete window.onTelegramAuth;
 });
 </script>
@@ -175,6 +204,31 @@ onUnmounted(() => {
   >
     <!-- Background -->
     <div class="login-bg-layer"></div>
+
+    <!-- Custom Toast Message -->
+    <Transition name="toast">
+      <div
+        v-if="toast.show"
+        class="fixed top-5 left-1/2 -translate-x-1/2 z-[200] max-w-[90vw]"
+      >
+        <div
+          :class="[
+            'toast-message flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold shadow-2xl border backdrop-blur-xl',
+            toast.type === 'success'
+              ? 'bg-emerald-500/15 border-emerald-500/20 text-emerald-400'
+              : 'bg-red-500/15 border-red-500/20 text-red-400',
+          ]"
+        >
+          <CheckCircle
+            v-if="toast.type === 'success'"
+            :size="18"
+            class="flex-shrink-0"
+          />
+          <XCircle v-else :size="18" class="flex-shrink-0" />
+          <span>{{ toast.text }}</span>
+        </div>
+      </div>
+    </Transition>
 
     <!-- Header / Nav Bar -->
     <header class="relative z-10 py-5 px-6 flex items-center justify-between">
@@ -375,6 +429,43 @@ onUnmounted(() => {
   height: 32px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Custom Toast */
+.toast-message {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.toast-enter-active {
+  animation: toast-in 0.35s cubic-bezier(0.21, 1.02, 0.73, 1);
+}
+
+.toast-leave-active {
+  animation: toast-out 0.3s cubic-bezier(0.06, 0.71, 0.55, 1);
+}
+
+@keyframes toast-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes toast-out {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -20px) scale(0.95);
+  }
 }
 
 .loading-dots {

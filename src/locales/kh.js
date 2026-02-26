@@ -1,5 +1,74 @@
 export default {
   // Navigation and Layout
+  my_tickets: "សំបុត្ររបស់ខ្ញុំ",
+  upcoming: "ជិតមកដល់",
+  history: "ប្រវត្តិ",
+  no_tickets: "រកមិនឃើញសំបុត្រ",
+  no_history: "រកមិនឃើញប្រវត្តិកក់",
+  ticket_details: "ព័ត៌មានលម្អិតសំបុត្រ",
+  booking_id: "លេខកក់",
+  seat: "កៅអី",
+  seats: "កៅអី",
+  hall: "សាល",
+  showtime: "វេនបញ្ចាំង",
+  show_date: "ថ្ងៃបញ្ចាំង",
+  start_time: "ម៉ោងចាប់ផ្តើម",
+  payment_method: "វិធីបង់ប្រាក់",
+  total_price: "តម្លៃសរុប",
+  ticket_reference: "លេខយោងសំបុត្រ",
+  n_a: "មិនមាន",
+  reference: "លេខយោង",
+  booking_date: "កាលបរិច្ឆេទកក់",
+  payment_status: "ស្ថានភាពបង់ប្រាក់",
+  bookings: {
+    bookingDate: "កាលបរិច្ឆេទកក់",
+    paymentStatus: "ស្ថានភាពបង់ប្រាក់",
+    confirmed: "បានបញ្ជាក់",
+    pending: "កំពុងរង់ចាំ",
+    cancelled: "បានលុបចោល",
+    completed: "បានបញ្ចប់",
+    failed: "បរាជ័យ",
+    refunded: "បានសងប្រាក់វិញ",
+    paid: "បានបង់រួច",
+  },
+  payments: {
+    bakongPayment: "បាគង",
+    payAtCinema: "បង់ប្រាក់នៅរោងកុន",
+    cashPayment: "សាច់ប្រាក់",
+  },
+  notifications_i18n: {
+    booking_created: {
+      title: "ការកក់បានបញ្ជាក់",
+      message:
+        'ការកក់ {ref} របស់អ្នកសម្រាប់ "{movie}" ត្រូវបានបញ្ជាក់។\n\nកៅអី: {seats}',
+    },
+    booking_confirmed: {
+      title: "ការបង់ប្រាក់បានបញ្ជាក់",
+      message:
+        'បានទទួលការបង់ប្រាក់! សំបុត្ររបស់អ្នកសម្រាប់ "{movie}" ត្រូវបានបញ្ជាក់។\n\nលេខយោង: {ref}\nកៅអី: {seats}\n\nបង្ហាញកូដនេះនៅកន្លែងលក់សំបុត្រ ឬប្រើវាដើម្បីចូល។',
+    },
+    booking_cancelled: {
+      title: "ការកក់ត្រូវបានលុបចោល",
+      message: "ការកក់ {ref} របស់អ្នកត្រូវបានលុបចោល។",
+    },
+    booking_updated: {
+      title: "ការកក់ត្រូវបានធ្វើបច្ចុប្បន្នភាព",
+      message:
+        'ការកក់ {ref} របស់អ្នកសម្រាប់ "{movie}" ត្រូវបានធ្វើបច្ចុប្បន្នភាព។\n\nកៅអី: {seats}',
+    },
+    promotion_new: {
+      title: "ការផ្សព្វផ្សាយថ្មី!",
+      message: "{promoTitle} (កូដ: {code})",
+    },
+    pay_at_cinema: {
+      message:
+        'ការកក់ {ref} បានបញ្ជាក់សម្រាប់ "{movie}"។\n\n📌 សំខាន់: សូមធ្វើដំណើរមកដល់រោងភាពយន្តយ៉ាងហោចណាស់ ៣០ នាទីមុនម៉ោងបញ្ចាំង ដើម្បីបង់ប្រាក់និងទទួលសំបុត្រ។\n\nកៅអី: {seats}',
+    },
+    pending_payment: {
+      message:
+        'ការកក់ {ref} បានបង្កើតសម្រាប់ "{movie}"។\n\nសូមបំពេញការបង់ប្រាក់ {method} របស់អ្នកដើម្បីបញ្ជាក់កៅអី។\n\nកៅអី: {seats}',
+    },
+  },
   nav: {
     dashboard: "ផ្ទាំងគ្រប់គ្រង",
     users: "អ្នកប្រើប្រាស់",
@@ -9,6 +78,9 @@ export default {
     logout: "ចាកចេញ",
     profile: "ប្រវត្តិរូប",
     reportsManagement: "គ្រប់គ្រងរបាយការណ៍",
+    clearAll: "លុបទាំងអស់",
+    notifications: "ការជូនដំណឹង",
+    tickets: "សំបុត្ររបស់ខ្ញុំ", // Add this
   },
 
   // Authentication
@@ -28,6 +100,7 @@ export default {
     loginSuccess: "ចូលដោយជោគជ័យ!",
     loginFailed: "ចូលមិនបាន",
     invalidCredentials: "ឈ្មោះអ្នកប្រើ/អ៊ីមែល ឬ លេខសម្ងាត់មិនត្រឹមត្រូវ",
+    logoutSuccess: "ចាកចេញដោយជោគជ័យ",
     brandingTitle: "ប្រព័ន្ធគ្រប់គ្រងការកក់",
     brandingSubtitle:
       "ដំណោះស្រាយរួមសម្រាប់គ្រប់គ្រងរោងកុន ម៉ោងបញ្ចាំង និងការកក់របស់អ្នក។",
@@ -432,6 +505,7 @@ export default {
     startDate: "កាលបរិច្ឆេទចាប់ផ្តើម",
     endDate: "កាលបរិច្ឆេទបញ្ចប់",
     status: "ស្ថានភាព",
+    description: "ការពិពណ៌នា",
     image: "រូបភាព",
     promotionImage: "រូបភាពផ្សព្វផ្សាយ",
     deletePromotion: "លុបការផ្សព្វផ្សាយ",
@@ -652,8 +726,10 @@ export default {
   },
   payments: {
     amount: "ចំនួនទឹកប្រាក់",
-    bakongPayment: "ការទូទាត់តាម Bakong",
-    cashPayment: "ការទូទាត់ជាសាច់ប្រាក់",
+    bakongPayment: "ការទូទាត់តាមបាគង",
+    payAtCinema: "បង់ប្រាក់នៅរោងកុន",
+    cashPayment: "បង់ប្រាក់សុទ្ធ",
+    onlinePayment: "ការទូទាត់តាមអនឡាញ",
     createPayment: "បង្កើតការបង់ប្រាក់",
     paymentDetails: "ព័ត៌មានលម្អិតការបង់ប្រាក់",
     paymentMethod: "វិធីសាស្រ្តបង់ប្រាក់",
@@ -795,6 +871,9 @@ export default {
     view: "មើល",
     watch: "មើល",
     download: "ទាញយក",
+    viewAll: "មើលទាំងអស់",
+    markAllAsRead: "សម្គាល់ថាអានទាំងអស់",
+    clearAll: "លុបទាំងអស់",
     downloadPNG: "ទាញយករូបភាព PNG",
     upload: "បញ្ជូន",
     more: "ផ្សេងៗ",
@@ -818,8 +897,15 @@ export default {
     error: "មានកំហុសមួយបានកើតឡើង",
     warning: "ការព្រមាន",
     info: "ព័ត៌មាន",
+    clearAllNotificationsPrompt: "តើអ្នកចង់លុបការជូនដំណឹងទាំងអស់មែនទេ?",
+    clearAllNotificationsWarning:
+      "សកម្មភាពនេះនឹងលុបការជូនដំណឹងរបស់អ្នកទាំងអស់ចេញពីបញ្ជីជាអចិន្ត្រៃយ៍។",
+    allNotificationsCleared: "ការជូនដំណឹងទាំងអស់ត្រូវបានលុបចេញហើយ។",
+    errorClearingNotifications: "មិនអាចលុបការជូនដំណឹងបានទេ។",
     loading: "កំពុងផ្ទុក...",
     noData: "គ្មានទិន្នន័យ",
+    noNotifications: "មិនមានការជូនដំណឹងថ្មីទេ",
+    clearAllNotifications: "តើអ្នកប្រាកដថាចង់លុបការជូនដំណឹងទាំងអស់មែនទេ?",
     networkError: "កំហុសបណ្តាញ។ សូមពិនិត្យការភ្ជាប់របស់អ្នក។",
     serverError: "កំហុសម៉ាស៊ីនផ្តល់សេវា។ សូមសាកល្បងម្តងទៀត។",
     validationFailed: "ការផ្ទៀងផ្ទាត់មិនបានជោគជ័យ",
@@ -889,6 +975,9 @@ export default {
     yes: "បាទ/ចាស",
     no: "ទេ",
     none: "គ្មាន",
+    client: "អតិថិជន",
+    admin: "អ្នកគ្រប់គ្រង",
+    notification: "ការជូនដំណឹង",
   },
 
   // Upload
@@ -953,6 +1042,10 @@ export default {
       termsOfService: "លក្ខខណ្ឌសេវាកម្ម",
       privacyPolicy: "គោលការណ៍ឯកជនភាព",
       welcomeBackMsg: "សូមស្វាគមន៍ត្រលប់មកវិញ, {name}!",
+      telegramLoginFailed: "ការចូល Telegram បរាជ័យ។",
+      telegramDataNotFound: "រកមិនឃើញទិន្នន័យ Telegram។ សូមបើកក្នុង Telegram។",
+      serverAuthFailed: "ការផ្ទៀងផ្ទាត់ម៉ាស៊ីនមេបរាជ័យ។",
+      telegramSdkError: "មានបញ្ហាជាមួយ Telegram SDK។",
     },
     register: {
       joinUs: "ចូលរួមជាមួយ RSB Cinema",

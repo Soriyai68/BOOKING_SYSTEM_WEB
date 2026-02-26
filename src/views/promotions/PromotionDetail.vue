@@ -52,6 +52,12 @@
             {{ promotion.title || "-" }}
           </el-descriptions-item>
 
+          <el-descriptions-item label="Description" :span="2">
+            <div class="description-text">
+              {{ promotion.description || "-" }}
+            </div>
+          </el-descriptions-item>
+
           <el-descriptions-item label="Created At">
             {{ formatDate(promotion.created_at) }}
           </el-descriptions-item>
@@ -91,7 +97,7 @@ import { promotionService } from "@/services/promotionService";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { ArrowLeft } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
-import { formatDate } from "@/utils/formatters";  
+import { formatDate } from "@/utils/formatters";
 
 const route = useRoute();
 const router = useRouter();
@@ -124,7 +130,7 @@ const handleDelete = async () => {
         type: "warning",
         confirmButtonText: "Delete",
         cancelButtonText: "Cancel",
-      }
+      },
     );
     await promotionService.deletePromotion(route.params.id);
     ElMessage.success("Promotion deleted successfully");
@@ -183,6 +189,12 @@ onMounted(async () => {
   max-height: 400px;
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.description-text {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: var(--el-text-color-primary);
 }
 
 .actions-section {

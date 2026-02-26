@@ -5,7 +5,7 @@
       <el-button
         v-permission="'promotions.create'"
         type="primary"
-        @click="$router.push('/admin/promotions/create')"
+        @click="$router.push('promotions/create')"
       >
         <el-icon>
           <Plus />
@@ -86,6 +86,16 @@
               />
               <span>{{ row.title || "-" }}</span>
             </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="description"
+          :label="$t('promotions.description') || 'Description'"
+          min-width="200"
+          show-overflow-tooltip
+        >
+          <template #default="{ row }">
+            {{ row.description || "-" }}
           </template>
         </el-table-column>
         <el-table-column

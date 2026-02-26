@@ -22,7 +22,7 @@ export const seatBookingService = {
       (k) => backendParams[k] === undefined && delete backendParams[k],
     );
 
-    const { data } = await api.get("/seatBookings", { params: backendParams });
+    const { data } = await api.get("/seat-bookings", { params: backendParams });
     if (data?.success && data?.data) {
       const { seatBookings, pagination } = data.data;
       return {
@@ -54,7 +54,7 @@ export const seatBookingService = {
       throw new Error("showtimeId is required");
     }
     const response = await api.get(
-      `/seatBookings/showtime/${showtimeId}/status`,
+      `/seat-bookings/showtime/${showtimeId}/status`,
     );
 
     if (response.data?.success && Array.isArray(response.data.data)) {
@@ -67,7 +67,7 @@ export const seatBookingService = {
     if (!showtimeId) {
       throw new Error("showtimeId is required");
     }
-    const response = await api.get(`/seatBookings/showtime/${showtimeId}/raw`);
+    const response = await api.get(`/seat-bookings/showtime/${showtimeId}/raw`);
     if (response.data?.success) {
       return response.data.data || [];
     }
@@ -79,14 +79,14 @@ export const seatBookingService = {
   // New methods from backend routes
   async lockSeats(payload) {
     // Payload should contain showtimeId, seatIds, bookingId (optional), lockDuration
-    const { data } = await api.post("/seatBookings/lock", payload);
+    const { data } = await api.post("/seat-bookings/lock", payload);
 
     return data;
   },
 
   async extendLock(payload) {
     // Payload should contain seatBookingIds, extendDuration
-    const { data } = await api.post("/seatBookings/extend-lock", payload);
+    const { data } = await api.post("/seat-bookings/extend-lock", payload);
     return data;
   },
 
@@ -98,7 +98,7 @@ export const seatBookingService = {
   ],
   getSeatBookingHistory: async (params) => {
     try {
-      const response = await api.get("/seatBookings/history", { params });
+      const response = await api.get("/seat-bookings/history", { params });
       return response.data;
     } catch (error) {
       throw error;

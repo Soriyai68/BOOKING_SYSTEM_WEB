@@ -1,5 +1,74 @@
 export default {
   // Navigation and Layout
+  my_tickets: "My Tickets",
+  upcoming: "Upcoming",
+  history: "History",
+  no_tickets: "No tickets found",
+  no_history: "No booking history found",
+  ticket_details: "Ticket Details",
+  booking_id: "Booking ID",
+  seat: "Seat",
+  seats: "Seats",
+  hall: "Hall",
+  showtime: "Showtime",
+  show_date: "Show Date",
+  start_time: "Start Time",
+  payment_method: "Payment Method",
+  total_price: "Total Price",
+  ticket_reference: "Ticket Reference",
+  n_a: "N/A",
+  reference: "Reference",
+  booking_date: "Booking Date",
+  payment_status: "Payment Status",
+  bookings: {
+    bookingDate: "Booking Date",
+    paymentStatus: "Payment Status",
+    confirmed: "Confirmed",
+    pending: "Pending",
+    cancelled: "Cancelled",
+    completed: "Completed",
+    failed: "Failed",
+    refunded: "Refunded",
+    paid: "Paid",
+  },
+  payments: {
+    bakongPayment: "Bakong",
+    payAtCinema: "Pay At Cinema",
+    cashPayment: "Cash",
+  },
+  notifications_i18n: {
+    booking_created: {
+      title: "Booking Confirmed",
+      message:
+        'Your booking {ref} for "{movie}" has been confirmed.\n\nSeats: {seats}',
+    },
+    booking_confirmed: {
+      title: "Payment Confirmed",
+      message:
+        'Payment received! Your tickets for "{movie}" are confirmed.\n\nReference: {ref}\nSeats: {seats}\n\nShow this code at the counter or use it to enter.',
+    },
+    booking_cancelled: {
+      title: "Booking Cancelled",
+      message: "Your booking {ref} has been cancelled.",
+    },
+    booking_updated: {
+      title: "Booking Updated",
+      message:
+        'Your booking {ref} for "{movie}" has been updated.\n\nSeats: {seats}',
+    },
+    promotion_new: {
+      title: "New Promotion!",
+      message: "{promoTitle} (Code: {code})",
+    },
+    pay_at_cinema: {
+      message:
+        'Booking {ref} confirmed for "{movie}".\n\n📌 Important: Please arrive at the cinema at least 30 minutes before the show starts to complete your payment and collect your tickets.\n\nSeats: {seats}',
+    },
+    pending_payment: {
+      message:
+        'Booking {ref} created for "{movie}".\n\nPlease complete your {method} payment to confirm your seats.\n\nSeats: {seats}',
+    },
+  },
   nav: {
     dashboard: "Dashboard",
     users: "Users",
@@ -9,6 +78,9 @@ export default {
     logout: "Logout",
     profile: "Profile",
     reportsManagement: "Reports Management",
+    clearAll: "Clear All",
+    notifications: "Notifications",
+    tickets: "My Tickets", // Add this
   },
 
   // Authentication
@@ -28,6 +100,7 @@ export default {
     loginSuccess: "Login successful!",
     loginFailed: "Login failed",
     invalidCredentials: "Invalid username/email or password",
+    logoutSuccess: "Logged out successfully",
     brandingTitle: "Booking System Pro",
     brandingSubtitle:
       "Your all-in-one solution for managing movie theaters, showtimes, and bookings.",
@@ -447,6 +520,7 @@ export default {
     startDate: "Start Date",
     endDate: "End Date",
     status: "Status",
+    description: "Description",
     image: "Image",
     promotionImage: "Promotion Image",
     deletePromotion: "Delete Promotion",
@@ -679,7 +753,9 @@ export default {
   },
   payments: {
     bakongPayment: "Bakong Payment",
+    payAtCinema: "Pay At Cinema",
     cashPayment: "Cash Payment",
+    onlinePayment: "Online Payment",
     createPayment: "Create Payment",
     paymentDetails: "Payment Details",
     paymentMethod: "Payment Method",
@@ -835,6 +911,9 @@ export default {
     tomorrow: "Tomorrow",
     print: "Print",
     restore: "Restore",
+    markAllAsRead: "Mark All As Read",
+    clearAll: "Clear All",
+    viewAll: "View All",
   },
 
   // Status Messages
@@ -845,6 +924,12 @@ export default {
     info: "Information",
     loading: "Loading...",
     noData: "No data available",
+    noNotifications: "No new notifications",
+    clearAllNotificationsPrompt: "Clear all notifications?",
+    clearAllNotificationsWarning:
+      "This will permanently remove all your notifications from the list.",
+    allNotificationsCleared: "All notifications have been cleared.",
+    errorClearingNotifications: "Failed to clear notifications.",
     networkError: "Network error. Please check your connection.",
     serverError: "Server error. Please try again later.",
     validationFailed: "Validation failed",
@@ -888,9 +973,9 @@ export default {
     thisMonth: "This month",
     thisYear: "This year",
     now: "Now",
-    minutesAgo: "{count} minutes ago",
-    hoursAgo: "{count} hours ago",
-    daysAgo: "{count} days ago",
+    minutesAgo: "{count}m ago",
+    hoursAgo: "{count}h ago",
+    daysAgo: "{count}d ago",
   },
 
   // Reports
@@ -915,6 +1000,9 @@ export default {
     yes: "Yes",
     no: "No",
     none: "None",
+    client: "Client",
+    admin: "Admin",
+    notification: "Notification",
   },
 
   // Upload
@@ -980,6 +1068,10 @@ export default {
       termsOfService: "Terms of Service",
       privacyPolicy: "Privacy Policy",
       welcomeBackMsg: "Welcome back, {name}!",
+      telegramLoginFailed: "Telegram login failed.",
+      telegramDataNotFound: "Telegram data not found. Please open in Telegram.",
+      serverAuthFailed: "Server authentication failed.",
+      telegramSdkError: "Something went wrong with Telegram SDK.",
     },
     register: {
       joinUs: "Join RSB Cinema",

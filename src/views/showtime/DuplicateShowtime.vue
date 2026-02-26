@@ -102,6 +102,7 @@ onMounted(async () => {
       return {
         ...s,
         show_date: formattedDate,
+        status: "scheduled",
       };
     });
   } catch (error) {

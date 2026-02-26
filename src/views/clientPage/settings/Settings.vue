@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import api from "@/utils/api";
 import {
@@ -12,14 +12,33 @@ import {
   LogOut,
   ChevronRight,
   Pencil,
+  Ticket,
+  CheckCircle,
+  XCircle,
 } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 import { setLanguage, availableLocales } from "@/i18n";
 import { useAuthStore } from "@/stores/auth";
+import { useNotificationStore } from "@/stores/notification";
 
 const router = useRouter();
 const { t, locale } = useI18n();
 const authStore = useAuthStore();
+const notificationStore = useNotificationStore();
+
+// Custom toast message state
+const toast = ref({ show: false, text: "", type: "success" });
+let toastTimer = null;
+
+const showToast = (text, type = "success") => {
+  if (toastTimer) clearTimeout(toastTimer);
+  toast.value = { show: true, text, type };
+  toastTimer = setTimeout(() => {
+    toast.value.show = false;
+  }, 3000);
+};
+
+const unreadCount = computed(() => notificationStore.unreadCount);
 
 // Real user data from API
 const user = ref({
@@ -60,7 +79,7 @@ onMounted(async () => {
 
 const handleLogout = async () => {
   await authStore.logout();
-  router.push({ name: "Login Page" });
+  router.push({ name: "Login Page", query: { loggedOut: "1" } });
 };
 
 const currentLocale = computed({
@@ -98,6 +117,7 @@ const menuItems = computed(() => [
         title: t("settings.notifications"),
         subtitle: t("settings.notificationsDesc"),
         action: () => router.push({ name: "Notifications Setting" }),
+        badge: unreadCount.value > 0 ? unreadCount.value : null,
       },
       {
         id: "language",
@@ -105,6 +125,13 @@ const menuItems = computed(() => [
         title: t("settings.language"),
         subtitle: t("settings.languageDesc"),
         type: "dropdown",
+      },
+      {
+        id: "tickets",
+        icon: Ticket,
+        title: t("my_tickets"),
+        subtitle: t("tickets_subtitle") || "View your booking history",
+        action: () => router.push({ name: "My Tickets" }),
       },
     ],
   },
@@ -115,6 +142,31 @@ const menuItems = computed(() => [
   <div class="settings-page min-h-screen text-white relative overflow-hidden">
     <!-- Background -->
     <div class="settings-bg"></div>
+
+    <!-- Custom Toast -->
+    <Transition name="toast">
+      <div
+        v-if="toast.show"
+        class="fixed top-5 left-1/2 -translate-x-1/2 z-[200] max-w-[90vw]"
+      >
+        <div
+          :class="[
+            'toast-message flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold shadow-2xl border backdrop-blur-xl',
+            toast.type === 'success'
+              ? 'bg-emerald-500/15 border-emerald-500/20 text-emerald-400'
+              : 'bg-red-500/15 border-red-500/20 text-red-400',
+          ]"
+        >
+          <CheckCircle
+            v-if="toast.type === 'success'"
+            :size="18"
+            class="flex-shrink-0"
+          />
+          <XCircle v-else :size="18" class="flex-shrink-0" />
+          <span>{{ toast.text }}</span>
+        </div>
+      </div>
+    </Transition>
 
     <div class="relative z-10 min-h-screen flex flex-col">
       <!-- Header -->
@@ -263,6 +315,16 @@ const menuItems = computed(() => [
                   </p>
                 </div>
 
+                <!-- Badge -->
+                <div
+                  v-if="item.badge"
+                  class="h-5 min-w-[20px] rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center px-1.5"
+                >
+                  <span class="text-[10px] font-bold text-red-400">{{
+                    item.badge > 9 ? "9+" : item.badge
+                  }}</span>
+                </div>
+
                 <div
                   v-if="item.type === 'dropdown' && item.id === 'language'"
                   class="flex items-center gap-2"
@@ -353,5 +415,42 @@ const menuItems = computed(() => [
 
 .settings-avatar {
   background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+}
+
+/* Custom Toast */
+.toast-message {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.toast-enter-active {
+  animation: toast-in 0.35s cubic-bezier(0.21, 1.02, 0.73, 1);
+}
+
+.toast-leave-active {
+  animation: toast-out 0.3s cubic-bezier(0.06, 0.71, 0.55, 1);
+}
+
+@keyframes toast-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes toast-out {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -20px) scale(0.95);
+  }
 }
 </style>

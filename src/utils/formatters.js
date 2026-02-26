@@ -1,3 +1,5 @@
+import i18n from "@/i18n";
+
 export const toLocalPhone = (internationalNum) => {
   if (!internationalNum) return "";
   if (internationalNum.startsWith("+855")) {
@@ -119,11 +121,18 @@ export const getRelativeTime = (dateString) => {
     const now = new Date();
     const diffInSeconds = Math.floor((now - date) / 1000);
 
-    if (diffInSeconds < 60) return "Just now";
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    const { t } = i18n.global;
+
+    if (diffInSeconds < 60) return t("datetime.now") || "Just now";
+    if (diffInSeconds < 3600)
+      return t("datetime.minutesAgo", {
+        count: Math.floor(diffInSeconds / 60),
+      });
     if (diffInSeconds < 86400)
-      return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+      return t("datetime.hoursAgo", {
+        count: Math.floor(diffInSeconds / 3600),
+      });
+    return t("datetime.daysAgo", { count: Math.floor(diffInSeconds / 86400) });
   } catch (e) {
     return "";
   }

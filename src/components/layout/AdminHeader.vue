@@ -43,16 +43,104 @@
       </el-tooltip>
 
       <!-- Notifications -->
-      <el-tooltip content="Notifications" placement="bottom">
-        <el-badge :value="notificationCount" :hidden="notificationCount === 0">
+      <div class="notification-trigger">
+        <el-badge
+          :value="unreadCount"
+          :hidden="unreadCount === 0"
+          class="notification-badge"
+          :class="{ pulsing: unreadCount > 0 }"
+        >
           <el-button
             :icon="Bell"
             text
-            @click="showNotifications"
             class="header-btn"
+            @click="showDrawer = true"
           />
         </el-badge>
-      </el-tooltip>
+      </div>
+
+      <el-drawer
+        v-model="showDrawer"
+        :title="t('nav.notifications')"
+        direction="rtl"
+        size="380px"
+        class="notification-drawer"
+      >
+        <template #header>
+          <div class="drawer-header">
+            <h3>{{ t("nav.notifications") }}</h3>
+            <div class="header-actions">
+              <el-tooltip
+                v-if="unreadCount > 0"
+                :content="t('actions.markAllAsRead')"
+                placement="bottom"
+              >
+                <el-button
+                  link
+                  @click="markAllAsRead"
+                  class="header-action-btn"
+                  :icon="CheckCheck"
+                />
+              </el-tooltip>
+              <el-tooltip
+                v-if="notifications.length > 0"
+                :content="t('nav.clearAll')"
+                placement="bottom"
+              >
+                <el-button
+                  link
+                  @click="deleteAllNotifications"
+                  class="header-action-btn clear-btn"
+                  :icon="Trash2"
+                />
+              </el-tooltip>
+            </div>
+          </div>
+        </template>
+
+        <div class="notification-list" v-if="notifications.length > 0">
+          <div
+            v-for="item in notifications"
+            :key="item._id"
+            class="notification-item"
+            :class="{ unread: !item.isRead }"
+            @click="handleNotificationClick(item)"
+          >
+            <div class="notification-status-dot" v-if="!item.isRead"></div>
+            <div class="notification-content-wrapper">
+              <div class="notification-main">
+                <div class="notification-title">
+                  {{ getLocalizedTitle(item) }}
+                </div>
+                <div class="notification-message">
+                  {{ getLocalizedMessage(item) }}
+                </div>
+                <div class="notification-time">
+                  {{ getRelativeTime(item.createdAt) }}
+                </div>
+              </div>
+              <el-button
+                class="item-delete-btn"
+                link
+                :icon="Trash2"
+                @click.stop="deleteNotification(item._id)"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="notification-empty" v-else>
+          <el-icon class="empty-icon"><BellOff /></el-icon>
+          <p>{{ t("messages.noNotifications") }}</p>
+        </div>
+
+        <template #footer>
+          <div class="notification-footer">
+            <el-button @click="goToNotifications" class="view-all-btn">
+              {{ t("actions.viewAll") }}
+            </el-button>
+          </div>
+        </template>
+      </el-drawer>
 
       <!-- User menu -->
       <el-dropdown @command="handleUserMenuCommand" class="user-dropdown">
@@ -90,9 +178,11 @@ import { useRoute, useRouter } from "vue-router";
 import { ElMessage, ElMessageBox, ElLoading } from "element-plus";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
+import { useNotificationStore } from "@/stores/notification";
 import { usePath } from "@/composables/usePath";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher.vue";
 import { useI18n } from "vue-i18n";
+import { getRelativeTime } from "@/utils/formatters";
 import {
   PanelLeftClose,
   PanelRightClose,
@@ -104,16 +194,41 @@ import {
   Settings,
   LogOut,
   TicketPlus,
+  Trash2,
+  CheckCheck,
+  BellOff,
 } from "lucide-vue-next";
 
 const route = useRoute();
 const router = useRouter();
 const appStore = useAppStore();
 const authStore = useAuthStore();
+const notificationStore = useNotificationStore();
 const { getAdminPath } = usePath();
-const { t } = useI18n();
+const { t, te } = useI18n();
 
-const notificationCount = ref(3); // Mock notification count
+const getLocalizedTitle = (item) => {
+  if (!item) return "";
+  const key = `notifications_i18n.${item.type}.title`;
+  if (te(key)) {
+    return t(key, item.metadata || {});
+  }
+  return item.title;
+};
+
+const getLocalizedMessage = (item) => {
+  if (!item) return "";
+  const key = `notifications_i18n.${item.type}.message`;
+  if (te(key) && item.metadata && Object.keys(item.metadata).length > 0) {
+    return t(key, item.metadata);
+  }
+  return item.message;
+};
+
+const showDrawer = ref(false);
+
+const notifications = computed(() => notificationStore.notifications);
+const unreadCount = computed(() => notificationStore.unreadCount);
 
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed);
 const theme = computed(() => appStore.theme);
@@ -131,8 +246,46 @@ const toggleTheme = () => {
   appStore.toggleTheme();
 };
 
-const showNotifications = () => {
-  ElMessage.info("Notifications feature coming soon!");
+const handleNotificationClick = (item) => {
+  if (!item.isRead) {
+    notificationStore.markAsRead(item._id);
+  }
+  // Navigate if relatedId exists
+  if (item.relatedId) {
+    showDrawer.value = false;
+    router.push(getAdminPath(`/booking/${item.relatedId}`));
+  }
+};
+
+const markAllAsRead = () => {
+  notificationStore.markAllAsRead();
+};
+
+const deleteNotification = (id) => {
+  notificationStore.deleteNotification(id);
+};
+
+const deleteAllNotifications = () => {
+  ElMessageBox.confirm(
+    t("messages.clearAllNotifications"),
+    t("actions.clearAll"),
+    {
+      confirmButtonText: t("actions.confirm"),
+      cancelButtonText: t("actions.cancel"),
+      type: "warning",
+    },
+  ).then(() => {
+    notificationStore.deleteAllNotifications();
+  });
+};
+
+const goToNotifications = () => {
+  showDrawer.value = false;
+  router.push(getAdminPath("/notifications"));
+};
+
+const handleNotificationCommand = (command) => {
+  // Can handle specific commands if needed
 };
 
 const goToCreateBooking = () => {
@@ -173,7 +326,12 @@ const handleUserMenuCommand = async (command) => {
       await router.replace("/login");
 
       ElMessage.closeAll();
-      ElMessage.success("Logged out successfully");
+      ElMessage({
+        message: t("auth.logoutSuccess") || "Logged out successfully",
+        type: "success",
+        customClass: "premium-message",
+        center: true,
+      });
     } catch (error) {
       if (error !== "cancel") {
         console.error("Logout error:", error);
@@ -350,5 +508,207 @@ const handleUserMenuCommand = async (command) => {
 
 :deep(.el-dropdown-menu__item .el-icon) {
   font-size: 14px;
+  gap: 8px;
+}
+
+.notification-dropdown {
+  width: 320px;
+  background: var(--el-bg-color);
+}
+
+.notification-header {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.clear-btn {
+  color: var(--el-color-danger);
+}
+
+.notification-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.header-action-btn {
+  padding: 8px;
+  font-size: 18px;
+}
+
+.header-action-btn:hover {
+  background-color: var(--el-fill-color-light) !important;
+}
+
+.notification-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.notification-content-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.notification-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-delete-btn {
+  padding: 4px;
+  color: var(--el-text-color-secondary);
+  opacity: 0;
+  transition: all 0.2s;
+}
+
+.notification-item:hover .item-delete-btn {
+  opacity: 1;
+}
+
+.item-delete-btn:hover {
+  color: var(--el-color-danger);
+}
+
+.notification-item:hover {
+  background-color: var(--el-fill-color-lighter);
+}
+
+.notification-item.unread {
+  background-color: var(--el-color-primary-light-9);
+  position: relative;
+}
+
+.notification-status-dot {
+  position: absolute;
+  left: 8px;
+  top: 18px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--el-color-primary);
+  border-radius: 50%;
+}
+
+.notification-item.unread:hover {
+  background-color: var(--el-color-primary-light-8);
+}
+
+/* Drawer specific styles */
+:deep(.notification-drawer .el-drawer__header) {
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.drawer-header {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  width: 100%;
+}
+
+.drawer-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+:deep(.notification-drawer .el-drawer__body) {
+  padding: 0;
+}
+
+.notification-title {
+  font-weight: 500;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.notification-message {
+  font-size: 12px;
+  color: var(--el-text-color-regular);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.notification-time {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+
+.notification-empty {
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--el-text-color-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  opacity: 0.3;
+}
+
+.notification-empty p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.notification-footer {
+  padding: 16px;
+  text-align: center;
+  border-top: 1px solid var(--el-border-color-lighter);
+}
+
+.view-all-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--el-fill-color-light);
+  border: none;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.view-all-btn:hover {
+  background: var(--el-fill-color);
+  color: var(--el-color-primary);
+}
+
+/* Pulse animation for unread notifications */
+.pulsing :deep(.el-badge__content) {
+  animation: badge-pulse 2s infinite;
+}
+
+@keyframes badge-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 108, 108, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(245, 108, 108, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 108, 108, 0);
+  }
 }
 </style>

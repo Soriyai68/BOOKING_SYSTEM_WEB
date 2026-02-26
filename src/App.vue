@@ -1,24 +1,41 @@
 <script setup>
-import {RouterView} from "vue-router";
-import {computed, onMounted} from "vue";
-import {useAuthStore} from "@/stores/auth";
-import {usePermissionStore} from "@/stores/permission";
+import { RouterView } from "vue-router";
+import { computed, onMounted } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { usePermissionStore } from "@/stores/permission";
 import AppLoading from "@/components/common/AppLoading.vue";
-import {useI18n} from 'vue-i18n';
-import {ElConfigProvider} from 'element-plus';
-import en from 'element-plus/dist/locale/en.mjs';
-import kh from '@/locales/element-plus/kh.js';
+import { useI18n } from "vue-i18n";
+import { ElConfigProvider } from "element-plus";
+import en from "element-plus/dist/locale/en.mjs";
+import kh from "@/locales/element-plus/kh.js";
+
+import { useNotificationStore } from "@/stores/notification";
+import { watch } from "vue";
 
 const authStore = useAuthStore();
 const permissionStore = usePermissionStore();
-const {locale} = useI18n();
+const notificationStore = useNotificationStore();
+const { locale } = useI18n();
 
 const elementPlusLocale = computed(() => {
-  return locale.value === 'kh' ? kh : en;
+  return locale.value === "kh" ? kh : en;
 });
 
 // Show loading while auth is initializing
 const showLoading = computed(() => !authStore.isInitialized);
+
+// Watch for authentication changes to start/stop notification polling
+watch(
+  () => authStore.isAuthenticated,
+  (isAuth) => {
+    if (isAuth) {
+      notificationStore.startPolling();
+    } else {
+      notificationStore.stopPolling();
+    }
+  },
+  { immediate: true },
+);
 
 // Initialize auth and permissions on app start
 onMounted(async () => {
@@ -37,10 +54,10 @@ onMounted(async () => {
   <el-config-provider :locale="elementPlusLocale">
     <div id="app">
       <!-- Show loading screen during auth initialization -->
-      <AppLoading v-if="showLoading"/>
+      <AppLoading v-if="showLoading" />
 
       <!-- Show app content once auth is initialized -->
-      <RouterView v-else/>
+      <RouterView v-else />
     </div>
   </el-config-provider>
 </template>

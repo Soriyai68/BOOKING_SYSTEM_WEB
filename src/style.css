@@ -159,3 +159,66 @@ svg {
     margin: 0 auto !important;
   }
 }
+
+/* Premium Element Plus Message Styling */
+.el-message.premium-message {
+  border: none;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  padding: 14px 24px;
+  min-width: 320px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  top: 40px !important;
+  animation: message-slide-down 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.dark .el-message.premium-message {
+  background: rgba(30, 30, 32, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.el-message.premium-message .el-message__content {
+  font-weight: 500;
+  font-size: 14px;
+  color: #1d1d1f;
+  letter-spacing: -0.01em;
+}
+
+.dark .el-message.premium-message .el-message__content {
+  color: #f5f5f7;
+}
+
+.el-message.premium-message.el-message--success {
+  background: rgba(52, 199, 89, 0.12);
+  border: 1px solid rgba(52, 199, 89, 0.2);
+}
+
+.dark .el-message.premium-message.el-message--success {
+  background: rgba(52, 199, 89, 0.15);
+}
+
+.el-message.premium-message.el-message--success .el-message__content {
+  color: #248a3d;
+}
+
+.dark .el-message.premium-message.el-message--success .el-message__content {
+  color: #34c759;
+}
+
+.el-message.premium-message .el-message__icon {
+  font-size: 18px;
+}
+
+@keyframes message-slide-down {
+  from {
+    transform: translateY(-20px) translateX(-50%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}

@@ -72,6 +72,14 @@ const clientRoutes = [
           title: "Privacy & Security",
         },
       },
+      {
+        path: "settings/tickets",
+        name: "My Tickets",
+        component: () => import("@/views/clientPage/settings/Tickets.vue"),
+        meta: {
+          title: "My Tickets",
+        },
+      },
     ],
   },
 ];

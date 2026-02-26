@@ -184,15 +184,25 @@ export const useAuthStore = defineStore("auth", () => {
       const response = await api.get(endpoint);
 
       let userData;
-      if (response.data?.success && response.data?.data?.user) {
-        userData = response.data.data.user;
-      } else if (response.data?.data) {
-        userData = response.data.data;
+      if (response.data?.success && response.data?.data) {
+        // Higher priority for explicitly nested user/customer
+        userData =
+          response.data.data.user ||
+          response.data.data.customer ||
+          response.data.data;
       } else {
-        userData = response.data.user || response.data;
+        userData =
+          response.data.user || response.data.customer || response.data;
       }
 
       if (userData) {
+        setUser(userData);
+        return userData;
+      }
+
+      // Fallback for customer structure
+      if (response.data?.data?.customer) {
+        userData = response.data.data.customer;
         setUser(userData);
         return userData;
       }
@@ -205,10 +215,20 @@ export const useAuthStore = defineStore("auth", () => {
 
   const updateProfile = async (profileData) => {
     try {
-      const response = await api.put("/auth/profile", profileData);
-      const userData = response.data.user || response.data;
-      setUser(userData);
-      return userData;
+      const isCustomer =
+        user.value && ("customerType" in user.value || !("role" in user.value));
+      const endpoint = isCustomer ? "/customer/auth/profile" : "/auth/profile";
+      const response = await api.put(endpoint, profileData);
+      const userData =
+        response.data.user ||
+        response.data.customer ||
+        response.data.data ||
+        response.data;
+
+      // Handle nested structures
+      const finalUser = userData.customer || userData.user || userData;
+      setUser(finalUser);
+      return finalUser;
     } catch (error) {
       throw error;
     }

@@ -21,6 +21,7 @@
           <select-showtime-step
             v-show="activeStep === 0"
             v-model="bookingState.showtime"
+            :active-step="activeStep"
           />
 
           <select-seats-step

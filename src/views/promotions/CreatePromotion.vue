@@ -20,6 +20,15 @@
           <el-input v-model="form.title" maxlength="200" show-word-limit />
         </el-form-item>
 
+        <!-- Description -->
+        <el-form-item label="Description" prop="description">
+          <el-input
+            v-model="form.description"
+            type="textarea"
+            :rows="4"
+          />
+        </el-form-item>
+
         <!-- Start Date -->
         <el-form-item label="Start Date" prop="start_date">
           <el-date-picker
@@ -69,12 +78,8 @@
           >
             Submit
           </el-button>
-          <el-button @click="resetForm">
-            Reset
-          </el-button>
-          <el-button @click="$router.back()">
-            Cancel
-          </el-button>
+          <el-button @click="resetForm"> Reset </el-button>
+          <el-button @click="$router.back()"> Cancel </el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -101,7 +106,8 @@ const form = reactive({
   title: "",
   start_date: "",
   end_date: "",
-  status: "Inactive",
+  status: "Active",
+  description: "",
   image_url: "",
 });
 
@@ -109,9 +115,7 @@ const rules = {
   code: [
     { required: true, message: "Promotion code is required", trigger: "blur" },
   ],
-  title: [
-    { required: true, message: "Title is required", trigger: "blur" },
-  ],
+  title: [{ required: true, message: "Title is required", trigger: "blur" }],
   start_date: [
     { required: true, message: "Start date is required", trigger: "change" },
   ],
@@ -151,6 +155,7 @@ const resetForm = () => {
     start_date: "",
     end_date: "",
     status: "Inactive",
+    description: "",
     image_url: "",
   });
 };

@@ -155,6 +155,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  activeStep: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -204,7 +208,7 @@ const loadShowtimes = async () => {
 
             const allSeatsResponse = await seatService.getSeatsByHall(
               showtime.hall_id,
-              { per_page: 100 }
+              { per_page: 100 },
             );
             const totalCount = allSeatsResponse.data.length || 0;
 
@@ -218,7 +222,7 @@ const loadShowtimes = async () => {
           } catch (e) {
             console.error(
               `Failed to load occupancy for showtime ${showtime.id}`,
-              e
+              e,
             );
             return {
               ...showtime,
@@ -228,7 +232,7 @@ const loadShowtimes = async () => {
               totalCount: "?",
             };
           }
-        })
+        }),
       );
       showtimeOptions.value = showtimesWithOccupancy;
     }
@@ -269,6 +273,16 @@ const getProgressBarColor = (occupancy) => {
 watch(selectedDateFilter, () => {
   loadShowtimes();
 });
+
+// Reload showtimes when navigating back to step 0 to refresh seat occupancy
+watch(
+  () => props.activeStep,
+  (newStep, oldStep) => {
+    if (newStep === 0 && oldStep !== 0) {
+      loadShowtimes();
+    }
+  },
+);
 
 onMounted(() => {
   loadShowtimes();
@@ -421,7 +435,7 @@ onMounted(() => {
 .occupancy-progress-container {
   display: flex;
   flex-direction: column;
-  gap: .75rem;
+  gap: 0.75rem;
 }
 
 .occupancy-labels {

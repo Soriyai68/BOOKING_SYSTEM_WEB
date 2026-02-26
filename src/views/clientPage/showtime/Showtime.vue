@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import api from "@/utils/api";
+import { useAuthStore } from "@/stores/auth";
 import {
   MapPin,
   Clock,
@@ -13,22 +13,20 @@ import {
   Search,
   X,
 } from "lucide-vue-next";
-const searchActive = ref(false);
-const searchQuery = ref("");
+import { useNotificationStore } from "@/stores/notification";
 
 const router = useRouter();
 const { t } = useI18n();
-const userProfile = ref(null);
+const authStore = useAuthStore();
+const notificationStore = useNotificationStore();
+const userProfile = computed(() => authStore.user);
+const unreadCount = computed(() => notificationStore.unreadCount);
+
+const searchActive = ref(false);
+const searchQuery = ref("");
 
 onMounted(async () => {
-  try {
-    const res = await api.get("/customer/auth/profile");
-    if (res.data?.success && res.data?.data?.customer) {
-      userProfile.value = res.data.data.customer;
-    }
-  } catch (error) {
-    console.error("Failed to fetch customer profile:", error);
-  }
+  // Profile is already handled by authStore.initializeAuth in App.vue
 });
 const dates = ref([
   { dayName: "Thu", dayNum: "12", day: "12", month: "Jun", active: true },
@@ -179,48 +177,59 @@ const handleReserveSeats = () => {
           </div>
         </div>
 
-        <div
-          class="flex items-center gap-3 cursor-pointer group"
-          @click="toggleSettings"
-        >
-          <!-- User Name -->
-          <div class="hidden sm:block text-right cursor-pointer">
-            <p class="text-[12px] font-bold text-white transition-colors">
-              {{ userProfile?.name?.split(" ")[0] || "Customer" }}
-            </p>
-            <p class="text-[10px] text-neutral-400">
-              {{ t("client.showtime.myAccount") }}
-            </p>
-          </div>
-
-          <!-- Avatar -->
-          <button
-            class="w-9 h-9 rounded-xl border border-white/[0.08] overflow-hidden transition-colors flex items-center justify-center p-0 cursor-pointer"
-            :class="
-              userProfile?.photoUrl
-                ? 'bg-transparent'
-                : 'bg-gradient-to-tr from-sky-500 to-indigo-500'
-            "
+        <div class="flex items-center gap-2">
+          <div
+            class="flex items-center gap-3 cursor-pointer group"
+            @click="toggleSettings"
           >
-            <img
-              v-if="userProfile?.photoUrl"
-              :src="userProfile.photoUrl"
-              alt="Profile"
-              class="w-full h-full object-cover"
-            />
-            <span
-              v-else-if="userProfile?.name"
-              class="text-sm font-bold text-white uppercase"
-            >
-              {{ userProfile.name.charAt(0) }}
-            </span>
-            <img
-              v-else
-              src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
-              alt="Profile"
-              class="w-full h-full object-cover"
-            />
-          </button>
+            <!-- User Name -->
+            <div class="hidden sm:block text-right cursor-pointer">
+              <p class="text-[12px] font-bold text-white transition-colors">
+                {{ userProfile?.name?.split(" ")[0] || "Customer" }}
+              </p>
+              <p class="text-[10px] text-neutral-400">
+                {{ t("client.showtime.myAccount") }}
+              </p>
+            </div>
+
+            <!-- Avatar with Badge -->
+            <div class="relative">
+              <button
+                class="w-9 h-9 rounded-xl border border-white/[0.08] overflow-hidden transition-colors flex items-center justify-center p-0 cursor-pointer"
+                :class="
+                  userProfile?.photoUrl
+                    ? 'bg-transparent'
+                    : 'bg-gradient-to-tr from-sky-500 to-indigo-500'
+                "
+              >
+                <img
+                  v-if="userProfile?.photoUrl"
+                  :src="userProfile.photoUrl"
+                  alt="Profile"
+                  class="w-full h-full object-cover"
+                />
+                <span
+                  v-else-if="userProfile?.name"
+                  class="text-sm font-bold text-white uppercase"
+                >
+                  {{ userProfile.name.charAt(0) }}
+                </span>
+                <img
+                  v-else
+                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                  alt="Profile"
+                  class="w-full h-full object-cover"
+                />
+              </button>
+              <!-- Badge -->
+              <span
+                v-if="unreadCount > 0"
+                class="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-lg ring-2 ring-[#0a0a0c] z-10"
+              >
+                {{ unreadCount > 9 ? "9+" : unreadCount }}
+              </span>
+            </div>
+          </div>
         </div>
       </header>
 
