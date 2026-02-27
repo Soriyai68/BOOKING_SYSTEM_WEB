@@ -205,27 +205,40 @@ onUnmounted(() => {
     <!-- Background -->
     <div class="login-bg-layer"></div>
 
-    <!-- Custom Toast Message -->
+    <!-- Premium Toast Message -->
     <Transition name="toast">
       <div
         v-if="toast.show"
-        class="fixed top-5 left-1/2 -translate-x-1/2 z-[200] max-w-[90vw]"
+        class="fixed top-6 left-1/2 -translate-x-1/2 z-[300] max-w-[90vw]"
       >
         <div
           :class="[
-            'toast-message flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold shadow-2xl border backdrop-blur-xl',
+            'premium-toast flex items-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-bold shadow-[0_20px_50px_rgba(0,0,0,0.5)] border backdrop-blur-2xl relative overflow-hidden',
             toast.type === 'success'
-              ? 'bg-emerald-500/15 border-emerald-500/20 text-emerald-400'
-              : 'bg-red-500/15 border-red-500/20 text-red-400',
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+              : 'bg-red-500/10 border-red-500/20 text-red-400',
           ]"
         >
-          <CheckCircle
-            v-if="toast.type === 'success'"
-            :size="18"
-            class="flex-shrink-0"
-          />
-          <XCircle v-else :size="18" class="flex-shrink-0" />
-          <span>{{ toast.text }}</span>
+          <!-- Icon Wrap -->
+          <div
+            :class="[
+              'w-8 h-8 rounded-xl flex items-center justify-center shrink-0',
+              toast.type === 'success' ? 'bg-emerald-500/20' : 'bg-red-500/20',
+            ]"
+          >
+            <CheckCircle v-if="toast.type === 'success'" :size="18" />
+            <XCircle v-else :size="18" />
+          </div>
+
+          <span class="tracking-tight">{{ toast.text }}</span>
+
+          <!-- Progress Bar -->
+          <div
+            :class="[
+              'toast-progress-bar',
+              toast.type === 'success' ? 'bg-emerald-500/40' : 'bg-red-500/40',
+            ]"
+          ></div>
         </div>
       </div>
     </Transition>
@@ -431,40 +444,59 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* Custom Toast */
-.toast-message {
+/* Premium Custom Toast */
+.premium-toast {
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 10px 40px -10px rgba(0, 0, 0, 0.5),
     0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
+.toast-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left;
+  animation: toast-progress 3s linear forwards;
+}
+
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
 .toast-enter-active {
-  animation: toast-in 0.35s cubic-bezier(0.21, 1.02, 0.73, 1);
+  animation: toast-in 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 
 .toast-leave-active {
-  animation: toast-out 0.3s cubic-bezier(0.06, 0.71, 0.55, 1);
+  animation: toast-out 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19);
 }
 
 @keyframes toast-in {
   0% {
     opacity: 0;
-    transform: translate(-50%, -20px) scale(0.95);
+    transform: translateY(-20px) scale(0.9);
   }
   100% {
     opacity: 1;
-    transform: translate(-50%, 0) scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes toast-out {
   0% {
     opacity: 1;
-    transform: translate(-50%, 0) scale(1);
+    transform: translateY(0) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -20px) scale(0.95);
+    transform: translateY(-20px) scale(0.9);
   }
 }
 

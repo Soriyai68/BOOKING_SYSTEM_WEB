@@ -14,7 +14,8 @@ import {
   Armchair,
   DollarSign,
   CreditCard,
-  CalendarCheck,
+  CheckCircle,
+  XCircle,
 } from "lucide-vue-next";
 
 const router = useRouter();
@@ -107,6 +108,20 @@ const formatDate = (dateString) => {
     day: "numeric",
   });
 };
+
+const getSeatTypes = (populatedSeats) => {
+  if (!populatedSeats || !populatedSeats.length) return "";
+
+  const types = [
+    ...new Set(
+      populatedSeats.map((s) => {
+        const t = s.seat_type || "";
+        return t.charAt(0).toUpperCase() + t.slice(1);
+      }),
+    ),
+  ];
+  return types.join(", ");
+};
 </script>
 
 <template>
@@ -118,19 +133,58 @@ const formatDate = (dateString) => {
 
     <!-- Header -->
     <header
-      class="relative z-10 py-3 px-5 flex items-center gap-3 border-b border-white/[0.05] bg-[#0a0a0c]/80 backdrop-blur-md"
+      class="relative z-10 py-2.5 px-4 flex items-center gap-3 border-b border-white/[0.05] bg-[#0a0a0c]/80 backdrop-blur-md"
     >
       <button
         @click="router.back()"
-        class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08]"
+        class="w-8 h-8 rounded-xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08]"
       >
-        <ArrowLeft :size="18" class="text-neutral-400" />
+        <ArrowLeft :size="16" class="text-neutral-400" />
       </button>
-      <h1 class="text-sm font-bold">{{ t("my_tickets") }}</h1>
+      <div class="flex-1">
+        <h1 class="text-xs font-bold leading-none">{{ t("my_tickets") }}</h1>
+        <p class="text-[9px] text-neutral-500 mt-1">
+          {{ t("tickets_subtitle") }}
+        </p>
+      </div>
     </header>
 
+    <!-- Premium Toast Message -->
+    <Transition name="toast">
+      <div
+        v-if="toast.show"
+        class="fixed top-6 left-1/2 -translate-x-1/2 z-[300] max-w-[90vw] w-auto pointer-events-none"
+      >
+        <div
+          :class="[
+            'premium-toast flex items-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-bold shadow-[0_20px_50px_rgba(0,0,0,0.5)] border backdrop-blur-2xl relative overflow-hidden',
+            toast.type === 'success'
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+              : 'bg-red-500/10 border-red-500/20 text-red-400',
+          ]"
+        >
+          <div
+            :class="[
+              'w-8 h-8 rounded-xl flex items-center justify-center shrink-0',
+              toast.type === 'success' ? 'bg-emerald-500/20' : 'bg-red-500/20',
+            ]"
+          >
+            <CheckCircle v-if="toast.type === 'success'" :size="18" />
+            <XCircle v-else :size="18" />
+          </div>
+          <span class="tracking-tight whitespace-nowrap">{{ toast.text }}</span>
+          <div
+            :class="[
+              'toast-progress-bar',
+              toast.type === 'success' ? 'bg-emerald-500/40' : 'bg-red-500/40',
+            ]"
+          ></div>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Tabs -->
-    <div class="relative z-10 px-5 py-4 bg-[#0a0a0c]/40 backdrop-blur-sm">
+    <div class="relative z-10 px-4 py-3 bg-[#0a0a0c]/40 backdrop-blur-sm">
       <div
         class="flex p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]"
       >
@@ -160,7 +214,7 @@ const formatDate = (dateString) => {
     </div>
 
     <!-- Ticket List -->
-    <div class="relative z-10 flex-1 overflow-y-auto px-5 py-4">
+    <div class="relative z-10 flex-1 overflow-y-auto px-4 py-3">
       <div
         v-if="isLoading"
         class="flex flex-col items-center justify-center py-20 opacity-50"
@@ -189,237 +243,328 @@ const formatDate = (dateString) => {
           v-for="booking in bookings"
           :key="booking._id"
           @click="selectedBooking = booking"
-          class="ticket-card group relative rounded-2xl border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300 cursor-pointer active:scale-[0.98] overflow-hidden"
+          class="premium-ticket relative group cursor-pointer active:scale-[0.98] transition-all duration-300"
         >
-          <!-- Top section: Movie title + status -->
-          <div class="px-4 pt-4 pb-3">
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex-1 min-w-0">
-                <h3
-                  class="font-bold text-[13px] leading-tight text-white truncate"
+          <!-- Shiny Effect -->
+          <div
+            class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.02] to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          ></div>
+
+          <div
+            class="relative rounded-2xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-md overflow-hidden"
+          >
+            <!-- Top section -->
+            <div class="px-4 pt-4 pb-3">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <h3
+                    class="font-bold text-sm text-white truncate group-hover:text-sky-400 transition-colors"
+                  >
+                    {{ booking.movie.title }}
+                  </h3>
+                  <div class="flex items-center gap-3 mt-2 text-neutral-500">
+                    <div class="flex items-center gap-1.5">
+                      <Calendar :size="12" class="text-neutral-600" />
+                      <span class="text-[10px] font-medium">{{
+                        formatDate(booking.showtime.show_date)
+                      }}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <Clock :size="12" class="text-neutral-600" />
+                      <span class="text-[10px] font-medium">{{
+                        booking.showtime.start_time
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <span
+                  :class="[
+                    'flex items-center gap-1.5 text-[9px] px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider border flex-shrink-0 backdrop-blur-xl',
+                    getStatusStyle(booking.booking_status),
+                  ]"
                 >
-                  {{ booking.movie.title }}
-                </h3>
+                  <span
+                    :class="[
+                      'w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]',
+                      getStatusDot(booking.booking_status),
+                    ]"
+                  ></span>
+                  {{ getStatusLabel(booking.booking_status) }}
+                </span>
               </div>
+            </div>
+
+            <!-- Enhanced Divider with Physical Cutouts -->
+            <div class="relative flex items-center px-1">
+              <div
+                class="absolute -left-2 w-4 h-4 rounded-full bg-[#0a0a0c] border-r border-white/[0.08]"
+              ></div>
+              <div
+                class="flex-1 border-t-2 border-dashed border-white/[0.06] mx-3"
+              ></div>
+              <div
+                class="absolute -right-2 w-4 h-4 rounded-full bg-[#0a0a0c] border-l border-white/[0.08]"
+              ></div>
+            </div>
+
+            <!-- Bottom section -->
+            <div class="px-4 pb-4 pt-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div
+                  class="w-7 h-7 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center"
+                >
+                  <Ticket :size="12" class="text-sky-400" />
+                </div>
+                <div>
+                  <p
+                    class="text-[8px] text-neutral-500 font-bold uppercase tracking-widest leading-none mb-1"
+                  >
+                    {{ t("reference") }}
+                  </p>
+                  <p
+                    class="text-[11px] font-black text-sky-400 tracking-wider leading-none"
+                  >
+                    {{ booking.reference_code }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <div class="text-right">
+                  <p
+                    class="text-[8px] text-neutral-500 font-bold uppercase tracking-widest leading-none mb-1"
+                  >
+                    {{ t("hall") }}
+                  </p>
+                  <p class="text-[11px] font-bold text-white leading-none">
+                    {{ booking.hall.hall_name }}
+                  </p>
+                </div>
+                <div class="w-px h-5 bg-white/[0.05]"></div>
+                <div class="text-right">
+                  <p
+                    class="text-[8px] text-neutral-500 font-bold uppercase tracking-widest leading-none mb-1"
+                  >
+                    {{ t("seat_type") }}
+                  </p>
+                  <p class="text-[11px] font-bold text-sky-400 leading-none">
+                    {{ getSeatTypes(booking.populatedSeats) }}
+                  </p>
+                </div>
+                <div class="w-px h-5 bg-white/[0.05]"></div>
+                <div class="text-right">
+                  <p
+                    class="text-[8px] text-neutral-500 font-bold uppercase tracking-widest leading-none mb-1"
+                  >
+                    {{ t("seats") }}
+                  </p>
+                  <p class="text-[11px] font-bold text-white leading-none">
+                    {{ booking.seat_count }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced Ticket Detail Modal -->
+    <Transition name="modal">
+      <div
+        v-if="selectedBooking"
+        class="fixed inset-0 z-[100] flex items-center justify-center p-6"
+      >
+        <div
+          class="absolute inset-0 bg-[#050505]/60 backdrop-blur-2xl"
+          @click="selectedBooking = null"
+        ></div>
+
+        <div
+          class="relative w-full max-w-sm bg-gradient-to-b from-[#15151a] to-[#0a0a0c] border border-white/[0.08] rounded-[2rem] overflow-hidden shadow-[0_32px_128px_rgba(0,0,0,0.8)] flex flex-col max-h-[90vh] ticket-modal"
+        >
+          <!-- Modal Header -->
+          <div class="px-6 pt-6 pb-3 text-center">
+            <h2
+              class="text-lg font-black text-white leading-tight mb-2 tracking-tight"
+            >
+              {{ selectedBooking.movie.title }}
+            </h2>
+            <div class="flex items-center justify-center">
               <span
                 :class="[
-                  'flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border flex-shrink-0',
-                  getStatusStyle(booking.booking_status),
+                  'flex items-center gap-2 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest border backdrop-blur-md',
+                  getStatusStyle(selectedBooking.booking_status),
                 ]"
               >
                 <span
                   :class="[
-                    'w-1.5 h-1.5 rounded-full',
-                    getStatusDot(booking.booking_status),
+                    'w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]',
+                    getStatusDot(selectedBooking.booking_status),
                   ]"
                 ></span>
-                {{ getStatusLabel(booking.booking_status) }}
-              </span>
-            </div>
-
-            <!-- Details row -->
-            <div class="flex items-center gap-4 mt-2.5 text-neutral-400">
-              <div class="flex items-center gap-1">
-                <Calendar :size="11" class="text-neutral-500" />
-                <span class="text-[10px]">{{
-                  formatDate(booking.showtime.show_date)
-                }}</span>
-              </div>
-              <div class="flex items-center gap-1">
-                <Clock :size="11" class="text-neutral-500" />
-                <span class="text-[10px]">{{
-                  booking.showtime.start_time
-                }}</span>
-              </div>
-              <div class="flex items-center gap-1">
-                <MapPin :size="11" class="text-neutral-500" />
-                <span class="text-[10px]">{{ booking.hall.hall_name }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Divider with punched holes -->
-          <div class="relative flex items-center mx-1">
-            <div
-              class="absolute -left-3 w-5 h-5 rounded-full bg-[#0a0a0c]"
-            ></div>
-            <div
-              class="flex-1 border-t border-dashed border-white/[0.08]"
-            ></div>
-            <div
-              class="absolute -right-3 w-5 h-5 rounded-full bg-[#0a0a0c]"
-            ></div>
-          </div>
-
-          <!-- Bottom section: Reference + seats -->
-          <div class="px-4 pb-4 pt-3 flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <Ticket :size="13" class="text-sky-400" />
-              <span class="text-[11px] font-bold text-sky-400 tracking-wide">{{
-                booking.reference_code
-              }}</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <Armchair :size="12" class="text-neutral-500" />
-              <span class="text-[11px] font-medium text-neutral-400">
-                {{ booking.seat_count }} {{ t("seat") }}
+                {{ getStatusLabel(selectedBooking.booking_status) }}
               </span>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Ticket Detail Modal -->
-    <div
-      v-if="selectedBooking"
-      class="fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-300"
-    >
-      <div
-        class="absolute inset-0 bg-black/80 backdrop-blur-md"
-        @click="selectedBooking = null"
-      ></div>
-
-      <div
-        class="relative w-full max-w-sm bg-[#0f0f12] border border-white/[0.08] rounded-[2rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]"
-      >
-        <!-- Modal Header -->
-        <div class="p-6 pb-4">
-          <div class="flex items-center justify-between mb-1">
-            <h2
-              class="text-base font-bold text-white leading-tight flex-1 min-w-0 pr-3 truncate"
-            >
-              {{ selectedBooking.movie.title }}
-            </h2>
-            <span
-              :class="[
-                'flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border flex-shrink-0',
-                getStatusStyle(selectedBooking.booking_status),
-              ]"
-            >
-              <span
-                :class="[
-                  'w-1.5 h-1.5 rounded-full',
-                  getStatusDot(selectedBooking.booking_status),
-                ]"
-              ></span>
-              {{ getStatusLabel(selectedBooking.booking_status) }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Modal Content: Scrollable -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6">
-          <!-- Quick Info Row -->
-          <div class="grid grid-cols-3 gap-2 mb-5">
-            <div
-              class="bg-white/[0.03] border border-white/[0.06] rounded-xl p-2.5 text-center"
-            >
-              <Calendar :size="14" class="text-sky-400 mx-auto mb-1.5" />
-              <span class="text-[10px] text-neutral-400 block leading-tight">{{
-                formatDate(selectedBooking.showtime.show_date)
-              }}</span>
-            </div>
-            <div
-              class="bg-white/[0.03] border border-white/[0.06] rounded-xl p-2.5 text-center"
-            >
-              <Clock :size="14" class="text-sky-400 mx-auto mb-1.5" />
-              <span class="text-[10px] text-neutral-400 block leading-tight">{{
-                selectedBooking.showtime.start_time
-              }}</span>
-            </div>
-            <div
-              class="bg-white/[0.03] border border-white/[0.06] rounded-xl p-2.5 text-center"
-            >
-              <MapPin :size="14" class="text-sky-400 mx-auto mb-1.5" />
-              <span
-                class="text-[10px] text-neutral-400 block leading-tight truncate"
-                >{{ selectedBooking.hall.hall_name }}</span
+          <!-- Modal Scroll Content -->
+          <div class="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6">
+            <!-- Quick Detail Row -->
+            <div class="grid grid-cols-3 gap-2 mb-6">
+              <div
+                class="flex flex-col items-center gap-1.5 bg-white/[0.02] border border-white/[0.04] rounded-2xl p-2.5"
               >
+                <Calendar :size="14" class="text-sky-400" />
+                <span
+                  class="text-[9px] font-bold text-neutral-400 text-center"
+                  >{{ formatDate(selectedBooking.showtime.show_date) }}</span
+                >
+              </div>
+              <div
+                class="flex flex-col items-center gap-1.5 bg-white/[0.02] border border-white/[0.04] rounded-2xl p-2.5"
+              >
+                <Clock :size="14" class="text-sky-400" />
+                <span
+                  class="text-[9px] font-bold text-neutral-400 text-center"
+                  >{{ selectedBooking.showtime.start_time }}</span
+                >
+              </div>
+              <div
+                class="flex flex-col items-center gap-1.5 bg-white/[0.02] border border-white/[0.04] rounded-2xl p-2.5"
+              >
+                <MapPin :size="14" class="text-sky-400" />
+                <span
+                  class="text-[9px] font-bold text-neutral-400 text-center truncate w-full"
+                  >{{ selectedBooking.hall.hall_name }}</span
+                >
+              </div>
+            </div>
+
+            <!-- Premium QR Card -->
+            <div class="relative group mt-1 mb-6">
+              <div
+                class="absolute inset-0 bg-sky-500/10 blur-2xl rounded-3xl group-hover:bg-sky-500/20 transition-all duration-500"
+              ></div>
+              <div
+                class="relative bg-white rounded-[1.5rem] p-6 flex flex-col items-center shadow-xl"
+              >
+                <div
+                  class="qr-glow-effect absolute inset-0 rounded-[1.5rem] opacity-20 bg-gradient-to-tr from-sky-400/0 via-sky-400 to-sky-400/0 pointer-events-none"
+                ></div>
+                <div class="bg-white p-2.5 rounded-2xl shadow-inner mb-4">
+                  <QrCode :size="120" stroke-width="1.5" class="text-black" />
+                </div>
+                <p
+                  class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] mb-1"
+                >
+                  REFERENCE CODE
+                </p>
+                <p class="text-2xl font-black text-black tracking-[0.15em]">
+                  {{ selectedBooking.reference_code }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Detailed Info List -->
+            <div class="space-y-1">
+              <div
+                class="flex items-center justify-between py-3 border-b border-white/[0.04]"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-8 h-8 rounded-xl bg-white/[0.03] flex items-center justify-center"
+                  >
+                    <Armchair :size="14" class="text-neutral-500" />
+                  </div>
+                  <span
+                    class="text-xs font-bold text-neutral-400 uppercase tracking-wider"
+                    >{{ $t("seats") }}</span
+                  >
+                </div>
+                <span class="text-sm font-bold text-white">
+                  {{
+                    selectedBooking.populatedSeats
+                      ?.map((s) => `${s.row}-${s.seat_number}`)
+                      .join(", ") || t("n_a")
+                  }}
+                </span>
+              </div>
+
+              <div
+                class="flex items-center justify-between py-3 border-b border-white/[0.04]"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-8 h-8 rounded-xl bg-white/[0.03] flex items-center justify-center"
+                  >
+                    <Armchair :size="14" class="text-sky-400" />
+                  </div>
+                  <span
+                    class="text-xs font-bold text-neutral-400 uppercase tracking-wider"
+                    >{{ $t("seat_type") }}</span
+                  >
+                </div>
+                <span class="text-sm font-bold text-sky-400">
+                  {{ getSeatTypes(selectedBooking.populatedSeats) }}
+                </span>
+              </div>
+
+              <div
+                class="flex items-center justify-between py-3 border-b border-white/[0.04]"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-8 h-8 rounded-xl bg-white/[0.03] flex items-center justify-center"
+                  >
+                    <CreditCard :size="14" class="text-neutral-500" />
+                  </div>
+                  <span
+                    class="text-xs font-bold text-neutral-400 uppercase tracking-wider"
+                    >{{ $t("payment_method") }}</span
+                  >
+                </div>
+                <span class="text-sm font-bold text-white">{{
+                  getMethodLabel(selectedBooking.payment_method)
+                }}</span>
+              </div>
+
+              <div class="flex items-center justify-between py-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-8 h-8 rounded-xl bg-sky-500/5 flex items-center justify-center"
+                  >
+                    <DollarSign :size="14" class="text-sky-400" />
+                  </div>
+                  <span
+                    class="text-xs font-bold text-neutral-400 uppercase tracking-wider"
+                    >{{ $t("total_price") }}</span
+                  >
+                </div>
+                <div class="text-right">
+                  <span class="text-lg font-black text-sky-400"
+                    >${{ selectedBooking.total_price }}</span
+                  >
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- QR / Reference Code Section -->
+          <!-- Action Footer -->
           <div
-            class="bg-white rounded-2xl p-5 flex flex-col items-center justify-center space-y-2 mb-5"
+            class="p-6 pt-3 bg-[#0a0a0c]/90 backdrop-blur-xl border-t border-white/[0.05]"
           >
-            <div class="text-black/15">
-              <QrCode :size="100" stroke-width="1.5" />
-            </div>
-            <div class="text-center">
-              <p
-                class="text-[9px] text-neutral-400 font-semibold uppercase tracking-[0.15em]"
-              >
-                {{ $t("ticket_reference") }}
-              </p>
-              <p class="text-xl font-black text-black tracking-[0.2em] mt-0.5">
-                {{ selectedBooking.reference_code }}
-              </p>
-            </div>
+            <button
+              @click="selectedBooking = null"
+              class="w-full py-3.5 rounded-2xl bg-white/[0.05] text-white text-[13px] font-black hover:bg-white/[0.08] transition-all border border-white/[0.1] active:scale-[0.98] shadow-lg uppercase tracking-widest"
+            >
+              {{ t("actions.close") || "Close" }}
+            </button>
           </div>
-
-          <!-- Booking Info List -->
-          <div class="space-y-0">
-            <div
-              class="flex items-center justify-between py-3 border-b border-white/[0.05]"
-            >
-              <div class="flex items-center gap-2 text-neutral-400">
-                <Armchair :size="13" />
-                <span class="text-xs">{{ $t("bookings.seats") }}</span>
-              </div>
-              <span class="text-xs font-bold text-white">
-                {{
-                  selectedBooking.populatedSeats
-                    ?.map((s) => `${s.row}-${s.seat_number}`)
-                    .join(", ") || t("n_a")
-                }}
-              </span>
-            </div>
-            <div
-              class="flex items-center justify-between py-3 border-b border-white/[0.05]"
-            >
-              <div class="flex items-center gap-2 text-neutral-400">
-                <CreditCard :size="13" />
-                <span class="text-xs">{{ $t("payment_method") }}</span>
-              </div>
-              <span class="text-xs font-bold text-white">{{
-                getMethodLabel(selectedBooking.payment_method)
-              }}</span>
-            </div>
-            <div
-              class="flex items-center justify-between py-3 border-b border-white/[0.05]"
-            >
-              <div class="flex items-center gap-2 text-neutral-400">
-                <DollarSign :size="13" />
-                <span class="text-xs">{{ $t("total_price") }}</span>
-              </div>
-              <span class="text-xs font-bold text-sky-400"
-                >${{ selectedBooking.total_price }}</span
-              >
-            </div>
-            <div class="flex items-center justify-between py-3">
-              <div class="flex items-center gap-2 text-neutral-400">
-                <CalendarCheck :size="13" />
-                <span class="text-xs">{{ $t("bookings.bookingDate") }}</span>
-              </div>
-              <span class="text-[11px] text-neutral-500">{{
-                formatDate(selectedBooking.booking_date)
-              }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sticky Footer -->
-        <div class="p-5 bg-[#0f0f12]/95 border-t border-white/[0.05]">
-          <button
-            @click="selectedBooking = null"
-            class="w-full py-3.5 rounded-2xl bg-white/[0.05] text-white text-sm font-bold hover:bg-white/[0.08] transition-all border border-white/[0.08] active:scale-[0.98]"
-          >
-            {{ t("actions.close") || "Close" }}
-          </button>
         </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
@@ -445,8 +590,114 @@ const formatDate = (dateString) => {
   pointer-events: none;
 }
 
-.ticket-card {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+.premium-ticket {
+  perspective: 1000px;
+}
+
+.premium-ticket:hover {
+  transform: translateY(-4px);
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.4));
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+/* Modal Animations */
+.modal-enter-active {
+  animation: modal-in 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+.modal-leave-active {
+  animation: modal-in 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19) reverse;
+}
+
+@keyframes modal-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Premium Custom Toast */
+.premium-toast {
+  box-shadow:
+    0 10px 40px -10px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.toast-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left;
+  animation: toast-progress 3s linear forwards;
+}
+
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.toast-enter-active {
+  animation: toast-in 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.toast-leave-active {
+  animation: toast-out 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+@keyframes toast-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+  }
+}
+
+.qr-glow-effect {
+  background-size: 200% 200%;
+  animation: qr-glow 4s ease-in-out infinite;
+}
+
+@keyframes qr-glow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 </style>

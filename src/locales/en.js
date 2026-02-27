@@ -16,10 +16,28 @@ export default {
   payment_method: "Payment Method",
   total_price: "Total Price",
   ticket_reference: "Ticket Reference",
+  tickets_subtitle: "View Booking History",
+  seat_type: "Seat Type",
   n_a: "N/A",
   reference: "Reference",
   booking_date: "Booking Date",
   payment_status: "Payment Status",
+  actions: {
+    close: "Close",
+    confirm: "Confirm",
+    cancel: "Cancel",
+    save: "Save",
+    delete: "Delete",
+    edit: "Edit",
+  },
+  booking_actions: {
+    delete_history: "Remove from History",
+    delete_confirm_title: "Remove Booking?",
+    delete_confirm_msg:
+      "Are you sure you want to remove this booking from your history? This action cannot be undone.",
+    delete_success: "Booking removed from history",
+    delete_error: "Failed to remove booking",
+  },
   bookings: {
     bookingDate: "Booking Date",
     paymentStatus: "Payment Status",
@@ -61,12 +79,19 @@ export default {
       message: "{promoTitle} (Code: {code})",
     },
     pay_at_cinema: {
+      title: "Booking Confirmed",
       message:
         'Booking {ref} confirmed for "{movie}".\n\n📌 Important: Please arrive at the cinema at least 30 minutes before the show starts to complete your payment and collect your tickets.\n\nSeats: {seats}',
     },
     pending_payment: {
+      title: "Pending Payment",
       message:
         'Booking {ref} created for "{movie}".\n\nPlease complete your {method} payment to confirm your seats.\n\nSeats: {seats}',
+    },
+    welcome: {
+      title: "Welcome to Movie Booking!",
+      message:
+        "Hello {name}, welcome to our platform! Enjoy your movie experience.",
     },
   },
   nav: {
@@ -944,6 +969,8 @@ export default {
     createFailed: "Failed to create",
     downloadSuccess: "Downloaded successfully",
     downloadFailed: "Failed to download",
+    notificationDeleted: "Notification deleted successfully",
+    notificationDeleteFailed: "Failed to delete notification",
   },
 
   // Table and Pagination

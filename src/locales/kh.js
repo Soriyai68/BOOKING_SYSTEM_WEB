@@ -16,10 +16,28 @@ export default {
   payment_method: "វិធីបង់ប្រាក់",
   total_price: "តម្លៃសរុប",
   ticket_reference: "លេខយោងសំបុត្រ",
+  tickets_subtitle: "មើលប្រវត្តិការកក់សំបុត្រ",
+  seat_type: "ប្រភេទកៅអី",
   n_a: "មិនមាន",
   reference: "លេខយោង",
   booking_date: "កាលបរិច្ឆេទកក់",
   payment_status: "ស្ថានភាពបង់ប្រាក់",
+  actions: {
+    close: "បិទ",
+    confirm: "បញ្ជាក់",
+    cancel: "បោះបង់",
+    save: "រក្សាទុក",
+    delete: "លុប",
+    edit: "កែសម្រួល",
+  },
+  booking_actions: {
+    delete_history: "លុបចេញពីប្រវត្តិ",
+    delete_confirm_title: "លុបការកក់?",
+    delete_confirm_msg:
+      "តើអ្នកពិតជាចង់លុបការកក់នេះចេញពីប្រវត្តិរបស់អ្នកមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។",
+    delete_success: "ការកក់ត្រូវបានលុបចេញពីប្រវត្តិ",
+    delete_error: "មិនអាចលុបការកក់បានទេ",
+  },
   bookings: {
     bookingDate: "កាលបរិច្ឆេទកក់",
     paymentStatus: "ស្ថានភាពបង់ប្រាក់",
@@ -61,12 +79,19 @@ export default {
       message: "{promoTitle} (កូដ: {code})",
     },
     pay_at_cinema: {
+      title: "ការកក់បានបញ្ជាក់",
       message:
         'ការកក់ {ref} បានបញ្ជាក់សម្រាប់ "{movie}"។\n\n📌 សំខាន់: សូមធ្វើដំណើរមកដល់រោងភាពយន្តយ៉ាងហោចណាស់ ៣០ នាទីមុនម៉ោងបញ្ចាំង ដើម្បីបង់ប្រាក់និងទទួលសំបុត្រ។\n\nកៅអី: {seats}',
     },
     pending_payment: {
+      title: "ការកក់មិនទាន់បង់ប្រាក់",
       message:
         'ការកក់ {ref} បានបង្កើតសម្រាប់ "{movie}"។\n\nសូមបំពេញការបង់ប្រាក់ {method} របស់អ្នកដើម្បីបញ្ជាក់កៅអី។\n\nកៅអី: {seats}',
+    },
+    welcome: {
+      title: "សូមស្វាគមន៍មកកាន់ប្រព័ន្ធកក់សំបុត្រកុន!",
+      message:
+        "សួស្តី {name}, សូមស្វាគមន៍មកកាន់ប្រព័ន្ធរបស់យើង! សូមរីករាយជាមួយការទស្សនាភាពយន្តរបស់អ្នក។",
     },
   },
   nav: {
@@ -919,6 +944,8 @@ export default {
     createFailed: "បរាជ័យក្នុងការបង្កើត",
     downloadSuccess: "ទាញយកបានជោគជ័យ",
     downloadFailed: "បរាជ័យក្នុងការទាញយក",
+    notificationDeleted: "ការជូនដំណឹងត្រូវបានលុបដោយជោគជ័យ",
+    notificationDeleteFailed: "មិនអាចលុបការជូនដំណឹងបានទេ",
   },
 
   // Table and Pagination
