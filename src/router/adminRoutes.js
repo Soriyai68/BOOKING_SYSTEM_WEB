@@ -389,7 +389,7 @@ const adminRoutesChildren = [
     },
   },
   {
-    path: "booking/create",
+    path: "bookings/create",
     name: "CreateBooking",
     component: () => import("@/views/bookings/CreateBooking.vue"),
     meta: {

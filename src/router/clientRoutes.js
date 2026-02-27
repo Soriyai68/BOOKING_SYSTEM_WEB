@@ -39,6 +39,32 @@ const clientRoutes = [
         },
       },
       {
+        path: "review",
+        name: "Review Selection",
+        component: () =>
+          import("@/views/clientPage/checkout/ReviewSelection.vue"),
+        meta: {
+          title: "Review Your Selection",
+        },
+      },
+      {
+        path: "checkout",
+        name: "Checkout",
+        component: () => import("@/views/clientPage/checkout/CheckoutPage.vue"),
+        meta: {
+          title: "Checkout",
+        },
+      },
+      {
+        path: "confirmation",
+        name: "Booking Confirmation",
+        component: () =>
+          import("@/views/clientPage/checkout/ConfirmationPage.vue"),
+        meta: {
+          title: "Booking Successful",
+        },
+      },
+      {
         path: "settings",
         name: "Settings",
         component: () => import("@/views/clientPage/settings/Settings.vue"),

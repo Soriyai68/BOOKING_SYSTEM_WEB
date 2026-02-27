@@ -57,8 +57,16 @@ export const seatBookingService = {
       `/seat-bookings/showtime/${showtimeId}/status`,
     );
 
-    if (response.data?.success && Array.isArray(response.data.data)) {
-      return response.data.data;
+    if (response.data?.success) {
+      if (Array.isArray(response.data.data)) {
+        return response.data.data;
+      }
+      if (
+        response.data.data?.seats &&
+        Array.isArray(response.data.data.seats)
+      ) {
+        return response.data.data.seats;
+      }
     }
     return [];
   },

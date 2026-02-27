@@ -253,7 +253,7 @@ const handleNotificationClick = (item) => {
   // Navigate if relatedId exists
   if (item.relatedId) {
     showDrawer.value = false;
-    router.push(getAdminPath(`/booking/${item.relatedId}`));
+    router.push(getAdminPath(`/bookings/${item.relatedId}`));
   }
 };
 
@@ -289,7 +289,7 @@ const handleNotificationCommand = (command) => {
 };
 
 const goToCreateBooking = () => {
-  router.push(getAdminPath("/booking/create"));
+  router.push(getAdminPath("/bookings/create"));
 };
 
 const handleUserMenuCommand = async (command) => {
@@ -319,9 +319,11 @@ const handleUserMenuCommand = async (command) => {
 
       loadingInstance = ElLoading.service({ fullscreen: false });
 
-      authStore.logout().catch((err) => {
-        console.warn("Logout API call failed (non-blocking):", err.message);
-      });
+      try {
+        await authStore.logout();
+      } catch (err) {
+        console.warn("Logout API call failed:", err.message);
+      }
 
       await router.replace("/login");
 
@@ -329,7 +331,6 @@ const handleUserMenuCommand = async (command) => {
       ElMessage({
         message: t("auth.logoutSuccess") || "Logged out successfully",
         type: "success",
-        customClass: "premium-message",
         center: true,
       });
     } catch (error) {

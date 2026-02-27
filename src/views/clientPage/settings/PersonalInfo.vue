@@ -17,6 +17,7 @@ import api from "@/utils/api";
 import { toLocalPhone } from "@/utils/formatters";
 
 import { useAuthStore } from "@/stores/auth";
+import { useUiStore } from "@/stores/uiStore";
 
 const router = useRouter();
 const { t } = useI18n();
@@ -25,7 +26,7 @@ const authStore = useAuthStore();
 const isLoading = ref(false);
 const isSaving = ref(false);
 const isEditing = ref(false);
-const message = ref({ text: "", type: "" });
+const uiStore = useUiStore();
 
 const userProfile = computed(() => {
   const customerData = authStore.user || {};
@@ -65,7 +66,6 @@ const toggleEdit = () => {
     };
   }
   isEditing.value = !isEditing.value;
-  message.value = { text: "", type: "" };
 };
 
 const handleSave = async () => {
@@ -85,23 +85,14 @@ const handleSave = async () => {
       userProfile.value.email = updatedCustomer.email;
 
       isEditing.value = false;
-      message.value = {
-        text: t("settings.updateSuccess"),
-        type: "success",
-      };
-
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        if (message.value.type === "success")
-          message.value = { text: "", type: "" };
-      }, 3000);
+      uiStore.showToast(t("settings.updateSuccess"), "success");
     }
   } catch (error) {
     console.error("Failed to update profile:", error);
-    message.value = {
-      text: error.response?.data?.message || t("settings.updateError"),
-      type: "error",
-    };
+    uiStore.showToast(
+      error.response?.data?.message || t("settings.updateError"),
+      "error",
+    );
   } finally {
     isSaving.value = false;
   }
@@ -160,19 +151,6 @@ const handleSave = async () => {
         </div>
 
         <div v-else class="space-y-4">
-          <!-- Notification Message -->
-          <div
-            v-if="message.text"
-            :class="[
-              'p-3 rounded-xl text-xs font-medium border animate-in fade-in slide-in-from-top-2 duration-300',
-              message.type === 'success'
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                : 'bg-red-500/10 text-red-400 border-red-500/20',
-            ]"
-          >
-            {{ message.text }}
-          </div>
-
           <!-- Name Section (Read Only) -->
           <div
             class="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center gap-4 opacity-80 backdrop-blur-sm"

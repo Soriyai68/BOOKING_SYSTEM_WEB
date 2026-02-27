@@ -61,7 +61,10 @@
           </div>
         </el-card>
       </el-col>
-    </el-row> 
+    </el-row>
+
+    <!-- Charts -->
+    <DashboardCharts />
   </div>
 </template>
 
@@ -78,6 +81,7 @@ import {
   Bell,
 } from "@element-plus/icons-vue";
 import reportService from "@/services/reportService";
+import DashboardCharts from "@/components/dashboard/DashboardCharts.vue";
 
 const router = useRouter();
 const appStore = useAppStore();

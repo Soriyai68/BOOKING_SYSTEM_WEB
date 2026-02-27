@@ -244,11 +244,11 @@ const submitBooking = async () => {
         ElMessage.error(
           paymentResponse.message || t("payments.initiateFailed"),
         );
-        router.push("/admin/bookings");
+        router.push(getAdminPath("/bookings"));
       }
     } else {
       ElMessage.success(t("bookings.createSuccess"));
-      router.push("/admin/bookings");
+      router.push(getAdminPath("/bookings"));
     }
   } catch (error) {
     ElMessage.error(error.message || t("bookings.createFailed"));
@@ -301,16 +301,16 @@ const handleRegenerateQR = async () => {
 const onPaymentPaid = async () => {
   ElMessage.success(t("payments.paymentSuccess"));
   showBakongDialog.value = false;
-  router.push("/admin/bookings");
+  router.push(getAdminPath("/bookings"));
 };
 
 const onPaymentDialogClose = (paid) => {
   showBakongDialog.value = false;
   if (paid) {
-    router.push("/admin/bookings");
+    router.push(getAdminPath("/bookings"));
   } else {
     // If not paid, we still redirect but maybe with a different message or just redirect to list
-    router.push("/admin/bookings");
+    router.push(getAdminPath("/bookings"));
   }
 };
 
@@ -321,9 +321,9 @@ onMounted(() => {
   window.addEventListener("keydown", handleEnterKey);
 
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("bookings.title"), path: "/admin/bookings" },
-    { title: t("bookings.addBooking"), path: "/admin/booking/create" },
+    { title: t("nav.dashboard"), path: getAdminPath("/dashboard") },
+    { title: t("bookings.title"), path: getAdminPath("/bookings") },
+    { title: t("bookings.addBooking"), path: getAdminPath("/bookings/create") },
   ]);
 });
 

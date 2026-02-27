@@ -186,6 +186,7 @@ import { ElMessage } from "element-plus";
 import { ArrowLeft } from "@element-plus/icons-vue";
 import { bookingService } from "@/services/bookingService";
 import { useAppStore } from "@/stores/app";
+import { usePath } from "@/composables/usePath";
 import {
   formatDate,
   formatDateTime,
@@ -196,6 +197,7 @@ import {
 const { t } = useI18n();
 const route = useRoute();
 const appStore = useAppStore();
+const { getAdminPath } = usePath();
 
 const loading = ref(true);
 const booking = ref(null);
@@ -229,11 +231,11 @@ const getStatusType = (options, status) => {
 onMounted(() => {
   loadBookingDetails();
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("bookings.title"), path: "/admin/bookings" },
+    { title: t("nav.dashboard"), path: getAdminPath("/dashboard") },
+    { title: t("bookings.title"), path: getAdminPath("/bookings") },
     {
       title: t("bookings.bookingDetails"),
-      path: `/admin/bookings/${route.params.id}`,
+      path: getAdminPath(`/bookings/${route.params.id}`),
     },
   ]);
 });

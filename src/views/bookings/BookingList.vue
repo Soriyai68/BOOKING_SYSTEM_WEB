@@ -485,9 +485,12 @@ import { Armchair } from "lucide-vue-next";
 import BakongQrPayment from "@/components/payments/BakongQRPayment.vue";
 import SelectSeatsStep from "@/components/bookings/SelectSeatsStep.vue";
 
+import { usePath } from "@/composables/usePath";
+
 const { t } = useI18n();
 const router = useRouter();
 const appStore = useAppStore();
+const { getAdminPath } = usePath();
 
 const loading = reactive({
   bookings: false,
@@ -894,8 +897,8 @@ onMounted(() => {
   loadBookings();
   loadShowtimes();
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("bookings.title"), path: "/admin/bookings" },
+    { title: t("nav.dashboard"), path: getAdminPath("/dashboard") },
+    { title: t("bookings.title"), path: getAdminPath("/bookings") },
   ]);
 });
 </script>

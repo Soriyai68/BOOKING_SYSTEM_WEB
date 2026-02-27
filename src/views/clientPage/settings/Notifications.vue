@@ -4,6 +4,7 @@ import { useI18n } from "vue-i18n";
 import { ArrowLeft, Bell, CheckCheck, Trash2 } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 import { useNotificationStore } from "@/stores/notification";
+import { useUiStore } from "@/stores/uiStore";
 import { getRelativeTime } from "@/utils/formatters";
 
 const router = useRouter();
@@ -37,17 +38,10 @@ const getLocalizedMessage = (item) => {
   return item.message;
 };
 
-const message = ref({ text: "", type: "" });
-const showDeleteConfirm = ref(false);
-const isDeletingAll = ref(false);
+const uiStore = useUiStore();
 
 const showMessage = (text, type = "success") => {
-  message.value = { text, type };
-  setTimeout(() => {
-    if (message.value.text === text) {
-      message.value = { text: "", type: "" };
-    }
-  }, 3000);
+  uiStore.showToast(text, type);
 };
 
 const notifications = computed(() => notificationStore.notifications);
@@ -89,15 +83,23 @@ const deleteNotification = async (id) => {
 };
 
 const deleteAllNotifications = async () => {
-  try {
-    isDeletingAll.value = true;
-    await notificationStore.deleteAllNotifications();
-    showMessage(t("messages.allNotificationsCleared"));
-    showDeleteConfirm.value = false;
-  } catch (error) {
-    showMessage(t("messages.errorClearingNotifications"), "error");
-  } finally {
-    isDeletingAll.value = false;
+  const confirmed = await uiStore.confirm({
+    title: t("messages.clearAllNotificationsPrompt"),
+    message:
+      t("messages.clearAllNotificationsWarning") ||
+      "This will permanently remove all your notifications.",
+    confirmText: t("actions.clearAll"),
+    cancelText: t("actions.cancel"),
+    type: "danger",
+  });
+
+  if (confirmed) {
+    try {
+      await notificationStore.deleteAllNotifications();
+      showMessage(t("messages.allNotificationsCleared"));
+    } catch (error) {
+      showMessage(t("messages.errorClearingNotifications"), "error");
+    }
   }
 };
 </script>
@@ -133,7 +135,7 @@ const deleteAllNotifications = async () => {
           </button>
           <button
             v-if="notifications.length > 0"
-            @click="showDeleteConfirm = true"
+            @click="deleteAllNotifications"
             class="text-xs font-medium text-red-400 hover:text-red-300 transition-colors ml-3"
           >
             {{ t("actions.clearAll") }}
@@ -143,19 +145,6 @@ const deleteAllNotifications = async () => {
 
       <!-- Content -->
       <div class="flex-1 overflow-y-auto px-5 py-6">
-        <!-- Message Banner -->
-        <div
-          v-if="message.text"
-          :class="[
-            'p-3 mb-4 rounded-xl text-xs font-medium border animate-in fade-in slide-in-from-top-2 duration-300',
-            message.type === 'success'
-              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-              : 'bg-red-500/10 text-red-400 border-red-500/20',
-          ]"
-        >
-          {{ message.text }}
-        </div>
-
         <div v-if="notifications.length > 0" class="space-y-2">
           <div
             v-for="item in notifications"
@@ -201,58 +190,6 @@ const deleteAllNotifications = async () => {
           <p class="text-sm text-neutral-400">
             {{ t("messages.noNotifications") }}
           </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Custom Confirmation Modal -->
-    <div
-      v-if="showDeleteConfirm"
-      class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 transition-all duration-300"
-    >
-      <div
-        class="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        @click="showDeleteConfirm = false"
-      ></div>
-
-      <div
-        class="relative w-full max-w-sm bg-[#0f0f12] border border-white/[0.08] rounded-3xl p-6 shadow-2xl animate-in fade-in slide-in-from-bottom-5 duration-300"
-      >
-        <div
-          class="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 mb-4"
-        >
-          <Trash2 :size="24" />
-        </div>
-
-        <h3 class="text-lg font-bold text-white mb-2">
-          {{ t("messages.clearAllNotificationsPrompt") }}
-        </h3>
-        <p class="text-sm text-neutral-400 mb-6 leading-relaxed">
-          {{
-            t("messages.clearAllNotificationsWarning") ||
-            "This will permanently remove all your notifications."
-          }}
-        </p>
-
-        <div class="flex flex-col gap-3">
-          <button
-            @click="deleteAllNotifications"
-            :disabled="isDeletingAll"
-            class="w-full py-4 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
-          >
-            <div
-              v-if="isDeletingAll"
-              class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
-            ></div>
-            {{ t("actions.clearAll") }}
-          </button>
-
-          <button
-            @click="showDeleteConfirm = false"
-            class="w-full py-4 rounded-xl bg-white/[0.05] text-neutral-300 font-bold hover:bg-white/[0.08] transition-all"
-          >
-            {{ t("actions.cancel") }}
-          </button>
         </div>
       </div>
     </div>

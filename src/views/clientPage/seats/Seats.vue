@@ -1,88 +1,123 @@
 <script setup>
-import { ref, computed } from "vue";
-import { useI18n } from "vue-i18n";
-import { ArrowLeft, Monitor, Info, Armchair } from "lucide-vue-next";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { ArrowLeft, Monitor } from "lucide-vue-next";
+import { useBookingStore } from "@/stores/booking";
+import { seatService } from "@/services/seatService";
+import { seatBookingService } from "@/services/seatBookingService";
 
 const router = useRouter();
 const { t } = useI18n();
+const bookingStore = useBookingStore();
 
-// Mock data — will be replaced with API calls
-const movieTitle = ref("Avatar: The Way of Water");
-const hallName = ref("Hall A");
-const showtime = ref("7:30 PM");
-const showDate = ref("Feb 20, 2026");
-const screenType = ref("2D");
+// Redirect if no showtime selected
+onMounted(() => {
+  if (!bookingStore.selectedShowtime) {
+    router.push("/layout/showtimes");
+    return;
+  }
+  loadSeats();
+});
+
+const movieTitle = computed(
+  () => bookingStore.selectedShowtime?.movie_title || "N/A",
+);
+const hallName = computed(
+  () => bookingStore.selectedShowtime?.hall_name || "N/A",
+);
+const showtime = computed(() => bookingStore.selectedShowtime?.time || "N/A");
+const showDate = computed(
+  () => bookingStore.selectedShowtime?.show_date || "N/A",
+);
+const screenType = computed(
+  () => bookingStore.selectedShowtime?.screen_type || "2D",
+);
+
+const loading = ref(false);
 
 // Seat types config
-const seatTypes = {
-  regular: { label: "Regular", color: "#3b82f6", price: 3.0 },
-  vip: { label: "VIP", color: "#a855f7", price: 5.0 },
-  couple: { label: "Couple", color: "#ec4899", price: 8.0 },
-  queen: { label: "Queen", color: "#f59e0b", price: 10.0 },
+const seatTypes = computed(() => ({
+  regular: { label: t("seats.types.regular"), color: "#3b82f6", price: 3.0 },
+  vip: { label: t("seats.types.vip"), color: "#a855f7", price: 5.0 },
+  couple: { label: t("seats.types.couple"), color: "#ec4899", price: 8.0 },
+  queen: { label: t("seats.types.queen"), color: "#f59e0b", price: 10.0 },
+}));
+
+const seatMap = ref([]);
+
+const loadSeats = async () => {
+  if (!bookingStore.selectedShowtime?.hall_id) return;
+
+  loading.value = true;
+  try {
+    const seats = await seatBookingService.getShowtimeSeatStatus(
+      bookingStore.selectedShowtime.id,
+    );
+
+    if (seats && Array.isArray(seats)) {
+      // Group seats by row
+      const grouped = {};
+      seats.forEach((seat) => {
+        const id = seat._id || seat.id;
+        const row = seat.row;
+
+        if (!grouped[row]) {
+          grouped[row] = { row: row, seats: [] };
+        }
+
+        // Handle identifier
+        const seatNumbers = Array.isArray(seat.seat_number)
+          ? seat.seat_number
+          : [seat.seat_number];
+        const seatIdentifier = seatNumbers
+          .map((num) => `${row}-${num}`)
+          .join(", ");
+
+        grouped[row].seats.push({
+          ...seat,
+          id: id,
+          seat_identifier: seatIdentifier,
+        });
+      });
+
+      // Sort rows alphabetically
+      seatMap.value = Object.values(grouped).sort((a, b) =>
+        a.row.localeCompare(b.row),
+      );
+
+      // Sort seats within rows
+      seatMap.value.forEach((row) => {
+        row.seats.sort((a, b) => {
+          const numA = parseInt(
+            Array.isArray(a.seat_number) ? a.seat_number[0] : a.seat_number,
+          );
+          const numB = parseInt(
+            Array.isArray(b.seat_number) ? b.seat_number[0] : b.seat_number,
+          );
+          return numA - numB;
+        });
+      });
+    }
+  } catch (error) {
+    console.error("Failed to load seats:", error);
+  } finally {
+    loading.value = false;
+  }
 };
 
-// Generate seat map (mock layout)
-const seatMap = ref([
-  { row: "A", seats: generateRow("A", 10, "regular") },
-  { row: "B", seats: generateRow("B", 10, "regular") },
-  { row: "C", seats: generateRow("C", 10, "regular") },
-  { row: "D", seats: generateRow("D", 10, "regular") },
-  { row: "E", seats: generateRow("E", 10, "regular") },
-  { row: "F", seats: generateRow("F", 10, "vip") },
-  { row: "G", seats: generateRow("G", 10, "vip") },
-  { row: "H", seats: generateRow("H", 5, "couple") },
-  { row: "I", seats: generateRow("I", 3, "queen") },
-]);
-
-function generateRow(row, count, type) {
-  const seats = [];
-  for (let i = 1; i <= count; i++) {
-    // Add some randomly booked/unavailable seats for demo
-    let status = "available";
-    if (
-      (row === "B" && (i === 3 || i === 4 || i === 5)) ||
-      (row === "D" && (i === 7 || i === 8)) ||
-      (row === "F" && i === 2) ||
-      (row === "C" && i === 9)
-    ) {
-      status = "booked";
-    }
-    if (row === "A" && i === 6) {
-      status = "maintenance";
-    }
-    seats.push({
-      id: `${row}-${i}`,
-      row,
-      seat_number: i,
-      seat_type: type,
-      status,
-      price: seatTypes[type].price,
-    });
-  }
-  return seats;
-}
-
-const selectedSeats = ref([]);
+const selectedSeats = computed(() => bookingStore.selectedSeats);
 
 function toggleSeat(seat) {
   if (seat.status === "booked" || seat.status === "maintenance") return;
-
-  const index = selectedSeats.value.findIndex((s) => s.id === seat.id);
-  if (index >= 0) {
-    selectedSeats.value.splice(index, 1);
-  } else {
-    selectedSeats.value.push(seat);
-  }
+  bookingStore.toggleSeat(seat);
 }
 
 function isSeatSelected(seat) {
   return selectedSeats.value.some((s) => s.id === seat.id);
 }
 
-const totalPrice = computed(() => {
-  return selectedSeats.value.reduce((sum, s) => sum + s.price, 0);
-});
+const totalPrice = computed(() => bookingStore.totalPrice);
 
 const seatWidthClass = (type) => {
   if (type === "couple") return "seats-couple";
@@ -107,6 +142,12 @@ function getSeatSelectedBg(seat) {
   if (type === "queen")
     return "background: linear-gradient(135deg, #f59e0b, #d97706)";
   return "background: linear-gradient(135deg, #3b82f6, #2563eb)";
+}
+
+function handleContinue() {
+  if (selectedSeats.value.length > 0) {
+    router.push("/layout/review");
+  }
 }
 </script>
 
@@ -312,7 +353,7 @@ function getSeatSelectedBg(seat) {
               class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold"
               :style="`background: ${seatTypes[seat.seat_type].color}22; color: ${seatTypes[seat.seat_type].color};`"
             >
-              {{ seat.id }}
+              {{ seat.seat_identifier || `${seat.row}-${seat.seat_number}` }}
             </span>
           </div>
           <p v-if="selectedSeats.length > 0" class="text-xs text-neutral-400">
@@ -333,6 +374,7 @@ function getSeatSelectedBg(seat) {
         </div>
 
         <button
+          @click="handleContinue"
           :disabled="selectedSeats.length === 0"
           :class="[
             'seats-confirm-btn px-8 py-3 rounded-xl text-sm font-bold cursor-pointer whitespace-nowrap',

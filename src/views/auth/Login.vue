@@ -90,6 +90,7 @@ import { useAuthStore } from "@/stores/auth";
 import { Film, User, Lock, Sunny, Moon } from "@element-plus/icons-vue";
 import api from "@/utils/api";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher.vue";
+import { usePath } from "@/composables/usePath";
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -97,6 +98,7 @@ const toggleDark = useToggle(isDark);
 const router = useRouter();
 const authStore = useAuthStore();
 const { t } = useI18n();
+const { getAdminPath } = usePath();
 
 const loginFormRef = ref();
 const loading = ref(false);
@@ -148,13 +150,12 @@ const handleLogin = async () => {
     ElMessage({
       message: t("auth.loginSuccess") || "Login successful!",
       type: "success",
-      customClass: "premium-message",
       center: true,
       grouping: true,
     });
 
     const redirectPath =
-      router.currentRoute.value.query.redirect || "/admin/dashboard";
+      router.currentRoute.value.query.redirect || getAdminPath("/dashboard");
 
     try {
       await router.replace(redirectPath);
@@ -171,7 +172,6 @@ const handleLogin = async () => {
           ElMessage({
             message: data.message || t("auth.invalidCredentials"),
             type: "error",
-            customClass: "premium-message",
             center: true,
           });
           break;

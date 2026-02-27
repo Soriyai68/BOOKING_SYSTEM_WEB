@@ -15,113 +15,128 @@ import {
 } from "lucide-vue-next";
 import { useNotificationStore } from "@/stores/notification";
 
+import { useBookingStore } from "@/stores/booking";
+import { showtimeService } from "@/services/showtimeService";
+import { movieService } from "@/services/movieService";
+import { seatBookingService } from "@/services/seatBookingService";
+import { format, addDays, startOfDay } from "date-fns";
+
 const router = useRouter();
 const { t } = useI18n();
 const authStore = useAuthStore();
+const bookingStore = useBookingStore();
 const notificationStore = useNotificationStore();
+
 const userProfile = computed(() => authStore.user);
 const unreadCount = computed(() => notificationStore.unreadCount);
 
 const searchActive = ref(false);
 const searchQuery = ref("");
+const loading = ref(false);
 
-onMounted(async () => {
-  // Profile is already handled by authStore.initializeAuth in App.vue
-});
-const dates = ref([
-  { dayName: "Thu", dayNum: "12", day: "12", month: "Jun", active: true },
-  { dayName: "Fri", dayNum: "13", day: "13", month: "Jun", active: false },
-  { dayName: "Sat", dayNum: "14", day: "14", month: "Jun", active: false },
-  { dayName: "Sun", dayNum: "15", day: "15", month: "Jun", active: false },
-  { dayName: "Mon", dayNum: "16", day: "16", month: "Jun", active: false },
-  { dayName: "Tue", dayNum: "17", day: "17", month: "Jun", active: false },
-  { dayName: "Wed", dayNum: "18", day: "18", month: "Jun", active: false },
-]);
-
-const movies = ref([
-  {
-    id: 1,
-    title: "Avatar: Way of Water",
-    poster:
-      "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400",
-    hall: "Hall 01",
-    duration: "3h 12m",
-    genre: "Sci-Fi / Action",
-    availableSeats: 42,
-    totalSeats: 120,
-    time: "10:30",
-    selected: true,
-    disabled: false,
-  },
-  {
-    id: 2,
-    title: "Inception",
-    poster:
-      "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=400",
-    hall: "Hall 04",
-    duration: "2h 28m",
-    genre: "Thriller",
-    availableSeats: 12,
-    totalSeats: 80,
-    time: "13:15",
-    selected: false,
-    disabled: false,
-  },
-  {
-    id: 3,
-    title: "The Dark Knight",
-    poster:
-      "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=400",
-    hall: "Hall 01",
-    duration: "2h 32m",
-    genre: "Action / Drama",
-    availableSeats: 0,
-    totalSeats: 50,
-    time: "16:45",
-    selected: false,
-    disabled: true,
-  },
-  {
-    id: 4,
-    title: "Interstellar",
-    poster:
-      "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=400",
-    hall: "Hall 02",
-    duration: "2h 49m",
-    genre: "Sci-Fi / Adventure",
-    availableSeats: 8,
-    totalSeats: 100,
-    time: "19:30",
-    selected: false,
-    disabled: false,
-  },
-  {
-    id: 5,
-    title: "Dune: Part Two",
-    poster:
-      "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?w=400",
-    hall: "Hall 01",
-    duration: "2h 15m",
-    genre: "Sci-Fi / Drama",
-    availableSeats: 60,
-    totalSeats: 100,
-    time: "22:15",
-    selected: false,
-    disabled: false,
-  },
-]);
-
-const selectDate = (selectedDate) => {
-  dates.value.forEach((date) => {
-    date.active = date.day === selectedDate.day;
-  });
+// Generate next 7 days
+const dates = ref([]);
+const generateDates = () => {
+  const today = new Date();
+  for (let i = 0; i < 7; i++) {
+    const d = addDays(today, i);
+    dates.value.push({
+      dayName: format(d, "EEE"),
+      dayNum: format(d, "dd"),
+      day: format(d, "dd"),
+      month: format(d, "MMM"),
+      fullDate: format(d, "yyyy-MM-dd"),
+      active: i === 0,
+    });
+  }
 };
 
-const selectMovie = (selectedMovie) => {
-  if (selectedMovie.disabled) return;
-  movies.value.forEach((movie) => {
-    movie.selected = movie.id === selectedMovie.id;
+const selectedDate = computed(() => dates.value.find((d) => d.active));
+const movies = ref([]);
+
+const loadShowtimes = async () => {
+  // Wait for auth initialization if needed (though RouterView should handle it)
+  if (!authStore.isInitialized) {
+    await authStore.initializeAuth();
+  }
+
+  if (!selectedDate.value) return;
+
+  loading.value = true;
+  try {
+    const params = {
+      show_date: selectedDate.value.fullDate,
+      status: "scheduled",
+      forBooking: true,
+    };
+    const response = await showtimeService.getShowtimes(params);
+    if (response && response.data) {
+      const showtimesWithSeats = await Promise.all(
+        response.data.map(async (s) => {
+          try {
+            // Fetch seat status
+            const seats = await seatBookingService.getShowtimeSeatStatus(s.id);
+            const availableSeats = seats.filter(
+              (seat) => seat.status === "available",
+            ).length;
+            const totalSeats = seats.length;
+
+            return {
+              ...s,
+              title: s.movie_title,
+              poster: s.movie_poster,
+              hall: s.hall_name,
+              duration: movieService.formatDuration(s.duration_minutes),
+              genre: s.movie_genres || "Action / Drama",
+              availableSeats,
+              totalSeats,
+              time: s.start_time,
+              selected: bookingStore.selectedShowtime?.id === s.id,
+              disabled: availableSeats === 0,
+            };
+          } catch (err) {
+            console.error(`Failed to fetch seats for showtime ${s.id}:`, err);
+            return {
+              ...s,
+              title: s.movie_title,
+              poster: s.movie_poster,
+              hall: s.hall_name,
+              duration: movieService.formatDuration(s.duration_minutes),
+              genre: "Action / Drama",
+              availableSeats: 0,
+              totalSeats: 0,
+              time: s.start_time,
+              selected: bookingStore.selectedShowtime?.id === s.id,
+              disabled: true,
+            };
+          }
+        }),
+      );
+      movies.value = showtimesWithSeats;
+    }
+  } catch (error) {
+    console.error("Failed to load showtimes:", error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(async () => {
+  generateDates();
+  await loadShowtimes();
+});
+
+const selectDate = async (date) => {
+  dates.value.forEach((d) => (d.active = d.fullDate === date.fullDate));
+  await loadShowtimes();
+};
+
+const selectMovie = (movie) => {
+  if (movie.disabled) return;
+  movies.value.forEach((m) => {
+    m.selected = m.id === movie.id;
   });
+  bookingStore.selectShowtime(movie);
 };
 
 const selectedMovie = computed(() => movies.value.find((m) => m.selected));
@@ -144,8 +159,11 @@ const getSeatColor = (movie) => {
 const toggleSettings = () => {
   router.push("/layout/settings");
 };
+
 const handleReserveSeats = () => {
-  router.push("/layout/seats");
+  if (selectedMovie.value) {
+    router.push("/layout/seats");
+  }
 };
 </script>
 

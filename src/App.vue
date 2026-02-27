@@ -2,6 +2,7 @@
 import { RouterView } from "vue-router";
 import { computed, onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
+import { useNotificationStore } from "@/stores/notification";
 import { usePermissionStore } from "@/stores/permission";
 import AppLoading from "@/components/common/AppLoading.vue";
 import { useI18n } from "vue-i18n";
@@ -9,8 +10,9 @@ import { ElConfigProvider } from "element-plus";
 import en from "element-plus/dist/locale/en.mjs";
 import kh from "@/locales/element-plus/kh.js";
 
-import { useNotificationStore } from "@/stores/notification";
 import { watch } from "vue";
+import GlobalToast from "@/components/common/GlobalToast.vue";
+import CustomConfirmDialog from "@/components/common/CustomConfirmDialog.vue";
 
 const authStore = useAuthStore();
 const permissionStore = usePermissionStore();
@@ -58,6 +60,10 @@ onMounted(async () => {
 
       <!-- Show app content once auth is initialized -->
       <RouterView v-else />
+
+      <!-- Global UI Components -->
+      <GlobalToast />
+      <CustomConfirmDialog />
     </div>
   </el-config-provider>
 </template>

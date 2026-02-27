@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { useUiStore } from "@/stores/uiStore";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import api from "@/utils/api";
@@ -24,6 +25,7 @@ const { t } = useI18n();
 const activeTab = ref("upcoming");
 const bookings = ref([]);
 const isLoading = ref(true);
+const uiStore = useUiStore();
 const selectedBooking = ref(null);
 
 const getStatusLabel = (status) => {
@@ -148,40 +150,6 @@ const getSeatTypes = (populatedSeats) => {
         </p>
       </div>
     </header>
-
-    <!-- Premium Toast Message -->
-    <Transition name="toast">
-      <div
-        v-if="toast.show"
-        class="fixed top-6 left-1/2 -translate-x-1/2 z-[300] max-w-[90vw] w-auto pointer-events-none"
-      >
-        <div
-          :class="[
-            'premium-toast flex items-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-bold shadow-[0_20px_50px_rgba(0,0,0,0.5)] border backdrop-blur-2xl relative overflow-hidden',
-            toast.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-              : 'bg-red-500/10 border-red-500/20 text-red-400',
-          ]"
-        >
-          <div
-            :class="[
-              'w-8 h-8 rounded-xl flex items-center justify-center shrink-0',
-              toast.type === 'success' ? 'bg-emerald-500/20' : 'bg-red-500/20',
-            ]"
-          >
-            <CheckCircle v-if="toast.type === 'success'" :size="18" />
-            <XCircle v-else :size="18" />
-          </div>
-          <span class="tracking-tight whitespace-nowrap">{{ toast.text }}</span>
-          <div
-            :class="[
-              'toast-progress-bar',
-              toast.type === 'success' ? 'bg-emerald-500/40' : 'bg-red-500/40',
-            ]"
-          ></div>
-        </div>
-      </div>
-    </Transition>
 
     <!-- Tabs -->
     <div class="relative z-10 px-4 py-3 bg-[#0a0a0c]/40 backdrop-blur-sm">
