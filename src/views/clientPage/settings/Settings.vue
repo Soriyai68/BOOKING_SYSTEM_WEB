@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed, watch } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import api from "@/utils/api";
 import {
@@ -13,8 +13,6 @@ import {
   ChevronRight,
   Pencil,
   Ticket,
-  CheckCircle,
-  XCircle,
 } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 import { setLanguage, availableLocales } from "@/i18n";
@@ -28,11 +26,6 @@ const authStore = useAuthStore();
 const notificationStore = useNotificationStore();
 
 const uiStore = useUiStore();
-
-const showToast = (text, type = "success") => {
-  uiStore.showToast(text, type);
-};
-
 const unreadCount = computed(() => notificationStore.unreadCount);
 
 // Real user data from API
@@ -74,15 +67,15 @@ onMounted(async () => {
 
 const handleLogout = async () => {
   const confirmed = await uiStore.confirm({
-    title: t("client.logout"),
-    message: t("auth.logoutConfirm") || "Are you sure you want to log out?",
-    confirmText: t("client.logout"),
+    title: t("auth.logoutConfirm.title"),
+    message:
+      t("auth.logoutConfirm.message") || "Are you sure you want to log out?",
+    confirmText: t("auth.logoutConfirm.confirmButton"),
     cancelText: t("common.cancel"),
     type: "danger",
   });
 
   if (confirmed) {
-    showToast(t("client.settings.loggingOut") || "Logging out...", "success");
     setTimeout(async () => {
       await authStore.logout();
       router.push({ name: "Login Page", query: { loggedOut: "1" } });

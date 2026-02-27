@@ -1005,6 +1005,7 @@ export default {
     client: "អតិថិជន",
     admin: "អ្នកគ្រប់គ្រង",
     notification: "ការជូនដំណឹង",
+    cancel: "បោះបង់",
   },
 
   // Upload

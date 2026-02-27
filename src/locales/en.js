@@ -1030,6 +1030,7 @@ export default {
     client: "Client",
     admin: "Admin",
     notification: "Notification",
+    cancel: "Cancel",
   },
 
   // Upload
