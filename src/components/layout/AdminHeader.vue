@@ -223,7 +223,7 @@ const getLocalizedMessage = (item) => {
     return t(key, item.metadata);
   }
   return item.message;
-};
+}
 
 const showDrawer = ref(false);
 
@@ -550,7 +550,7 @@ const handleUserMenuCommand = async (command) => {
 }
 
 .notification-list {
-  max-height: 400px;
+  max-height: 100%;
   overflow-y: auto;
 }
 

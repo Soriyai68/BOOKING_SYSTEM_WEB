@@ -60,6 +60,11 @@ export default {
       message:
         'Your booking {ref} for "{movie}" has been confirmed.\n\nSeats: {seats}',
     },
+    admin_booking_created: {
+      title: "New Booking",
+      message:
+        'New booking {ref} for "{movie}" by {customer}.\n\nSeats: {seats}',
+    },
     booking_confirmed: {
       title: "Payment Confirmed",
       message:

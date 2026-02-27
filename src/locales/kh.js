@@ -60,6 +60,11 @@ export default {
       message:
         'ការកក់ {ref} របស់អ្នកសម្រាប់ "{movie}" ត្រូវបានបញ្ជាក់។\n\nកៅអី: {seats}',
     },
+    admin_booking_created: {
+      title: "ការកក់ថ្មី",
+      message:
+        'មានការកក់ថ្មី {ref} សម្រាប់រឿង "{movie}" ដោយ {customer}។\n\nកៅអី: {seats}',
+    },
     booking_confirmed: {
       title: "ការបង់ប្រាក់បានបញ្ជាក់",
       message:

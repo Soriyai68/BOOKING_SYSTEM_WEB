@@ -104,6 +104,7 @@ import { useAppStore } from "@/stores/app";
 import { bookingService } from "@/services/bookingService";
 import { paymentService } from "@/services/paymentService";
 import { formatDate } from "@/utils/formatters";
+import { usePath } from "@/composables/usePath";
 
 import SelectShowtimeStep from "@/components/bookings/SelectShowtimeStep.vue";
 import SelectSeatsStep from "@/components/bookings/SelectSeatsStep.vue";
@@ -114,6 +115,7 @@ import BakongQrPayment from "@/components/payments/BakongQRPayment.vue";
 const { t } = useI18n();
 const router = useRouter();
 const appStore = useAppStore();
+const { getAdminPath } = usePath();
 
 const activeStep = ref(0);
 const showBakongDialog = ref(false);
