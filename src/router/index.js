@@ -9,7 +9,6 @@ import {
 
 const ADMIN_SUBDOMAIN = "admin";
 const IS_ADMIN_APP = window.location.hostname.startsWith(`${ADMIN_SUBDOMAIN}.`);
-
 let allRoutes = [];
 let defaultRedirect = "/";
 const loginComponentName = "Login";
@@ -70,19 +69,24 @@ const router = createRouter({
   history: createWebHistory(),
   routes: finalRoutes,
 });
-
 router.beforeEach(async (to, from, next) => {
+  // ❌ Block admin login on main domain
+  if (to.path === "/login" && !IS_ADMIN_APP) {
+    const url = new URL(window.location.href);
+    url.pathname = "/";
+    window.location.replace(url.toString());
+    return;
+  }
+
   const { useAuthStore } = await import("@/stores/auth");
   const { usePermissionStore } = await import("@/stores/permission");
   const authStore = useAuthStore();
   const permissionStore = usePermissionStore();
 
-  try {
-    if (!authStore.isInitialized) {
+  if (!authStore.isInitialized) {
+    try {
       await authStore.initializeAuth();
-    }
-  } catch (error) {
-    // console.error("Auth initialization failed:", error);
+    } catch {}
   }
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
@@ -100,8 +104,16 @@ router.beforeEach(async (to, from, next) => {
     // If route requires admin, check if user is admin regardless of subdomain
     if (requiresAdmin && !authStore.isAdmin) {
       if (IS_ADMIN_APP) {
-        if (to.path === "/login") return next();
-        return next({ path: "/login", query: { redirect: to.fullPath } });
+        if (authStore.isAuthenticated) {
+          return;
+        }
+        if (to.path === "/login" && !IS_ADMIN_APP) {
+          // If someone manually removed `admin.` → kick them to client home
+          const url = new URL(window.location.href);
+          url.pathname = "/";
+          window.location.replace(url.toString());
+          return;
+        }
       } else {
         // On client app, if they try to access admin route without being admin
         return next({ path: "/" });
@@ -141,8 +153,7 @@ router.beforeEach(async (to, from, next) => {
         if (authStore.isAdmin) {
           return next({ name: "AdminDashboard" });
         }
-        // If they are a customer on the admin app, let them stay on login (or we could logout)
-        return next();
+        return;
       } else {
         // On client app, redirect to home if authenticated
         return next({ path: "/layout" });

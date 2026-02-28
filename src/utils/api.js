@@ -120,13 +120,21 @@ api.interceptors.response.use(
                 );
 
                 // Redirection targets
-                const loginTarget = IS_ADMIN_APP
-                  ? { path: "/login" }
-                  : { name: "Login Page" };
-                const loginRouteName = IS_ADMIN_APP ? "Login" : "Login Page";
-
-                if (router.currentRoute.value.name !== loginRouteName) {
-                  router.push(loginTarget);
+                if (IS_ADMIN_APP) {
+                  const hostname = window.location.hostname;
+                  const mainDomain = hostname.replace(
+                    `${ADMIN_SUBDOMAIN}.`,
+                    "",
+                  );
+                  const protocol = window.location.protocol;
+                  const port = window.location.port
+                    ? `:${window.location.port}`
+                    : "";
+                  window.location.href = `${protocol}//${mainDomain}${port}`;
+                } else {
+                  if (router.currentRoute.value.name !== "Login Page") {
+                    router.push({ name: "Login Page" });
+                  }
                 }
               } finally {
                 isHandling401 = false;
