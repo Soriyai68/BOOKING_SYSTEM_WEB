@@ -91,8 +91,8 @@ api.interceptors.response.use(
         );
       }
 
-      // Only show automatic error messages for non-auth requests
-      if (!isAuthAttempt) {
+      // Only show automatic error messages for non-auth requests and if not explicitly skipped
+      if (!isAuthAttempt && !error.config?.skipGlobalError) {
         switch (status) {
           case 401: {
             // Unauthorized - token expired or invalid (but not for login)

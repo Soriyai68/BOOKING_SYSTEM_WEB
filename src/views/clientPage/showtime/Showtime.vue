@@ -29,6 +29,8 @@ const notificationStore = useNotificationStore();
 
 const userProfile = computed(() => authStore.user);
 const unreadCount = computed(() => notificationStore.unreadCount);
+const hasShowtimes = computed(() => movies.value.length > 0 && !loading.value);
+const noShowtimes = computed(() => !loading.value && movies.value.length === 0);
 
 const searchActive = ref(false);
 const searchQuery = ref("");

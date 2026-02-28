@@ -201,7 +201,9 @@ export const showtimeService = {
       showtimes: processedShowtimes,
     };
 
-    const { data } = await api.post("/showtimes/bulk/create", backendData);
+    const { data } = await api.post("/showtimes/bulk/create", backendData, {
+      skipGlobalError: true,
+    });
     return data;
   },
 
@@ -307,7 +309,9 @@ export const showtimeService = {
       showtimes: processedShowtimes,
     };
 
-    const { data } = await api.post("/showtimes/bulk/duplicate", backendData);
+    const { data } = await api.post("/showtimes/bulk/duplicate", backendData, {
+      skipGlobalError: true,
+    });
     return data;
   },
   // Soft delete a showtime

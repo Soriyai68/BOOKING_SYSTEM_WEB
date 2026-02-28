@@ -162,7 +162,13 @@
         type="primary"
         @click="submitMultipleForm"
       >
-        {{ isUpdateMode ? $t("actions.update") : (isDuplicateMode ? $t("actions.duplicate") : $t("actions.create")) }}
+        {{
+          isUpdateMode
+            ? $t("actions.update")
+            : isDuplicateMode
+              ? $t("actions.duplicate")
+              : $t("actions.create")
+        }}
       </el-button>
       <el-button @click="$router.back()">{{ $t("actions.cancel") }}</el-button>
     </el-form-item>
@@ -220,14 +226,14 @@ watch(
       ];
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
   () => props.initialTheaterId,
   (newId) => {
     multipleShowtimeData.theater_id = newId;
-  }
+  },
 );
 
 const multipleRules = computed(() => ({
@@ -304,7 +310,10 @@ const submitMultipleForm = () => {
           // Update mode - single showtime update
           if (multipleShowtimeData.showtimes.length === 1) {
             const showtimeData = payload.showtimes[0];
-            await showtimeService.updateShowtime(props.showtimeId, showtimeData);
+            await showtimeService.updateShowtime(
+              props.showtimeId,
+              showtimeData,
+            );
             ElMessage.success(t("showtimes.updateSuccess"));
           } else {
             ElMessage.error(t("showtimes.updateSingleOnly"));
@@ -313,7 +322,10 @@ const submitMultipleForm = () => {
         } else if (props.isDuplicateMode) {
           payload.showtimes.forEach((s, index) => {
             const originalShowtime = multipleShowtimeData.showtimes[index];
-            if (typeof originalShowtime.id === "string") {
+            if (
+              originalShowtime.id &&
+              typeof originalShowtime.id === "string"
+            ) {
               s._id = originalShowtime.id;
             }
           });
@@ -324,11 +336,33 @@ const submitMultipleForm = () => {
           ElMessage.success(t("showtimes.createMultipleSuccess"));
         }
         emit("submitted");
-      } catch (errors) {
-        console.error("Form submission failed:", errors);
-        // ElMessage.error(
-        //   error?.response?.data?.message || t("messages.unknownError")
-        // );
+      } catch (error) {
+        console.error("Form submission failed:", error);
+
+        const responseData = error?.response?.data;
+        let detailedErrors = "";
+
+        if (responseData?.success === false && responseData?.data?.errors) {
+          detailedErrors = responseData.data.errors
+            .map((e) => `<li>${e.error}</li>`)
+            .join("");
+        } else if (responseData?.errors && Array.isArray(responseData.errors)) {
+          detailedErrors = responseData.errors
+            .map((e) => `<li>${e.error || e.message}</li>`)
+            .join("");
+        }
+
+        const message = detailedErrors
+          ? `<div style="text-align: left;"><strong>${responseData?.message || t("messages.error")}</strong><ul style="margin-top: 5px; padding-left: 15px;">${detailedErrors}</ul></div>`
+          : responseData?.message || t("messages.error");
+
+        ElMessage({
+          message,
+          type: "error",
+          grouping: true,
+          duration: 7000,
+          dangerouslyUseHTMLString: !!detailedErrors,
+        });
       } finally {
         appStore.setLoading(false);
       }
@@ -342,7 +376,7 @@ const addShowtimeRow = () => {
     ElMessage.warning(t("showtimes.cannotAddInUpdateMode"));
     return;
   }
-  
+
   const max_rows = 8;
   if (multipleShowtimeData.showtimes.length >= max_rows) {
     ElMessage.error(`${t("showtimes.limitError", { max: max_rows })}`);
@@ -385,14 +419,14 @@ watch(
       if (movie && item.start_time) {
         item.end_time = calculateEndTime(
           item.start_time,
-          movie.duration_minutes
+          movie.duration_minutes,
         );
       } else {
         item.end_time = "";
       }
     });
   },
-  { deep: true }
+  { deep: true },
 );
 </script>
 
