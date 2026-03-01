@@ -936,7 +936,7 @@ export default {
     noData: "គ្មានទិន្នន័យ",
     noNotifications: "មិនមានការជូនដំណឹងថ្មីទេ",
     clearAllNotifications: "តើអ្នកប្រាកដថាចង់លុបការជូនដំណឹងទាំងអស់មែនទេ?",
-    networkError: "កំហុសបណ្តាញ។ សូមពិនិត្យការភ្ជាប់របស់អ្នក។",
+    networkError: "កំហុសបណ្តាញ!សូមពិនិត្យការភ្ជាប់របស់អ្នក។",
     serverError: "កំហុសម៉ាស៊ីនផ្តល់សេវា។ សូមសាកល្បងម្តងទៀត។",
     validationFailed: "ការផ្ទៀងផ្ទាត់មិនបានជោគជ័យ",
     accessDenied: "ការចូលប្រើត្រូវបានបដិសេធ។ អ្នកមិនមានសិទ្ធិ។",
@@ -951,6 +951,8 @@ export default {
     downloadFailed: "បរាជ័យក្នុងការទាញយក",
     notificationDeleted: "ការជូនដំណឹងត្រូវបានលុបដោយជោគជ័យ",
     notificationDeleteFailed: "មិនអាចលុបការជូនដំណឹងបានទេ",
+    resourceNotFound: "រកមិនឃើញធនធាន",
+    httpError: "កំហុស HTTP: {status}",
   },
 
   // Table and Pagination

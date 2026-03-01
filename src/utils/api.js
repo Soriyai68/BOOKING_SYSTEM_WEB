@@ -67,9 +67,8 @@ api.interceptors.response.use(
     if (error.response) {
       const { status, data } = error.response;
       const { url, method } = error.config;
-
-      // Special handling for check-payment polling: a 400 status is an expected "not yet paid" state.
-      // We suppress the global error message for this specific case to avoid user confusion.
+      
+       // We suppress the global error message for this specific case to avoid user confusion.
       if (
         status === 400 &&
         method === "post" &&
@@ -144,13 +143,11 @@ api.interceptors.response.use(
           }
 
           case 403:
-            ElMessage.error(
-              "Access denied. You don't have permission to perform this action.",
-            );
+            ElMessage.error(i18n.global.t("messages.accessDenied"));
             break;
 
           case 404:
-            ElMessage.error("Resource not found.");
+            ElMessage.error(i18n.global.t("messages.resourceNotFound"));
             break;
 
           case 422:
@@ -161,45 +158,35 @@ api.interceptors.response.use(
                 ElMessage.error(message);
               });
             } else {
-              ElMessage.error(data.message || "Validation failed.");
+              ElMessage.error(
+                data.message || i18n.global.t("messages.validationFailed"),
+              );
             }
             break;
 
           case 429:
-            ElMessage.warning("Too many requests. Please try again later.");
+            ElMessage.warning(i18n.global.t("messages.tooManyRequests"));
             break;
 
           case 500:
-            ElMessage.error("Server error. Please try again later.");
-            ElNotification({
-              title: "Server Error",
-              message:
-                "An internal server error occurred. Please contact support if this persists.",
-              type: "error",
-              duration: 5000,
-            });
+            ElMessage.error(i18n.global.t("messages.serverError"));
             break;
 
           default:
-            ElMessage.error(data.message || `HTTP Error: ${status}`);
+            ElMessage.error(
+              data.message || i18n.global.t("messages.httpError", { status }),
+            );
         }
       }
     } else if (error.request) {
       // Network error - only show for non-auth requests
       if (!isAuthAttempt) {
-        ElMessage.error("Network error. Please check your connection.");
-        ElNotification({
-          title: "Network Error",
-          message:
-            "Unable to connect to the server. Please check your internet connection.",
-          type: "error",
-          duration: 5000,
-        });
+        ElMessage.error(i18n.global.t("messages.networkError"));
       }
     } else {
       // Other errors
       if (!isAuthAttempt) {
-        ElMessage.error("An unexpected error occurred.");
+        ElMessage.error(i18n.global.t("messages.error"));
       }
     }
 

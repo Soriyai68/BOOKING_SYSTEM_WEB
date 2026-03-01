@@ -976,6 +976,8 @@ export default {
     downloadFailed: "Failed to download",
     notificationDeleted: "Notification deleted successfully",
     notificationDeleteFailed: "Failed to delete notification",
+    resourceNotFound: "Resource not found",
+    httpError: "HTTP Error: {status}",
   },
 
   // Table and Pagination

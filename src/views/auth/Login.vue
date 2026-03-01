@@ -148,7 +148,7 @@ const handleLogin = async () => {
     });
 
     ElMessage({
-      message: t("auth.loginSuccess") || "Login successful!",
+      message: t("auth.loginSuccess"),
       type: "success",
       center: true,
       grouping: true,
@@ -182,24 +182,22 @@ const handleLogin = async () => {
               Array.isArray(firstError) ? firstError[0] : firstError,
             );
           } else {
-            ElMessage.error(data.message || "Validation failed");
+            ElMessage.error(data.message || t("messages.validationFailed"));
           }
           break;
         case 429:
-          ElMessage.warning("Too many login attempts. Please try again later.");
+          ElMessage.warning(t("messages.tooManyRequests"));
           break;
         case 500:
-          ElMessage.error("Server error. Please try again later.");
+          ElMessage.error(t("messages.serverError"));
           break;
         default:
-          ElMessage.error(data.message || "Login failed. Please try again.");
+          ElMessage.error(data.message || t("auth.loginFailed"));
       }
     } else if (error.request) {
-      ElMessage.error(
-        "Network error. Please check your connection and try again.",
-      );
+      ElMessage.error(t("messages.networkError"));
     } else {
-      ElMessage.error("Invalid email or password");
+      ElMessage.error(t("auth.invalidCredentials"));
     }
   } finally {
     loading.value = false;
