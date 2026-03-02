@@ -172,6 +172,38 @@ const isStepValid = computed(() => {
 });
 
 const nextStep = () => {
+  if (activeStep.value === 1) {
+    // Validate seats
+    const seats = bookingState.selectedSeatDetails;
+    if (seats.length > 10) {
+      ElMessage.error(t("bookings.maxSeatsError", { count: 10 }));
+      return;
+    }
+
+    if (seats.length > 1) {
+      // Rule 2: All seats must be in the same row
+      const firstRow = seats[0].row;
+      if (!seats.every((s) => s.row === firstRow)) {
+        ElMessage.error(t("bookings.sameRowError"));
+        return;
+      }
+
+      // Rule 3: No gaps between seats
+      const sorted = [...seats].sort((a, b) => {
+        const numA = parseInt(a.seat_number);
+        const numB = parseInt(b.seat_number);
+        return numA - numB;
+      });
+      for (let i = 0; i < sorted.length - 1; i++) {
+        const numA = parseInt(sorted[i].seat_number);
+        const numB = parseInt(sorted[i + 1].seat_number);
+        if (numA + 1 !== numB) {
+          ElMessage.error(t("bookings.noGapsError"));
+          return;
+        }
+      }
+    }
+  }
   if (activeStep.value < 2) activeStep.value++;
 };
 
@@ -243,10 +275,13 @@ const submitBooking = async () => {
         bakongPaymentData.value = paymentResponse.data.payment;
         showBakongDialog.value = true;
       } else {
+        // Payment initiation failed - cancel the booking
+        if (currentBookingId.value) {
+          await bookingService.cancelBooking(currentBookingId.value);
+        }
         ElMessage.error(
           paymentResponse.message || t("payments.initiateFailed"),
         );
-        router.push(getAdminPath("/bookings"));
       }
     } else {
       ElMessage.success(t("bookings.createSuccess"));
@@ -306,12 +341,21 @@ const onPaymentPaid = async () => {
   router.push(getAdminPath("/bookings"));
 };
 
-const onPaymentDialogClose = (paid) => {
+const onPaymentDialogClose = async (paid) => {
   showBakongDialog.value = false;
   if (paid) {
+    ElMessage.success(t("payments.paymentSuccess"));
     router.push(getAdminPath("/bookings"));
   } else {
-    // If not paid, we still redirect but maybe with a different message or just redirect to list
+    // If not paid, we cancel the booking to release seats
+    if (currentBookingId.value) {
+      try {
+        await bookingService.cancelBooking(currentBookingId.value);
+        ElMessage.warning(t("payments.paymentFailed"));
+      } catch (error) {
+        console.error("Failed to cancel unpaid booking:", error);
+      }
+    }
     router.push(getAdminPath("/bookings"));
   }
 };

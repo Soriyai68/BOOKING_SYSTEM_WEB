@@ -188,7 +188,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (widgetTimer) clearTimeout(widgetTimer);
-  if (toastTimer) clearTimeout(toastTimer);
   delete window.onTelegramAuth;
 });
 </script>

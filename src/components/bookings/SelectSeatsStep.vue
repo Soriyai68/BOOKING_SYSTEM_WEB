@@ -20,7 +20,14 @@
 
       <div class="seat-map">
         <div v-for="row in seatLayout" :key="row.row" class="seat-row">
-          <div class="row-label">{{ row.row }}</div>
+          <div class="row-label left">
+            <div
+              class="row-type-dot"
+              :style="{ backgroundColor: seatTypes[row.rowType]?.color }"
+              :title="seatTypes[row.rowType]?.label"
+            ></div>
+            <span>{{ row.row }}</span>
+          </div>
           <div class="seats-container">
             <div class="seats-section" v-if="row.sections.left.length">
               <div
@@ -59,22 +66,48 @@
               </div>
             </div>
           </div>
-          <div class="row-label">{{ row.row }}</div>
+          <div class="row-label right">
+            <span>{{ row.row }}</span>
+            <div
+              class="row-type-dot"
+              :style="{ backgroundColor: seatTypes[row.rowType]?.color }"
+              :title="seatTypes[row.rowType]?.label"
+            ></div>
+          </div>
         </div>
       </div>
 
       <div class="legend">
-        <div class="legend-item">
-          <div class="seat available"><span class="seat-number"></span></div>
-          <span>{{ $t("seats.statuses.available") }}</span>
+        <!-- Row 1: Status -->
+        <div class="legend-row status-row">
+          <div class="legend-item">
+            <div class="seat available"><span class="seat-number"></span></div>
+            <span>{{ $t("seats.statuses.available") }}</span>
+          </div>
+          <div class="legend-item">
+            <div class="seat selected"><span class="seat-number"></span></div>
+            <span>{{ $t("seats.statuses.selected") }}</span>
+          </div>
+          <div class="legend-item">
+            <div class="seat booked"><span class="seat-number"></span></div>
+            <span>{{ $t("seats.statuses.booked") }}</span>
+          </div>
+          <div class="legend-item">
+            <div class="seat unavailable">
+              <span class="seat-number"></span>
+            </div>
+            <span>{{ $t("seats.statuses.unavailable") }}</span>
+          </div>
         </div>
-        <div class="legend-item">
-          <div class="seat selected"><span class="seat-number"></span></div>
-          <span>{{ $t("seats.statuses.selected") }}</span>
-        </div>
-        <div class="legend-item">
-          <div class="seat booked"><span class="seat-number"></span></div>
-          <span>{{ $t("seats.statuses.booked") }}</span>
+
+        <div class="legend-divider"></div>
+
+        <!-- Row 2: Types -->
+        <div class="legend-row types-row">
+          <div v-for="(cfg, key) in seatTypes" :key="key" class="legend-item">
+            <div class="seat-dot" :style="{ backgroundColor: cfg.color }"></div>
+            <span>{{ cfg.label }} ${{ cfg.price.toFixed(2) }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -83,8 +116,12 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
 import { seatService } from "@/services/seatService";
 import { seatBookingService } from "@/services/seatBookingService";
+
+const { t } = useI18n();
 
 const props = defineProps({
   showtime: {
@@ -174,7 +211,7 @@ const seatRows = computed(() => {
   const rows = {};
   hallSeats.value.forEach((seat) => {
     if (!rows[seat.row]) {
-      rows[seat.row] = { row: seat.row, seats: [] };
+      rows[seat.row] = { row: seat.row, seats: [], rowType: seat.seat_type };
     }
     rows[seat.row].seats.push(seat);
   });
@@ -213,6 +250,7 @@ const seatLayout = computed(() => {
 
     return {
       ...row,
+      rowType: row.rowType,
       sections: {
         left: leftSeats,
         middle: middleSeats,
@@ -224,16 +262,103 @@ const seatLayout = computed(() => {
 
 const getSeatClass = (seat) => {
   const seatId = (seat._id || seat.id)?.toString();
+  if (seat.status === "maintenance" || seat.status === "out_of_order")
+    return "unavailable";
   if (bookedSeats.value.includes(seatId)) return "booked";
   if (props.modelValue.has(seatId)) return "selected";
   return "available";
 };
 
+const seatTypes = computed(() => {
+  const types = {};
+  const typeColors = {
+    vip: "#a855f7",
+    couple: "#ec4899",
+    queen: "#f59e0b",
+    regular: "#3b82f6",
+  };
+
+  hallSeats.value.forEach((seat) => {
+    if (!types[seat.seat_type]) {
+      types[seat.seat_type] = {
+        label: t(`seats.types.${seat.seat_type}`),
+        color: typeColors[seat.seat_type] || "#3b82f6",
+        price: seat.price || 0,
+      };
+    }
+  });
+  return types;
+});
+
 const toggleSeat = (seat) => {
   const seatId = (seat._id || seat.id)?.toString();
-  if (bookedSeats.value.includes(seatId)) return;
+  if (
+    bookedSeats.value.includes(seatId) ||
+    seat.status === "maintenance" ||
+    seat.status === "out_of_order"
+  )
+    return;
 
   const newSelectedSeats = new Set(props.modelValue);
+  const isSelecting = !newSelectedSeats.has(seatId);
+
+  if (isSelecting) {
+    // Rule 1: Max 10 seats
+    if (newSelectedSeats.size >= 10) {
+      ElMessage.error(t("bookings.maxSeatsError", { count: 10 }));
+      return;
+    }
+
+    // Rule 2: Same Row
+    if (newSelectedSeats.size > 0) {
+      const firstId = Array.from(newSelectedSeats)[0];
+      const firstSeat = hallSeats.value.find(
+        (s) => (s._id || s.id).toString() === firstId,
+      );
+      if (firstSeat && seat.row !== firstSeat.row) {
+        ElMessage.error(t("bookings.sameRowError"));
+        return;
+      }
+
+      // Rule 3: No gaps (Check if new seat creates a gap with existing ones)
+      // This is a simplified check: get all seats in this row, sort them, and check continuity
+      const rowSeats = hallSeats.value.filter((s) => s.row === seat.row);
+      const selectedInRow = rowSeats.filter((s) => {
+        const sId = (s._id || s.id).toString();
+        return newSelectedSeats.has(sId) || sId === seatId;
+      });
+
+      if (selectedInRow.length > 1) {
+        const sorted = [...selectedInRow].sort((a, b) => {
+          const numA = parseInt(
+            Array.isArray(a.seat_number) ? a.seat_number[0] : a.seat_number,
+          );
+          const numB = parseInt(
+            Array.isArray(b.seat_number) ? b.seat_number[0] : b.seat_number,
+          );
+          return numA - numB;
+        });
+
+        for (let i = 0; i < sorted.length - 1; i++) {
+          const numA = parseInt(
+            Array.isArray(sorted[i].seat_number)
+              ? sorted[i].seat_number[0]
+              : sorted[i].seat_number,
+          );
+          const numB = parseInt(
+            Array.isArray(sorted[i + 1].seat_number)
+              ? sorted[i + 1].seat_number[0]
+              : sorted[i + 1].seat_number,
+          );
+          if (numA + 1 !== numB) {
+            ElMessage.error(t("bookings.noGapsError"));
+            return;
+          }
+        }
+      }
+    }
+  }
+
   if (newSelectedSeats.has(seatId)) {
     newSelectedSeats.delete(seatId);
   } else {
@@ -261,9 +386,10 @@ const toggleSeat = (seat) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: var(--el-fill-color-lighter);
+  background-color: var(--el-bg-color);
   padding: 40px;
   border-radius: 8px;
+  border: 1px solid var(--el-border-color-lighter);
 }
 
 .screen-container {
@@ -275,24 +401,23 @@ const toggleSeat = (seat) => {
 }
 
 .screen-arc {
-  width: 80%;
-  height: 100px;
-  border: 4px solid var(--el-fill-color-light);
-  border-color: var(--el-text-color-primary) transparent transparent transparent;
-  border-radius: 100% / 25px;
+  width: 60%;
+  height: 4px;
+  background: var(--el-border-color-light);
+  border-radius: 4px;
   position: absolute;
-  left: 10%;
+  left: 20%;
   top: 0;
-  box-sizing: content-box;
-  opacity: 0.2;
 }
 
 .screen-text {
   position: relative;
-  top: -25px;
-  color: var(--el-text-color-secondary);
+  top: 15px;
+  color: var(--el-text-color-placeholder);
   text-transform: uppercase;
   font-weight: bold;
+  font-size: 12px;
+  letter-spacing: 2px;
 }
 
 .seat-map {
@@ -310,10 +435,27 @@ const toggleSeat = (seat) => {
 }
 
 .row-label {
-  width: 25px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 50px;
   font-weight: bold;
   color: var(--el-text-color-secondary);
-  text-align: center;
+}
+
+.row-label.left {
+  justify-content: flex-end;
+}
+
+.row-label.right {
+  justify-content: flex-start;
+}
+
+.row-type-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .seats-container {
@@ -329,15 +471,15 @@ const toggleSeat = (seat) => {
 }
 
 .seat {
-  width: 25px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 6px 6px 2px 2px;
+  border-radius: 4px;
   cursor: pointer;
   user-select: none;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease;
   font-weight: 600;
   position: relative;
 }
@@ -347,51 +489,83 @@ const toggleSeat = (seat) => {
 }
 
 .seat.available {
-  background-color: var(--el-color-info-light-7);
-  color: var(--el-text-color-regular);
+  background-color: #e4e7ed;
+  color: #909399;
 }
 .seat.available:hover {
-  background-color: var(--el-color-info-light-5);
-  transform: scale(1.1);
+  background-color: #dcdfe6;
+  transform: translateY(-2px);
 }
 
 .seat.selected {
-  background-color: var(--el-color-primary);
+  background-color: #409eff;
   color: white;
-  transform: scale(1.1);
-  box-shadow: 0 0 12px var(--el-color-primary-light-3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
 }
 
 .seat.booked {
-  background-color: var(--el-color-info);
-  color: var(--el-color-white);
+  background-color: #909399;
+  color: white;
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.seat.unavailable {
+  background-color: #fef0f0;
+  border: 1px solid #fde2e2;
+  color: #f56c6c;
   cursor: not-allowed;
 }
 
 .legend {
   margin-top: 50px;
   display: flex;
-  gap: 25px;
-  padding: 10px 10px;
-  background: var(--el-bg-color-overlay);
-  border-radius: 6px;
-  box-shadow: var(--el-box-shadow-light);
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  padding: 30px;
+  background-color: white;
+  border-top: 1px solid #f2f6fc;
+}
+
+.legend-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.legend-divider {
+  width: 60%;
+  height: 1px;
+  background-color: var(--el-border-color-lighter);
+  margin: 0 auto;
+  opacity: 0.5;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 14px;
+  font-size: 13px;
+  color: var(--el-text-color-primary);
 }
 
 .legend-item .seat {
-  width: 13px;
-  height: 15px;
+  width: 18px;
+  height: 20px;
   cursor: default;
   transform: scale(1);
   box-shadow: none;
 }
+
+.seat-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
 .legend-item .seat:hover {
   transform: none;
 }

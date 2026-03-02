@@ -6,10 +6,12 @@ import { ArrowLeft, Monitor } from "lucide-vue-next";
 import { useBookingStore } from "@/stores/booking";
 import { seatService } from "@/services/seatService";
 import { seatBookingService } from "@/services/seatBookingService";
+import { useUiStore } from "@/stores/uiStore";
 
 const router = useRouter();
 const { t } = useI18n();
 const bookingStore = useBookingStore();
+const uiStore = useUiStore();
 
 // Redirect if no showtime selected
 onMounted(() => {
@@ -37,12 +39,28 @@ const screenType = computed(
 const loading = ref(false);
 
 // Seat types config
-const seatTypes = computed(() => ({
-  regular: { label: t("seats.types.regular"), color: "#3b82f6", price: 3.0 },
-  vip: { label: t("seats.types.vip"), color: "#a855f7", price: 5.0 },
-  couple: { label: t("seats.types.couple"), color: "#ec4899", price: 8.0 },
-  queen: { label: t("seats.types.queen"), color: "#f59e0b", price: 10.0 },
-}));
+const seatTypes = computed(() => {
+  const types = {};
+  const typeColors = {
+    vip: "#a855f7",
+    couple: "#ec4899",
+    queen: "#f59e0b",
+    regular: "#3b82f6",
+  };
+
+  seatMap.value.forEach((row) => {
+    row.seats.forEach((seat) => {
+      if (!types[seat.seat_type]) {
+        types[seat.seat_type] = {
+          label: t(`seats.types.${seat.seat_type}`),
+          color: typeColors[seat.seat_type] || "#3b82f6",
+          price: seat.price || 0,
+        };
+      }
+    });
+  });
+  return types;
+});
 
 const seatMap = ref([]);
 
@@ -110,6 +128,21 @@ const selectedSeats = computed(() => bookingStore.selectedSeats);
 
 function toggleSeat(seat) {
   if (seat.status === "booked" || seat.status === "maintenance") return;
+
+  // Proactive Rule 1: Max 10
+  if (!isSeatSelected(seat) && selectedSeats.value.length >= 10) {
+    uiStore.showToast(t("bookings.maxSeatsError", { count: 10 }), "error");
+    return;
+  }
+
+  // Proactive Rule 2: Same Row
+  if (!isSeatSelected(seat) && selectedSeats.value.length > 0) {
+    if (seat.row !== selectedSeats.value[0].row) {
+      uiStore.showToast(t("bookings.sameRowError"), "error");
+      return;
+    }
+  }
+
   bookingStore.toggleSeat(seat);
 }
 
@@ -146,6 +179,47 @@ function getSeatSelectedBg(seat) {
 
 function handleContinue() {
   if (selectedSeats.value.length > 0) {
+    // Rule 1: Max 10
+    if (selectedSeats.value.length > 10) {
+      uiStore.showToast(t("bookings.maxSeatsError", { count: 10 }), "error");
+      return;
+    }
+
+    // Rule 2: Same Row
+    const firstRow = selectedSeats.value[0].row;
+    if (!selectedSeats.value.every((s) => s.row === firstRow)) {
+      uiStore.showToast(t("bookings.sameRowError"), "error");
+      return;
+    }
+
+    // Rule 3: No gaps
+    const sorted = [...selectedSeats.value].sort((a, b) => {
+      const numA = parseInt(
+        Array.isArray(a.seat_number) ? a.seat_number[0] : a.seat_number,
+      );
+      const numB = parseInt(
+        Array.isArray(b.seat_number) ? b.seat_number[0] : b.seat_number,
+      );
+      return numA - numB;
+    });
+
+    for (let i = 0; i < sorted.length - 1; i++) {
+      const numA = parseInt(
+        Array.isArray(sorted[i].seat_number)
+          ? sorted[i].seat_number[0]
+          : sorted[i].seat_number,
+      );
+      const numB = parseInt(
+        Array.isArray(sorted[i + 1].seat_number)
+          ? sorted[i + 1].seat_number[0]
+          : sorted[i + 1].seat_number,
+      );
+      if (numA + 1 !== numB) {
+        uiStore.showToast(t("bookings.noGapsError"), "error");
+        return;
+      }
+    }
+
     router.push("/layout/review");
   }
 }

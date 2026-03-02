@@ -4,6 +4,7 @@ import { useUiStore } from "@/stores/uiStore";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import api from "@/utils/api";
+import QrcodeVue from "qrcode.vue";
 import {
   ArrowLeft,
   Ticket,
@@ -17,6 +18,8 @@ import {
   CreditCard,
   CheckCircle,
   XCircle,
+  Download,
+  Trash2,
 } from "lucide-vue-next";
 
 const router = useRouter();
@@ -124,6 +127,68 @@ const getSeatTypes = (populatedSeats) => {
   ];
   return types.join(", ");
 };
+
+const ticketQrRef = ref(null);
+
+const downloadTicketQR = () => {
+  const canvas = ticketQrRef.value.querySelector("canvas");
+  if (!canvas) return;
+
+  const link = document.createElement("a");
+  link.download = `ticket-qr-${selectedBooking.value.reference_code}.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+
+  uiStore.showToast(t("messages.qrSaved") || "QR Code saved successfully");
+};
+
+const handleDeleteHistory = async (bookingId, event) => {
+  if (event) event.stopPropagation();
+
+  const confirmed = await uiStore.confirm({
+    title: t("booking_actions.delete_confirm_title"),
+    message: t("booking_actions.delete_confirm_msg"),
+    confirmText: t("actions.delete"),
+    cancelText: t("actions.cancel"),
+    type: "danger",
+  });
+
+  if (!confirmed) return;
+
+  try {
+    const res = await api.delete(`/customer/bookings/${bookingId}`);
+    if (res.data?.success) {
+      uiStore.showToast(t("booking_actions.delete_success"), "success");
+      fetchBookings();
+    }
+  } catch (error) {
+    console.error("Delete history error:", error);
+    uiStore.showToast(t("booking_actions.delete_error"), "error");
+  }
+};
+
+const handleClearAllHistory = async () => {
+  const confirmed = await uiStore.confirm({
+    title: t("booking_actions.delete_all_confirm_title"),
+    message: t("booking_actions.delete_all_confirm_msg"),
+    confirmText: t("actions.delete"),
+    cancelText: t("actions.cancel"),
+    type: "danger",
+  });
+
+  if (!confirmed) return;
+
+  try {
+    const res = await api.delete("/customer/bookings/history/all");
+    if (res.data?.success) {
+      uiStore.showToast(t("booking_actions.delete_all_success"), "success");
+      fetchBookings();
+    }
+  } catch (error) {
+    console.error("Clear history error:", error);
+    uiStore.showToast(t("booking_actions.delete_all_error"), "error");
+  }
+};
 </script>
 
 <template>
@@ -207,6 +272,20 @@ const getSeatTypes = (populatedSeats) => {
       </div>
 
       <div v-else class="space-y-3">
+        <!-- Clear All Button -->
+        <div
+          v-if="activeTab === 'history' && bookings.length > 0"
+          class="flex justify-end mb-2"
+        >
+          <button
+            @click="handleClearAllHistory"
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-wider hover:bg-red-500/20 transition-all active:scale-95"
+          >
+            <Trash2 :size="12" />
+            {{ t("booking_actions.delete_all") }}
+          </button>
+        </div>
+
         <div
           v-for="booking in bookings"
           :key="booking._id"
@@ -260,6 +339,15 @@ const getSeatTypes = (populatedSeats) => {
                   ></span>
                   {{ getStatusLabel(booking.booking_status) }}
                 </span>
+
+                <!-- Delete Button (History Only) -->
+                <button
+                  v-if="activeTab === 'history'"
+                  @click="handleDeleteHistory(booking._id, $event)"
+                  class="w-7 h-7 rounded-lg flex items-center justify-center bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all active:scale-90"
+                >
+                  <Trash2 :size="14" />
+                </button>
               </div>
             </div>
 
@@ -421,9 +509,31 @@ const getSeatTypes = (populatedSeats) => {
                 <div
                   class="qr-glow-effect absolute inset-0 rounded-[1.5rem] opacity-20 bg-gradient-to-tr from-sky-400/0 via-sky-400 to-sky-400/0 pointer-events-none"
                 ></div>
-                <div class="bg-white p-2.5 rounded-2xl shadow-inner mb-4">
-                  <QrCode :size="120" stroke-width="1.5" class="text-black" />
+                <div
+                  class="bg-white p-2.5 rounded-2xl shadow-inner mb-4"
+                  ref="ticketQrRef"
+                >
+                  <qrcode-vue
+                    :value="
+                      selectedBooking.payment?.status === 'Pending' &&
+                      selectedBooking.payment?.payment_method === 'Bakong'
+                        ? selectedBooking.payment.qr
+                        : selectedBooking.reference_code
+                    "
+                    :size="160"
+                    level="H"
+                    render-as="canvas"
+                  />
                 </div>
+
+                <!-- Download Button -->
+                <button
+                  @click="downloadTicketQR"
+                  class="flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 text-[10px] font-bold uppercase tracking-wider hover:bg-sky-500/20 transition-all mb-4"
+                >
+                  <Download :size="14" />
+                  {{ t("actions.download_qr") || "Save QR Image" }}
+                </button>
                 <p
                   class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] mb-1"
                 >

@@ -43,7 +43,7 @@ import AdminHeader from "@/components/layout/AdminHeader.vue";
 const appStore = useAppStore();
 
 const sidebarWidth = computed(() => {
-  return appStore.sidebarCollapsed ? "64px" : "240px";
+  return appStore.sidebarCollapsed ? "70px" : "240px";
 });
 
 const breadcrumbs = computed(() => appStore.breadcrumbs);

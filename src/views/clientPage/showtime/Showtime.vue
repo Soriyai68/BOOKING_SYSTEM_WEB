@@ -1,8 +1,9 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/stores/auth";
+import { debounce } from "lodash-es";
 import {
   MapPin,
   Clock,
@@ -68,54 +69,55 @@ const loadShowtimes = async () => {
   try {
     const params = {
       show_date: selectedDate.value.fullDate,
+      search: searchQuery.value || undefined,
       status: "scheduled",
       forBooking: true,
     };
+    // Fetch showtimes
     const response = await showtimeService.getShowtimes(params);
-    if (response && response.data) {
-      const showtimesWithSeats = await Promise.all(
-        response.data.map(async (s) => {
-          try {
-            // Fetch seat status
-            const seats = await seatBookingService.getShowtimeSeatStatus(s.id);
-            const availableSeats = seats.filter(
-              (seat) => seat.status === "available",
-            ).length;
-            const totalSeats = seats.length;
+    if (!response?.data) return;
 
-            return {
-              ...s,
-              title: s.movie_title,
-              poster: s.movie_poster,
-              hall: s.hall_name,
-              duration: movieService.formatDuration(s.duration_minutes),
-              genre: s.movie_genres || "Action / Drama",
-              availableSeats,
-              totalSeats,
-              time: s.start_time,
-              selected: bookingStore.selectedShowtime?.id === s.id,
-              disabled: availableSeats === 0,
-            };
-          } catch (err) {
-            console.error(`Failed to fetch seats for showtime ${s.id}:`, err);
-            return {
-              ...s,
-              title: s.movie_title,
-              poster: s.movie_poster,
-              hall: s.hall_name,
-              duration: movieService.formatDuration(s.duration_minutes),
-              genre: "Action / Drama",
-              availableSeats: 0,
-              totalSeats: 0,
-              time: s.start_time,
-              selected: bookingStore.selectedShowtime?.id === s.id,
-              disabled: true,
-            };
-          }
-        }),
-      );
-      movies.value = showtimesWithSeats;
-    }
+    // Fetch unique movie details for genres
+    const movieIds = [...new Set(response?.data?.map((s) => s.movie_id))];
+    const moviesData = await Promise.all(
+      movieIds.map((id) => movieService.getMovie(id)),
+    );
+    const movieMap = Object.fromEntries(moviesData.map((m) => [m.id, m]));
+
+    // Map showtimes with seat status and genre
+    movies.value = await Promise.all(
+      response.data.map(async (s) => {
+        try {
+          const seats = await seatBookingService.getShowtimeSeatStatus(s.id);
+          const available = seats.filter(
+            (seat) => seat.status === "available",
+          ).length;
+
+          const movie = movieMap[s.movie_id];
+          const genreText =
+            movie?.genres
+              ?.map((g) => movieService.getGenreLabel(g))
+              .join(" / ") || "Action";
+
+          return {
+            ...s,
+            title: s.movie_title,
+            poster: s.movie_poster,
+            hall: s.hall_name,
+            duration: movieService.formatDuration(s.duration_minutes),
+            genre: genreText,
+            availableSeats: available,
+            totalSeats: seats.length,
+            time: s.start_time,
+            selected: bookingStore.selectedShowtime?.id === s.id,
+            disabled: available === 0,
+          };
+        } catch (err) {
+          console.error(`Error loading showtime ${s.id}:`, err);
+          return { ...s, disabled: true };
+        }
+      }),
+    );
   } catch (error) {
     console.error("Failed to load showtimes:", error);
   } finally {
@@ -140,6 +142,16 @@ const selectMovie = (movie) => {
   });
   bookingStore.selectShowtime(movie);
 };
+
+// Debounced search
+const debouncedSearch = debounce(() => {
+  loadShowtimes();
+}, 500);
+
+// Watch search query
+watch(searchQuery, () => {
+  debouncedSearch();
+});
 
 const selectedMovie = computed(() => movies.value.find((m) => m.selected));
 
@@ -332,7 +344,7 @@ const handleReserveSeats = () => {
       </div>
 
       <!-- Movie Grid -->
-      <div class="space-y-4">
+      <div v-if="hasShowtimes" class="space-y-4">
         <div
           v-for="movie in movies"
           :key="movie.id"
@@ -456,6 +468,37 @@ const handleReserveSeats = () => {
             class="h-[2px] bg-gradient-to-r from-transparent via-sky-500 to-transparent"
           ></div>
         </div>
+      </div>
+
+      <!-- No Showtimes Found -->
+      <div
+        v-if="noShowtimes"
+        class="flex flex-col items-center justify-center py-20 text-center"
+      >
+        <div
+          class="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center mb-4 border border-white/[0.06]"
+        >
+          <TicketX :size="32" class="text-neutral-600" />
+        </div>
+        <h3 class="text-lg font-bold text-white mb-1">
+          {{ t("bookings.noShowtimesFound") }}
+        </h3>
+        <!-- <p class="text-sm text-neutral-500 max-w-xs mx-auto">
+          {{ t("bookings.tryAdjustingFilters") }}
+        </p> -->
+      </div>
+
+      <!-- Loading State -->
+      <div
+        v-if="loading"
+        class="flex flex-col items-center justify-center py-20"
+      >
+        <div
+          class="w-10 h-10 border-4 border-sky-500/30 border-t-sky-500 rounded-full animate-spin mb-4"
+        ></div>
+        <p class="text-neutral-500 text-sm font-medium">
+          {{ t("messages.loading") }}
+        </p>
       </div>
     </div>
 

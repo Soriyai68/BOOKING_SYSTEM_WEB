@@ -49,6 +49,15 @@
                 {{ booking.payment_status }}
               </el-tag>
             </el-descriptions-item>
+            <el-descriptions-item :label="$t('payments.paymentMethod')">
+              <el-tag
+                :type="
+                  getStatusType(paymentMethodOptions, booking.payment_method)
+                "
+              >
+                {{ booking.payment_method || $t("common.n_a") }}
+              </el-tag>
+            </el-descriptions-item>
           </el-descriptions>
         </el-card>
 
@@ -204,6 +213,7 @@ const booking = ref(null);
 
 const bookingStatusOptions = bookingService.BOOKING_STATUSES;
 const paymentStatusOptions = bookingService.PAYMENT_STATUSES;
+const paymentMethodOptions = bookingService.PAYMENT_METHODS;
 
 const loadBookingDetails = async () => {
   loading.value = true;

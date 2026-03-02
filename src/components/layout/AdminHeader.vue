@@ -133,13 +133,13 @@
           <p>{{ t("messages.noNotifications") }}</p>
         </div>
 
-        <template #footer>
+        <!-- <template #footer>
           <div class="notification-footer">
             <el-button @click="goToNotifications" class="view-all-btn">
               {{ t("actions.viewAll") }}
             </el-button>
           </div>
-        </template>
+        </template> -->
       </el-drawer>
 
       <!-- User menu -->

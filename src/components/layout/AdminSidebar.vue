@@ -37,7 +37,7 @@
             <el-icon>
               <BookOpen />
             </el-icon>
-            <span>{{ $t("bookings.title") }}</span>
+            <span>{{ $t("nav.bookingsNav") }}</span>
           </template>
           <el-menu-item
             v-if="isSuperAdmin || canViewBookings"
@@ -46,7 +46,7 @@
             <el-icon>
               <BookOpen />
             </el-icon>
-            <template #title>{{ $t("bookings.title") }}</template>
+            <template #title>{{ $t("nav.bookingsNav") }}</template>
           </el-menu-item>
           <el-menu-item
             v-if="isSuperAdmin || canViewBookingTickets"
@@ -280,7 +280,7 @@
             <el-icon>
               <ClipboardCheck />
             </el-icon>
-            <span>{{ $t("nav.reportsManagement") }}</span>
+            <span>{{ $t("nav.reportsNav") }}</span>
           </template>
           <el-menu-item :index="pathPrefix + '/reports/customer-frequency'">
             <el-icon>

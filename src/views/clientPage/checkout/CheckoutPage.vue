@@ -15,6 +15,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useUiStore } from "@/stores/uiStore";
 import { bookingService } from "@/services/bookingService";
 import { paymentService } from "@/services/paymentService";
+import ClientBakongQR from "@/components/payments/ClientBakongQR.vue";
 
 const router = useRouter();
 const { t } = useI18n();
@@ -39,6 +40,8 @@ const paymentMethods = computed(() => [
 
 const selectedMethod = ref("bakong");
 const isProcessing = ref(false);
+const showBakongQR = ref(false);
+const paymentData = ref(null);
 
 const totalPrice = computed(() => bookingStore.totalPrice);
 
@@ -68,37 +71,101 @@ const handleCompleteBooking = async () => {
     };
 
     const response = await bookingService.createBooking(bookingData);
+    console.log("Booking response:", response);
 
-    if (response?.success && response?.data) {
-      const bookingId = response.data._id || response.data.id;
+    if (response?.success && response?.data?.booking) {
+      const bookingId = response.data.booking._id || response.data.booking.id;
 
       // If Bakong, we might need to create a payment record or handle QR
       if (selectedMethod.value === "bakong") {
-        await paymentService.createPayment({
-          bookingId: bookingId,
-          amount: bookingStore.totalPrice,
-          payment_method: "Bakong",
-          currency: "USD",
-          status: "Pending",
-          description: `Booking for ${bookingStore.selectedShowtime.movie_title}`,
-        });
+        try {
+          const paymentRes = await paymentService.createPayment({
+            bookingId: bookingId,
+            amount: bookingStore.totalPrice,
+            payment_method: "Bakong",
+            currency: "USD",
+            status: "Pending",
+            description: `Booking for ${bookingStore.selectedShowtime.movie_title}`,
+          });
+          console.log("Payment creation response:", paymentRes);
+          if (paymentRes?.success && paymentRes?.data?.payment) {
+            paymentData.value = paymentRes.data.payment;
+            showBakongQR.value = true;
+            return; // Don't redirect yet
+          } else {
+            // Payment creation failed but response was returned (e.g. business logic error)
+            await bookingService.cancelBooking(bookingId);
+            uiStore.showToast(
+              paymentRes?.message || t("payments.initiateFailed"),
+              "error",
+            );
+          }
+        } catch (paymentErr) {
+          console.error("Payment initiation failed:", paymentErr);
+          // Gateway error or network issue - cancel the booking to avoid stale pending
+          await bookingService.cancelBooking(bookingId);
+          uiStore.showToast(t("payments.initiateFailed"), "error");
+        }
       }
 
-      // Clear selection after successful booking
-      // bookingStore.clearSelection(); // Optional: might want to keep it until confirmation is seen
-
-      router.push({
-        path: "/layout/confirmation",
-        query: { bookingId: bookingId },
-      });
+      // If Cash, redirect immediately
+      if (selectedMethod.value === "cash") {
+        router.push({
+          path: "/layout/confirmation",
+          query: { bookingId: bookingId },
+        });
+      }
     } else {
+      console.warn("Booking creation unsuccessful:", response);
       uiStore.showToast(response?.message || t("messages.error"), "error");
     }
   } catch (error) {
-    console.error("Booking failed:", error);
+    console.error("Booking failed with exception:", error);
     uiStore.showToast(t("messages.createFailed"), "error");
   } finally {
     isProcessing.value = false;
+  }
+};
+
+const handlePaymentSuccess = () => {
+  showBakongQR.value = false;
+  const bId =
+    paymentData.value.bookingId?._id ||
+    paymentData.value.bookingId?.id ||
+    paymentData.value.bookingId;
+
+  uiStore.showToast(t("payments.paymentSuccess"), "success");
+
+  router.push({
+    path: "/layout/confirmation",
+    query: { bookingId: bId },
+  });
+};
+
+const handleQRClose = async (isPaid) => {
+  if (isPaid) {
+    handlePaymentSuccess();
+    return;
+  }
+
+  // If they close without paying, cancel the booking
+  const bId =
+    paymentData.value.bookingId?._id ||
+    paymentData.value.bookingId?.id ||
+    paymentData.value.bookingId;
+
+  showBakongQR.value = false;
+  isProcessing.value = true;
+
+  try {
+    await bookingService.cancelBooking(bId);
+    uiStore.showToast(t("payments.paymentFailed"), "warning");
+    // Optionally stay on checkout page or redirect to showtimes
+  } catch (error) {
+    console.error("Failed to cancel unpaid booking:", error);
+  } finally {
+    isProcessing.value = false;
+    paymentData.value = null;
   }
 };
 </script>
@@ -215,6 +282,18 @@ const handleCompleteBooking = async () => {
           <span v-else>{{ t("client.checkout.completeBooking") }}</span>
         </button>
       </div>
+    </div>
+
+    <!-- Bakong QR Modal -->
+    <div
+      v-if="showBakongQR"
+      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+    >
+      <ClientBakongQR
+        :payment="paymentData"
+        @close="handleQRClose"
+        @paid="handlePaymentSuccess"
+      />
     </div>
   </div>
 </template>

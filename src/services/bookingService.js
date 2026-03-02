@@ -171,4 +171,10 @@ export const bookingService = {
     { value: "Failed", label: "Failed", type: "danger" }, // Changed color to type
     { value: "Refunded", label: "Refunded", type: "info" }, // Changed color to type
   ],
+  PAYMENT_METHODS: [
+    { value: "Bakong", label: "Bakong", type: "primary" },
+    { value: "Cash", label: "Cash", type: "success" },
+    { value: "PayAtCinema", label: "Pay At Cinema", type: "info" },
+    { value: "Card", label: "Card", type: "warning" },
+  ],
 };

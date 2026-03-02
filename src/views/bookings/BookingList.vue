@@ -524,6 +524,15 @@ const editForm = reactive({
   payment_status: "",
 });
 
+watch(
+  () => editForm.booking_status,
+  (newStatus) => {
+    if (newStatus === "Cancelled") {
+      editForm.payment_status = "Failed";
+    }
+  },
+);
+
 const paymentDialogVisible = ref(false);
 const paymentForm = reactive({
   bookingId: null,

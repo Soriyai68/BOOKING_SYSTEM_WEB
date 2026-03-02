@@ -14,6 +14,7 @@ import {
   Clock,
   Loader2,
 } from "lucide-vue-next";
+import { formatTime, formatDate } from "../../../utils/formatters";
 
 const router = useRouter();
 const route = useRoute();
@@ -43,12 +44,12 @@ onMounted(async () => {
 });
 
 const handleFinish = () => {
-  bookingStore.clearSelection();
+  bookingStore.clearBooking();
   router.push("/layout/showtimes");
 };
 
 const goToTickets = () => {
-  bookingStore.clearSelection();
+  bookingStore.clearBooking();
   router.push("/layout/settings/tickets");
 };
 </script>
@@ -115,7 +116,7 @@ const goToTickets = () => {
                 :key="seat.seatId"
                 class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/[0.06] text-sky-400"
               >
-                {{ seat.seat_number }}
+                {{ seat.seat_identifier }}
               </span>
             </div>
             <p class="text-[10px] text-neutral-500 mt-2 font-mono">
@@ -130,13 +131,13 @@ const goToTickets = () => {
           <div class="flex items-center gap-3 text-sm">
             <Calendar :size="16" class="text-neutral-500" />
             <span class="text-neutral-300 font-medium">{{
-              booking.showtime?.show_date
+              formatDate(booking.showtime?.show_date)
             }}</span>
           </div>
           <div class="flex items-center gap-3 text-sm">
             <Clock :size="16" class="text-neutral-500" />
             <span class="text-neutral-300 font-medium">{{
-              booking.showtime?.start_time
+              formatTime(booking.showtime?.start_time)
             }}</span>
           </div>
           <div class="flex items-center gap-3 text-sm">
