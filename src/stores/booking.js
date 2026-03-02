@@ -1,10 +1,27 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { computed } from "vue";
+import { useLocalStorage } from "@vueuse/core";
 
 export const useBookingStore = defineStore("booking", () => {
-  const selectedShowtime = ref(null);
-  const selectedSeats = ref([]);
-  const movieDetails = ref(null);
+  const customSerializer = {
+    read: (v) => {
+      if (!v) return null;
+      try {
+        return JSON.parse(v);
+      } catch (e) {
+        return null;
+      }
+    },
+    write: (v) => JSON.stringify(v),
+  };
+
+  const selectedShowtime = useLocalStorage("booking_showtime", null, {
+    serializer: customSerializer,
+  });
+  const selectedSeats = useLocalStorage("booking_seats", []);
+  const movieDetails = useLocalStorage("booking_movie", null, {
+    serializer: customSerializer,
+  });
 
   const isShowtimeSelected = computed(() => !!selectedShowtime.value);
   const totalSeatsCount = computed(() => selectedSeats.value.length);

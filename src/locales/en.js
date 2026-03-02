@@ -935,6 +935,7 @@ export default {
     confirmDelete: "Are you sure you want to delete this item?",
     view: "View",
     watch: "Watch",
+    download_qr: "Download QR Code",
     download: "Download",
     downloadPNG: "Download PNG",
     upload: "Upload",

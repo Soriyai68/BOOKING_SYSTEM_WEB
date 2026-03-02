@@ -301,7 +301,7 @@ function handleContinue() {
         </div>
 
         <!-- Seat Grid -->
-        <div class="flex flex-col items-center gap-[5px] sm:gap-2 mb-6">
+        <div class="flex flex-col items-center gap-1.5 sm:gap-2 mb-6">
           <div
             v-for="rowData in seatMap"
             :key="rowData.row"
@@ -315,7 +315,7 @@ function handleContinue() {
             </span>
 
             <!-- Seats -->
-            <div class="flex items-center gap-[3px] sm:gap-1.5">
+            <div class="flex items-center gap-1 sm:gap-1.5">
               <button
                 v-for="seat in rowData.seats"
                 :key="seat.id"
@@ -347,7 +347,7 @@ function handleContinue() {
 
             <!-- Row label right -->
             <span
-              class="w-4 sm:w-6 text-center text-[9px] sm:text-[11px] font-bold text-neutral-500 hidden sm:block"
+              class="w-4 sm:w-6 text-center text-[9px] sm:text-[11px] font-bold text-neutral-500"
             >
               {{ rowData.row }}
             </span>
@@ -487,7 +487,7 @@ function handleContinue() {
 }
 
 .seats-screen {
-  width: 70%;
+  width: 95%;
   height: 4px;
   border-radius: 50%;
   background: linear-gradient(
@@ -500,18 +500,18 @@ function handleContinue() {
 }
 
 .seats-single {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 }
 
 .seats-couple {
-  width: 48px;
-  height: 28px;
+  width: 42px;
+  height: 24px;
 }
 
 .seats-queen {
-  width: 56px;
-  height: 28px;
+  width: 50px;
+  height: 24px;
 }
 
 @media (min-width: 640px) {

@@ -4,7 +4,6 @@ import { useUiStore } from "@/stores/uiStore";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import api from "@/utils/api";
-import QrcodeVue from "qrcode.vue";
 import {
   ArrowLeft,
   Ticket,
@@ -12,7 +11,6 @@ import {
   MapPin,
   Clock,
   Inbox,
-  QrCode,
   Armchair,
   DollarSign,
   CreditCard,
@@ -128,19 +126,7 @@ const getSeatTypes = (populatedSeats) => {
   return types.join(", ");
 };
 
-const ticketQrRef = ref(null);
-
-const downloadTicketQR = () => {
-  const canvas = ticketQrRef.value.querySelector("canvas");
-  if (!canvas) return;
-
-  const link = document.createElement("a");
-  link.download = `ticket-qr-${selectedBooking.value.reference_code}.png`;
-  link.href = canvas.toDataURL("image/png");
-  link.click();
-
-  uiStore.showToast(t("messages.qrSaved") || "QR Code saved successfully");
-};
+// No QR download needed
 
 const handleDeleteHistory = async (bookingId, event) => {
   if (event) event.stopPropagation();
@@ -413,7 +399,7 @@ const handleClearAllHistory = async () => {
                   <p
                     class="text-[8px] text-neutral-500 font-bold uppercase tracking-widest leading-none mb-1"
                   >
-                    {{ t("seats") }}
+                    {{ t("bookings.seats") }}
                   </p>
                   <p class="text-[11px] font-bold text-white leading-none">
                     {{ booking.seat_count }}
@@ -498,48 +484,25 @@ const handleClearAllHistory = async () => {
               </div>
             </div>
 
-            <!-- Premium QR Card -->
-            <div class="relative group mt-1 mb-6">
+            <!-- Reference Code Card -->
+            <div class="relative group mt-2 mb-6">
               <div
-                class="absolute inset-0 bg-sky-500/10 blur-2xl rounded-3xl group-hover:bg-sky-500/20 transition-all duration-500"
-              ></div>
-              <div
-                class="relative bg-white rounded-[1.5rem] p-6 flex flex-col items-center shadow-xl"
+                class="relative bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5 flex items-center justify-between shadow-lg backdrop-blur-md"
               >
-                <div
-                  class="qr-glow-effect absolute inset-0 rounded-[1.5rem] opacity-20 bg-gradient-to-tr from-sky-400/0 via-sky-400 to-sky-400/0 pointer-events-none"
-                ></div>
-                <div
-                  class="bg-white p-2.5 rounded-2xl shadow-inner mb-4"
-                  ref="ticketQrRef"
-                >
-                  <qrcode-vue
-                    :value="
-                      selectedBooking.payment?.status === 'Pending' &&
-                      selectedBooking.payment?.payment_method === 'Bakong'
-                        ? selectedBooking.payment.qr
-                        : selectedBooking.reference_code
-                    "
-                    :size="160"
-                    level="H"
-                    render-as="canvas"
-                  />
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center"
+                  >
+                    <Ticket :size="14" class="text-sky-400" />
+                  </div>
+                  <span
+                    class="text-xs font-bold text-neutral-400 uppercase tracking-wider"
+                  >
+                    REFERENCE CODE
+                  </span>
                 </div>
 
-                <!-- Download Button -->
-                <button
-                  @click="downloadTicketQR"
-                  class="flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 text-[10px] font-bold uppercase tracking-wider hover:bg-sky-500/20 transition-all mb-4"
-                >
-                  <Download :size="14" />
-                  {{ t("actions.download_qr") || "Save QR Image" }}
-                </button>
-                <p
-                  class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] mb-1"
-                >
-                  REFERENCE CODE
-                </p>
-                <p class="text-2xl font-black text-black tracking-[0.15em]">
+                <p class="text-sm font-black text-sky-400 tracking-wider">
                   {{ selectedBooking.reference_code }}
                 </p>
               </div>
@@ -558,7 +521,7 @@ const handleClearAllHistory = async () => {
                   </div>
                   <span
                     class="text-xs font-bold text-neutral-400 uppercase tracking-wider"
-                    >{{ $t("seats") }}</span
+                    >{{ $t("bookings.seats") }}</span
                   >
                 </div>
                 <span class="text-sm font-bold text-white">
@@ -765,17 +728,6 @@ const handleClearAllHistory = async () => {
 }
 
 .qr-glow-effect {
-  background-size: 200% 200%;
-  animation: qr-glow 4s ease-in-out infinite;
-}
-
-@keyframes qr-glow {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+  display: none;
 }
 </style>

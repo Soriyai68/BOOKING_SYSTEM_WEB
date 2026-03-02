@@ -915,6 +915,7 @@ export default {
     viewAll: "មើលទាំងអស់",
     markAllAsRead: "សម្គាល់ថាអានទាំងអស់",
     clearAll: "លុបទាំងអស់",
+    download_qr: "ទាញយក QR code",
     downloadPNG: "ទាញយករូបភាព PNG",
     upload: "បញ្ជូន",
     more: "ផ្សេងៗ",
