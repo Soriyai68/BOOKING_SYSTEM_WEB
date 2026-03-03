@@ -140,6 +140,8 @@ export default {
     delete: "Delete",
     edit: "Edit",
     download_qr: "Save QR Image",
+    activate: "Activate",
+    deactivate: "Deactivate",
   },
   booking_actions: {
     delete_history: "Remove from History",
@@ -1186,6 +1188,13 @@ export default {
     },
     messages: {
       qrSaved: "QR Code saved to your device",
+      activated: "Account activated successfully",
+      deactivated: "Account deactivated successfully",
+      confirm: {
+        title: "Confirmation",
+        activate: "Are you sure you want to activate {name}'s account?",
+        deactivate: "Are you sure you want to deactivate {name}'s account?",
+      },
     },
   },
 };

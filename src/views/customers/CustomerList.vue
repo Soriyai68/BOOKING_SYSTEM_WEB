@@ -99,7 +99,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('actions.title')" width="200">
+        <el-table-column :label="$t('actions.title')" width="220">
           <template #default="{ row }">
             <el-button
               type="info"
@@ -136,6 +136,17 @@
               @click="restoreCustomer(row.id)"
             >
               {{ $t("actions.restore") }}
+            </el-button>
+            <el-button
+              v-if="!row.deleted_at"
+              :type="row.isActive ? 'warning' : 'success'"
+              size="small"
+              link
+              @click="toggleStatus(row)"
+            >
+              {{
+                row.isActive ? $t("customers.inactive") : $t("customers.active")
+              }}
             </el-button>
           </template>
         </el-table-column>
@@ -246,6 +257,43 @@ const handleCurrentChange = (newPage) => {
 
 const goToCreatePage = () => {
   router.push({ name: "CreateCustomer", params: { id: null } });
+};
+
+const toggleStatus = async (customer) => {
+  try {
+    const newStatus = !customer.isActive;
+    const actionKey = newStatus ? "activate" : "deactivate";
+
+    await ElMessageBox.confirm(
+      t(`messages.confirm.${actionKey}`, {
+        name: customer.name || customer.phone || customer.email,
+      }),
+      t("messages.confirm.title"),
+      {
+        confirmButtonText: t(
+          `actions.${newStatus ? "activate" : "deactivate"}`,
+        ),
+        cancelButtonText: t("actions.cancel"),
+        type: newStatus ? "success" : "warning",
+      },
+    );
+
+    const response = await customerService.updateCustomer(customer.id, {
+      isActive: newStatus,
+    });
+
+    if (response.success || response) {
+      ElMessage.success(
+        t(`messages.${newStatus ? "activated" : "deactivated"}`),
+      );
+      appStore.triggerRefresh();
+    }
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("Toggle customer status error:", error);
+      ElMessage.error(t("errors.updateFailed"));
+    }
+  }
 };
 
 const editCustomer = (id) => {

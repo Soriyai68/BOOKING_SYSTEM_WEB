@@ -136,6 +136,8 @@ export default {
     save: "រក្សាទុក",
     delete: "លុប",
     edit: "កែសម្រួល",
+    activate: "ធ្វើឱ្យសកម្ម",
+    deactivate: "ធ្វើឱ្យអសកម្ម",
   },
   booking_actions: {
     delete_history: "លុបចេញពីប្រវត្តិ",
@@ -1158,6 +1160,16 @@ export default {
       totalPrice: "តម្លៃសរុប",
       viewTickets: "មើលសំបុត្ររបស់ខ្ញុំ",
       backToHome: "ត្រលប់ទៅទំព័រដើម",
+    },
+    messages: {
+      qrSaved: "កូដ QR ត្រូវបានរក្សាទុកក្នុងឧបករណ៍របស់អ្នក",
+      activated: "គណនីត្រូវបានធ្វើឱ្យសកម្មដោយជោគជ័យ",
+      deactivated: "គណនីត្រូវបានធ្វើឱ្យអសកម្មដោយជោគជ័យ",
+      confirm: {
+        title: "ការបញ្ជាក់",
+        activate: "តើអ្នកពិតជាចង់ធ្វើឱ្យគណនីរបស់ {name} សកម្មមែនទេ?",
+        deactivate: "តើអ្នកពិតជាចង់ធ្វើឱ្យគណនីរបស់ {name} អសកម្មមែនទេ?",
+      },
     },
   },
 };

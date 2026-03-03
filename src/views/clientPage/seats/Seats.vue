@@ -298,7 +298,6 @@ function handleContinue() {
           <div
             class="flex items-center justify-center gap-1.5 text-neutral-600"
           >
-            <Monitor :size="11" />
             <span class="text-[9px] uppercase tracking-widest font-medium"
               >Screen</span
             >

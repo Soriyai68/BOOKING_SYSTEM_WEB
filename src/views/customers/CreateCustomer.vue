@@ -141,8 +141,9 @@ const formatPhoneNumber = (inputValue) => {
 
 const validatePhone = (rule, value, callback) => {
   if (!value) {
-    callback(new Error(t("validation.phoneRequired")));
-  } else if (!/^\+855[0-9]{8,9}$/.test(value)) {
+    return callback(); // Optional
+  }
+  if (!/^\+855[0-9]{8,9}$/.test(value)) {
     callback(new Error(t("validation.phoneInvalid")));
   } else {
     callback();
@@ -168,13 +169,13 @@ const rules = computed(() => {
       trigger: "blur",
     });
     phoneRules.push({
-      required: true,
+      required: false,
       validator: validatePhone,
       trigger: "blur",
     });
   } else if (currentType === "guest") {
     emailRules.push({
-      required: true,
+      required: false,
       message: t("validation.required"),
       trigger: "blur",
     });
