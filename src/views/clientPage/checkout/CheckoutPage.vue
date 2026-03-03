@@ -40,8 +40,11 @@ const paymentMethods = computed(() => [
 
 const selectedMethod = ref("bakong");
 const isProcessing = ref(false);
-const showBakongQR = ref(false);
-const paymentData = ref(null);
+const showBakongQR = ref(!!bookingStore.paymentData);
+const paymentData = computed({
+  get: () => bookingStore.paymentData,
+  set: (val) => (bookingStore.paymentData = val),
+});
 
 const totalPrice = computed(() => bookingStore.totalPrice);
 
@@ -128,11 +131,14 @@ const handleCompleteBooking = async () => {
 };
 
 const handlePaymentSuccess = () => {
-  showBakongQR.value = false;
   const bId =
     paymentData.value.bookingId?._id ||
     paymentData.value.bookingId?.id ||
     paymentData.value.bookingId;
+
+  // Clear payment data from store upon success
+  bookingStore.paymentData = null;
+  showBakongQR.value = false;
 
   uiStore.showToast(t("payments.paymentSuccess"), "success");
 
@@ -165,7 +171,7 @@ const handleQRClose = async (isPaid) => {
     console.error("Failed to cancel unpaid booking:", error);
   } finally {
     isProcessing.value = false;
-    paymentData.value = null;
+    bookingStore.paymentData = null;
   }
 };
 </script>

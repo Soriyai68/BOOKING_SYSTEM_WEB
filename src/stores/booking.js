@@ -22,6 +22,9 @@ export const useBookingStore = defineStore("booking", () => {
   const movieDetails = useLocalStorage("booking_movie", null, {
     serializer: customSerializer,
   });
+  const paymentData = useLocalStorage("booking_payment", null, {
+    serializer: customSerializer,
+  });
 
   const isShowtimeSelected = computed(() => !!selectedShowtime.value);
   const totalSeatsCount = computed(() => selectedSeats.value.length);
@@ -52,12 +55,14 @@ export const useBookingStore = defineStore("booking", () => {
     selectedShowtime.value = null;
     selectedSeats.value = [];
     movieDetails.value = null;
+    paymentData.value = null;
   };
 
   return {
     selectedShowtime,
     selectedSeats,
     movieDetails,
+    paymentData,
     isShowtimeSelected,
     totalSeatsCount,
     totalPrice,

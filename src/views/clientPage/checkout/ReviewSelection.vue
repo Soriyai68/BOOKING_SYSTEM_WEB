@@ -41,7 +41,7 @@ const handleCheckout = () => {
       <!-- Header -->
       <header class="flex items-center gap-4 mb-8">
         <button
-          @click="router.back()"
+          @click="router.push('/layout/seats')"
           class="w-10 h-10 rounded-xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] cursor-pointer"
         >
           <ArrowLeft :size="20" />

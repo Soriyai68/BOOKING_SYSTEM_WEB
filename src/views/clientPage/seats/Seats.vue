@@ -237,7 +237,7 @@ function handleContinue() {
       >
         <div class="flex items-center gap-3">
           <button
-            @click="router.back()"
+            @click="router.push('/layout/showtimes')"
             class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] cursor-pointer"
           >
             <ArrowLeft :size="18" class="text-neutral-400" />
