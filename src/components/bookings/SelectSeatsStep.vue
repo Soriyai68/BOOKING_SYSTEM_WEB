@@ -120,6 +120,7 @@ import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import { seatService } from "@/services/seatService";
 import { seatBookingService } from "@/services/seatBookingService";
+import { useAutoRefresh } from "@/composables/useAutoRefresh";
 
 const { t } = useI18n();
 
@@ -133,9 +134,14 @@ const props = defineProps({
     required: true,
   },
   excludeBookingId: {
-    type: String,
+    type: [String, Number],
     default: null,
   },
+});
+
+// Auto-refresh seat data when showtime or booking changes, or when the tab is focused
+useAutoRefresh(() => loadSeatData(), {
+  deps: [() => props.showtime, () => props.excludeBookingId],
 });
 
 const emit = defineEmits(["update:modelValue", "update:selectedSeatDetails"]);
@@ -146,6 +152,7 @@ const loading = reactive({
 
 const hallSeats = ref([]);
 const bookedSeats = ref([]);
+const selectedSeats = ref([]);
 
 const isSameId = (id1, id2) => {
   if (!id1 || !id2) return false;
@@ -195,16 +202,6 @@ const loadSeatData = async () => {
     loading.seats = false;
   }
 };
-
-watch(
-  [() => props.showtime, () => props.excludeBookingId],
-  ([newShowtime]) => {
-    if (newShowtime) {
-      loadSeatData();
-    }
-  },
-  { immediate: true },
-);
 
 const seatRows = computed(() => {
   if (!hallSeats.value) return [];

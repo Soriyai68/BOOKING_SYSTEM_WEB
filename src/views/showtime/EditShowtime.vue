@@ -126,6 +126,7 @@ const loadHalls = async (theaterId) => {
 };
 
 const handleUpdateSuccess = () => {
+  appStore.triggerRefresh();
   router.push({ name: "Showtimes" });
 };
 

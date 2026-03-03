@@ -285,6 +285,7 @@ const submitBooking = async () => {
       }
     } else {
       ElMessage.success(t("bookings.createSuccess"));
+      appStore.triggerRefresh();
       router.push(getAdminPath("/bookings"));
     }
   } catch (error) {
@@ -338,6 +339,7 @@ const handleRegenerateQR = async () => {
 const onPaymentPaid = async () => {
   ElMessage.success(t("payments.paymentSuccess"));
   showBakongDialog.value = false;
+  appStore.triggerRefresh();
   router.push(getAdminPath("/bookings"));
 };
 
@@ -356,6 +358,7 @@ const onPaymentDialogClose = async (paid) => {
         console.error("Failed to cancel unpaid booking:", error);
       }
     }
+    appStore.triggerRefresh();
     router.push(getAdminPath("/bookings"));
   }
 };

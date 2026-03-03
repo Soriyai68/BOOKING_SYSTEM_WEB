@@ -7,6 +7,7 @@ import { useBookingStore } from "@/stores/booking";
 import { seatService } from "@/services/seatService";
 import { seatBookingService } from "@/services/seatBookingService";
 import { useUiStore } from "@/stores/uiStore";
+import { useAutoRefresh } from "@/composables/useAutoRefresh";
 
 const router = useRouter();
 const { t } = useI18n();
@@ -19,7 +20,11 @@ onMounted(() => {
     router.push("/layout/showtimes");
     return;
   }
-  loadSeats();
+});
+
+// Auto-refresh seat status when showtime changes or when the tab is focused
+useAutoRefresh(() => loadSeats(), {
+  deps: [() => bookingStore.selectedShowtime],
 });
 
 const movieTitle = computed(

@@ -167,6 +167,7 @@ import { Plus, Search } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
 import { debounce } from "lodash-es";
 import { toLocalPhone } from "@/utils/formatters";
+import { useAutoRefresh } from "@/composables/useAutoRefresh";
 
 const appStore = useAppStore();
 const router = useRouter();
@@ -183,15 +184,24 @@ const customers = ref([]);
 const customerTable = ref(null);
 const includeDeleted = ref(false);
 
+// Auto-refresh the customer list when filters change, the tab is focused, or global CRUD occurs
+useAutoRefresh(() => loadCustomers(true), {
+  deps: [
+    statusFilter,
+    customerTypeFilter,
+    includeDeleted,
+    () => appStore.dataVersion,
+  ],
+});
+
+watch([statusFilter, customerTypeFilter, includeDeleted], () => {
+  currentPage.value = 1;
+});
+
 const debouncedSearch = debounce(() => {
   currentPage.value = 1;
   loadCustomers();
 }, 500);
-
-watch([statusFilter, customerTypeFilter, includeDeleted], () => {
-  currentPage.value = 1;
-  loadCustomers();
-});
 
 const loadCustomers = async (isBackground = false) => {
   if (!isBackground) {
@@ -264,7 +274,7 @@ const deleteCustomer = async (id) => {
     if (customers.value.length === 1 && currentPage.value > 1) {
       currentPage.value--;
     }
-    loadCustomers();
+    appStore.triggerRefresh();
   } catch (error) {
     if (error !== "cancel") {
       console.error("Failed to delete customer:", error);
@@ -288,7 +298,7 @@ const restoreCustomer = async (id) => {
     const res = await customerService.restoreCustomer(id);
     if (res.success) {
       ElMessage.success(t("customers.restoreSuccess"));
-      loadCustomers();
+      appStore.triggerRefresh();
     } else {
       ElMessage.error(res.message || t("customers.restoreError"));
     }
@@ -318,9 +328,7 @@ onMounted(() => {
     { title: t("nav.dashboard"), path: "/admin/dashboard" },
     { title: t("customers.title"), path: "/admin/customers" },
   ]);
-  loadCustomers();
 });
-
 </script>
 
 <style scoped>

@@ -1,79 +1,89 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { defineStore } from "pinia";
+import { ref } from "vue";
 
-export const useAppStore = defineStore('app', () => {
-  const sidebarCollapsed = ref(false)
+export const useAppStore = defineStore("app", () => {
+  const sidebarCollapsed = ref(false);
   // Initialize theme from localStorage or system preference
   const getInitialTheme = () => {
-    const stored = localStorage.getItem('cinema_theme')
-    if (stored) return stored
+    const stored = localStorage.getItem("cinema_theme");
+    if (stored) return stored;
 
     // Check system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark'
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+      return "dark";
     }
-    return 'light'
-  }
+    return "light";
+  };
 
-  const theme = ref(getInitialTheme())
-  const loading = ref(false)
-  const breadcrumbs = ref([])
+  const theme = ref(getInitialTheme());
+  const loading = ref(false);
+  const breadcrumbs = ref([]);
 
   const toggleSidebar = () => {
-    sidebarCollapsed.value = !sidebarCollapsed.value
-  }
+    sidebarCollapsed.value = !sidebarCollapsed.value;
+  };
 
   const setSidebarCollapsed = (collapsed) => {
-    sidebarCollapsed.value = collapsed
-  }
+    sidebarCollapsed.value = collapsed;
+  };
 
   const setTheme = (newTheme) => {
-    theme.value = newTheme
-    localStorage.setItem('cinema_theme', newTheme)
+    theme.value = newTheme;
+    localStorage.setItem("cinema_theme", newTheme);
 
     // Update Element Plus theme
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark')
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark')
+      document.documentElement.classList.remove("dark");
     }
 
-    console.log(`Theme changed to: ${newTheme}`)
-  }
+    console.log(`Theme changed to: ${newTheme}`);
+  };
 
   // Apply the theme on initial load
-  setTheme(theme.value)
+  setTheme(theme.value);
 
   const toggleTheme = () => {
-    const newTheme = theme.value === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
-  }
+    const newTheme = theme.value === "light" ? "dark" : "light";
+    setTheme(newTheme);
+  };
 
   const setLoading = (isLoading) => {
-    loading.value = isLoading
-  }
+    loading.value = isLoading;
+  };
 
   const setBreadcrumbs = (items) => {
-    breadcrumbs.value = items
-  }
+    breadcrumbs.value = items;
+  };
 
   const addBreadcrumb = (item) => {
-    breadcrumbs.value.push(item)
-  }
+    breadcrumbs.value.push(item);
+  };
 
-
+  // Global Data Version for Sync
+  const dataVersion = ref(0);
+  const triggerRefresh = () => {
+    dataVersion.value++;
+    console.log("Global refresh triggered, new version:", dataVersion.value);
+  };
 
   return {
     sidebarCollapsed,
     theme,
     loading,
     breadcrumbs,
+    dataVersion,
+    triggerRefresh,
     toggleSidebar,
     setSidebarCollapsed,
     setTheme,
     toggleTheme,
     setLoading,
     setBreadcrumbs,
-    addBreadcrumb
-  }
-})
+    addBreadcrumb,
+  };
+});

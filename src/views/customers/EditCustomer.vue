@@ -259,6 +259,7 @@ const handleSubmit = async () => {
     await customerService.updateCustomer(route.params.id, form);
 
     ElMessage.success(t("customers.updateSuccess"));
+    appStore.triggerRefresh();
     router.push({ name: "Customers" });
   } catch (error) {
     console.error("Update customer error:", error);

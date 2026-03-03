@@ -97,6 +97,7 @@ const loadHallsForMultiple = async (theaterId) => {
 
 // --- Form Submission ---
 const handleShowtimesCreated = () => {
+  appStore.triggerRefresh();
   router.push({ name: "Showtimes" });
 };
 

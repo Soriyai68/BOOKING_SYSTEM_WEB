@@ -486,6 +486,7 @@ import BakongQrPayment from "@/components/payments/BakongQRPayment.vue";
 import SelectSeatsStep from "@/components/bookings/SelectSeatsStep.vue";
 
 import { usePath } from "@/composables/usePath";
+import { useAutoRefresh } from "@/composables/useAutoRefresh";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -756,7 +757,7 @@ const confirmSeatUpdate = async () => {
     if (response.success) {
       ElMessage.success(t("messages.updateSuccess"));
       editSeatsDialogVisible.value = false;
-      await loadBookings(); // Refresh the list
+      appStore.triggerRefresh(); // Sync change
     } else {
       ElMessage.error(response.message || t("errors.updateFailed"));
     }
@@ -785,7 +786,7 @@ const handleUpdate = async () => {
     if (response.success) {
       ElMessage.success(t("bookings.updateSuccess"));
       editDialogVisible.value = false;
-      await loadBookings();
+      appStore.triggerRefresh();
     } else {
       ElMessage.error(response.message || t("errors.updateFailed"));
     }
@@ -811,7 +812,7 @@ const cancelBooking = async (id) => {
     const response = await bookingService.cancelBooking(id);
     if (response.success) {
       ElMessage.success(t("bookings.deleteSuccess"));
-      await loadBookings();
+      appStore.triggerRefresh();
     } else {
       ElMessage.error(response.message || t("errors.deleteFailed"));
     }
@@ -842,7 +843,7 @@ const handleCreatePayment = async () => {
       } else {
         ElMessage.success(t("payments.createSuccess"));
         paymentDialogVisible.value = false;
-        await loadBookings();
+        appStore.triggerRefresh();
       }
     } else {
       ElMessage.error(response.message || t("errors.createFailed"));
@@ -858,12 +859,12 @@ const handleCreatePayment = async () => {
 const onPaymentPaid = async () => {
   ElMessage.success(t("payments.paymentSuccess"));
   showBakongDialog.value = false;
-  await loadBookings();
+  appStore.triggerRefresh();
 };
 
 const onPaymentDialogClose = () => {
   showBakongDialog.value = false;
-  loadBookings();
+  appStore.triggerRefresh();
 };
 
 const handleRegenerateQR = async () => {
@@ -888,6 +889,11 @@ const getStatusType = (options, status) => {
   return option ? option.type : "info";
 };
 
+// Auto-refresh the booking list when filters change, the tab is focused, or global CRUD occurs
+useAutoRefresh(() => loadBookings(), {
+  deps: [filters, () => appStore.dataVersion],
+});
+
 watch(
   () => [
     filters.search,
@@ -898,12 +904,10 @@ watch(
   ],
   () => {
     pagination.current_page = 1;
-    loadBookings();
   },
   { deep: true },
 );
 onMounted(() => {
-  loadBookings();
   loadShowtimes();
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: getAdminPath("/dashboard") },

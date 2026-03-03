@@ -21,6 +21,7 @@ import { showtimeService } from "@/services/showtimeService";
 import { movieService } from "@/services/movieService";
 import { seatBookingService } from "@/services/seatBookingService";
 import { format, addDays, startOfDay } from "date-fns";
+import { useAutoRefresh } from "@/composables/useAutoRefresh";
 
 const router = useRouter();
 const { t } = useI18n();
@@ -125,14 +126,18 @@ const loadShowtimes = async () => {
   }
 };
 
-onMounted(async () => {
-  generateDates();
-  await loadShowtimes();
+// Auto-refresh showtimes when date or search changes, or when the tab is focused
+useAutoRefresh(() => loadShowtimes(), {
+  deps: [selectedDate, searchQuery],
 });
 
-const selectDate = async (date) => {
+onMounted(async () => {
+  generateDates();
+});
+
+const selectDate = (date) => {
   dates.value.forEach((d) => (d.active = d.fullDate === date.fullDate));
-  await loadShowtimes();
+  // No need to manually call loadShowtimes(), useAutoRefresh watch will handle it
 };
 
 const selectMovie = (movie) => {
@@ -145,13 +150,9 @@ const selectMovie = (movie) => {
 
 // Debounced search
 const debouncedSearch = debounce(() => {
-  loadShowtimes();
+  // loadShowtimes() will be triggered by the watch in useAutoRefresh
+  // assuming searchQuery is updated by v-model
 }, 500);
-
-// Watch search query
-watch(searchQuery, () => {
-  debouncedSearch();
-});
 
 const selectedMovie = computed(() => movies.value.find((m) => m.selected));
 

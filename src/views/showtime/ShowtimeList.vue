@@ -248,6 +248,7 @@ import { Plus, Search } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
 import { debounce } from "lodash-es";
 import { formatDate } from "@/utils/formatters";
+import { useAutoRefresh } from "@/composables/useAutoRefresh";
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -293,20 +294,10 @@ const debouncedSearch = debounce(() => {
   loadShowtimes();
 }, 500);
 
-// Watchers for filters
-watch(
-  [
-    () => filters.show_date,
-    () => filters.search,
-    () => filters.status,
-    () => filters.theater_id,
-    () => filters.hall_id,
-  ],
-  () => {
-    pagination.current_page = 1;
-    loadShowtimes();
-  },
-);
+// Auto-refresh showtimes when filters change, the tab is focused, or global CRUD occurs
+useAutoRefresh(() => loadShowtimes(), {
+  deps: [filters, () => appStore.dataVersion],
+});
 
 // API Calls
 const loadShowtimes = async () => {
@@ -400,7 +391,7 @@ const deleteShowtime = async (id) => {
     );
     await showtimeService.deleteShowtime(id);
     ElMessage.success(t("showtimes.deleteSuccess"));
-    loadShowtimes();
+    appStore.triggerRefresh();
   } catch (error) {
     if (error !== "cancel") {
       console.error("Failed to delete showtime:", error);
@@ -432,7 +423,7 @@ const forceDeleteSelectedShowtimes = async () => {
     );
     await showtimeService.forceDeleteBulkShowtimes(ids);
     ElMessage.success(t("showtimes.forceDeleteSuccess"));
-    loadShowtimes();
+    appStore.triggerRefresh();
     cancelSelection();
   } catch (error) {
     if (error !== "cancel") {
@@ -487,8 +478,6 @@ onMounted(async () => {
     { title: t("nav.dashboard"), path: "/" },
     { title: t("showtimes.title") },
   ]);
-
-  await loadShowtimes();
 });
 </script>
 

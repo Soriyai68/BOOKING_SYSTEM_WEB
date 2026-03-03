@@ -200,6 +200,7 @@ const handleSubmit = async () => {
     await customerService.createCustomer(form);
 
     ElMessage.success(t("customers.createSuccess"));
+    appStore.triggerRefresh();
     router.push({ name: "Customers" });
   } catch (error) {
     console.error("Create customer error:", error);
