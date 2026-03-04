@@ -148,7 +148,7 @@ export const bookingService = {
    * @returns {Promise<object>}
    */
   async cancelBooking(id, config = {}) {
-    const response = await api.patch(`/bookings/${id}/cancel`, null, config);
+    const response = await api.patch(`/bookings/${id}/cancel`, {}, config);
     return response.data;
   },
 
