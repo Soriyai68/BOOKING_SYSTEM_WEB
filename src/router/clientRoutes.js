@@ -99,6 +99,15 @@ const clientRoutes = [
         },
       },
       {
+        path: "settings/activity-logs",
+        name: "Activity Logs",
+        component: () => import("@/views/clientPage/settings/ActivityLogs.vue"),
+        meta: {
+          title: "Activity History",
+        },
+      },
+
+      {
         path: "settings/tickets",
         name: "My Tickets",
         component: () => import("@/views/clientPage/settings/Tickets.vue"),

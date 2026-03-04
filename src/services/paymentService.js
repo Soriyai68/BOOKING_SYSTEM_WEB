@@ -106,7 +106,7 @@ export const paymentService = {
   },
 
   // Create new payment
-  async createPayment(paymentData) {
+  async createPayment(paymentData, config = {}) {
     const backendData = {
       bookingId: paymentData.bookingId,
       amount: paymentData.amount,
@@ -115,7 +115,7 @@ export const paymentService = {
       status: paymentData.status,
       description: paymentData.description,
     };
-    const response = await api.post("/payments", backendData);
+    const response = await api.post("/payments", backendData, config);
     return response.data;
   },
 

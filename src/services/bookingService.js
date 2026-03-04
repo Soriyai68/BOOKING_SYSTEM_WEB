@@ -126,8 +126,8 @@ export const bookingService = {
    * @param {object} bookingData - The data for the new booking.
    * @returns {Promise<object>}
    */
-  async createBooking(bookingData) {
-    const response = await api.post("/bookings", bookingData);
+  async createBooking(bookingData, config = {}) {
+    const response = await api.post("/bookings", bookingData, config);
     return response.data;
   },
 
@@ -147,8 +147,8 @@ export const bookingService = {
    * @param {string} id - The booking ID.
    * @returns {Promise<object>}
    */
-  async cancelBooking(id) {
-    const response = await api.patch(`/bookings/${id}/cancel`);
+  async cancelBooking(id, config = {}) {
+    const response = await api.patch(`/bookings/${id}/cancel`, null, config);
     return response.data;
   },
 

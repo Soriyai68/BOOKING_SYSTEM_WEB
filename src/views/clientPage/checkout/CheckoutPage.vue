@@ -73,7 +73,9 @@ const handleCompleteBooking = async () => {
         selectedMethod.value === "bakong" ? "Bakong" : "PayAtCinema",
     };
 
-    const response = await bookingService.createBooking(bookingData);
+    const response = await bookingService.createBooking(bookingData, {
+      skipGlobalError: true,
+    });
     console.log("Booking response:", response);
 
     if (response?.success && response?.data?.booking) {
@@ -82,14 +84,17 @@ const handleCompleteBooking = async () => {
       // If Bakong, we might need to create a payment record or handle QR
       if (selectedMethod.value === "bakong") {
         try {
-          const paymentRes = await paymentService.createPayment({
-            bookingId: bookingId,
-            amount: bookingStore.totalPrice,
-            payment_method: "Bakong",
-            currency: "USD",
-            status: "Pending",
-            description: `Booking for ${bookingStore.selectedShowtime.movie_title}`,
-          });
+          const paymentRes = await paymentService.createPayment(
+            {
+              bookingId: bookingId,
+              amount: bookingStore.totalPrice,
+              payment_method: "Bakong",
+              currency: "USD",
+              status: "Pending",
+              description: `Booking for ${bookingStore.selectedShowtime.movie_title}`,
+            },
+            { skipGlobalError: true },
+          );
           console.log("Payment creation response:", paymentRes);
           if (paymentRes?.success && paymentRes?.data?.payment) {
             paymentData.value = paymentRes.data.payment;
@@ -107,7 +112,15 @@ const handleCompleteBooking = async () => {
           console.error("Payment initiation failed:", paymentErr);
           // Gateway error or network issue - cancel the booking to avoid stale pending
           await bookingService.cancelBooking(bookingId);
-          uiStore.showToast(t("payments.initiateFailed"), "error");
+
+          const backendMsg = paymentErr.response?.data?.message || "";
+          let errorMsg = t("messages.paymentInitiateFailed");
+
+          if (backendMsg.includes("Too many pending")) {
+            errorMsg = t("messages.pendingLimitReached");
+          }
+
+          uiStore.showToast(errorMsg, "error");
         }
       }
 
@@ -124,7 +137,18 @@ const handleCompleteBooking = async () => {
     }
   } catch (error) {
     console.error("Booking failed with exception:", error);
-    uiStore.showToast(t("messages.createFailed"), "error");
+    const backendMsg = error.response?.data?.message || "";
+    let errorMsg = t("messages.createFailed");
+
+    if (backendMsg.includes("already have an active booking")) {
+      errorMsg = t("messages.bookingExists");
+    } else if (backendMsg.includes("Too many pending")) {
+      errorMsg = t("messages.pendingLimitReached");
+    } else if (backendMsg) {
+      errorMsg = backendMsg;
+    }
+
+    uiStore.showToast(errorMsg, "error");
   } finally {
     isProcessing.value = false;
   }
@@ -164,7 +188,7 @@ const handleQRClose = async (isPaid) => {
   isProcessing.value = true;
 
   try {
-    await bookingService.cancelBooking(bId);
+    await bookingService.cancelBooking(bId, { skipGlobalError: true });
     uiStore.showToast(t("payments.paymentFailed"), "warning");
     // Optionally stay on checkout page or redirect to showtimes
   } catch (error) {

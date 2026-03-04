@@ -108,4 +108,18 @@ export const customerService = {
     const response = await api.get("/customers/stats");
     return response.data;
   },
+
+  // Get customer activity logs
+  async getActivityLogs(params = {}) {
+    const backendParams = {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      action: params.action,
+    };
+
+    const response = await api.get("/customer/auth/activity-logs", {
+      params: backendParams,
+    });
+    return response.data;
+  },
 };

@@ -13,7 +13,9 @@ import {
   ChevronRight,
   Pencil,
   Ticket,
+  Activity,
 } from "lucide-vue-next";
+
 import { useRouter } from "vue-router";
 import { setLanguage, availableLocales } from "@/i18n";
 import { useAuthStore } from "@/stores/auth";
@@ -107,8 +109,16 @@ const menuItems = computed(() => [
         subtitle: t("settings.privacySecurityDesc"),
         action: () => router.push({ name: "Privacy Security" }),
       },
+      {
+        id: "activityLogs",
+        icon: Activity,
+        title: t("settings.activityHistory"),
+        subtitle: t("settings.activityHistoryDesc"),
+        action: () => router.push({ name: "Activity Logs" }),
+      },
     ],
   },
+
   {
     label: t("settings.preferences"),
     items: [

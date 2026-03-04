@@ -503,6 +503,26 @@ const adminRoutesChildren = [
       titleKey: "settings.title",
       ...createPermissionMeta(PERMISSIONS.SETTINGS_VIEW),
     },
+    children: [
+      {
+        path: "activity-logs",
+        name: "AdminActivityLogs",
+        component: () => import("@/views/settings/ActivityLogs.vue"),
+        meta: {
+          title: "Activity Logs",
+          titleKey: "activity_logs.title",
+        },
+      },
+      {
+        path: "security",
+        name: "AdminSecurity",
+        component: () => import("@/views/settings/Security.vue"),
+        meta: {
+          title: "Privacy & Security",
+          titleKey: "settings.privacySecurity",
+        },
+      },
+    ],
   },
   {
     path: "profile",

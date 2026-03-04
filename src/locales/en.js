@@ -894,6 +894,59 @@ export default {
     deleteAccountConfirmTitle: "Are you absolutely sure?",
     deleteAccountConfirmDesc:
       "Your bookings, profile data, and history will be permanently removed. You will be logged out immediately.",
+    activityHistory: "Activity History",
+    activityHistoryDesc: "View your recent account activity",
+    profile: "Profile Information",
+    profileDesc: "Update your name, email and avatar",
+    accountSettings: "Account Settings",
+    manageAccount:
+      "Manage your administrative account settings and view your activity history.",
+  },
+
+  // Activity Logs
+  activity: {
+    login: "Login",
+    logout: "Logout",
+    book_create_pending: "Create Booking (Pending)",
+    book_create_confirmed: "Create Booking (Confirmed)",
+    book_cancel: "Cancel Booking",
+    book_expired: "Booking Expired",
+    account_deactivated: "Account Deactivated",
+    auth_fail: "Authentication Failed",
+  },
+
+  activity_logs: {
+    title: "Activity History",
+    noActivities: "No activities yet",
+    noActivitiesDesc:
+      "Your recent account activities will appear here once you start using the system.",
+    pageOf: "Page {page} of {total}",
+    actionFailed: "Action Failed",
+    reason: "Reason",
+    titleDesc: "Your recent administrative and account activities",
+    fetchFailed: "Failed to load activity logs",
+    columns: {
+      action: "Action",
+      time: "Time",
+      device: "Device",
+      ip: "IP Address",
+    },
+    actions: {
+      USER_LOGIN: "Logged In",
+      USER_LOGOUT: "Logged Out",
+      USER_CREATE: "Created User",
+      USER_UPDATE: "Updated User",
+      USER_DELETE: "Deleted User",
+      USER_RESTORE: "Restored User",
+      ROLE_UPDATE: "Updated Role",
+      PERMISSION_UPDATE: "Updated Permissions",
+      BOOK_CREATE_PENDING: "Created Booking",
+      BOOK_UPDATE: "Updated Booking",
+      BOOK_CANCEL: "Cancelled Booking",
+      BOOK_RESTORE: "Restored Booking",
+      BOOK_DELETE: "Permanently Deleted Booking",
+      BOOK_UPDATE_SEATS: "Updated Booking Seats",
+    },
   },
 
   // Profile
@@ -985,10 +1038,23 @@ export default {
     deleteFailed: "Failed to delete",
     updateFailed: "Failed to update",
     createFailed: "Failed to create",
+    bookingExists:
+      "You already have an active booking for this showtime. One customer can only book once per showtime.",
+    pendingLimitReached:
+      "You have too many pending 'Pay At Cinema' bookings. Please complete or cancel your existing bookings before making a new one.",
+    paymentInitiateFailed: "Failed to initiate payment. Please try again.",
     downloadSuccess: "Downloaded successfully",
     downloadFailed: "Failed to download",
     notificationDeleted: "Notification deleted successfully",
     notificationDeleteFailed: "Failed to delete notification",
+    qrSaved: "QR Code saved to your device",
+    activated: "Account activated successfully",
+    deactivated: "Account deactivated successfully",
+    confirm: {
+      title: "Confirmation",
+      activate: "Are you sure you want to activate {name}'s account?",
+      deactivate: "Are you sure you want to deactivate {name}'s account?",
+    },
   },
 
   // Table and Pagination
@@ -1185,16 +1251,6 @@ export default {
       totalPrice: "Total Price",
       viewTickets: "View My Tickets",
       backToHome: "Back to Home",
-    },
-    messages: {
-      qrSaved: "QR Code saved to your device",
-      activated: "Account activated successfully",
-      deactivated: "Account deactivated successfully",
-      confirm: {
-        title: "Confirmation",
-        activate: "Are you sure you want to activate {name}'s account?",
-        deactivate: "Are you sure you want to deactivate {name}'s account?",
-      },
     },
   },
 };
