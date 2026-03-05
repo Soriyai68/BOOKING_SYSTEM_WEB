@@ -79,7 +79,8 @@
       :title="$t('payments.bakongPayment')"
       width="400px"
       :show-close="false"
-      @closed="onPaymentDialogClose"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
     >
       <bakong-qr-payment
         v-if="bakongPaymentData"
@@ -121,6 +122,7 @@ const activeStep = ref(0);
 const showBakongDialog = ref(false);
 const bakongPaymentData = ref(null);
 const currentBookingId = ref(null);
+const isHandlingClose = ref(false);
 
 const loading = reactive({
   booking: false,
@@ -344,15 +346,25 @@ const onPaymentPaid = async () => {
 };
 
 const onPaymentDialogClose = async (paid) => {
+  // Guard against double-firing (e.g. from component @close + dialog @closed)
+  if (isHandlingClose.value) return;
+  isHandlingClose.value = true;
+
   showBakongDialog.value = false;
+
   if (paid) {
     ElMessage.success(t("payments.paymentSuccess"));
+    appStore.triggerRefresh();
     router.push(getAdminPath("/bookings"));
   } else {
-    // If not paid, we cancel the booking to release seats
-    if (currentBookingId.value) {
+    // If not paid, cancel the booking to release the seats
+    const bookingIdToCancel = currentBookingId.value;
+    currentBookingId.value = null; // Clear immediately to prevent re-use
+    bakongPaymentData.value = null;
+
+    if (bookingIdToCancel) {
       try {
-        await bookingService.cancelBooking(currentBookingId.value);
+        await bookingService.cancelBooking(bookingIdToCancel);
         ElMessage.warning(t("payments.paymentFailed"));
       } catch (error) {
         console.error("Failed to cancel unpaid booking:", error);
@@ -361,6 +373,8 @@ const onPaymentDialogClose = async (paid) => {
     appStore.triggerRefresh();
     router.push(getAdminPath("/bookings"));
   }
+
+  isHandlingClose.value = false;
 };
 
 /* ===================== */

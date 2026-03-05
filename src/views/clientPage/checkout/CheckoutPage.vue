@@ -40,7 +40,9 @@ const paymentMethods = computed(() => [
 
 const selectedMethod = ref("bakong");
 const isProcessing = ref(false);
-const showBakongQR = ref(!!bookingStore.paymentData);
+const isHandlingQRClose = ref(false);
+// Always start fresh — don't auto-show a QR from a previous session
+const showBakongQR = ref(false);
 const paymentData = computed({
   get: () => bookingStore.paymentData,
   set: (val) => (bookingStore.paymentData = val),
@@ -173,29 +175,43 @@ const handlePaymentSuccess = () => {
 };
 
 const handleQRClose = async (isPaid) => {
+  if (isHandlingQRClose.value) return;
+  isHandlingQRClose.value = true;
+
   if (isPaid) {
     handlePaymentSuccess();
+    isHandlingQRClose.value = false;
     return;
   }
 
-  // If they close without paying, cancel the booking
-  const bId =
-    paymentData.value.bookingId?._id ||
-    paymentData.value.bookingId?.id ||
-    paymentData.value.bookingId;
-
+  // Close the QR modal immediately so the user sees feedback fast
   showBakongQR.value = false;
-  isProcessing.value = true;
 
+  // Grab and clear payment data before async work to prevent re-entry
+  const currentPayment = bookingStore.paymentData;
+  bookingStore.paymentData = null;
+
+  if (!currentPayment) {
+    isHandlingQRClose.value = false;
+    return;
+  }
+
+  const bId =
+    currentPayment.bookingId?._id ||
+    currentPayment.bookingId?.id ||
+    currentPayment.bookingId;
+
+  isProcessing.value = true;
   try {
-    await bookingService.cancelBooking(bId, { skipGlobalError: true });
+    if (bId) {
+      await bookingService.cancelBooking(bId, { skipGlobalError: true });
+    }
     uiStore.showToast(t("payments.paymentFailed"), "warning");
-    // Optionally stay on checkout page or redirect to showtimes
   } catch (error) {
     console.error("Failed to cancel unpaid booking:", error);
   } finally {
     isProcessing.value = false;
-    bookingStore.paymentData = null;
+    isHandlingQRClose.value = false;
   }
 };
 </script>
