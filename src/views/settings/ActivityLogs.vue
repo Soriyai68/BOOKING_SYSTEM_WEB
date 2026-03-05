@@ -1,6 +1,49 @@
 <template>
   <div class="activity-logs-view">
-    <div class="header-actions mb-6 flex justify-end">
+    <div
+      class="header-actions mb-6 flex flex-wrap gap-4 items-center justify-between"
+    >
+      <div
+        class="filter-group flex gap-2 flex-nowrap overflow-x-auto pb-2 sm:pb-0"
+      >
+        <el-select
+          v-model="filters.role"
+          :placeholder="t('system.rolePermissions') || 'Role'"
+          clearable
+          class="role-select"
+          @change="fetchLogs(1)"
+        >
+          <el-option label="Superadmin" value="superadmin" />
+          <el-option label="Admin" value="admin" />
+          <el-option label="Cashier" value="cashier" />
+        </el-select>
+
+        <el-select
+          v-model="filters.action"
+          :placeholder="t('activity_logs.columns.action') || 'Action'"
+          clearable
+          class="action-select"
+          @change="fetchLogs(1)"
+        >
+          <el-option
+            v-for="action in actionOptions"
+            :key="action"
+            :label="t(`activity_logs.actions.${action}`) || action"
+            :value="action"
+          />
+        </el-select>
+
+        <el-date-picker
+          v-model="filters.dateRange"
+          type="daterange"
+          range-separator="-"
+          :start-placeholder="t('datetime.today')"
+          :end-placeholder="t('datetime.today')"
+          class="date-filter-range"
+          @change="fetchLogs(1)"
+        />
+      </div>
+
       <el-tooltip :content="t('actions.refresh')" placement="top">
         <el-button
           type="primary"
@@ -180,13 +223,59 @@ const pagination = ref({
   totalCount: 0,
 });
 
+const filters = ref({
+  role: "",
+  action: "",
+  dateRange: null,
+});
+
+const actionOptions = [
+  "LOGIN",
+  "LOGOUT",
+  "USER_CREATE",
+  "USER_UPDATE",
+  "USER_DELETE",
+  "USER_RESTORE",
+  "ROLE_UPDATE",
+  "PERMISSION_UPDATE",
+  "BOOK_CREATE_PENDING",
+  "BOOK_CREATE_CONFIRMED",
+  "BOOK_UPDATE",
+  "BOOK_UPDATE_SEATS",
+  "BOOK_CANCEL",
+  "BOOK_RESTORE",
+  "BOOK_DELETE",
+  "BOOK_FORCE_DELETE",
+  "BOOK_EXPIRED",
+];
+
 const fetchLogs = async (page = 1) => {
   loading.value = true;
   try {
-    const response = await userService.getActivityLogs({
+    const params = {
       page,
       limit: pagination.value.limit,
-    });
+    };
+    if (filters.value.role) params.role = filters.value.role;
+    if (filters.value.action) params.action = filters.value.action;
+
+    // Handle both single date and daterange
+    if (filters.value.dateRange) {
+      if (
+        Array.isArray(filters.value.dateRange) &&
+        filters.value.dateRange.length === 2
+      ) {
+        params.startDate = filters.value.dateRange[0].toISOString();
+        params.endDate = filters.value.dateRange[1].toISOString();
+      } else {
+        // Single date handle
+        const date = new Date(filters.value.dateRange);
+        params.startDate = date.toISOString();
+        params.endDate = date.toISOString();
+      }
+    }
+
+    const response = await userService.getActivityLogs(params);
     if (response) {
       logs.value = response.logs || response.data?.logs || [];
       const meta = response.pagination || response.data?.pagination || {};
@@ -273,6 +362,24 @@ onMounted(() => {
   animation: fadeIn 0.4s ease-out;
 }
 
+.filter-group {
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+.role-select {
+  width: 130px !important;
+}
+
+.action-select {
+  width: 200px !important;
+}
+
+.date-filter-range {
+  width: 320px !important;
+}
+
 .view-title {
   font-size: 24px;
   font-weight: 800;
@@ -342,8 +449,8 @@ onMounted(() => {
 }
 
 .indicator-primary {
-  background: rgba(14, 165, 233, 0.15);
-  color: #0ea5e9;
+  background: rgba(var(--el-color-primary-rgb), 0.15);
+  color: var(--primary-color);
 }
 .indicator-success {
   background: rgba(34, 197, 94, 0.15);
