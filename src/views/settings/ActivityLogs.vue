@@ -53,7 +53,7 @@
                       effect="dark"
                       class="ml-2 role-tag"
                     >
-                      {{ log.userId.role?.toUppeokirCase() }}
+                      {{ log.userId.role?.toUpperCase() }}
                     </el-tag>
                   </div>
 
