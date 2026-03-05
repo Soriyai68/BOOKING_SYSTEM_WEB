@@ -41,6 +41,22 @@
 
               <div class="log-details mt-2 space-y-2">
                 <div class="log-meta-group">
+                  <!-- User Info (New) -->
+                  <div v-if="log.userId" class="meta-bubble user-info">
+                    <UserCog :size="14" />
+                    <span class="font-bold">{{
+                      log.userId.name || "System"
+                    }}</span>
+                    <el-tag
+                      size="small"
+                      :type="getRoleType(log.userId.role)"
+                      effect="dark"
+                      class="ml-2 role-tag"
+                    >
+                      {{ log.userId.role?.toUppeokirCase() }}
+                    </el-tag>
+                  </div>
+
                   <div class="meta-bubble">
                     <Monitor :size="14" />
                     <span>{{ log.metadata?.device || "Unknown Device" }}</span>
@@ -100,7 +116,6 @@
             layout="prev, pager, next, total"
             :total="pagination.totalCount"
             @current-change="fetchLogs"
-            background
             class="premium-pagination"
           />
         </div>
@@ -144,6 +159,7 @@ import {
   UserMinus,
   ShieldCheck,
   Settings,
+  Grid2x2,
   Monitor,
   MapPin,
   AlertCircle,
@@ -198,6 +214,14 @@ const getActionIcon = (action) => {
     USER_RESTORE: UserPlus,
     ROLE_UPDATE: UserCog,
     PERMISSION_UPDATE: ShieldCheck,
+    BOOK_CREATE_PENDING: Activity,
+    BOOK_CREATE_CONFIRMED: ShieldCheck,
+    BOOK_UPDATE: UserCheck,
+    BOOK_UPDATE_SEATS: Grid2x2,
+    BOOK_CANCEL: LogOut,
+    BOOK_RESTORE: RotateCw,
+    BOOK_DELETE: UserMinus,
+    BOOK_FORCE_DELETE: UserMinus,
     LOGIN: LogIn,
     LOGOUT: LogOut,
   };
@@ -205,14 +229,25 @@ const getActionIcon = (action) => {
 };
 
 const getActionClass = (action) => {
-  if (action.includes("DELETE")) return "indicator-danger";
-  if (action.includes("CREATE") || action.includes("RESTORE"))
-    return "indicator-success";
-  if (action.includes("UPDATE") || action.includes("ROLE"))
+  if (action?.includes("DELETE")) return "indicator-danger";
+  if (action?.includes("CANCEL") || action?.includes("EXPIRED"))
     return "indicator-warning";
-  if (action.includes("LOGIN") || action.includes("LOGOUT"))
+  if (action?.includes("CREATE") || action?.includes("RESTORE"))
+    return "indicator-success";
+  if (action?.includes("UPDATE") || action?.includes("ROLE"))
+    return "indicator-warning";
+  if (action?.includes("LOGIN") || action?.includes("LOGOUT"))
     return "indicator-primary";
   return "indicator-neutral";
+};
+
+const getRoleType = (role) => {
+  const types = {
+    superadmin: "danger",
+    admin: "warning",
+    cashier: "success",
+  };
+  return types[role?.toLowerCase()] || "info";
 };
 
 const formatAction = (action) => {
@@ -366,6 +401,24 @@ onMounted(() => {
   padding: 4px 10px;
   border-radius: 6px;
   border: 1px solid var(--el-border-color-lighter);
+  transition: all 0.3s ease;
+}
+
+.meta-bubble.user-info {
+  background: var(--el-color-primary-light-9);
+  border-color: var(--el-color-primary-light-8);
+  color: var(--el-color-primary);
+}
+
+.role-tag {
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: 10px;
+  padding: 0 6px;
+  height: 18px;
+  line-height: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .metadata-details {

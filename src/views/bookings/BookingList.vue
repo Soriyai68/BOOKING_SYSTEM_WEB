@@ -229,20 +229,31 @@
                     </el-icon>
                     {{ $t("actions.view") }}
                   </el-dropdown-item>
-                  <el-dropdown-item command="edit" class="text-primary">
+                  <el-dropdown-item
+                    v-if="hasPermission('bookings.edit')"
+                    command="edit"
+                    class="text-primary"
+                  >
                     <el-icon>
                       <Edit />
                     </el-icon>
                     {{ $t("actions.edit") }}
                   </el-dropdown-item>
-                  <el-dropdown-item command="delete" class="text-danger">
+                  <el-dropdown-item
+                    v-if="hasPermission('bookings.delete')"
+                    command="delete"
+                    class="text-danger"
+                  >
                     <el-icon>
                       <Delete />
                     </el-icon>
                     {{ $t("actions.delete") }}
                   </el-dropdown-item>
                   <el-dropdown-item
-                    v-if="row.payment_status === 'Pending'"
+                    v-if="
+                      hasPermission('payments.create') &&
+                      row.payment_status === 'Pending'
+                    "
                     command="createPayment"
                     class="text-success"
                   >
@@ -253,6 +264,7 @@
                   </el-dropdown-item>
                   <el-dropdown-item
                     v-if="
+                      hasPermission('bookings.edit') &&
                       row.payment_status !== 'Completed' &&
                       row.booking_status !== 'Cancelled'
                     "
@@ -487,11 +499,13 @@ import SelectSeatsStep from "@/components/bookings/SelectSeatsStep.vue";
 
 import { usePath } from "@/composables/usePath";
 import { useAutoRefresh } from "@/composables/useAutoRefresh";
+import { usePermissions } from "@/composables/usePermissions";
 
 const { t } = useI18n();
 const router = useRouter();
 const appStore = useAppStore();
 const { getAdminPath } = usePath();
+const { hasPermission } = usePermissions();
 
 const loading = reactive({
   bookings: false,
@@ -694,7 +708,7 @@ const handleCommand = (command, row) => {
       openEditDialog(row);
       break;
     case "delete":
-      cancelBooking(row.id);
+      deleteBooking(row.id);
       break;
     case "createPayment":
       openCreatePaymentDialog(row);
@@ -798,7 +812,7 @@ const handleUpdate = async () => {
   }
 };
 
-const cancelBooking = async (id) => {
+const deleteBooking = async (id) => {
   try {
     await ElMessageBox.confirm(
       t("bookings.confirmDelete"),
@@ -809,7 +823,7 @@ const cancelBooking = async (id) => {
         type: "warning",
       },
     );
-    const response = await bookingService.cancelBooking(id);
+    const response = await bookingService.deleteBooking(id);
     if (response.success) {
       ElMessage.success(t("bookings.deleteSuccess"));
       appStore.triggerRefresh();

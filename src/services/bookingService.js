@@ -152,6 +152,16 @@ export const bookingService = {
     return response.data;
   },
 
+  /**
+   * Delete a booking (admin soft delete).
+   * @param {string} id - The booking ID.
+   * @returns {Promise<object>}
+   */
+  async deleteBooking(id) {
+    const response = await api.delete(`/bookings/${id}/soft-delete`);
+    return response.data;
+  },
+
   async changeSeats(id, data) {
     const response = await api.patch(`/bookings/${id}/change-seat`, data);
     return response.data;
