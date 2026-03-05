@@ -86,7 +86,7 @@ const loadSeats = async () => {
         const row = seat.row;
 
         if (!grouped[row]) {
-          grouped[row] = { row: row, seats: [] };
+          grouped[row] = { row: row, seats: [], seat_type: seat.seat_type };
         }
 
         // Handle identifier
@@ -132,7 +132,12 @@ const loadSeats = async () => {
 const selectedSeats = computed(() => bookingStore.selectedSeats);
 
 function toggleSeat(seat) {
-  if (seat.status === "booked" || seat.status === "maintenance") return;
+  if (
+    seat.status === "booked" ||
+    seat.status === "maintenance" ||
+    seat.status === "out_of_order"
+  )
+    return;
 
   // Proactive Rule 1: Max 10
   if (!isSeatSelected(seat) && selectedSeats.value.length >= 10) {
@@ -165,9 +170,10 @@ const seatWidthClass = (type) => {
 
 function getSeatColor(seat) {
   if (seat.status === "booked") return "bg-white/[0.06] border-white/[0.04]";
-  if (seat.status === "maintenance") return "bg-red-900/20 border-red-500/20";
-  if (isSeatSelected(seat)) return `border-transparent`;
-  return "bg-white/[0.04] border-white/[0.08] hover:border-white/20";
+  if (seat.status === "maintenance" || seat.status === "out_of_order")
+    return "bg-red-900/20 border-red-500/20";
+  if (isSeatSelected(seat)) return "border-transparent";
+  return "bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:border-white/20";
 }
 
 function getSeatSelectedBg(seat) {
@@ -180,6 +186,34 @@ function getSeatSelectedBg(seat) {
   if (type === "queen")
     return "background: linear-gradient(135deg, #f59e0b, #d97706)";
   return "background: linear-gradient(135deg, #3b82f6, #2563eb)";
+}
+
+const seatTypeColor = {
+  vip: "#a855f7",
+  couple: "#ec4899",
+  queen: "#f59e0b",
+  regular: "#3b82f6",
+};
+
+function getSeatTypeStyle(seat) {
+  if (
+    seat.status === "booked" ||
+    seat.status === "maintenance" ||
+    seat.status === "out_of_order"
+  )
+    return {};
+
+  const color = seatTypeColor[seat.seat_type] || "#3b82f6";
+
+  if (isSeatSelected(seat)) {
+    return { boxShadow: `0 0 20px -5px ${color}aa` };
+  }
+
+  return {
+    "--type-color": color,
+    borderBottom: `4px solid ${color}`,
+    backgroundColor: `${color}1A`, // 10% opacity
+  };
 }
 
 function handleContinue() {
@@ -311,12 +345,14 @@ function handleContinue() {
             :key="rowData.row"
             class="flex items-center gap-1 sm:gap-2"
           >
-            <!-- Row label -->
-            <span
-              class="w-4 sm:w-6 text-center text-[9px] sm:text-[11px] font-bold text-neutral-500"
-            >
-              {{ rowData.row }}
-            </span>
+            <!-- Row label left -->
+            <div class="flex items-center justify-end w-6 sm:w-8">
+              <span
+                class="text-center text-[10px] sm:text-[12px] font-bold text-neutral-500"
+              >
+                {{ rowData.row }}
+              </span>
+            </div>
 
             <!-- Seats -->
             <div class="flex items-center gap-1 sm:gap-1.5">
@@ -328,33 +364,35 @@ function handleContinue() {
                   'seats-seat rounded-md sm:rounded-lg border flex items-center justify-center text-[8px] sm:text-[10px] font-bold cursor-pointer',
                   seatWidthClass(seat.seat_type),
                   getSeatColor(seat),
-                  seat.status === 'booked' || seat.status === 'maintenance'
+                  seat.status === 'booked' ||
+                  seat.status === 'maintenance' ||
+                  seat.status === 'out_of_order'
                     ? 'cursor-not-allowed opacity-40'
                     : '',
                   isSeatSelected(seat) ? 'text-white' : 'text-neutral-500',
                 ]"
-                :style="isSeatSelected(seat) ? getSeatSelectedBg(seat) : ''"
+                :style="[
+                  isSeatSelected(seat) ? getSeatSelectedBg(seat) : '',
+                  getSeatTypeStyle(seat),
+                ]"
                 :disabled="
-                  seat.status === 'booked' || seat.status === 'maintenance'
+                  seat.status === 'booked' ||
+                  seat.status === 'maintenance' ||
+                  seat.status === 'out_of_order'
                 "
               >
-                <!-- Old: seat number text -->
-                {{ seat.seat_number }}
-
-                <!-- New: seat icon from lucide-vue-next -->
-                <!-- <Armchair
-                  :size="seat.seat_type === 'couple' ? 18 : seat.seat_type === 'queen' ? 20 : 16"
-                  :stroke-width="2"
-                /> -->
+                <span class="z-10 relative">{{ seat.seat_number }}</span>
               </button>
             </div>
 
             <!-- Row label right -->
-            <span
-              class="w-4 sm:w-6 text-center text-[9px] sm:text-[11px] font-bold text-neutral-500"
-            >
-              {{ rowData.row }}
-            </span>
+            <div class="flex items-center justify-start w-6 sm:w-8">
+              <span
+                class="text-center text-[10px] sm:text-[12px] font-bold text-neutral-500"
+              >
+                {{ rowData.row }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -365,52 +403,60 @@ function handleContinue() {
           >
             <div class="flex items-center gap-1.5">
               <div
-                class="w-4 h-4 rounded bg-white/[0.04] border border-white/[0.08]"
+                class="w-5 h-5 rounded bg-white/[0.04] border border-white/[0.08]"
               ></div>
-              <span class="text-[9px] text-neutral-500">{{
+              <span class="text-xs text-neutral-400">{{
                 t("client.seats.available")
               }}</span>
             </div>
             <div class="flex items-center gap-1.5">
-              <div class="w-4 h-4 rounded bg-blue-500"></div>
-              <span class="text-[9px] text-neutral-500">{{
+              <div class="w-5 h-5 rounded bg-blue-500"></div>
+              <span class="text-xs text-neutral-400">{{
                 t("client.seats.selected")
               }}</span>
             </div>
             <div class="flex items-center gap-1.5">
               <div
-                class="w-4 h-4 rounded bg-white/[0.06] border border-white/[0.04] opacity-40"
+                class="w-5 h-5 rounded bg-white/[0.06] border border-white/[0.04] opacity-40"
               ></div>
-              <span class="text-[9px] text-neutral-500">{{
+              <span class="text-xs text-neutral-400">{{
                 t("client.seats.booked")
               }}</span>
             </div>
             <div class="flex items-center gap-1.5">
               <div
-                class="w-4 h-4 rounded bg-red-900/20 border border-red-500/20"
+                class="w-5 h-5 rounded bg-red-900/20 border border-red-500/20"
               ></div>
-              <span class="text-[9px] text-neutral-500">{{
+              <span class="text-xs text-neutral-400">{{
                 t("client.seats.unavailable")
               }}</span>
             </div>
           </div>
 
-          <!-- Seat Type Legend -->
           <div
-            class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 pt-2 border-t border-white/[0.04]"
+            class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 pt-4 border-t border-white/[0.04]"
           >
             <div
               v-for="(cfg, key) in seatTypes"
               :key="key"
-              class="flex items-center gap-1.5"
+              class="flex items-center gap-2"
             >
               <div
-                class="w-2.5 h-2.5 rounded-full"
-                :style="{ background: cfg.color }"
+                class="w-9 h-5 rounded-[4px] bg-white/[0.04] border border-white/[0.08] border-b-[4px] box-border"
+                :style="{
+                  borderBottomColor: cfg.color,
+                  backgroundColor: `${cfg.color}1A`,
+                }"
               ></div>
-              <span class="text-[9px] text-neutral-400"
-                >{{ cfg.label }} ${{ cfg.price.toFixed(2) }}</span
-              >
+              <div class="flex items-center gap-1.5">
+                <span
+                  class="text-[11px] text-neutral-300 font-bold uppercase tracking-tight"
+                  >{{ cfg.label }}</span
+                >
+                <span class="text-[11px] text-neutral-400 font-semibold"
+                  >${{ cfg.price.toFixed(2) }}</span
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -534,7 +580,14 @@ function handleContinue() {
 }
 
 .seats-seat {
-  transition: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.seats-seat:not(:disabled):hover {
+  transform: translateY(-2px);
+  filter: brightness(1.2);
+  box-shadow: 0 4px 15px -4px var(--type-color, rgba(255, 255, 255, 0.1));
 }
 
 .seats-bottom-bar {
