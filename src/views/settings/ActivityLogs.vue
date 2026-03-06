@@ -46,8 +46,6 @@
 
       <el-tooltip :content="t('actions.refresh')" placement="top">
         <el-button
-          type="primary"
-          plain
           circle
           :icon="RotateCw"
           @click="fetchLogs(1)"
@@ -138,6 +136,10 @@
                       >${{ log.metadata.totalPrice }}</span
                     >
                   </div>
+                  <div v-if="log.metadata.paymentMethod" class="detail-tag">
+                    <span class="label">PAYMENT METHOD:</span>
+                    <span class="value">{{ log.metadata.paymentMethod }}</span>
+                  </div>
                 </div>
               </div>
 
@@ -194,21 +196,24 @@ import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/stores/app";
 import {
-  RotateCw,
   LogIn,
   LogOut,
   UserPlus,
   UserCheck,
   UserMinus,
-  ShieldCheck,
-  Settings,
-  Grid2x2,
-  Monitor,
-  MapPin,
-  AlertCircle,
-  Activity,
   UserCog,
-  Globe,
+  ShieldCheck,
+  Clock,
+  TicketCheck,
+  Ticket,
+  CalendarDays,
+  Armchair,
+  XCircle,
+  RotateCcw,
+  Trash2,
+  ShieldAlert,
+  Activity,
+  RotateCw,
 } from "lucide-vue-next";
 import { userService } from "@/services/userService";
 import { ElMessage } from "element-plus";
@@ -240,9 +245,12 @@ const actionOptions = [
   "PERMISSION_UPDATE",
   "BOOK_CREATE_PENDING",
   "BOOK_CREATE_CONFIRMED",
+  "BOOK_CONFIRMED",
   "BOOK_UPDATE",
   "BOOK_UPDATE_SEATS",
   "BOOK_CANCEL",
+  "BOOK_CANCEL_PENDING",
+  "BOOK_CANCEL_CONFIRMED",
   "BOOK_RESTORE",
   "BOOK_DELETE",
   "BOOK_FORCE_DELETE",
@@ -295,25 +303,40 @@ const fetchLogs = async (page = 1) => {
 
 const getActionIcon = (action) => {
   const icons = {
+    // --- Auth & User Management ---
     USER_LOGIN: LogIn,
     USER_LOGOUT: LogOut,
     USER_CREATE: UserPlus,
     USER_UPDATE: UserCheck,
     USER_DELETE: UserMinus,
-    USER_RESTORE: UserPlus,
+    USER_RESTORE: RotateCcw,
     ROLE_UPDATE: UserCog,
     PERMISSION_UPDATE: ShieldCheck,
-    BOOK_CREATE_PENDING: Activity,
-    BOOK_CREATE_CONFIRMED: ShieldCheck,
-    BOOK_UPDATE: UserCheck,
-    BOOK_UPDATE_SEATS: Grid2x2,
-    BOOK_CANCEL: LogOut,
-    BOOK_RESTORE: RotateCw,
-    BOOK_DELETE: UserMinus,
-    BOOK_FORCE_DELETE: UserMinus,
+
+    // --- Booking Lifecycle ---
+    // Use 'Clock' for pending and 'Ticket' for the act of booking
+    BOOK_CREATE_PENDING: Clock,
+    BOOK_CREATE_CONFIRMED: TicketCheck,
+    BOOK_CONFIRMED: TicketCheck,
+
+    // Updates
+    BOOK_UPDATE: CalendarDays,
+    BOOK_UPDATE_SEATS: Armchair, // More specific to a cinema context than Grid
+
+    // Cancellations & Deletions
+    // Distinguish between a 'Cancel' (X) and a 'Delete' (Trash)
+    BOOK_CANCEL: XCircle,
+    BOOK_CANCEL_PENDING: Clock,
+    BOOK_CANCEL_CONFIRMED: XCircle,
+    BOOK_RESTORE: RotateCcw,
+    BOOK_DELETE: Trash2,
+    BOOK_FORCE_DELETE: ShieldAlert, // Indicates a permanent, destructive action
+
+    // --- General/Fallback ---
     LOGIN: LogIn,
     LOGOUT: LogOut,
   };
+
   return icons[action] || Activity;
 };
 

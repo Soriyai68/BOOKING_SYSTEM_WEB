@@ -262,17 +262,22 @@ const handleExport = (type) => {
   } else if (type === "excel") {
     exportToExcel(data, filename);
   } else if (type === "pdf") {
+    const pdfData = reportData.value.map((item) => ({
+      date: formatDateTime(item.payment_date),
+      ref: item.reference_code,
+      customer: item.customer_name,
+      method: item.payment_method,
+      amount: item.amount,
+    }));
+
     const columns = [
-      { header: t("reports.date"), dataKey: t("reports.date") },
-      {
-        header: t("reports.bookingRef"),
-        dataKey: t("reports.bookingRef"),
-      },
-      { header: t("reports.customer"), dataKey: t("reports.customer") },
-      { header: t("reports.method"), dataKey: t("reports.method") },
-      { header: t("reports.amount"), dataKey: t("reports.amount") },
+      { header: t("reports.date"), dataKey: "date" },
+      { header: t("reports.bookingRef"), dataKey: "ref" },
+      { header: t("reports.customer"), dataKey: "customer" },
+      { header: t("reports.method"), dataKey: "method" },
+      { header: t("reports.amount"), dataKey: "amount" },
     ];
-    exportToPDF(data, columns, t("reports.revenueReportDetailed"), filename);
+    exportToPDF(pdfData, columns, t("reports.revenueReportDetailed"), filename);
   }
 };
 

@@ -280,16 +280,31 @@ const handleExport = (type) => {
   } else if (type === "excel") {
     exportToExcel(data, filename);
   } else if (type === "pdf") {
+    const pdfData = reportData.value.map((item) => ({
+      date: formatDateTime(item.booking_date),
+      ref: item.reference_code,
+      customer: item.customer_name,
+      movie: item.movie_title,
+      status: t(`bookings.${item.booking_status.toLowerCase()}`),
+      seats: item.seat_count,
+      total: item.total_price,
+    }));
+
     const columns = [
-      { header: t("dashboard.date"), dataKey: t("dashboard.date") },
-      { header: t("dashboard.ref"), dataKey: t("dashboard.ref") },
-      { header: t("dashboard.customer"), dataKey: t("dashboard.customer") },
-      { header: t("dashboard.movie"), dataKey: t("dashboard.movie") },
-      { header: t("dashboard.status"), dataKey: t("dashboard.status") },
-      { header: t("dashboard.seats"), dataKey: t("dashboard.seats") },
-      { header: t("dashboard.total"), dataKey: t("dashboard.total") },
+      { header: t("dashboard.date"), dataKey: "date" },
+      { header: t("dashboard.ref"), dataKey: "ref" },
+      { header: t("dashboard.customer"), dataKey: "customer" },
+      { header: t("dashboard.movie"), dataKey: "movie" },
+      { header: t("dashboard.status"), dataKey: "status" },
+      { header: t("dashboard.seats"), dataKey: "seats" },
+      { header: t("dashboard.total"), dataKey: "total" },
     ];
-    exportToPDF(data, columns, t("dashboard.bookingReportDetailed"), filename);
+    exportToPDF(
+      pdfData,
+      columns,
+      t("dashboard.bookingReportDetailed"),
+      filename,
+    );
   }
 };
 

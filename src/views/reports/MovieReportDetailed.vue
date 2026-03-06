@@ -216,14 +216,27 @@ const handleExport = (type) => {
   } else if (type === "excel") {
     exportToExcel(data, filename);
   } else if (type === "pdf") {
+    const pdfData = reportData.value.map((item) => ({
+      movie: item.title,
+      showtimes: item.showtimes,
+      bookings: item.total_bookings,
+      seats: item.total_seats,
+      revenue: item.total_revenue,
+    }));
+
     const columns = [
-      { header: t("reports.movie"), dataKey: t("reports.movie") },
-      { header: t("reports.showtimes"), dataKey: t("reports.showtimes") },
-      { header: t("reports.bookings"), dataKey: t("reports.bookings") },
-      { header: t("reports.seatsSold"), dataKey: t("reports.seatsSold") },
-      { header: t("reports.revenue"), dataKey: t("reports.revenue") },
+      { header: t("reports.movie"), dataKey: "movie" },
+      { header: t("reports.showtimes"), dataKey: "showtimes" },
+      { header: t("reports.bookings"), dataKey: "bookings" },
+      { header: t("reports.seatsSold"), dataKey: "seats" },
+      { header: t("reports.revenue"), dataKey: "revenue" },
     ];
-    exportToPDF(data, columns, t("reports.moviePerformanceDetailed"), filename);
+    exportToPDF(
+      pdfData,
+      columns,
+      t("reports.moviePerformanceDetailed"),
+      filename,
+    );
   }
 };
 
