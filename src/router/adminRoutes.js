@@ -466,6 +466,16 @@ const adminRoutesChildren = [
 
   // reports
   {
+    path: "reports",
+    name: "ReportsManagement",
+    component: () => import("@/views/reports/ReportsManagement.vue"),
+    meta: {
+      title: "Reports Management",
+      titleKey: "nav.reportsNav",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_VIEW),
+    },
+  },
+  {
     path: "reports/customer-frequency",
     name: "CustomerBookingFrequency",
     component: () => import("@/views/reports/Customerfrequency.vue"),
@@ -473,6 +483,40 @@ const adminRoutesChildren = [
       title: "Customer Booking Frequency",
       titleKey: "reports.customerFrequency",
       ...createPermissionMeta(PERMISSIONS.REPORTS_VIEW),
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "reports/revenue",
+    name: "RevenueReportDetailed",
+    component: () => import("@/views/reports/RevenueReportDetailed.vue"),
+    meta: {
+      title: "Detailed Revenue Report",
+      titleKey: "reports.revenueReport",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_VIEW),
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "reports/bookings",
+    name: "BookingReportDetailed",
+    component: () => import("@/views/reports/BookingReportDetailed.vue"),
+    meta: {
+      title: "Detailed Booking Report",
+      titleKey: "reports.bookingReport",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_VIEW),
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "reports/movies",
+    name: "MovieReportDetailed",
+    component: () => import("@/views/reports/MovieReportDetailed.vue"),
+    meta: {
+      title: "Movie Performance Report",
+      titleKey: "reports.moviePerformance",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_VIEW),
+      hideInMenu: true,
     },
   },
   // system

@@ -274,21 +274,16 @@
           </el-menu-item>
         </el-sub-menu>
 
-        <!-- report  -->
-        <el-sub-menu v-if="isSuperAdmin || canViewHalls" index="reports">
-          <template #title>
-            <el-icon>
-              <ClipboardCheck />
-            </el-icon>
-            <span>{{ $t("nav.reportsNav") }}</span>
-          </template>
-          <el-menu-item :index="pathPrefix + '/reports/customer-frequency'">
-            <el-icon>
-              <Users />
-            </el-icon>
-            <template #title>{{ $t("reports.customerFrequency") }}</template>
-          </el-menu-item>
-        </el-sub-menu>
+        <!-- Reports -->
+        <el-menu-item
+          v-if="isSuperAdmin || canViewHalls"
+          :index="pathPrefix + '/reports'"
+        >
+          <el-icon>
+            <ClipboardCheck />
+          </el-icon>
+          <template #title>{{ $t("nav.reportsNav") }}</template>
+        </el-menu-item>
 
         <!-- User Management (Dialog-based create) -->
         <el-menu-item

@@ -1,77 +1,198 @@
 <template>
-  <div class="dashboard">
+  <div class="dashboard-container">
+    <!-- Welcome Header -->
+    <header class="dashboard-header animate-fade-in">
+      <div class="header-content">
+        <h1 class="welcome-text">
+          {{ $t("nav.dashboard") }}
+        </h1>
+        <p class="subtitle-text">
+          {{ welcomeMessage }}, {{ currentUser?.name || "Admin" }}!
+          <span class="date-text">{{ currentDate }}</span>
+        </p>
+      </div>
+      <div class="header-actions">
+        <el-button type="primary" class="premium-btn" :icon="Bell">
+          {{ $t("common.notification") }}
+        </el-button>
+      </div>
+    </header>
+
     <!-- Statistics Cards -->
     <el-row :gutter="24" class="stats-row">
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card class="stat-card">
+      <el-col
+        v-for="(stat, index) in stats"
+        :key="index"
+        :xs="24"
+        :sm="12"
+        :lg="6"
+        class="animate-slide-up"
+        :style="{ animationDelay: `${index * 100}ms` }"
+      >
+        <el-card class="premium-stat-card" :class="stat.type">
+          <div class="stat-glass-effect"></div>
           <div class="stat-content">
-            <div class="stat-icon users">
-              <el-icon><User /></el-icon>
+            <div class="stat-icon-wrapper">
+              <el-icon><component :is="stat.icon" /></el-icon>
             </div>
-            <div class="stat-info">
-              <h3>{{ totalUsers }}</h3>
-              <p>Total Users</p>
-              <span class="stat-change positive">+12%</span>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon movies">
-              <el-icon><VideoCamera /></el-icon>
-            </div>
-            <div class="stat-info">
-              <h3>{{ totalMovies }}</h3>
-              <p>Total Movies</p>
-              <span class="stat-change positive">+5%</span>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon bookings">
-              <el-icon><Tickets /></el-icon>
-            </div>
-            <div class="stat-info">
-              <h3>{{ totalBookings }}</h3>
-              <p>Total Bookings</p>
-              <span class="stat-change positive">+18%</span>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon revenue">
-              <el-icon><Money /></el-icon>
-            </div>
-            <div class="stat-info">
-              <h3>${{ totalRevenue }}</h3>
-              <p>Total Revenue</p>
-              <span class="stat-change positive">+25%</span>
+            <div class="stat-main">
+              <span class="stat-label">{{
+                $t(`dashboard.${stat.label}`)
+              }}</span>
+              <div class="stat-value-row">
+                <h3 class="stat-value">
+                  <span v-if="stat.isCurrency">$</span>{{ stat.value }}
+                </h3>
+                <span
+                  class="stat-trend"
+                  :class="stat.trend > 0 ? 'up' : 'down'"
+                >
+                  <el-icon>
+                    <CaretTop v-if="stat.trend > 0" />
+                    <CaretBottom v-else />
+                  </el-icon>
+                  {{ Math.abs(stat.trend) }}%
+                </span>
+              </div>
             </div>
           </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- Charts -->
-    <DashboardCharts />
+    <!-- Charts Section -->
+    <div class="charts-section animate-slide-up" style="animation-delay: 400ms">
+      <DashboardCharts />
+    </div>
+
+    <!-- Bottom Content: Recent Bookings & Activities -->
+    <el-row
+      :gutter="24"
+      class="bottom-row animate-slide-up"
+      style="animation-delay: 500ms"
+    >
+      <el-col :xs="24" :lg="16">
+        <el-card class="premium-table-card" shadow="never">
+          <template #header>
+            <div class="card-header">
+              <span class="header-title">
+                <el-icon><Tickets /></el-icon>
+                {{ $t("dashboard.recentBookings") }}
+              </span>
+              <el-button
+                link
+                type="primary"
+                @click="router.push('/admin/bookings')"
+              >
+                {{ $t("dashboard.viewAll") }}
+              </el-button>
+            </div>
+          </template>
+          <el-table
+            :data="recentBookings"
+            style="width: 100%"
+            v-loading="loading"
+          >
+            <el-table-column
+              prop="reference_code"
+              :label="$t('bookings.referenceCode')"
+              width="130"
+            >
+              <template #default="{ row }">
+                <span class="ref-code">#{{ row.reference_code }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('bookings.customer')" min-width="150">
+              <template #default="{ row }">
+                {{ row.customer?.name || "N/A" }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              :label="$t('bookings.movie')"
+              min-width="180"
+              show-overflow-tooltip
+            >
+              <template #default="{ row }">
+                {{ row.movie?.title || "N/A" }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="total_price"
+              :label="$t('bookings.amount')"
+              width="100"
+            >
+              <template #default="{ row }">
+                <span class="amount-text">${{ row.total_price }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="booking_status"
+              :label="$t('bookings.status')"
+              width="120"
+            >
+              <template #default="{ row }">
+                <el-tag
+                  :type="getStatusType(row.booking_status)"
+                  size="small"
+                  effect="light"
+                  round
+                >
+                  {{ $t(`bookings.${row.booking_status.toLowerCase()}`) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column
+              fixed="right"
+              :label="$t('bookings.actions')"
+              width="100"
+            >
+              <template #default="{ row }">
+                <el-button
+                  circle
+                  size="small"
+                  :icon="View"
+                  @click="viewBooking(row.id)"
+                />
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-col>
+
+      <el-col :xs="24" :lg="8">
+        <el-card class="activity-feed-card" shadow="never">
+          <template #header>
+            <div class="card-header">
+              <span class="header-title">
+                <el-icon><Bell /></el-icon>
+                {{ $t("dashboard.recentActivities") }}
+              </span>
+            </div>
+          </template>
+          <div class="activity-timeline">
+            <div
+              v-for="activity in recentActivities"
+              :key="activity.id"
+              class="activity-item"
+            >
+              <div class="activity-marker" :class="activity.type"></div>
+              <div class="activity-content">
+                <p class="activity-text">{{ activity.text }}</p>
+                <span class="activity-time">{{ activity.time }}</span>
+              </div>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
+import { useAuthStore } from "@/stores/auth";
 import { useI18n } from "vue-i18n";
 import {
   User,
@@ -79,82 +200,90 @@ import {
   Tickets,
   Money,
   Bell,
+  View,
+  CaretTop,
+  CaretBottom,
 } from "@element-plus/icons-vue";
 import reportService from "@/services/reportService";
+import { bookingService } from "@/services/bookingService";
+import { userService } from "@/services/userService";
 import DashboardCharts from "@/components/dashboard/DashboardCharts.vue";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 const router = useRouter();
 const appStore = useAppStore();
+const authStore = useAuthStore();
+const { t } = useI18n();
 
-// Reactive data
+const currentUser = computed(() => authStore.user);
 const loading = ref(false);
-const chartPeriod = ref("month");
+
+const currentDate = computed(() => dayjs().format("dddd, D MMMM YYYY"));
+const welcomeMessage = computed(() => {
+  const hour = dayjs().hour();
+  if (hour < 12) return t("dashboard.goodMorning");
+  if (hour < 18) return t("dashboard.goodAfternoon");
+  return t("dashboard.goodEvening");
+});
 
 // Statistics
 const totalUsers = ref(0);
 const totalMovies = ref(0);
 const totalBookings = ref(0);
 const totalRevenue = ref(0);
+const userTrend = ref(0);
+const movieTrend = ref(0);
+const bookingTrend = ref(0);
+const revenueTrend = ref(0);
 
-// i18n for translations
-const { t } = useI18n();
+const stats = computed(() => [
+  {
+    label: "totalUsers",
+    value: totalUsers.value,
+    icon: User,
+    type: "users",
+    trend: userTrend.value,
+  },
+  {
+    label: "totalMovies",
+    value: totalMovies.value,
+    icon: VideoCamera,
+    type: "movies",
+    trend: movieTrend.value,
+  },
+  {
+    label: "totalBookings",
+    value: totalBookings.value,
+    icon: Tickets,
+    type: "bookings",
+    trend: bookingTrend.value,
+  },
+  {
+    label: "totalRevenue",
+    value: totalRevenue.value,
+    icon: Money,
+    type: "revenue",
+    isCurrency: true,
+    trend: revenueTrend.value,
+  },
+]);
 
 // Recent activities
-const recentActivities = ref([
-  { id: 1, text: "New user registered: John Doe", time: "2 minutes ago" },
-  { id: 2, text: 'Movie "Avatar 3" was added', time: "1 hour ago" },
-  { id: 3, text: "Booking #1234 was confirmed", time: "3 hours ago" },
-  { id: 4, text: "User payment processed", time: "5 hours ago" },
-  { id: 5, text: "System maintenance completed", time: "1 day ago" },
-]);
+const recentActivities = ref([]);
 
-// Recent bookings
-const recentBookings = ref([
-  {
-    id: 1001,
-    user_name: "John Doe",
-    movie_title: "Avatar: The Way of Water",
-    show_date: "2024-03-15",
-    seats: 2,
-    total_amount: 25.5,
-    status: "confirmed",
-  },
-  {
-    id: 1002,
-    user_name: "Jane Smith",
-    movie_title: "Top Gun: Maverick",
-    show_date: "2024-03-16",
-    seats: 1,
-    total_amount: 12.75,
-    status: "pending",
-  },
-  {
-    id: 1003,
-    user_name: "Bob Johnson",
-    movie_title: "Black Panther: Wakanda Forever",
-    show_date: "2024-03-17",
-    seats: 4,
-    total_amount: 51.0,
-    status: "confirmed",
-  },
-  {
-    id: 1004,
-    user_name: "Alice Brown",
-    movie_title: "Thor: Love and Thunder",
-    show_date: "2024-03-18",
-    seats: 3,
-    total_amount: 38.25,
-    status: "cancelled",
-  },
-]);
+const recentBookings = ref([]);
 
 const getStatusType = (status) => {
   switch (status) {
-    case "confirmed":
+    case "Confirmed":
+    case "Completed":
       return "success";
-    case "pending":
+    case "Pending":
       return "warning";
-    case "cancelled":
+    case "Cancelled":
       return "danger";
     default:
       return "info";
@@ -162,24 +291,48 @@ const getStatusType = (status) => {
 };
 
 const viewBooking = (id) => {
-  router.push(`/admin/bookings/${id}`);
+  router.push(`/bookings/${id}`);
 };
 
 const loadDashboardData = async () => {
   loading.value = true;
   try {
-    const [customersData, bookingsData, revenueData, moviesData] =
-      await Promise.all([
-        reportService.getTotalCustomers(),
-        reportService.getTotalBookings(),
-        reportService.getTotalRevenue(),
-        reportService.getTotalMovies(),
-      ]);
+    const [
+      customersData,
+      bookingsData,
+      revenueData,
+      moviesData,
+      bookingsList,
+      logsData,
+    ] = await Promise.all([
+      reportService.getTotalCustomers(),
+      reportService.getTotalBookings(),
+      reportService.getTotalRevenue(),
+      reportService.getTotalMovies(),
+      bookingService.getBookings({ limit: 5 }),
+      userService.getActivityLogs({ limit: 8 }),
+    ]);
 
-    totalUsers.value = customersData.totalCustomers;
-    totalBookings.value = bookingsData.totalBookings;
-    totalRevenue.value = revenueData.totalRevenue;
-    totalMovies.value = moviesData.totalMovies;
+    totalUsers.value = customersData.totalCustomers || 0;
+    totalBookings.value = bookingsData.totalBookings || 0;
+    totalRevenue.value = revenueData.totalRevenue || 0;
+    totalMovies.value = moviesData.totalMovies || 0;
+
+    userTrend.value = customersData.trend || 0;
+    bookingTrend.value = bookingsData.trend || 0;
+    revenueTrend.value = revenueData.trend || 0;
+    movieTrend.value = moviesData.trend || 0;
+
+    recentBookings.value = bookingsList.data || [];
+
+    // Map real activity logs to dashboard format
+    const logs = logsData.logs || logsData.data?.logs || [];
+    recentActivities.value = logs.map((log) => ({
+      id: log._id,
+      text: `${log.userId?.name || "System"} performed ${log.action.replace(/_/g, " ").toLowerCase()}`,
+      time: dayjs(log.createdAt).fromNow(),
+      type: getActionType(log.action),
+    }));
   } catch (error) {
     console.error("Failed to load dashboard data:", error);
   } finally {
@@ -187,107 +340,184 @@ const loadDashboardData = async () => {
   }
 };
 
+const getActionType = (action) => {
+  if (action.includes("DELETE") || action.includes("CANCEL")) return "danger";
+  if (action.includes("CREATE") || action.includes("CONFIRMED"))
+    return "success";
+  if (action.includes("UPDATE")) return "warning";
+  return "info";
+};
+
 onMounted(() => {
-  // Set breadcrumbs
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },
   ]);
-
   loadDashboardData();
 });
 </script>
 
 <style scoped>
-.dashboard {
-  padding: 0;
+.dashboard-container {
+  padding: 10px;
+  height: 100%;
 }
 
+/* Header Styling */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+.welcome-text {
+  padding: 10px 0 5px 0;
+  font-size: 30px;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(to right, var(--el-text-color-primary), #6366f1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle-text {
+  color: var(--el-text-color-secondary);
+  font-size: 15px;
+  margin: 10px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.date-text {
+  padding: 4px 12px;
+  background: var(--el-fill-color-light);
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Premium Stat Cards */
 .stats-row {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
-.content-row {
-  margin-bottom: 24px;
+.premium-stat-card {
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--el-bg-color);
+  cursor: default;
 }
 
-.stat-card {
-  height: 140px;
+.premium-stat-card:hover {
+  cursor: pointer;
+}
+
+.stat-glass-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  pointer-events: none;
 }
 
 .stat-content {
   display: flex;
   align-items: center;
-  height: 100%;
+  padding: 8px 4px;
+  position: relative;
+  z-index: 1;
 }
 
-.stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+.stat-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
   color: white;
-  margin-right: 16px;
+  margin-right: 20px;
+  flex-shrink: 0;
 }
 
-.stat-icon.users {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.users .stat-icon-wrapper {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+.movies .stat-icon-wrapper {
+  background: linear-gradient(135deg, #f43f5e, #fb7185);
+}
+.bookings .stat-icon-wrapper {
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+}
+.revenue .stat-icon-wrapper {
+  background: linear-gradient(135deg, #10b981, #34d399);
 }
 
-.stat-icon.movies {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+.stat-main {
+  flex-grow: 1;
 }
 
-.stat-icon.bookings {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+.stat-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
 }
 
-.stat-icon.revenue {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+.stat-value-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
 }
 
-.stat-info h3 {
-  margin: 0 0 4px 0;
-  font-size: 28px;
-  font-weight: bold;
+.stat-value {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
   color: var(--el-text-color-primary);
 }
 
-.stat-info p {
-  margin: 0 0 8px 0;
-  color: var(--el-text-color-secondary);
-  font-size: 14px;
-}
-
-.stat-change {
-  font-size: 12px;
-  padding: 2px 6px;
+.stat-trend {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 2px 8px;
   border-radius: 12px;
 }
 
-.stat-change.positive {
-  background-color: #f0f9ff;
-  color: #10b981;
+.stat-trend.up {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+.stat-trend.down {
+  background: #fef2f2;
+  color: #dc2626;
 }
 
-.chart-card {
-  height: 400px;
+/* Charts & Tables */
+.charts-section {
+  margin-bottom: 32px;
 }
 
-.activity-card {
-  height: 400px;
-}
-
-.chart-placeholder {
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--el-fill-color-lighter);
-  border-radius: 4px;
-  color: var(--el-text-color-secondary);
+.premium-table-card,
+.activity-feed-card {
+  border-radius: 20px;
+  border: 1px solid var(--el-border-color-lighter);
 }
 
 .card-header {
@@ -296,51 +526,115 @@ onMounted(() => {
   align-items: center;
 }
 
-.activity-list {
-  max-height: 320px;
-  overflow-y: auto;
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+}
+
+.ref-code {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 600;
+  color: #6366f1;
+}
+
+.amount-text {
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+}
+
+/* Activity timeline */
+.activity-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .activity-item {
   display: flex;
-  align-items: flex-start;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--el-border-color-lighter);
+  gap: 16px;
+  position: relative;
 }
 
-.activity-item:last-child {
-  border-bottom: none;
-}
-
-.activity-icon {
-  width: 32px;
-  height: 32px;
+.activity-marker {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background-color: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
+  margin-top: 6px;
   flex-shrink: 0;
+  box-shadow: 0 0 0 4px var(--el-bg-color);
+  z-index: 1;
 }
 
-.activity-content {
-  flex: 1;
+.activity-marker.info {
+  background: #6366f1;
+}
+.activity-marker.success {
+  background: #10b981;
+}
+.activity-marker.warning {
+  background: #f59e0b;
+}
+.activity-marker.danger {
+  background: #ef4444;
+}
+
+.activity-item::before {
+  content: "";
+  position: absolute;
+  left: 5.5px;
+  top: 20px;
+  bottom: -15px;
+  width: 1px;
+  background: var(--el-border-color-lighter);
+}
+
+.activity-item:last-child::before {
+  display: none;
 }
 
 .activity-text {
-  margin: 0 0 4px 0;
-  color: var(--el-text-color-primary);
+  margin: 0;
   font-size: 14px;
+  color: var(--el-text-color-primary);
+  font-weight: 500;
 }
 
 .activity-time {
-  color: var(--el-text-color-secondary);
   font-size: 12px;
+  color: var(--el-text-color-secondary);
 }
 
-.table-card {
-  margin-top: 24px;
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animate-slide-up {
+  opacity: 0;
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
