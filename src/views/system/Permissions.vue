@@ -64,7 +64,7 @@ const groupedPermissions = ref({});
 const modules = ref([]);
 const activeModules = ref([]);
 const appStore = useAppStore();
-const {t} = useI18n();
+const { t } = useI18n();
 
 const fetchPermissions = async () => {
   loading.value = true;
@@ -85,8 +85,9 @@ const fetchPermissions = async () => {
 onMounted(async () => {
   await fetchPermissions();
   appStore.setBreadcrumbs([
-    { title: t("nav.dashboard"), path: "/admin/dashboard" },
-    { title: t("system.permissions"), path: "system/permissions" },
+    { title: t("nav.dashboard"), path: "/dashboard" },
+    { title: t("settings.title"), path: "/settings" },
+    { title: t("system.permissions"), path: "/admin/system/permissions" },
   ]);
 });
 </script>

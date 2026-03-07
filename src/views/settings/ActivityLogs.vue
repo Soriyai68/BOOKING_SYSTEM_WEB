@@ -214,6 +214,23 @@ import {
   ShieldAlert,
   Activity,
   RotateCw,
+  UserCircle,
+  KeyRound,
+  Lock,
+  Clapperboard,
+  Building2,
+  Layout,
+  CreditCard,
+  FileOutput,
+  Tags,
+  FileUp,
+  FileX,
+  FileText,
+  Bell,
+  Monitor,
+  Globe,
+  MapPin,
+  AlertCircle,
 } from "lucide-vue-next";
 import { userService } from "@/services/userService";
 import { ElMessage } from "element-plus";
@@ -237,12 +254,73 @@ const filters = ref({
 const actionOptions = [
   "LOGIN",
   "LOGOUT",
+  "REGISTER",
+  "PASSWORD_RESET_REQUEST",
+  "PASSWORD_RESET",
+  "PROFILE_UPDATE",
   "USER_CREATE",
   "USER_UPDATE",
   "USER_DELETE",
   "USER_RESTORE",
-  "ROLE_UPDATE",
-  "PERMISSION_UPDATE",
+  "USER_FORCE_DELETE",
+  "USER_STATUS_UPDATE",
+  "CUSTOMER_CREATE",
+  "CUSTOMER_UPDATE",
+  "CUSTOMER_DELETE",
+  "CUSTOMER_RESTORE",
+  "CUSTOMER_FORCE_DELETE",
+  "ROLE_CREATE",
+  "ROLE_DELETE",
+  "PERMISSION_CREATE",
+  "PERMISSION_DELETE",
+  "MOVIE_CREATE",
+  "MOVIE_UPDATE",
+  "MOVIE_DELETE",
+  "MOVIE_RESTORE",
+  "MOVIE_FORCE_DELETE",
+  "MOVIE_STATUS_UPDATE",
+  "THEATER_CREATE",
+  "THEATER_UPDATE",
+  "THEATER_DELETE",
+  "THEATER_RESTORE",
+  "THEATER_FORCE_DELETE",
+  "HALL_CREATE",
+  "HALL_UPDATE",
+  "HALL_DELETE",
+  "HALL_RESTORE",
+  "HALL_FORCE_DELETE",
+  "SHOWTIME_CREATE",
+  "SHOWTIME_UPDATE",
+  "SHOWTIME_DELETE",
+  "SHOWTIME_RESTORE",
+  "SHOWTIME_FORCE_DELETE",
+  "SHOWTIME_STATUS_UPDATE",
+  "SEAT_CREATE",
+  "SEAT_UPDATE",
+  "SEAT_DELETE",
+  "SEAT_RESTORE",
+  "SEAT_FORCE_DELETE",
+  "SEAT_BOOKING_UPDATE",
+  "PROMOTION_CREATE",
+  "PROMOTION_UPDATE",
+  "PROMOTION_DELETE",
+  "PROMOTION_RESTORE",
+  "PROMOTION_FORCE_DELETE",
+  "PROMOTION_STATUS_UPDATE",
+  "PAYMENT_CREATE",
+  "PAYMENT_UPDATE",
+  "PAYMENT_DELETE",
+  "PAYMENT_STATUS_UPDATE",
+  "PAYMENT_VERIFIED",
+  "INVOICE_GENERATE",
+  "INVOICE_DELETE",
+  "NOTIFICATION_CREATE",
+  "NOTIFICATION_UPDATE",
+  "NOTIFICATION_DELETE",
+  "NOTIFICATION_SEND",
+  "REPORT_GENERATE",
+  "FILE_UPLOAD",
+  "FILE_DELETE",
   "BOOK_CREATE_PENDING",
   "BOOK_CREATE_CONFIRMED",
   "BOOK_CONFIRMED",
@@ -303,50 +381,131 @@ const fetchLogs = async (page = 1) => {
 
 const getActionIcon = (action) => {
   const icons = {
-    // --- Auth & User Management ---
-    USER_LOGIN: LogIn,
-    USER_LOGOUT: LogOut,
+    // --- Auth & Profile ---
+    LOGIN: LogIn,
+    LOGOUT: LogOut,
+    REGISTER: UserCircle,
+    PASSWORD_RESET_REQUEST: Lock,
+    PASSWORD_RESET: KeyRound,
+    PROFILE_UPDATE: UserCheck,
+
+    // --- User & Role Management ---
     USER_CREATE: UserPlus,
     USER_UPDATE: UserCheck,
     USER_DELETE: UserMinus,
     USER_RESTORE: RotateCcw,
-    ROLE_UPDATE: UserCog,
-    PERMISSION_UPDATE: ShieldCheck,
+    USER_FORCE_DELETE: ShieldAlert,
+    USER_STATUS_UPDATE: UserCog,
+    ROLE_CREATE: ShieldCheck,
+    ROLE_DELETE: ShieldAlert,
+    PERMISSION_CREATE: ShieldCheck,
+    PERMISSION_DELETE: ShieldAlert,
+
+    // --- Customer Management ---
+    CUSTOMER_CREATE: UserPlus,
+    CUSTOMER_UPDATE: UserCheck,
+    CUSTOMER_DELETE: UserMinus,
+    CUSTOMER_RESTORE: RotateCcw,
+    CUSTOMER_FORCE_DELETE: ShieldAlert,
+
+    // --- Movie & Show Management ---
+    MOVIE_CREATE: Clapperboard,
+    MOVIE_UPDATE: Clapperboard,
+    MOVIE_DELETE: Trash2,
+    MOVIE_RESTORE: RotateCcw,
+    MOVIE_FORCE_DELETE: ShieldAlert,
+    MOVIE_STATUS_UPDATE: Activity,
+    THEATER_CREATE: Building2,
+    THEATER_UPDATE: Building2,
+    THEATER_DELETE: Trash2,
+    THEATER_RESTORE: RotateCcw,
+    THEATER_FORCE_DELETE: ShieldAlert,
+    HALL_CREATE: Layout,
+    HALL_UPDATE: Layout,
+    HALL_DELETE: Trash2,
+    HALL_RESTORE: RotateCcw,
+    HALL_FORCE_DELETE: ShieldAlert,
+    SHOWTIME_CREATE: CalendarDays,
+    SHOWTIME_UPDATE: CalendarDays,
+    SHOWTIME_DELETE: Trash2,
+    SHOWTIME_RESTORE: RotateCcw,
+    SHOWTIME_FORCE_DELETE: ShieldAlert,
+    SHOWTIME_STATUS_UPDATE: Activity,
+
+    // --- Seat Management ---
+    SEAT_CREATE: Armchair,
+    SEAT_UPDATE: Armchair,
+    SEAT_DELETE: Trash2,
+    SEAT_RESTORE: RotateCcw,
+    SEAT_FORCE_DELETE: ShieldAlert,
+    SEAT_BOOKING_UPDATE: Armchair,
 
     // --- Booking Lifecycle ---
-    // Use 'Clock' for pending and 'Ticket' for the act of booking
     BOOK_CREATE_PENDING: Clock,
     BOOK_CREATE_CONFIRMED: TicketCheck,
     BOOK_CONFIRMED: TicketCheck,
-
-    // Updates
     BOOK_UPDATE: CalendarDays,
-    BOOK_UPDATE_SEATS: Armchair, // More specific to a cinema context than Grid
-
-    // Cancellations & Deletions
-    // Distinguish between a 'Cancel' (X) and a 'Delete' (Trash)
+    BOOK_UPDATE_SEATS: Armchair,
     BOOK_CANCEL: XCircle,
     BOOK_CANCEL_PENDING: Clock,
     BOOK_CANCEL_CONFIRMED: XCircle,
     BOOK_RESTORE: RotateCcw,
     BOOK_DELETE: Trash2,
-    BOOK_FORCE_DELETE: ShieldAlert, // Indicates a permanent, destructive action
+    BOOK_FORCE_DELETE: ShieldAlert,
+    BOOK_EXPIRED: Clock,
 
-    // --- General/Fallback ---
-    LOGIN: LogIn,
-    LOGOUT: LogOut,
+    // --- Payments & Invoices ---
+    PAYMENT_CREATE: CreditCard,
+    PAYMENT_UPDATE: CreditCard,
+    PAYMENT_DELETE: Trash2,
+    PAYMENT_STATUS_UPDATE: Activity,
+    PAYMENT_VERIFIED: ShieldCheck,
+    INVOICE_GENERATE: FileOutput,
+    INVOICE_DELETE: Trash2,
+
+    // --- Promotion Management ---
+    PROMOTION_CREATE: Tags,
+    PROMOTION_UPDATE: Tags,
+    PROMOTION_DELETE: Trash2,
+    PROMOTION_RESTORE: RotateCcw,
+    PROMOTION_FORCE_DELETE: ShieldAlert,
+    PROMOTION_STATUS_UPDATE: Activity,
+
+    // --- Notifications ---
+    NOTIFICATION_CREATE: Bell,
+    NOTIFICATION_UPDATE: Bell,
+    NOTIFICATION_DELETE: Trash2,
+    NOTIFICATION_SEND: Bell,
+
+    // --- System Operations ---
+    REPORT_GENERATE: FileText,
+    FILE_UPLOAD: FileUp,
+    FILE_DELETE: FileX,
   };
 
   return icons[action] || Activity;
 };
 
 const getActionClass = (action) => {
-  if (action?.includes("DELETE")) return "indicator-danger";
-  if (action?.includes("CANCEL") || action?.includes("EXPIRED"))
+  if (action?.includes("DELETE") || action?.includes("FORCE"))
+    return "indicator-danger";
+  if (
+    action?.includes("CANCEL") ||
+    action?.includes("EXPIRED") ||
+    action?.includes("PASSWORD_RESET_REQUEST")
+  )
     return "indicator-warning";
-  if (action?.includes("CREATE") || action?.includes("RESTORE"))
+  if (
+    action?.includes("CREATE") ||
+    action?.includes("RESTORE") ||
+    action?.includes("REGISTER") ||
+    action?.includes("VERIFIED") ||
+    action?.includes("GENERATE") ||
+    action?.includes("UPLOAD") ||
+    action?.includes("SEND")
+  )
     return "indicator-success";
-  if (action?.includes("UPDATE") || action?.includes("ROLE"))
+  if (action?.includes("UPDATE") || action?.includes("STATUS"))
     return "indicator-warning";
   if (action?.includes("LOGIN") || action?.includes("LOGOUT"))
     return "indicator-primary";

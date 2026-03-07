@@ -61,7 +61,7 @@
                   </div>
                 </el-card>
 
-                <el-card
+                <!-- <el-card
                   class="stat-card"
                   @click="handleMenuSelect('security')"
                 >
@@ -78,7 +78,54 @@
                       }}</span>
                     </div>
                   </div>
-                </el-card>
+                </el-card> -->
+
+                <!-- System Management Cards (SuperAdmin Only) -->
+                <template v-if="authStore.isSuperAdmin">
+                  <el-card
+                    class="stat-card"
+                    @click="handleMenuSelect('permissions')"
+                  >
+                    <div class="stat-content">
+                      <div class="stat-icon icon-blue">
+                        <Shield :size="24" />
+                      </div>
+                      <div class="stat-details">
+                        <span class="stat-title">{{
+                          t("system.permissions")
+                        }}</span>
+                        <span class="stat-desc">
+                          {{
+                            t("system.permissionsDesc") ||
+                            "Manage system access permissions"
+                          }}
+                        </span>
+                      </div>
+                    </div>
+                  </el-card>
+
+                  <el-card
+                    class="stat-card"
+                    @click="handleMenuSelect('role-permissions')"
+                  >
+                    <div class="stat-content">
+                      <div class="stat-icon icon-purple">
+                        <UserCog :size="24" />
+                      </div>
+                      <div class="stat-details">
+                        <span class="stat-title">{{
+                          t("system.rolePermissions")
+                        }}</span>
+                        <span class="stat-desc">
+                          {{
+                            t("system.rolePermissionsDesc") ||
+                            "Assign permissions to roles"
+                          }}
+                        </span>
+                      </div>
+                    </div>
+                  </el-card>
+                </template>
               </div>
             </div>
           </div>
@@ -93,19 +140,24 @@ import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/stores/app";
-import { User, Activity, Shield, ArrowLeft } from "lucide-vue-next";
+import { useAuthStore } from "@/stores/auth";
+import { User, Activity, Shield, ArrowLeft, UserCog } from "lucide-vue-next";
 
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const appStore = useAppStore();
+const authStore = useAuthStore();
 
-const user = computed(() => appStore.user);
+const user = computed(() => authStore.user);
 
 const pageTitle = computed(() => {
   if (route.name === "AdminActivityLogs") return t("activity_logs.title");
-  if (route.name === "AdminSecurity") return t("settings.privacySecurity");
+  // if (route.name === "AdminSecurity") return t("settings.privacySecurity");
   if (route.name === "Profile") return t("settings.profile");
+  if (route.name === "SystemPermissions") return t("system.permissions");
+  if (route.name === "SystemRolePermissions")
+    return t("system.rolePermissions");
   return t("settings.accountSettings");
 });
 
@@ -116,6 +168,10 @@ const handleMenuSelect = (index) => {
     router.push({ name: "AdminActivityLogs" });
   } else if (index === "security") {
     router.push({ name: "AdminSecurity" });
+  } else if (index === "permissions") {
+    router.push({ name: "SystemPermissions" });
+  } else if (index === "role-permissions") {
+    router.push({ name: "SystemRolePermissions" });
   }
 };
 

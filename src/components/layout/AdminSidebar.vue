@@ -296,28 +296,6 @@
           <template #title>{{ $t("users.title") }}</template>
         </el-menu-item>
 
-        <!-- System Management (SuperAdmin Only) -->
-        <el-sub-menu v-if="isSuperAdmin" index="system">
-          <template #title>
-            <el-icon>
-              <Shield />
-            </el-icon>
-            <span>{{ $t("system.title") }}</span>
-          </template>
-          <el-menu-item :index="pathPrefix + '/system/permissions'">
-            <el-icon>
-              <Shield />
-            </el-icon>
-            <template #title>{{ $t("system.permissions") }}</template>
-          </el-menu-item>
-          <el-menu-item :index="pathPrefix + '/system/role-permissions'">
-            <el-icon>
-              <UserCog />
-            </el-icon>
-            <template #title>{{ $t("system.rolePermissions") }}</template>
-          </el-menu-item>
-        </el-sub-menu>
-
         <!-- Settings -->
         <el-menu-item
           v-if="isSuperAdmin || canViewSettings"
