@@ -14,7 +14,9 @@ export const bookingTicketService = {
       bookingId: params.bookingId,
       seatId: params.seatId,
       ticket_type: params.ticket_type,
-      sortBy: params.sortBy || "createdAt",
+      startDate: params.startDate,
+      endDate: params.endDate,
+      sortBy: params.sortBy || "issuedAt",
       sortOrder: params.sortOrder || "desc",
     };
     

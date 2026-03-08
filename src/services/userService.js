@@ -1,6 +1,7 @@
 import api from "@/utils/api";
 
-const ALLOWED_ROLES = ["superadmin", "admin", "cashier"];
+// Only admin, cashier, and superadmin roles are allowed in the system
+const ALLOWED_ROLES = ["admin", "cashier", "superadmin"];
 const sanitizeRole = (role, fallback = "cashier") => {
   if (!role) return fallback;
   const r = String(role).toLowerCase();
@@ -94,6 +95,8 @@ export const userService = {
     // Convert frontend format to backend format
     const backendData = {
       name: userData.name,
+      username: userData.username,
+      email: userData.email,
       phone: userData.phone,
       role: sanitizeRole(userData.role, "cashier"),
       password: userData.password,
@@ -148,35 +151,7 @@ export const userService = {
     return response.data;
   },
 
-  // Get user statistics
-  async getUserStats() {
-    const response = await api.get("/users/stats");
-    return response.data;
-  },
 
-  // Search users with advanced filters
-  async searchUsers(searchData) {
-    const response = await api.post("/users/search", searchData);
-    return response.data;
-  },
-
-  // Get users by role
-  async getUsersByRole(role, params = {}) {
-    const response = await api.get(`/users/role/${role}`, { params });
-    return response.data;
-  },
-
-  // Get deleted users
-  async getDeletedUsers(params = {}) {
-    const response = await api.get("/users/deleted", { params });
-    return response.data;
-  },
-
-  // Restore deleted user
-  async restoreUser(id) {
-    const response = await api.put(`/users/${id}/restore`);
-    return response.data;
-  },
 
   // Get activity logs for the current admin
   async getActivityLogs(params = {}) {

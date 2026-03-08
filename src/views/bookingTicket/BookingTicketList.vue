@@ -12,19 +12,30 @@
           class="search-input"
           :prefix-icon="Search"
           clearable
-          style="width: 250px"
+          style="width: 200px"
           @input="debouncedSearch"
         />
         <el-select
           v-model="ticketTypeFilter"
           :placeholder="$t('bookingTickets.filterByTicketType')"
           clearable
-          style="width: 250px"
+          style="width: 200px"
         >
           <el-option :label="$t('table.selectAll')" value="" />
-          <el-option :label="$t('bookingTickets.standard')" value="regular" />
+          <el-option :label="$t('bookingTickets.adult')" value="adult" />
+          <el-option :label="$t('bookingTickets.child')" value="child" />
           <el-option :label="$t('bookingTickets.vip')" value="vip" />
         </el-select>
+        <el-date-picker
+          v-model="dateRange"
+          type="daterange"
+          :range-separator="$t('common.to')"
+          :start-placeholder="$t('common.startDate')"
+          :end-placeholder="$t('common.endDate')"
+          style="width: 20px"
+          clearable
+          @change="handleDateChange"
+        />
       </div>
     </el-card>
 
@@ -144,6 +155,7 @@ const router = useRouter();
 const loading = ref(false);
 const searchText = ref("");
 const ticketTypeFilter = ref("");
+const dateRange = ref(null);
 const currentPage = ref(1);
 const pageSize = ref(10);
 const total = ref(0);
@@ -163,6 +175,11 @@ watch([ticketTypeFilter], () => {
   loadBookingTickets();
 });
 
+const handleDateChange = () => {
+  currentPage.value = 1;
+  loadBookingTickets();
+};
+
 const loadBookingTickets = async () => {
   loading.value = true;
   try {
@@ -172,6 +189,12 @@ const loadBookingTickets = async () => {
       search: searchText.value || undefined,
       ticket_type: ticketTypeFilter.value || undefined,
     };
+
+    // Add date range if selected
+    if (dateRange.value && dateRange.value.length === 2) {
+      params.startDate = dateRange.value[0].toISOString();
+      params.endDate = dateRange.value[1].toISOString();
+    }
 
     const response = await bookingTicketService.getBookingTickets(params);
 

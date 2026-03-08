@@ -776,8 +776,10 @@ export default {
     seat: "Seat",
     paymentMethod: "Payment Method",
     issuedAt: "Issued At",
-    standard: "Standard",
+    adult: "Adult",
+    child: "Child",
     vip: "VIP",
+    standard: "Standard",
     confirmDelete: "Are you sure you want to delete this booking ticket?",
     deleteSuccess: "Booking ticket deleted successfully",
     load_error: "Failed to load booking tickets",
@@ -1240,6 +1242,9 @@ export default {
     week: "Week",
     month: "Month",
     year: "Year",
+    to: "to",
+    startDate: "Start Date",
+    endDate: "End Date",
   },
 
   // Upload

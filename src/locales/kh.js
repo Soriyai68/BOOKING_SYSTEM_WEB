@@ -753,8 +753,10 @@ export default {
     searchPlaceholder: "Search by ticket code...",
     filterByTicketType: "ចម្រាញ់តាមប្រភេទសំបុត្រ",
     ticketType: "Ticket Type",
-    standard: "ធម្មតា",
+    adult: "មនុស្សពេញវ័យ",
+    child: "កុមារ",
     vip: "វីអាយភី",
+    standard: "ធម្មតា",
     ticketCode: "លេខកូដសំបុត្រ",
     user: "អ្នកប្រើប្រាស់",
     bookingId: "លេខកក់",
@@ -1233,6 +1235,9 @@ export default {
     week: "សប្ដាហ៍",
     month: "ខែ",
     year: "ឆ្នាំ",
+    to: "ដល់",
+    startDate: "កាលបរិច្ឆេទចាប់ផ្តើម",
+    endDate: "កាលបរិច្ឆេទបញ្ចប់",
   },
 
   // Upload

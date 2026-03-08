@@ -27,6 +27,23 @@
           />
         </el-form-item>
 
+        <el-form-item label="Username" prop="username">
+          <el-input
+              v-model="form.username"
+              placeholder="Username"
+              maxlength="30"
+              show-word-limit
+          />
+        </el-form-item>
+
+        <el-form-item label="Email" prop="email">
+          <el-input
+              v-model="form.email"
+              type="email"
+              placeholder="Email address"
+          />
+        </el-form-item>
+
         <el-form-item :label="$t('users.phone')" prop="phone">
           <el-input
               v-model="displayPhone"
@@ -44,11 +61,10 @@
               filterable
           >
             <el-option
-                v-for="r in roleOptions"
+                v-for="r in filteredRoleOptions"
                 :key="r.name"
                 :label="r.displayName || r.name"
                 :value="r.name"
-                :disabled="r.name === 'superadmin' && !authStore.isSuperAdmin"
             />
           </el-select>
         </el-form-item>
@@ -97,6 +113,7 @@ import {useAppStore} from "@/stores/app";
 import {useAuthStore} from "@/stores/auth";
 import {userService} from "@/services/userService";
 import { toInternationalPhone } from "@/utils/formatters";
+import { computed } from "vue";
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -114,8 +131,20 @@ const roleOptions = ref([
   {name: 'user', displayName: 'User', isSystem: true},
 ]);
 
+// Filter roles based on user permissions
+const filteredRoleOptions = computed(() => {
+  return roleOptions.value.filter(r => {
+    if (r.name === 'superadmin' && !authStore.isSuperAdmin) {
+      return false;
+    }
+    return true;
+  });
+});
+
 const form = reactive({
   name: "",
+  username: "",
+  email: "",
   phone: "",
   role: "user",
   password: "",
@@ -153,6 +182,28 @@ const rules = {
       min: 2,
       max: 50,
       message: "Name must be between 2 and 50 characters",
+      trigger: "blur",
+    },
+  ],
+  username: [
+    {required: true, message: "Username is required", trigger: "blur"},
+    {
+      min: 3,
+      max: 30,
+      message: "Username must be between 3 and 30 characters",
+      trigger: "blur",
+    },
+    {
+      pattern: /^[a-zA-Z0-9_-]+$/,
+      message: "Username can only contain letters, numbers, underscores, and hyphens",
+      trigger: "blur",
+    },
+  ],
+  email: [
+    {required: true, message: "Email is required", trigger: "blur"},
+    {
+      type: "email",
+      message: "Please enter a valid email address",
       trigger: "blur",
     },
   ],
@@ -208,6 +259,8 @@ const resetForm = () => {
   }
   Object.assign(form, {
     name: "",
+    username: "",
+    email: "",
     phone: "",
     role: "user",
     password: "",
