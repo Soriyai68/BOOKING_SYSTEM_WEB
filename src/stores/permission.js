@@ -145,6 +145,21 @@ export const usePermissionStore = defineStore("permission", () => {
   const canDeletePayments = computed(() => canDelete("payments"));
   const canManagePayments = computed(() => canManage("payments"));
 
+  // Reports permissions
+  const canViewReports = computed(() => hasPermission("reports.view"));
+  const canViewTotalCustomersReport = computed(() => hasPermission("reports.total-customers.view"));
+  const canViewTotalBookingsReport = computed(() => hasPermission("reports.total-bookings.view"));
+  const canViewTotalRevenueReport = computed(() => hasPermission("reports.total-revenue.view"));
+  const canViewTotalMoviesReport = computed(() => hasPermission("reports.total-movies.view"));
+  const canViewCustomerFrequencyReport = computed(() => hasPermission("reports.customer-frequency.view"));
+  const canViewRevenueReport = computed(() => hasPermission("reports.revenue-report.view"));
+  const canViewBookingStatusReport = computed(() => hasPermission("reports.booking-status-report.view"));
+  const canViewPopularMoviesReport = computed(() => hasPermission("reports.popular-movies-report.view"));
+  const canViewSeatTypeRevenueReport = computed(() => hasPermission("reports.seat-type-revenue-report.view"));
+  const canViewDetailedRevenueReport = computed(() => hasPermission("reports.detailed-revenue.view"));
+  const canViewDetailedBookingsReport = computed(() => hasPermission("reports.detailed-bookings.view"));
+  const canViewDetailedMoviesReport = computed(() => hasPermission("reports.detailed-movies.view"));
+
   // Actions
   const fetchUserPermissions = async (force = false) => {
     // Don't fetch if not authenticated
@@ -350,6 +365,20 @@ export const usePermissionStore = defineStore("permission", () => {
     canEditPayments,
     canDeletePayments,
     canManagePayments,
+
+    canViewReports,
+    canViewTotalCustomersReport,
+    canViewTotalBookingsReport,
+    canViewTotalRevenueReport,
+    canViewTotalMoviesReport,
+    canViewCustomerFrequencyReport,
+    canViewRevenueReport,
+    canViewBookingStatusReport,
+    canViewPopularMoviesReport,
+    canViewSeatTypeRevenueReport,
+    canViewDetailedRevenueReport,
+    canViewDetailedBookingsReport,
+    canViewDetailedMoviesReport,
 
     canViewDashboard,
     canViewAnalytics,

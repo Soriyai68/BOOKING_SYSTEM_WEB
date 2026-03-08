@@ -482,7 +482,7 @@ const adminRoutesChildren = [
     meta: {
       title: "Customer Booking Frequency",
       titleKey: "reports.customerFrequency",
-      ...createPermissionMeta(PERMISSIONS.REPORTS_VIEW),
+      ...createPermissionMeta(PERMISSIONS.REPORTS_CUSTOMER_FREQUENCY),
       hideInMenu: true,
     },
   },
@@ -493,7 +493,7 @@ const adminRoutesChildren = [
     meta: {
       title: "Detailed Revenue Report",
       titleKey: "reports.revenueReport",
-      ...createPermissionMeta(PERMISSIONS.REPORTS_VIEW),
+      ...createPermissionMeta(PERMISSIONS.REPORTS_DETAILED_REVENUE),
       hideInMenu: true,
     },
   },
@@ -504,7 +504,7 @@ const adminRoutesChildren = [
     meta: {
       title: "Detailed Booking Report",
       titleKey: "reports.bookingReport",
-      ...createPermissionMeta(PERMISSIONS.REPORTS_VIEW),
+      ...createPermissionMeta(PERMISSIONS.REPORTS_DETAILED_BOOKINGS),
       hideInMenu: true,
     },
   },
@@ -515,7 +515,84 @@ const adminRoutesChildren = [
     meta: {
       title: "Movie Performance Report",
       titleKey: "reports.moviePerformance",
-      ...createPermissionMeta(PERMISSIONS.REPORTS_VIEW),
+      ...createPermissionMeta(PERMISSIONS.REPORTS_DETAILED_MOVIES),
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "reports/total-customers",
+    name: "TotalCustomersReport",
+    component: () => import("@/views/reports/ReportsManagement.vue"),
+    meta: {
+      title: "Total Customers Report",
+      titleKey: "reports.totalCustomers",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_TOTAL_CUSTOMERS),
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "reports/total-bookings",
+    name: "TotalBookingsReport",
+    component: () => import("@/views/reports/ReportsManagement.vue"),
+    meta: {
+      title: "Total Bookings Report",
+      titleKey: "reports.totalBookings",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_TOTAL_BOOKINGS),
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "reports/total-revenue",
+    name: "TotalRevenueReport",
+    component: () => import("@/views/reports/ReportsManagement.vue"),
+    meta: {
+      title: "Total Revenue Report",
+      titleKey: "reports.totalRevenue",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_TOTAL_REVENUE),
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "reports/total-movies",
+    name: "TotalMoviesReport",
+    component: () => import("@/views/reports/ReportsManagement.vue"),
+    meta: {
+      title: "Total Movies Report",
+      titleKey: "reports.totalMovies",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_TOTAL_MOVIES),
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "reports/booking-status",
+    name: "BookingStatusReport",
+    component: () => import("@/views/reports/ReportsManagement.vue"),
+    meta: {
+      title: "Booking Status Report",
+      titleKey: "reports.bookingStatus",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_BOOKING_STATUS),
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "reports/popular-movies",
+    name: "PopularMoviesReport",
+    component: () => import("@/views/reports/ReportsManagement.vue"),
+    meta: {
+      title: "Popular Movies Report",
+      titleKey: "reports.popularMovies",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_POPULAR_MOVIES),
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "reports/seat-type-revenue",
+    name: "SeatTypeRevenueReport",
+    component: () => import("@/views/reports/ReportsManagement.vue"),
+    meta: {
+      title: "Seat Type Revenue Report",
+      titleKey: "reports.seatTypeRevenue",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_SEAT_TYPE_REVENUE),
       hideInMenu: true,
     },
   },

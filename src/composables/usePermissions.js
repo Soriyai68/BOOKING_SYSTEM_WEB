@@ -112,6 +112,21 @@ export function usePermissions() {
     canManageSettings: permissionStore.canManageSettings,
     canManageSystem: permissionStore.canManageSystem,
 
+    // Reports
+    canViewReports: permissionStore.canViewReports,
+    canViewTotalCustomersReport: permissionStore.canViewTotalCustomersReport,
+    canViewTotalBookingsReport: permissionStore.canViewTotalBookingsReport,
+    canViewTotalRevenueReport: permissionStore.canViewTotalRevenueReport,
+    canViewTotalMoviesReport: permissionStore.canViewTotalMoviesReport,
+    canViewCustomerFrequencyReport: permissionStore.canViewCustomerFrequencyReport,
+    canViewRevenueReport: permissionStore.canViewRevenueReport,
+    canViewBookingStatusReport: permissionStore.canViewBookingStatusReport,
+    canViewPopularMoviesReport: permissionStore.canViewPopularMoviesReport,
+    canViewSeatTypeRevenueReport: permissionStore.canViewSeatTypeRevenueReport,
+    canViewDetailedRevenueReport: permissionStore.canViewDetailedRevenueReport,
+    canViewDetailedBookingsReport: permissionStore.canViewDetailedBookingsReport,
+    canViewDetailedMoviesReport: permissionStore.canViewDetailedMoviesReport,
+
     // Data getters
     getPermissionsByModule: permissionStore.getPermissionsByModule,
     getAvailableModules: permissionStore.getAvailableModules,
@@ -214,7 +229,18 @@ export const PERMISSIONS = {
 
   // Reports
   REPORTS_VIEW: 'reports.view',
+  REPORTS_TOTAL_CUSTOMERS: 'reports.total-customers.view',
+  REPORTS_TOTAL_BOOKINGS: 'reports.total-bookings.view',
+  REPORTS_TOTAL_REVENUE: 'reports.total-revenue.view',
+  REPORTS_TOTAL_MOVIES: 'reports.total-movies.view',
   REPORTS_CUSTOMER_FREQUENCY: 'reports.customer-frequency.view',
+  REPORTS_REVENUE: 'reports.revenue-report.view',
+  REPORTS_BOOKING_STATUS: 'reports.booking-status-report.view',
+  REPORTS_POPULAR_MOVIES: 'reports.popular-movies-report.view',
+  REPORTS_SEAT_TYPE_REVENUE: 'reports.seat-type-revenue-report.view',
+  REPORTS_DETAILED_REVENUE: 'reports.detailed-revenue.view',
+  REPORTS_DETAILED_BOOKINGS: 'reports.detailed-bookings.view',
+  REPORTS_DETAILED_MOVIES: 'reports.detailed-movies.view',
 
   // System
   DASHBOARD_VIEW: 'dashboard.view',

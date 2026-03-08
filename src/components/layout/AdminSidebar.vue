@@ -276,7 +276,7 @@
 
         <!-- Reports -->
         <el-menu-item
-          v-if="isSuperAdmin || canViewHalls"
+          v-if="isSuperAdmin || canViewReports"
           :index="pathPrefix + '/reports'"
         >
           <el-icon>
@@ -358,7 +358,8 @@ const {
   canCreateShowtimes,
   canViewBookings,
   canViewBookingTickets,
-  canViewPayments, // Added canViewPayments
+  canViewPayments,
+  canViewReports,
   isSuperAdmin,
 } = usePermissions();
 

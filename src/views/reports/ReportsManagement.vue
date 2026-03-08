@@ -1,13 +1,13 @@
 <template>
   <div class="reports-management">
-    <div class="header-section mb-8">
+    <!-- <div class="header-section mb-8">
       <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">
         {{ $t("reports.managementTitle") }}
       </h1>
       <p class="text-gray-500 dark:text-gray-400">
         {{ $t("reports.subheader") }}
       </p>
-    </div>
+    </div> -->
 
     <el-row :gutter="20">
       <el-col
@@ -54,10 +54,11 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/stores/app";
+import { usePermissions, PERMISSIONS } from "@/composables/usePermissions";
 import {
   Money,
   Tickets,
@@ -69,8 +70,9 @@ import {
 const router = useRouter();
 const { t } = useI18n();
 const appStore = useAppStore();
+const { hasPermission } = usePermissions();
 
-const reportsList = [
+const allReports = [
   {
     id: "revenue",
     title: "Revenue Report",
@@ -80,6 +82,7 @@ const reportsList = [
     icon: Money,
     color: "#6366f1",
     path: "reports/revenue",
+    permission: PERMISSIONS.REPORTS_DETAILED_REVENUE,
   },
   {
     id: "bookings",
@@ -90,6 +93,7 @@ const reportsList = [
     icon: Tickets,
     color: "#10b981",
     path: "reports/bookings",
+    permission: PERMISSIONS.REPORTS_DETAILED_BOOKINGS,
   },
   {
     id: "movies",
@@ -100,6 +104,7 @@ const reportsList = [
     icon: VideoCamera,
     color: "#f59e0b",
     path: "reports/movies",
+    permission: PERMISSIONS.REPORTS_DETAILED_MOVIES,
   },
   {
     id: "frequency",
@@ -110,8 +115,14 @@ const reportsList = [
     icon: User,
     color: "#ec4899",
     path: "reports/customer-frequency",
+    permission: PERMISSIONS.REPORTS_CUSTOMER_FREQUENCY,
   },
 ];
+
+// Filter reports based on user permissions
+const reportsList = computed(() => {
+  return allReports.filter((report) => hasPermission(report.permission));
+});
 
 const navigateToReport = (path) => {
   router.push(path);
