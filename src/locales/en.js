@@ -717,6 +717,7 @@ export default {
     forceDeleteFailed: "Failed to permanently delete showtimes",
     loadFailed: "Failed to load showtimes",
     createSuccess: "Showtime created successfully.",
+    createMultipleSuccess: "Multiple showtimes created successfully",
     createFailed: "Failed to create showtime.",
     updateSuccess: "Showtime updated successfully",
     updateFailed: "Failed to update showtime",
@@ -1245,6 +1246,7 @@ export default {
     to: "to",
     startDate: "Start Date",
     endDate: "End Date",
+    status: "Status",
   },
 
   // Upload

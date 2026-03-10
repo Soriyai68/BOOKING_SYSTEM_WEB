@@ -9,7 +9,7 @@
         <el-button
           type="primary"
           link
-          @click="$router.push('/admin/reports/bookings')"
+          @click="$router.push('/reports/bookings')"
         >
           {{ $t("reports.viewDetails") }}
         </el-button>

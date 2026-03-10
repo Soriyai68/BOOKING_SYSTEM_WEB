@@ -21,7 +21,7 @@
           <el-button
             type="primary"
             link
-            @click="$router.push('/admin/reports/revenue')"
+            @click="$router.push('/reports/revenue')"
           >
             {{ $t("reports.viewDetails") }}
           </el-button>
