@@ -746,6 +746,8 @@ export default {
     addRows: "បន្ថែមជួរ",
     limitError: "អ្នកអាចបន្ថែមត្រឹមតែ {max} ​ជួរក្នុងមួយដងប៉ុណ្ណោះ។",
     duplicateShowtime: "ចម្លងម៉ោងបញ្ចាំង",
+    createMultipleSuccess: "បានបង្កើតម៉ោងបញ្ចាំងច្រើនដោយជោគជ័យ",
+    duplicateSuccess: "បានចម្លងម៉ោងបញ្ចាំងដោយជោគជ័យ",
   },
 
   bookingTickets: {

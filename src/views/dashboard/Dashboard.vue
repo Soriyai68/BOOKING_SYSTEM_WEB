@@ -11,11 +11,11 @@
           <span class="date-text">{{ currentDate }}</span>
         </p>
       </div>
-      <div class="header-actions">
+      <!-- <div class="header-actions">
         <el-button type="primary" class="premium-btn" :icon="Bell">
           {{ $t("common.notification") }}
         </el-button>
-      </div>
+      </div> -->
     </header>
 
     <!-- Statistics Cards -->

@@ -748,6 +748,8 @@ export default {
     selectTheaterForAll: "Select theater for all rows",
     limitError: "You can only add up to {max} rows at once.",
     duplicateShowtime: "Duplicate showtimes",
+    createMultipleSuccess: "Multiple showtimes created successfully",
+    duplicateSuccess: "Duplicate showtimes created successfully",
   },
   validations: {
     movieRequired: "Please select a movie",
