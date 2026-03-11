@@ -327,12 +327,25 @@ const loadDashboardData = async () => {
 
     // Map real activity logs to dashboard format
     const logs = logsData.logs || logsData.data?.logs || [];
-    recentActivities.value = logs.map((log) => ({
-      id: log._id,
-      text: `${log.userId?.name || "System"} performed ${log.action.replace(/_/g, " ").toLowerCase()}`,
-      time: dayjs(log.createdAt).fromNow(),
-      type: getActionType(log.action),
-    }));
+    recentActivities.value = logs.map((log) => {
+      const name = log.userId?.name || t("dashboard.activity.system");
+      const actionKey = `dashboard.activity.${log.action}`;
+      // Use translated action label if it exists, else fall back to formatted raw action
+      const formattedRawAction = log.action
+        .replace(/force_delete/i, "delete")
+        .replace(/_/g, " ")
+        .toLowerCase();
+      
+      const actionLabel = t(actionKey) !== actionKey
+        ? t(actionKey)
+        : formattedRawAction;
+      return {
+        id: log._id,
+        text: `${name} ${actionLabel}`,
+        time: dayjs(log.createdAt).fromNow(),
+        type: getActionType(log.action),
+      };
+    });
   } catch (error) {
     console.error("Failed to load dashboard data:", error);
   } finally {

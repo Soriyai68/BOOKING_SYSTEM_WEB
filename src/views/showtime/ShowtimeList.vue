@@ -403,40 +403,26 @@ const deleteShowtime = async (id) => {
 const forceDeleteSelectedShowtimes = async () => {
   try {
     await ElMessageBox.confirm(
-      t("showtimes.forceDeleteSelectedConfirm", {
+      t("showtimes.deleteSelectedConfirm", {
         count: selectedShowtimes.value.length,
       }),
-      t("showtimes.forceDeleteTitle"),
+      t("showtimes.deleteTitle"),
       {
-        confirmButtonText: t("actions.forceDelete"),
+        confirmButtonText: t("actions.delete"),
         cancelButtonText: t("actions.cancel"),
-        type: "error",
-        dangerouslyUseHTMLString: true,
+        type: "warning",
       },
     );
     const ids = selectedShowtimes.value.map((s) => s.id);
-    console.log("Force delete showtime IDs:", ids);
-    console.log("Number of IDs:", ids.length);
-    console.log(
-      "ID types:",
-      ids.map((id) => typeof id),
-    );
     await showtimeService.forceDeleteBulkShowtimes(ids);
-    ElMessage.success(t("showtimes.forceDeleteSuccess"));
+    ElMessage.success(t("showtimes.deleteSuccess"));
     appStore.triggerRefresh();
     cancelSelection();
   } catch (error) {
     if (error !== "cancel") {
-      console.error("Failed to force delete selected showtimes:", error);
-      console.error("Error response:", error.response?.data);
+      console.error("Failed to delete selected showtimes:", error);
       const errorMsg =
-        error.response?.data?.message || t("showtimes.forceDeleteFailed");
-      const errors = error.response?.data?.errors;
-      if (errors && errors.length > 0) {
-        errors.forEach((err) => {
-          console.error(`Validation error - ${err.field}: ${err.message}`);
-        });
-      }
+        error.response?.data?.message || t("showtimes.deleteFailed");
       ElMessage.error(errorMsg);
     }
   }
