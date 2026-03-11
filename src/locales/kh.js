@@ -315,6 +315,8 @@ export default {
       SHOWTIME_UPDATED: "បានកែប្រែម៉ោងបញ្ចាំង",
       SHOWTIME_DELETED: "បានលុបម៉ោងបញ្ចាំង",
       SHOWTIME_FORCE_DELETE: "បានលុបម៉ោងបញ្ចាំង",
+      BOOK_DELETE: "បានលុបការកក់",
+      NOTIFICATION_SEND: "បានផ្ញើការជូនដំណឹង",
     },
   },
   // Seat Management

@@ -278,7 +278,7 @@ const seatTypes = computed(() => {
   hallSeats.value.forEach((seat) => {
     if (!types[seat.seat_type]) {
       types[seat.seat_type] = {
-        label: t(`seats.types.${seat.seat_type}`),
+        label: seat.seat_type.charAt(0).toUpperCase() + seat.seat_type.slice(1),
         color: typeColors[seat.seat_type] || "#3b82f6",
         price: seat.price || 0,
       };

@@ -166,7 +166,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('showtimes.movie')" width="220">
+        <el-table-column :label="$t('showtimes.movie')" width="250">
           <template #default="{ row }">{{ row.movie?.title }}</template>
         </el-table-column>
         <el-table-column :label="$t('showtimes.showtimeDetails')" width="220">
@@ -181,18 +181,18 @@
         <el-table-column
           prop="seat_count"
           :label="$t('bookings.seatCount')"
-          width="100"
+          width="150"
         />
         <el-table-column
           prop="total_price"
           :label="$t('bookings.totalPrice')"
-          width="120"
+          width="150"
         >
           <template #default="{ row }">{{
             formatCurrency(row.total_price)
           }}</template>
         </el-table-column>
-        <el-table-column :label="$t('bookings.bookingStatus')" width="160">
+        <el-table-column :label="$t('bookings.bookingStatus')" width="180">
           <template #default="{ row }">
             <el-tag
               :type="getStatusType(bookingStatusOptions, row.booking_status)"
@@ -201,7 +201,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('bookings.paymentStatus')" width="160">
+        <!-- <el-table-column :label="$t('bookings.paymentStatus')" width="160">
           <template #default="{ row }">
             <el-tag
               :type="getStatusType(paymentStatusOptions, row.payment_status)"
@@ -209,7 +209,7 @@
               {{ row.payment_status }}
             </el-tag>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
           :label="$t('common.actions')"
           fixed="right"
@@ -314,7 +314,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('bookings.paymentStatus')">
+        <!-- <el-form-item :label="$t('bookings.paymentStatus')">
           <el-select v-model="editForm.payment_status" style="width: 100%">
             <el-option
               v-for="status in paymentStatusOptions"
@@ -323,7 +323,7 @@
               :value="status.value"
             />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <template #footer>
         <el-button @click="editDialogVisible = false">{{
@@ -786,7 +786,7 @@ const confirmSeatUpdate = async () => {
 const openEditDialog = (booking) => {
   editForm.id = booking.id;
   editForm.booking_status = booking.booking_status;
-  editForm.payment_status = booking.payment_status;
+  // editForm.payment_status = booking.payment_status;
   editDialogVisible.value = true;
 };
 

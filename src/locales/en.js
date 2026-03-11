@@ -311,6 +311,8 @@ export default {
       SHOWTIME_UPDATED: "updated a showtime",
       SHOWTIME_DELETED: "deleted a showtime",
       SHOWTIME_FORCE_DELETE: "deleted a showtime",
+      BOOK_DELETE: "deleted a booking",
+      NOTIFICATION_SEND: "sent a notification",
     },
   },
 

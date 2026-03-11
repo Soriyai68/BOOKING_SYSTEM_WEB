@@ -104,7 +104,7 @@
             </el-table-column>
             <el-table-column :label="$t('bookings.customer')" min-width="150">
               <template #default="{ row }">
-                {{ row.customer?.name || "N/A" }}
+                {{ row.customer?.name || $t("customers.walkin") }}
               </template>
             </el-table-column>
             <el-table-column
@@ -113,7 +113,7 @@
               show-overflow-tooltip
             >
               <template #default="{ row }">
-                {{ row.movie?.title || "N/A" }}
+                {{ row.movie?.title || " " }}
               </template>
             </el-table-column>
             <el-table-column
@@ -335,10 +335,9 @@ const loadDashboardData = async () => {
         .replace(/force_delete/i, "delete")
         .replace(/_/g, " ")
         .toLowerCase();
-      
-      const actionLabel = t(actionKey) !== actionKey
-        ? t(actionKey)
-        : formattedRawAction;
+
+      const actionLabel =
+        t(actionKey) !== actionKey ? t(actionKey) : formattedRawAction;
       return {
         id: log._id,
         text: `${name} ${actionLabel}`,
