@@ -4,7 +4,7 @@
       <h2>Create Promotion</h2>
       <el-button @click="$router.back()">
         <el-icon><ArrowLeft /></el-icon>
-        Back
+        {{ $t("actions.back") }}
       </el-button>
     </div>
 

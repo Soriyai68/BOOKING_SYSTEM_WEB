@@ -3,15 +3,37 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <h2>{{ $t("reports.customerFrequency") }}</h2>
-          <el-button
-            type="primary"
-            :icon="Refresh"
-            @click="loadData"
-            :loading="loading"
-          >
-            {{ $t("actions.refresh") }}
-          </el-button>
+          <div class="title-section">
+            <el-button
+              @click="$router.push('/admin/reports')"
+              link
+              :icon="ArrowLeft"
+              class="mr-2"
+            />
+            <h2>{{ $t("reports.customerFrequency") }}</h2>
+          </div>
+          <div class="action-section">
+            <!-- <el-button
+              type="primary"
+              :icon="Refresh"
+              @click="loadData"
+              :loading="loading"
+            >
+              {{ $t("actions.refresh") }}
+            </el-button> -->
+            <el-dropdown trigger="click" @command="handleExport">
+              <el-button type="primary" :icon="Download">
+                {{ $t("reports.export") || "Export Data" }}
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="csv">CSV</el-dropdown-item>
+                  <el-dropdown-item command="excel">Excel</el-dropdown-item>
+                  <el-dropdown-item command="pdf">PDF</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
         </div>
       </template>
 
@@ -25,12 +47,13 @@
         <el-table-column type="index" label="#" width="60" />
 
         <el-table-column
-          prop="customer_name"
-          :label="$t('reports.customerName')"
+          :label="$t('reports.customer')"
           min-width="150"
         >
           <template #default="{ row }">
-            <span>{{ row.customer_name || "N/A" }}</span>
+            <span>
+              {{ row.customer_name ? row.customer_name : $t('customers.' + row.customer_type) || "N/A" }}
+            </span>
           </template>
         </el-table-column>
 
@@ -40,7 +63,7 @@
           min-width="130"
         >
           <template #default="{ row }">
-            <span>{{ row.customer_phone || "N/A" }}</span>
+            <span>{{ row.customer_phone || "" }}</span>
           </template>
         </el-table-column>
 
@@ -50,14 +73,14 @@
           min-width="180"
         >
           <template #default="{ row }">
-            <span>{{ row.customer_email || "N/A" }}</span>
+            <span>{{ row.customer_email || "" }}</span>
           </template>
         </el-table-column>
 
         <el-table-column
           prop="total_bookings"
           :label="$t('reports.totalBookings')"
-          width="140"
+          width="160"
           sortable
           align="center"
         >
@@ -103,11 +126,13 @@
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import { Refresh } from "@element-plus/icons-vue";
+import { Refresh, ArrowLeft, Download } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";
 import reportService from "@/services/reportService";
 import { useAppStore } from "@/stores/app";
+import { exportToCSV, exportToExcel, exportToPDF } from "@/utils/exportUtils";
+import dayjs from "dayjs";
 
 const appStore = useAppStore();
 const { t } = useI18n();
@@ -133,12 +158,52 @@ const loadData = async () => {
     const response =
       await reportService.getCustomerBookingFrequency(pagination);
     customerData.value = response.data || [];
+    console.table(customerData.value);
     total.value = response.total || 0;
   } catch (error) {
     console.error("Failed to load customer booking frequency:", error);
     ElMessage.error(t("messages.loadDataFailed"));
   } finally {
     loading.value = false;
+  }
+};
+
+const handleExport = (type) => {
+  const data = customerData.value.map((item) => ({
+    [t("reports.customerName")]: item.customer_name || t('customers.' + item.customer_type) || "N/A",
+    [t("reports.phone")]: item.customer_phone || "N/A",
+    [t("reports.email")]: item.customer_email || "N/A",
+    [t("reports.totalBookings")]: item.total_bookings,
+    [t("reports.totalValue")]: item.total_spend,
+  }));
+
+  const filename = `${t("reports.customerFrequency")
+    .toLowerCase()
+    .replace(/\s+/g, "_")}_${dayjs().format("YYYYMMDD")}`;
+
+  if (type === "csv") {
+    exportToCSV(data, filename);
+  } else if (type === "excel") {
+    exportToExcel(data, filename);
+  } else if (type === "pdf") {
+    const pdfData = customerData.value.map((item, index) => ({
+      index: index + 1,
+      customer_name: item.customer_name || t('customers.' + item.customer_type) || "N/A",
+      phone: item.customer_phone || "N/A",
+      email: item.customer_email || "N/A",
+      total_bookings: item.total_bookings,
+      total_spend: `$${formatAmount(item.total_spend)}`,
+    }));
+
+    const columns = [
+      { header: "#", dataKey: "index" },
+      { header: t("reports.customerName"), dataKey: "customer_name" },
+      { header: t("reports.phone"), dataKey: "phone" },
+      { header: t("reports.email"), dataKey: "email" },
+      { header: t("reports.totalBookings"), dataKey: "total_bookings" },
+      { header: t("reports.totalValue"), dataKey: "total_spend" },
+    ];
+    exportToPDF(pdfData, columns, t("reports.customerFrequency"), filename);
   }
 };
 
@@ -165,6 +230,17 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.title-section {
+  display: flex;
+  align-items: center;
+}
+
+.action-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .card-header h2 {

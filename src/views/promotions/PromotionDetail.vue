@@ -5,7 +5,7 @@
       <div>
         <el-button @click="$router.back()">
           <el-icon><ArrowLeft /></el-icon>
-          Back
+          {{ $t("actions.back") }}
         </el-button>
         <el-button
           v-permission="'promotions.edit'"

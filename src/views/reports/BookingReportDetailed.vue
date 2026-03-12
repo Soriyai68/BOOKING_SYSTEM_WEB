@@ -312,7 +312,7 @@ onMounted(() => {
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },
     { title: t("nav.reportsNav"), path: "/admin/reports" },
-    { title: t("dashboard.bookingReport"), path: "/admin/reports/bookings" },
+    { title: t("reports.bookingReport"), path: "/admin/reports/bookings" },
   ]);
   loadData();
 });
