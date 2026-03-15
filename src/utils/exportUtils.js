@@ -93,7 +93,7 @@ const shapeKhmer = (text) => {
  * Enhanced translation map for internal report data values.
  */
 const KHMER_MAP = {
-  Cash: "សាច់ប្រាក់",
+  // Cash: "សាច់ប្រាក់",
   Bakong: "បាគង់",
   Pending: "រង់ចាំ",
   Paid: "បង់រួច",
@@ -150,11 +150,11 @@ export const exportToPDF = (
   // Subtitle / Timestamp
   doc.setFontSize(10);
   doc.setTextColor(100, 100, 100); // Gray RGB
-  doc.text(
-    shapeKhmer(`បង្កើតនៅថ្ងៃទី: ${new Date().toLocaleString()}`),
-    14,
-    30,
-  );
+  // doc.text(
+  //   shapeKhmer(`បង្កើតនៅថ្ងៃទី: ${new Date().toLocaleString()}`),
+  //   14,
+  //   30,
+  // );
 
   // Table Data Preparation (Strict Array-of-Arrays)
   const head = [columns.map((col) => shapeKhmer(col.header))];

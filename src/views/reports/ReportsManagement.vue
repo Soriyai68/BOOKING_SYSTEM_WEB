@@ -65,6 +65,7 @@ import {
   VideoCamera,
   User,
   ArrowRight,
+  CreditCard,
 } from "@element-plus/icons-vue";
 
 const router = useRouter();
@@ -116,6 +117,17 @@ const allReports = [
     color: "#ec4899",
     path: "reports/customer-frequency",
     permission: PERMISSIONS.REPORTS_CUSTOMER_FREQUENCY,
+  },
+  {
+    id: "payment-methods",
+    title: "Payment Method Analysis",
+    titleKey: "reports.paymentMethodAnalysis",
+    description: "Analyze payment methods, success rates, and transaction patterns.",
+    descriptionKey: "reports.paymentMethodDesc",
+    icon: CreditCard,
+    color: "#8b5cf6",
+    path: "reports/payment-methods",
+    permission: PERMISSIONS.REPORTS_PAYMENT_METHOD_ANALYSIS,
   },
 ];
 

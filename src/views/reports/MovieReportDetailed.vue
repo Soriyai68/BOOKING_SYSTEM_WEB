@@ -114,14 +114,14 @@
         />
       </div>
 
-      <div
+      <!-- <div
         class="info-section mt-6 p-4 bg-blue-50 text-blue-700 rounded-lg flex items-start gap-3"
       >
         <el-icon class="mt-1"><InfoFilled /></el-icon>
         <p class="text-sm m-0">
           {{ $t("reports.movieInfoNote") }}
         </p>
-      </div>
+      </div> -->
     </el-card>
   </div>
 </template>

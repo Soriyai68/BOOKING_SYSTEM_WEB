@@ -596,6 +596,19 @@ const adminRoutesChildren = [
       hideInMenu: true,
     },
   },
+  {
+    path: "reports/payment-methods",
+    name: "PaymentMethodAnalysisReport",
+    component: () => import("@/views/reports/PaymentMethodAnalysisReport.vue"),
+    meta: {
+      title: "Payment Method Analysis Report",
+      titleKey: "reports.paymentMethodAnalysis",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_PAYMENT_METHOD_ANALYSIS),
+      hideInMenu: true,
+    },
+  },
+
+  
   // system
   {
     path: "system/permissions",

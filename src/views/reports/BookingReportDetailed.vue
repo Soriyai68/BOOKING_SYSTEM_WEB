@@ -152,7 +152,7 @@
         />
       </div>
 
-      <div
+      <!-- <div
         class="summary-footer mt-6 p-4 bg-gray-50 rounded-lg flex justify-between items-center"
       >
         <span class="text-gray-600"
@@ -162,7 +162,7 @@
         <span class="text-xl font-bold text-green-600">
           {{ $t("reports.totalValue") }}: ${{ totalValue.toFixed(2) }}
         </span>
-      </div>
+      </div> -->
     </el-card>
   </div>
 </template>
