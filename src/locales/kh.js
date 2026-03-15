@@ -461,6 +461,8 @@ export default {
     deleteMultipleSuccess: "លុបរោងកុន {count} នេះបានជោគជាំយ",
     deleteMultipleError: "បរាជ័យក្នុងការលុបរោងកុន",
     loadError: "បរាជ័យក្នុងការផ្ទុករោងកុន",
+    updateTheater: "ធ្វើបច្ចុប្បន្នភាពរោងកុន",
+    confirmDelete: "តើអ្នកប្រាកដថាចង់លុបរោងកុននេះមែនទេ?",
   },
 
   // Hall Management
@@ -498,6 +500,7 @@ export default {
     deleteMultipleSuccess: "លុបសាល {count} នេះបានជោគជាំយ",
     deleteMultipleError: "បរាជ័យក្នុងការលុបសាល",
     loadError: "បរាជ័យក្នុងការផ្ទុកសាល",
+    confirmDelete: "តើអ្នកប្រាកដថាចង់លុបសាលនេះមែនទេ?",
   },
   // User Management
   users: {
@@ -1103,6 +1106,9 @@ export default {
     tomorrow: "ថ្ងៃស្អែក",
     print: "បោះពុម្ព",
     restore: "ស្តារឡើងវិញ",
+    activate: "ធ្វើឱ្យសកម្ម",
+    deactivate: "ធ្វើឱ្យអសកម្ម",
+    title: "សកម្មភាព",
   },
 
   // Status Messages

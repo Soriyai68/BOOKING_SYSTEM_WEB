@@ -569,6 +569,8 @@ export default {
       out_of_order: "Out of Order",
       reserved: "Reserved",
     },
+    updateTheater: "Update Theater",
+    confirmDelete: "Are you sure you want to delete this theater?",
   },
   // Hall Management
   halls: {
@@ -599,6 +601,7 @@ export default {
     createSuccess: "Hall created successfully",
     updateHall: "Update Hall",
     updateSuccess: "Hall updated successfully",
+    confirmDelete: "Are you sure you want to delete this hall?",
   },
 
   // Movie Management
@@ -1119,6 +1122,9 @@ export default {
     markAllAsRead: "Mark All As Read",
     clearAll: "Clear All",
     viewAll: "View All",
+    activate: "Activate",
+    deactivate: "Deactivate",
+    title: "Actions",
   },
 
   // Status Messages

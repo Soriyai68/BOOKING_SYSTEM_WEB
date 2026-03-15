@@ -13,7 +13,7 @@
         ref="formRef"
         :model="form"
         :rules="rules"
-        label-width="120px"
+        label-width="150px"
         @submit.prevent="handleSubmit"
       >
         <!-- Customer Type -->
@@ -23,9 +23,9 @@
             :placeholder="$t('customers.customerType')"
             style="width: 100%"
           >
-            <el-option :label="$t('customers.member')" value="member" />
+            <!-- <el-option :label="$t('customers.member')" value="member" /> -->
             <el-option :label="$t('customers.walkin')" value="walkin" />
-            <el-option :label="$t('customers.guest')" value="guest" />
+            <!-- <el-option :label="$t('customers.guest')" value="guest" /> -->
           </el-select>
         </el-form-item>
 
@@ -57,14 +57,6 @@
           />
         </el-form-item>
 
-        <!-- Email (member + guest only) -->
-        <el-form-item
-          v-if="['guest'].includes(form.customerType)"
-          :label="$t('customers.email')"
-          prop="email"
-        >
-          <el-input v-model="form.email" :placeholder="$t('customers.email')" />
-        </el-form-item>
 
         <!-- Username (member only) -->
         <el-form-item
@@ -171,12 +163,6 @@ const rules = computed(() => {
     phoneRules.push({
       required: false,
       validator: validatePhone,
-      trigger: "blur",
-    });
-  } else if (currentType === "guest") {
-    emailRules.push({
-      required: false,
-      message: t("validation.required"),
       trigger: "blur",
     });
   }

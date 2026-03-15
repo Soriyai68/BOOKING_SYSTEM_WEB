@@ -18,7 +18,11 @@
       <template #header>
         <div class="context-header">
           <span>{{ $t("halls.belongsToTheater") }}</span>
-          <el-button v-permission="'theaters.view'" size="small" @click="goToTheater">
+          <el-button
+            v-permission="'theaters.view'"
+            size="small"
+            @click="goToTheater"
+          >
             <el-icon><ArrowRight /></el-icon>
             {{ $t("actions.view") }} {{ $t("theaters.title") }}
           </el-button>
@@ -71,7 +75,11 @@
     </el-card>
 
     <!-- Edit Hall Dialog -->
-    <EditHall v-model="showEditDialog" :hall-id="route.params.id" @success="handleEditSuccess" />
+    <EditHall
+      v-model="showEditDialog"
+      :hall-id="route.params.id"
+      @success="handleEditSuccess"
+    />
   </div>
 </template>
 
@@ -126,7 +134,7 @@ const handleEditSuccess = async () => {
 
 const goToTheater = () => {
   if (theater.value) {
-    router.push(`/admin/theaters/${theater.value.id}`);
+    router.push(`/theaters/${theater.value.id}`);
   }
 };
 
@@ -143,7 +151,7 @@ const statusTagType = (status) => {
     default:
       return "";
   }
-}
+};
 
 onMounted(async () => {
   await load();

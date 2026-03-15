@@ -270,11 +270,13 @@ const toggleStatus = async (customer) => {
       }),
       t("messages.confirm.title"),
       {
-        confirmButtonText: t(
-          `actions.${newStatus ? "activate" : "deactivate"}`,
-        ),
+        // Fix: Use a specific action label instead of the full sentence
+        confirmButtonText: t(`actions.${actionKey}`),
         cancelButtonText: t("actions.cancel"),
         type: newStatus ? "success" : "warning",
+        // Add this to control width via CSS
+        customClass: "wide-message-box",
+        draggable: true, // Optional: makes it feel more "high-end"
       },
     );
 
