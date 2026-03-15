@@ -3,7 +3,9 @@
     <el-card shadow="never" class="payment-card">
       <template #header>
         <div class="card-header">
-          <span class="flex gap-[10px] items-center"><Wallet :size="18" /> {{ $t("payments.paymentDetails") }}</span>
+          <span class="flex gap-[10px] items-center"
+            ><Wallet :size="18" /> {{ $t("payments.paymentDetails") }}</span
+          >
         </div>
       </template>
 
@@ -79,7 +81,13 @@ import { ElMessage } from "element-plus";
 import { customerService } from "@/services/customerService";
 import { paymentService } from "@/services/paymentService";
 import { toLocalPhone } from "@/utils/formatters";
-import { CircleDollarSign , Wallet, User, Store, CreditCard } from "lucide-vue-next";
+import {
+  CircleDollarSign,
+  Wallet,
+  User,
+  Store,
+  CreditCard,
+} from "lucide-vue-next";
 
 defineProps({
   customerId: {
@@ -102,13 +110,13 @@ const loading = reactive({
 const customerOptions = ref([]);
 
 const paymentMethods = paymentService.PAYMENT_METHODS.filter((p) =>
-  ["Cash", "Bakong", "PayAtCinema"].includes(p.value)
+  ["Cash", "Bakong", "PayAtCinema"].includes(p.value),
 );
 
 const getPaymentMethodIcon = (method) => {
   switch (method) {
     case "Cash":
-      return CircleDollarSign ;
+      return CircleDollarSign;
     case "Bakong":
       return CreditCard;
     case "PayAtCinema":
@@ -120,10 +128,7 @@ const getPaymentMethodIcon = (method) => {
 
 const getCustomerLabel = (customer) => {
   if (customer.customerType === "walkin") {
-    return "Walk-in Customer";
-  }
-  if (customer.customerType === "guest") {
-    return `Guest Customer - ${customer.email || customer.name || customer.id}`;
+    return t("customers.walkin") || "Walk-in Customer";
   }
   if (customer.name && customer.phone) {
     return `${customer.name} - ${toLocalPhone(customer.phone)}`;
@@ -142,6 +147,7 @@ const loadCustomers = async (query = "") => {
   try {
     const response = await customerService.getCustomers({
       search: query,
+      isActive: true,
       limit: 20,
     });
     customerOptions.value = response.data;
@@ -166,7 +172,7 @@ onMounted(() => {
 .card-header {
   font-size: 1.2em;
   font-weight: 600;
-  display: flex;;
+  display: flex;
   align-items: center;
   gap: 8px;
   color: var(--el-text-color-primary);
