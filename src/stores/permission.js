@@ -159,6 +159,8 @@ export const usePermissionStore = defineStore("permission", () => {
   const canViewDetailedRevenueReport = computed(() => hasPermission("reports.detailed-revenue.view"));
   const canViewDetailedBookingsReport = computed(() => hasPermission("reports.detailed-bookings.view"));
   const canViewDetailedMoviesReport = computed(() => hasPermission("reports.detailed-movies.view"));
+  const canViewPaymentMethodAnalysisReport = computed(() => hasPermission("reports.payment-method-analysis.view"));
+  const canViewShowtimeUtilizationReport = computed(() => hasPermission("reports.showtime-utilization.view"));
 
   // Actions
   const fetchUserPermissions = async (force = false) => {
@@ -379,6 +381,8 @@ export const usePermissionStore = defineStore("permission", () => {
     canViewDetailedRevenueReport,
     canViewDetailedBookingsReport,
     canViewDetailedMoviesReport,
+    canViewPaymentMethodAnalysisReport,
+    canViewShowtimeUtilizationReport,
 
     canViewDashboard,
     canViewAnalytics,

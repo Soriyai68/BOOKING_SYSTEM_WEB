@@ -216,6 +216,34 @@
             <span>${{ row.avg_transaction_value?.toFixed(2) }}</span>
           </template>
         </el-table-column>
+        <el-table-column
+          prop="first_transaction_date"
+          :label="$t('reports.firstTransactionDate')"
+          width="180"
+          align="center"
+          sortable
+        >
+          <template #default="{ row }">
+            <span v-if="row.first_transaction_date">
+              {{ formatDate(row.first_transaction_date) }}
+            </span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="last_transaction_date"
+          :label="$t('reports.lastTransactionDate')"
+          width="180"
+          align="center"
+          sortable
+        >
+          <template #default="{ row }">
+            <span v-if="row.last_transaction_date">
+              {{ formatDate(row.last_transaction_date) }}
+            </span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
       </el-table>
 
    
@@ -301,6 +329,11 @@ const getProgressColor = (percentage) => {
   return "#F56C6C";
 };
 
+const formatDate = (date) => {
+  if (!date) return "-";
+  return dayjs(date).format("YYYY-MM-DD");
+};
+
 const handleExport = (type) => {
   const data = reportData.value.map((item) => ({
     [t("reports.paymentMethod")]: item.payment_method,
@@ -313,6 +346,8 @@ const handleExport = (type) => {
     [t("reports.revenue")]: item.total_revenue,
     [t("reports.revenueContribution")]: `${item.revenue_contribution_percentage}%`,
     [t("reports.avgTransactionValue")]: item.avg_transaction_value,
+    [t("reports.firstTransactionDate")]: formatDate(item.first_transaction_date),
+    [t("reports.lastTransactionDate")]: formatDate(item.last_transaction_date),
   }));
 
   const filename = `${t("reports.paymentMethodAnalysis")
@@ -335,6 +370,8 @@ const handleExport = (type) => {
       revenue: item.total_revenue,
       contribution: `${item.revenue_contribution_percentage}%`,
       avgValue: item.avg_transaction_value,
+      firstDate: formatDate(item.first_transaction_date),
+      lastDate: formatDate(item.last_transaction_date),
     }));
 
     const columns = [
@@ -348,6 +385,8 @@ const handleExport = (type) => {
       { header: t("reports.revenue"), dataKey: "revenue" },
       { header: t("reports.revenueContribution"), dataKey: "contribution" },
       { header: t("reports.avgTransactionValue"), dataKey: "avgValue" },
+      { header: t("reports.firstTransactionDate"), dataKey: "firstDate" },
+      { header: t("reports.lastTransactionDate"), dataKey: "lastDate" },
     ];
     exportToPDF(
       pdfData,

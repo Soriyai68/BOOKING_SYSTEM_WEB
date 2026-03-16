@@ -66,6 +66,7 @@ import {
   User,
   ArrowRight,
   CreditCard,
+  Clock,
 } from "@element-plus/icons-vue";
 
 const router = useRouter();
@@ -128,6 +129,17 @@ const allReports = [
     color: "#8b5cf6",
     path: "reports/payment-methods",
     permission: PERMISSIONS.REPORTS_PAYMENT_METHOD_ANALYSIS,
+  },
+  {
+    id: "showtimes",
+    title: "Showtime Utilization",
+    titleKey: "reports.showtimeUtilization",
+    description: "Analyze showtime performance, occupancy rates, and revenue per seat.",
+    descriptionKey: "reports.showtimeUtilizationDesc",
+    icon: Clock,
+    color: "#06b6d4",
+    path: "reports/showtimes",
+    permission: PERMISSIONS.REPORTS_SHOWTIME_UTILIZATION,
   },
 ];
 

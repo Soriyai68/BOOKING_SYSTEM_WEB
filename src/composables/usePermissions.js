@@ -127,6 +127,7 @@ export function usePermissions() {
     canViewDetailedBookingsReport: permissionStore.canViewDetailedBookingsReport,
     canViewDetailedMoviesReport: permissionStore.canViewDetailedMoviesReport,
     canViewPaymentMethodAnalysisReport: permissionStore.canViewPaymentMethodAnalysisReport,
+    canViewShowtimeUtilizationReport: permissionStore.canViewShowtimeUtilizationReport,
 
     // Data getters
     getPermissionsByModule: permissionStore.getPermissionsByModule,
@@ -243,6 +244,7 @@ export const PERMISSIONS = {
   REPORTS_DETAILED_BOOKINGS: 'reports.detailed-bookings.view',
   REPORTS_DETAILED_MOVIES: 'reports.detailed-movies.view',
   REPORTS_PAYMENT_METHOD_ANALYSIS: 'reports.payment-method-analysis.view',
+  REPORTS_SHOWTIME_UTILIZATION: 'reports.showtime-utilization.view',
 
   // System
   DASHBOARD_VIEW: 'dashboard.view',

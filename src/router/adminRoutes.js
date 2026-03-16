@@ -607,6 +607,17 @@ const adminRoutesChildren = [
       hideInMenu: true,
     },
   },
+  {
+    path: "reports/showtimes",
+    name: "ShowtimeUtilizationReport",
+    component: () => import("@/views/reports/ShowtimeUtilizationReport.vue"),
+    meta: {
+      title: "Showtime Utilization Report",
+      titleKey: "reports.showtimeUtilization",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_SHOWTIME_UTILIZATION),
+      hideInMenu: true,
+    },
+  },
 
   
   // system
