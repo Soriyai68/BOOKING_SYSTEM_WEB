@@ -618,6 +618,28 @@ const adminRoutesChildren = [
       hideInMenu: true,
     },
   },
+  // {
+  //   path: "reports/demographics",
+  //   name: "CustomerDemographicReport",
+  //   component: () => import("@/views/reports/CustomerDemographicReport.vue"),
+  //   meta: {
+  //     title: "Customer Demographic Report",
+  //     titleKey: "reports.customerDemographic",
+  //     ...createPermissionMeta(PERMISSIONS.REPORTS_CUSTOMER_DEMOGRAPHIC),
+  //     hideInMenu: true,
+  //   },
+  // },
+  {
+    path: "reports/staff-performance",
+    name: "StaffPerformanceReport",
+    component: () => import("@/views/reports/StaffPerformanceReport.vue"),
+    meta: {
+      title: "Staff Performance Report",
+      titleKey: "reports.staffPerformance",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_STAFF_PERFORMANCE),
+      hideInMenu: true,
+    },
+  },
 
   
   // system

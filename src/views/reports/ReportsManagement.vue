@@ -67,6 +67,8 @@ import {
   ArrowRight,
   CreditCard,
   Clock,
+  DataAnalysis,
+  UserFilled,
 } from "@element-plus/icons-vue";
 
 const router = useRouter();
@@ -140,6 +142,17 @@ const allReports = [
     color: "#06b6d4",
     path: "reports/showtimes",
     permission: PERMISSIONS.REPORTS_SHOWTIME_UTILIZATION,
+  },
+  {
+    id: "staff-performance",
+    title: "Staff Performance",
+    titleKey: "reports.staffPerformance",
+    description: "Track staff productivity, revenue generation, and booking metrics.",
+    descriptionKey: "reports.staffPerformanceDesc",
+    icon: UserFilled,
+    color: "#f97316",
+    path: "reports/staff-performance",
+    permission: PERMISSIONS.REPORTS_STAFF_PERFORMANCE,
   },
 ];
 

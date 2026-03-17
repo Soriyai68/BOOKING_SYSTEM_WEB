@@ -134,6 +134,28 @@ const reportService = {
       throw error.response?.data || error.message;
     }
   },
+
+  getCustomerDemographicReport: async (params) => {
+    try {
+      const response = await api.get("/reports/customer-demographic", {
+        params,
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
+  getStaffPerformanceReport: async (params) => {
+    try {
+      const response = await api.get("/reports/staff-performance", {
+        params,
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
 };
 
 export default reportService;
