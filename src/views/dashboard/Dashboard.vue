@@ -64,12 +64,29 @@
     <div class="charts-section animate-slide-up" style="animation-delay: 400ms">
       <DashboardCharts />
     </div>
-
+    <!-- Seat Layout Preview & Showtime Schedule -->
+    <el-row
+      :gutter="24"
+      class="widgets-row animate-slide-up"
+      style="animation-delay: 600ms; margin-top: 24px"
+    >
+      <el-col :xs="24" :lg="12">
+        <!-- Core logic: interactive-mode lets clicking a card emit @select instead of navigating -->
+        <ShowtimeSchedule interactive-mode @select="handleShowtimeSelect" />
+      </el-col>
+      <el-col :xs="24" :lg="12">
+        <!-- Core logic: Receives the selectedShowtimeId and dynamically updates its seat map -->
+        <SeatLayoutPreview
+          :showtime-id="selectedShowtimeId"
+          :hide-header="true"
+        />
+      </el-col>
+    </el-row>
     <!-- Bottom Content: Recent Bookings & Activities -->
     <el-row
       :gutter="24"
       class="bottom-row animate-slide-up"
-      style="animation-delay: 500ms"
+      style="animation-delay: 500ms; margin-top: 24px"
     >
       <el-col :xs="24" :lg="16">
         <el-card class="premium-table-card" shadow="never">
@@ -208,6 +225,8 @@ import reportService from "@/services/reportService";
 import { bookingService } from "@/services/bookingService";
 import { userService } from "@/services/userService";
 import DashboardCharts from "@/components/dashboard/DashboardCharts.vue";
+import SeatLayoutPreview from "@/components/dashboard/SeatLayoutPreview.vue";
+import ShowtimeSchedule from "@/components/dashboard/ShowtimeSchedule.vue";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -220,6 +239,11 @@ const { t } = useI18n();
 
 const currentUser = computed(() => authStore.user);
 const loading = ref(false);
+
+const selectedShowtimeId = ref("");
+const handleShowtimeSelect = (id) => {
+  selectedShowtimeId.value = id;
+};
 
 const currentDate = computed(() => dayjs().format("dddd, D MMMM YYYY"));
 const welcomeMessage = computed(() => {

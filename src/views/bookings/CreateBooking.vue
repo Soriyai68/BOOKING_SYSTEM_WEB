@@ -96,12 +96,14 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import { ArrowLeft } from "lucide-vue-next";
 import { useAppStore } from "@/stores/app";
 
+import { showtimeService } from "@/services/showtimeService";
+import { seatService } from "@/services/seatService";
 import { bookingService } from "@/services/bookingService";
 import { paymentService } from "@/services/paymentService";
 import { formatDate } from "@/utils/formatters";
@@ -115,6 +117,7 @@ import BakongQrPayment from "@/components/payments/BakongQRPayment.vue";
 
 const { t } = useI18n();
 const router = useRouter();
+const route = useRoute();
 const appStore = useAppStore();
 const { getAdminPath } = usePath();
 
@@ -169,7 +172,7 @@ const bookingSummary = computed(() => {
 const isStepValid = computed(() => {
   if (activeStep.value === 0) return !!bookingState.showtime;
   if (activeStep.value === 1) return bookingState.selectedSeats.size > 0;
-  if (activeStep.value === 2) return !!bookingState.customerId;
+  if (activeStep.value === 2) return !!bookingState.paymentMethod;
   return false;
 });
 
@@ -380,7 +383,7 @@ const onPaymentDialogClose = async (paid) => {
 /* ===================== */
 /* LIFECYCLE HOOKS */
 /* ===================== */
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener("keydown", handleEnterKey);
 
   appStore.setBreadcrumbs([
@@ -388,6 +391,43 @@ onMounted(() => {
     { title: t("bookings.title"), path: getAdminPath("/bookings") },
     { title: t("bookings.addBooking"), path: getAdminPath("/bookings/create") },
   ]);
+
+  // Handle auto-population from Dashboard quick-actions
+  const { showtime, seats } = route.query;
+  if (showtime) {
+    loading.booking = true;
+    try {
+      const showtimeData = await showtimeService.getShowtime(showtime);
+      if (showtimeData) {
+        bookingState.showtime = showtimeData;
+        
+        if (seats) {
+          const seatIds = seats.split(',');
+          seatIds.forEach(id => bookingState.selectedSeats.add(id));
+          
+          // Hydrate seat details for the summary
+          const seatResponse = await seatService.getSeatsByHall(showtimeData.hall_id, { per_page: 100 });
+          if (seatResponse?.data) {
+            const selectedDetails = seatResponse.data.filter(s => {
+              const sId = (s._id || s.id)?.toString();
+              return seatIds.includes(sId);
+            });
+            bookingState.selectedSeatDetails = selectedDetails;
+          }
+          
+          // Skip directly to Payment step
+          activeStep.value = 2;
+        } else {
+          // Or just skip to Seat Selection step
+          activeStep.value = 1;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load booking context from URL:", e);
+    } finally {
+      loading.booking = false;
+    }
+  }
 });
 
 onUnmounted(() => {

@@ -49,7 +49,7 @@
                   :is="getPaymentMethodIcon(method.value)"
                   :size="20"
                 />
-                <span>{{ method.label }}</span>
+                <span>{{ method.value.toLowerCase() }}</span>
               </div>
             </el-radio-button>
           </el-radio-group>
@@ -81,13 +81,7 @@ import { ElMessage } from "element-plus";
 import { customerService } from "@/services/customerService";
 import { paymentService } from "@/services/paymentService";
 import { toLocalPhone } from "@/utils/formatters";
-import {
-  CircleDollarSign,
-  Wallet,
-  User,
-  Store,
-  CreditCard,
-} from "lucide-vue-next";
+import { CircleDollarSign, Wallet, User } from "lucide-vue-next";
 
 defineProps({
   customerId: {
@@ -110,25 +104,21 @@ const loading = reactive({
 const customerOptions = ref([]);
 
 const paymentMethods = paymentService.PAYMENT_METHODS.filter((p) =>
-  ["Cash", "Bakong", "PayAtCinema"].includes(p.value),
+  ["Cash"].includes(p.value),
 );
 
 const getPaymentMethodIcon = (method) => {
   switch (method) {
     case "Cash":
       return CircleDollarSign;
-    case "Bakong":
-      return CreditCard;
-    case "PayAtCinema":
-      return Store;
     default:
-      return DollarSign;
+      return CircleDollarSign;
   }
 };
 
 const getCustomerLabel = (customer) => {
   if (customer.customerType === "walkin") {
-    return t("customers.walkin") || "Walk-in Customer";
+    return t("customers.walkin", "Walk-in Customer");
   }
   if (customer.name && customer.phone) {
     return `${customer.name} - ${toLocalPhone(customer.phone)}`;
@@ -139,7 +129,7 @@ const getCustomerLabel = (customer) => {
   if (customer.email) {
     return customer.email;
   }
-  return customer.id;
+  return t("customers.walkin", "Walk-in Customer");
 };
 
 const loadCustomers = async (query = "") => {
