@@ -596,6 +596,52 @@ const adminRoutesChildren = [
       hideInMenu: true,
     },
   },
+  {
+    path: "reports/payment-methods",
+    name: "PaymentMethodAnalysisReport",
+    component: () => import("@/views/reports/PaymentMethodAnalysisReport.vue"),
+    meta: {
+      title: "Payment Method Analysis Report",
+      titleKey: "reports.paymentMethodAnalysis",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_PAYMENT_METHOD_ANALYSIS),
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "reports/showtimes",
+    name: "ShowtimeUtilizationReport",
+    component: () => import("@/views/reports/ShowtimeUtilizationReport.vue"),
+    meta: {
+      title: "Showtime Utilization Report",
+      titleKey: "reports.showtimeUtilization",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_SHOWTIME_UTILIZATION),
+      hideInMenu: true,
+    },
+  },
+  // {
+  //   path: "reports/demographics",
+  //   name: "CustomerDemographicReport",
+  //   component: () => import("@/views/reports/CustomerDemographicReport.vue"),
+  //   meta: {
+  //     title: "Customer Demographic Report",
+  //     titleKey: "reports.customerDemographic",
+  //     ...createPermissionMeta(PERMISSIONS.REPORTS_CUSTOMER_DEMOGRAPHIC),
+  //     hideInMenu: true,
+  //   },
+  // },
+  {
+    path: "reports/staff-performance",
+    name: "StaffPerformanceReport",
+    component: () => import("@/views/reports/StaffPerformanceReport.vue"),
+    meta: {
+      title: "Staff Performance Report",
+      titleKey: "reports.staffPerformance",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_STAFF_PERFORMANCE),
+      hideInMenu: true,
+    },
+  },
+
+  
   // system
   {
     path: "system/permissions",

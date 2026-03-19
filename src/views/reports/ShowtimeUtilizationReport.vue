@@ -1,5 +1,5 @@
 <template>
-  <div class="detailed-report">
+  <div class="showtime-utilization-report">
     <el-card shadow="never">
       <template #header>
         <div class="card-header">
@@ -11,7 +11,7 @@
               class="mr-2"
             />
             <h2 class="text-xl font-bold">
-              {{ $t("reports.moviePerformanceDetailed") }}
+              {{ $t("reports.showtimeUtilization") }}
             </h2>
           </div>
           <div class="action-section">
@@ -45,6 +45,11 @@
               value-format="YYYY-MM-DD"
             />
           </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="loadData" :icon="Search">
+              {{ $t("reports.search") }}
+            </el-button>
+          </el-form-item>
         </el-form>
       </div>
 
@@ -57,39 +62,87 @@
       >
         <el-table-column type="index" label="#" width="60" />
         <el-table-column
-          prop="title"
-          :label="$t('reports.movieTitle')"
-          min-width="250"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="showtimes"
-          :label="$t('reports.showtimes')"
-          width="120"
+          prop="showtime_date"
+          :label="$t('reports.showtimeDate')"
+          width="140"
           align="center"
+          sortable
         >
           <template #default="{ row }">
-            <el-tag size="small" type="info">{{ row.showtimes }}</el-tag>
+            <span>{{ formatDate(row.showtime_date) }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          prop="total_bookings"
-          :label="$t('reports.bookings')"
+          prop="start_time"
+          :label="$t('reports.startTime')"
+          width="120"
+          align="center"
+        />
+        <el-table-column
+          prop="end_time"
+          :label="$t('reports.endTime')"
+          width="120"
+          align="center"
+        />
+        <el-table-column
+          prop="movie_title"
+          :label="$t('reports.movieTitle')"
+          min-width="200"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="theater_name"
+          :label="$t('reports.theater')"
+          width="150"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="hall_name"
+          :label="$t('reports.hall')"
+          width="120"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="total_seats_available"
+          :label="$t('reports.totalSeatsAvailable')"
+          width="140"
+          align="center"
+          sortable
+        />
+        <el-table-column
+          prop="seats_booked"
+          :label="$t('reports.seatsBooked')"
           width="120"
           align="center"
           sortable
         />
         <el-table-column
-          prop="total_seats"
-          :label="$t('reports.seatsSold')"
-          width="120"
+          prop="seats_available"
+          :label="$t('reports.seatsAvailable')"
+          width="130"
           align="center"
           sortable
         />
+        <el-table-column
+          prop="occupancy_rate"
+          :label="$t('reports.occupancyRate')"
+          width="140"
+          align="center"
+          sortable
+        >
+          <template #default="{ row }">
+            <el-progress
+              :percentage="row.occupancy_rate"
+              :color="getProgressColor(row.occupancy_rate)"
+              :show-text="false"
+            />
+            <span class="text-xs">{{ row.occupancy_rate }}%</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="total_revenue"
           :label="$t('reports.revenue')"
-          width="150"
+          width="140"
           align="right"
           sortable
         >
@@ -99,6 +152,24 @@
             >
           </template>
         </el-table-column>
+        <el-table-column
+          prop="revenue_per_seat"
+          :label="$t('reports.revenuePerSeat')"
+          width="140"
+          align="right"
+          sortable
+        >
+          <template #default="{ row }">
+            <span>${{ row.revenue_per_seat?.toFixed(2) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="booking_count"
+          :label="$t('reports.bookingCount')"
+          width="120"
+          align="center"
+          sortable
+        />
       </el-table>
 
       <!-- Pagination -->
@@ -113,15 +184,6 @@
           @current-change="loadData"
         />
       </div>
-
-      <!-- <div
-        class="info-section mt-6 p-4 bg-blue-50 text-blue-700 rounded-lg flex items-start gap-3"
-      >
-        <el-icon class="mt-1"><InfoFilled /></el-icon>
-        <p class="text-sm m-0">
-          {{ $t("reports.movieInfoNote") }}
-        </p>
-      </div> -->
     </el-card>
   </div>
 </template>
@@ -159,7 +221,6 @@ const filters = reactive({
 watch(
   () => ({ ...filters }),
   (newFilters, oldFilters) => {
-    // If any filter other than page/limit changed, reset to page 1
     const filterChanged =
       newFilters.dateFrom !== oldFilters.dateFrom ||
       newFilters.dateTo !== oldFilters.dateTo;
@@ -187,27 +248,51 @@ watch(dateRange, (val) => {
 const loadData = async () => {
   loading.value = true;
   try {
-    const response = await reportService.getDetailedMovieReport(filters);
+    const response = await reportService.getShowtimeUtilizationReport(filters);
     reportData.value = response.data || [];
     total.value = response.total || 0;
   } catch (error) {
-    ElMessage.error("Failed to load movie performance data");
+    ElMessage.error(t("reports.failedToLoadData"));
     console.error(error);
   } finally {
     loading.value = false;
   }
 };
 
+const handleFilterChange = () => {
+  loadData();
+};
+
+const formatDate = (date) => {
+  if (!date) return "-";
+  return dayjs(date).format("YYYY-MM-DD");
+};
+
+const getProgressColor = (percentage) => {
+  if (percentage >= 80) return "#67C23A";
+  if (percentage >= 60) return "#409EFF";
+  if (percentage >= 40) return "#E6A23C";
+  return "#F56C6C";
+};
+
 const handleExport = (type) => {
   const data = reportData.value.map((item) => ({
-    [t("reports.movie")]: item.title,
-    [t("reports.showtimes")]: item.showtimes,
-    [t("reports.bookings")]: item.total_bookings,
-    [t("reports.seatsSold")]: item.total_seats,
+    [t("reports.showtimeDate")]: formatDate(item.showtime_date),
+    [t("reports.startTime")]: item.start_time,
+    [t("reports.endTime")]: item.end_time,
+    [t("reports.movieTitle")]: item.movie_title,
+    [t("reports.theater")]: item.theater_name,
+    [t("reports.hall")]: item.hall_name,
+    [t("reports.totalSeatsAvailable")]: item.total_seats_available,
+    [t("reports.seatsBooked")]: item.seats_booked,
+    [t("reports.seatsAvailable")]: item.seats_available,
+    [t("reports.occupancyRate")]: `${item.occupancy_rate}%`,
     [t("reports.revenue")]: item.total_revenue,
+    [t("reports.revenuePerSeat")]: item.revenue_per_seat,
+    [t("reports.bookingCount")]: item.booking_count,
   }));
 
-  const filename = `${t("reports.moviePerformance")
+  const filename = `${t("reports.showtimeUtilization")
     .toLowerCase()
     .replace(/\s+/g, "_")}_${dayjs().format("YYYYMMDD")}`;
 
@@ -217,24 +302,40 @@ const handleExport = (type) => {
     exportToExcel(data, filename);
   } else if (type === "pdf") {
     const pdfData = reportData.value.map((item) => ({
-      movie: item.title,
-      showtimes: item.showtimes,
-      bookings: item.total_bookings,
-      seats: item.total_seats,
+      date: formatDate(item.showtime_date),
+      startTime: item.start_time,
+      endTime: item.end_time,
+      movie: item.movie_title,
+      theater: item.theater_name,
+      hall: item.hall_name,
+      totalSeats: item.total_seats_available,
+      booked: item.seats_booked,
+      available: item.seats_available,
+      occupancy: `${item.occupancy_rate}%`,
       revenue: item.total_revenue,
+      revenuePerSeat: item.revenue_per_seat,
+      bookings: item.booking_count,
     }));
 
     const columns = [
-      { header: t("reports.movie"), dataKey: "movie" },
-      { header: t("reports.showtimes"), dataKey: "showtimes" },
-      { header: t("reports.bookings"), dataKey: "bookings" },
-      { header: t("reports.seatsSold"), dataKey: "seats" },
+      { header: t("reports.showtimeDate"), dataKey: "date" },
+      { header: t("reports.startTime"), dataKey: "startTime" },
+      { header: t("reports.endTime"), dataKey: "endTime" },
+      { header: t("reports.movieTitle"), dataKey: "movie" },
+      { header: t("reports.theater"), dataKey: "theater" },
+      { header: t("reports.hall"), dataKey: "hall" },
+      { header: t("reports.totalSeatsAvailable"), dataKey: "totalSeats" },
+      { header: t("reports.seatsBooked"), dataKey: "booked" },
+      { header: t("reports.seatsAvailable"), dataKey: "available" },
+      { header: t("reports.occupancyRate"), dataKey: "occupancy" },
       { header: t("reports.revenue"), dataKey: "revenue" },
+      { header: t("reports.revenuePerSeat"), dataKey: "revenuePerSeat" },
+      { header: t("reports.bookingCount"), dataKey: "bookings" },
     ];
     exportToPDF(
       pdfData,
       columns,
-      t("reports.moviePerformanceDetailed"),
+      t("reports.showtimeUtilization"),
       filename,
     );
   }
@@ -244,14 +345,14 @@ onMounted(() => {
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },
     { title: t("nav.reportsNav"), path: "/admin/reports" },
-    { title: t("reports.moviePerformanceDetailed"), path: "/admin/reports/movies" },
+    { title: t("reports.showtimeUtilization"), path: "/admin/reports/showtimes" },
   ]);
   loadData();
 });
 </script>
 
 <style scoped>
-.detailed-report {
+.showtime-utilization-report {
   padding: 0;
 }
 
@@ -271,5 +372,14 @@ onMounted(() => {
   padding: 20px;
   border-radius: 8px;
   border: 1px solid var(--el-border-color-lighter);
+}
+
+.pagination-section {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.info-section {
+  border-left: 4px solid #409eff;
 }
 </style>
