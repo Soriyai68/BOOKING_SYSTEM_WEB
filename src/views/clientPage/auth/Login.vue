@@ -4,7 +4,8 @@ import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { useUiStore } from "@/stores/uiStore";
 import { useI18n } from "vue-i18n";
-import { CheckCircle, XCircle } from "lucide-vue-next";
+import { CheckCircle, XCircle, Sun, Moon } from "lucide-vue-next";
+import { isDark, toggleDark } from "@/composables/useTheme";
 
 const router = useRouter();
 const route = useRoute();
@@ -194,7 +195,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="login-page min-h-screen flex flex-col text-white relative overflow-hidden"
+    class="login-page min-h-screen flex flex-col bg-slate-50 dark:bg-[#050505] text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-300"
   >
     <!-- Background -->
     <div class="login-bg-layer"></div>
@@ -208,16 +209,17 @@ onUnmounted(() => {
           class="w-16 h-18 object-contain"
         />
         <div>
-          <h1 class="text-sm font-bold leading-snug">
+          <h1 class="text-sm font-bold leading-snug text-slate-900 dark:text-white">
             {{ t("client.nav.cinemaNameKH") }}
           </h1>
           <p
-            class="text-[10px] font-semibold text-neutral-500 mt-0.5 tracking-wider uppercase"
+            class="text-[10px] font-semibold text-slate-400 dark:text-neutral-500 mt-0.5 tracking-wider uppercase"
           >
             {{ t("client.nav.cinemaNameEN") }}
           </p>
         </div>
       </div>
+
     </header>
 
     <!-- Content -->
@@ -226,7 +228,7 @@ onUnmounted(() => {
     >
       <div class="w-full max-w-[380px] space-y-8">
         <div class="text-center space-y-3">
-          <h2 class="text-3xl font-extrabold tracking-tight text-white">
+          <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             {{
               isWebApp
                 ? firstName
@@ -236,7 +238,7 @@ onUnmounted(() => {
             }}
           </h2>
           <p
-            class="text-sm text-neutral-400 leading-relaxed max-w-[280px] mx-auto"
+            class="text-sm text-slate-500 dark:text-neutral-400 leading-relaxed max-w-[280px] mx-auto"
           >
             {{
               isWebApp
@@ -248,7 +250,7 @@ onUnmounted(() => {
 
         <!-- Cinema Icons -->
         <div
-          class="flex items-center justify-center gap-8 text-neutral-700 my-10"
+          class="flex items-center justify-center gap-8 text-slate-300 dark:text-neutral-700 my-10"
         >
           <svg
             class="w-10 h-10"
@@ -338,7 +340,7 @@ onUnmounted(() => {
         <!-- Additional Info -->
         <div class="text-center pt-4">
           <p
-            class="text-[11px] text-neutral-600 font-medium"
+            class="text-[11px] text-slate-400 dark:text-neutral-600 font-medium"
             v-html="t('client.login.fastSecure')"
           ></p>
         </div>
@@ -348,14 +350,14 @@ onUnmounted(() => {
     <!-- Footer -->
     <footer class="relative z-10 px-8 py-8">
       <p
-        class="text-center text-[11px] text-neutral-500 font-medium leading-relaxed"
+        class="text-center text-[11px] text-slate-400 dark:text-neutral-500 font-medium leading-relaxed"
       >
         <span v-html="t('client.login.termsAgreement')"></span>
         <a href="#" class="text-sky-500/80 hover:text-sky-400">{{
           t("client.login.termsOfService")
         }}</a>
         &
-        <a href="#" class="text-sky-500/80 hover:text-sky-400">{{
+        <a href="#" class="text-sky-500/80 hover:text-sky-600 dark:hover:text-sky-400">{{
           t("client.login.privacyPolicy")
         }}</a>
       </p>
@@ -364,9 +366,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.login-page {
-  background: #050505;
-}
 
 .login-bg-layer {
   position: fixed;

@@ -14,7 +14,10 @@ import {
   Pencil,
   Ticket,
   Activity,
+  Sun,
+  Moon,
 } from "lucide-vue-next";
+import { isDark, toggleDark } from "@/composables/useTheme";
 
 import { useRouter } from "vue-router";
 import { setLanguage, availableLocales } from "@/i18n";
@@ -146,25 +149,37 @@ const menuItems = computed(() => [
       },
     ],
   },
+  {
+    label: t("settings.appearance") || "Appearance",
+    items: [
+      {
+        id: "theme",
+        icon: isDark.value ? Moon : Sun,
+        title: t("settings.theme") || "Dark Mode",
+        subtitle: t("settings.themeDesc") || "Toggle between light and dark theme",
+        type: "toggle",
+      },
+    ],
+  },
 ]);
 </script>
 
 <template>
-  <div class="settings-page min-h-screen text-white relative overflow-hidden">
+  <div class="settings-page min-h-screen bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-300">
     <!-- Background -->
     <div class="settings-bg"></div>
 
     <div class="relative z-10 min-h-screen flex flex-col">
       <!-- Header -->
       <header
-        class="py-3 px-5 flex items-center justify-between border-b border-white/[0.05]"
+        class="py-3 px-5 flex items-center justify-between border-b border-slate-200 dark:border-white/[0.05]"
       >
         <div class="flex items-center gap-3">
           <button
             @click="router.back()"
-            class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] cursor-pointer"
+            class="w-9 h-9 rounded-xl flex items-center justify-center bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/[0.08] cursor-pointer"
           >
-            <ArrowLeft :size="18" class="text-neutral-400" />
+            <ArrowLeft :size="18" class="text-slate-500 dark:text-neutral-400" />
           </button>
           <h1 class="text-sm font-bold">{{ t("settings.title") }}</h1>
         </div>
@@ -175,14 +190,14 @@ const menuItems = computed(() => [
         <!-- Profile Preview Card -->
         <div class="px-5 py-6">
           <div
-            class="settings-profile-card rounded-2xl border border-white/[0.06] p-6"
+            class="settings-profile-card bg-white dark:bg-white/[0.01] rounded-2xl border border-slate-200 dark:border-white/[0.06] p-6 shadow-sm dark:shadow-none"
           >
             <div class="flex items-center gap-4">
               <!-- Avatar -->
               <div class="relative">
                 <div
                   v-if="user.photo_url"
-                  class="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/[0.1]"
+                  class="w-16 h-16 rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-white/[0.1]"
                 >
                   <img
                     :src="user.photo_url"
@@ -192,7 +207,7 @@ const menuItems = computed(() => [
                 </div>
                 <div
                   v-else
-                  class="settings-avatar w-16 h-16 rounded-2xl flex items-center justify-center border-2 border-white/[0.1]"
+                  class="settings-avatar w-16 h-16 rounded-2xl flex items-center justify-center border-2 border-slate-200 dark:border-white/[0.1]"
                 >
                   <span class="text-xl font-bold text-white">
                     {{ user.first_name.charAt(0)
@@ -202,7 +217,7 @@ const menuItems = computed(() => [
                 <!-- Edit badge -->
                 <button
                   @click="router.push({ name: 'Personal Info' })"
-                  class="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-sky-500 flex items-center justify-center border-2 border-[#0a0a0c] cursor-pointer"
+                  class="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-sky-500 flex items-center justify-center border-2 border-white dark:border-[#0a0a0c] cursor-pointer"
                 >
                   <Pencil :size="10" class="text-white" />
                 </button>
@@ -227,7 +242,7 @@ const menuItems = computed(() => [
                       d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.13 7.19c-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59l2.76-2.69c.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02l-5.54 3.69c-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.78-1.64 6.3-2.73 7.55-3.26 3.58-1.51 4.34-1.77 4.83-1.77.11 0 .35.03.5.15.13.1.17.24.18.33 0 .06 0 .16-.02.2z"
                     />
                   </svg>
-                  <span class="text-[11px] text-neutral-500">{{
+                  <span class="text-[11px] text-slate-500 dark:text-neutral-500">{{
                     t("settings.telegramConnected")
                   }}</span>
                 </div>
@@ -235,7 +250,7 @@ const menuItems = computed(() => [
             </div>
 
             <!-- Telegram Info Strip -->
-            <div class="mt-5 pt-4 border-t border-white/[0.04]">
+            <div class="mt-5 pt-4 border-t border-slate-100 dark:border-white/[0.04]">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <div
@@ -248,7 +263,7 @@ const menuItems = computed(() => [
                     </svg>
                   </div>
                   <div>
-                    <p class="text-[11px] font-semibold text-neutral-300">
+                    <p class="text-[11px] font-semibold text-slate-700 dark:text-neutral-300">
                       {{ t("users.username") }}
                     </p>
                     <p class="text-[11px] text-sky-400 font-medium">
@@ -272,31 +287,31 @@ const menuItems = computed(() => [
         <div class="px-5 space-y-6 pb-6">
           <div v-for="section in menuItems" :key="section.label">
             <h3
-              class="text-[10px] uppercase tracking-widest font-semibold text-neutral-600 mb-3 px-1"
+              class="text-[10px] uppercase tracking-widest font-semibold text-slate-400 dark:text-neutral-600 mb-3 px-1"
             >
               {{ section.label }}
             </h3>
             <div
-              class="rounded-2xl border border-white/[0.06] overflow-hidden divide-y divide-white/[0.04]"
+              class="rounded-2xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-transparent overflow-hidden divide-y divide-slate-100 dark:divide-white/[0.04] shadow-sm dark:shadow-none"
             >
               <button
                 v-for="item in section.items"
                 :key="item.id"
-                @click="item.action ? item.action() : null"
-                class="w-full flex items-center gap-3.5 px-4 py-3.5 hover:bg-white/[0.03] cursor-pointer"
+                @click="item.action ? item.action() : (item.type === 'toggle' ? toggleDark() : null)"
+                class="w-full flex items-center gap-3.5 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-white/[0.03] cursor-pointer transition-colors"
               >
                 <div
-                  class="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0"
+                  class="w-9 h-9 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.06] flex items-center justify-center flex-shrink-0"
                 >
                   <component
                     :is="item.icon"
                     :size="16"
-                    class="text-neutral-400"
+                    class="text-slate-500 dark:text-neutral-400"
                   />
                 </div>
                 <div class="flex-1 text-left min-w-0">
-                  <p class="text-sm font-semibold">{{ item.title }}</p>
-                  <p class="text-[11px] text-neutral-500 mt-0.5">
+                  <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ item.title }}</p>
+                  <p class="text-[11px] text-slate-500 dark:text-neutral-500 mt-0.5">
                     {{ item.subtitle }}
                   </p>
                 </div>
@@ -318,17 +333,29 @@ const menuItems = computed(() => [
                 >
                   <select
                     v-model="currentLocale"
-                    class="bg-white/[0.05] text-xs font-medium text-neutral-300 outline-none border border-white/[0.05] px-2 py-1 rounded-md cursor-pointer hover:bg-white/[0.08]"
+                    class="bg-slate-100 dark:bg-white/[0.05] text-xs font-medium text-slate-700 dark:text-neutral-300 outline-none border border-slate-200 dark:border-white/[0.05] px-2 py-1 rounded-md cursor-pointer hover:bg-slate-200 dark:hover:bg-white/[0.08] transition-colors"
                   >
                     <option
                       v-for="lang in availableLocales"
                       :key="lang.code"
                       :value="lang.code"
-                      class="bg-[#0a0a0c] text-white"
+                      class="bg-white dark:bg-[#0a0a0c] text-slate-900 dark:text-white"
                     >
                       {{ lang.nativeName }}
                     </option>
                   </select>
+                </div>
+
+                <div v-else-if="item.type === 'toggle'" class="flex items-center" @click.stop="toggleDark()">
+                   <div :class="[
+                      'w-10 h-5 rounded-full transition-colors relative cursor-pointer',
+                      isDark ? 'bg-sky-500' : 'bg-slate-200'
+                   ]">
+                      <div :class="[
+                        'absolute top-1 left-1 w-3 h-3 rounded-full bg-white transition-transform duration-200',
+                        isDark ? 'translate-x-5' : 'translate-x-0'
+                      ]"></div>
+                   </div>
                 </div>
                 <div v-else-if="item.rightText" class="flex items-center gap-2">
                   <span
@@ -338,9 +365,9 @@ const menuItems = computed(() => [
                 </div>
 
                 <ChevronRight
-                  v-if="!item.rightText && item.type !== 'dropdown'"
+                  v-if="!item.rightText && item.type !== 'dropdown' && item.type !== 'toggle'"
                   :size="16"
-                  class="text-neutral-600 flex-shrink-0"
+                  class="text-slate-300 dark:text-neutral-600 flex-shrink-0"
                 />
               </button>
             </div>
@@ -350,7 +377,7 @@ const menuItems = computed(() => [
           <div>
             <button
               @click="handleLogout"
-              class="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-red-500/10 hover:bg-red-500/[0.04] cursor-pointer"
+              class="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white dark:bg-transparent border border-red-500/10 dark:border-red-500/10 hover:bg-red-50 dark:hover:bg-red-500/[0.04] cursor-pointer transition-colors shadow-sm dark:shadow-none"
             >
               <LogOut :size="16" class="text-red-400" />
               <span class="text-sm font-semibold text-red-400">{{
@@ -361,7 +388,7 @@ const menuItems = computed(() => [
 
           <!-- App footer -->
           <div class="text-center pb-4">
-            <p class="text-[10px] text-neutral-700">RSB Cinema v1.0.0</p>
+            <p class="text-[10px] text-slate-400 dark:text-neutral-700">RSB Cinema v1.0.0</p>
           </div>
         </div>
       </div>
@@ -371,7 +398,7 @@ const menuItems = computed(() => [
 
 <style scoped>
 .settings-page {
-  background: #0a0a0c;
+  /* background: #0a0a0c; */
 }
 
 .settings-bg {
@@ -392,11 +419,7 @@ const menuItems = computed(() => [
 }
 
 .settings-profile-card {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.03),
-    rgba(255, 255, 255, 0.01)
-  );
+  transition: all 0.3s ease;
 }
 
 .settings-avatar {

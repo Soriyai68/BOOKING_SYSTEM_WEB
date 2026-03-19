@@ -2,7 +2,8 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ArrowLeft, Monitor } from "lucide-vue-next";
+import { ArrowLeft, Monitor, Sun, Moon } from "lucide-vue-next";
+import { isDark, toggleDark } from "@/composables/useTheme";
 import { useBookingStore } from "@/stores/booking";
 import { seatService } from "@/services/seatService";
 import { seatBookingService } from "@/services/seatBookingService";
@@ -169,11 +170,11 @@ const seatWidthClass = (type) => {
 };
 
 function getSeatColor(seat) {
-  if (seat.status === "booked") return "bg-white/[0.06] border-white/[0.04]";
+  if (seat.status === "booked") return "bg-slate-200 dark:bg-white/[0.06] border-slate-300 dark:border-white/[0.04]";
   if (seat.status === "maintenance" || seat.status === "out_of_order")
-    return "bg-red-900/20 border-red-500/20";
+    return "bg-red-100 dark:bg-red-900/20 border-red-300 dark:border-red-500/20";
   if (isSeatSelected(seat)) return "border-transparent";
-  return "bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:border-white/20";
+  return "bg-white dark:bg-white/[0.03] border-slate-300 dark:border-white/[0.06] hover:bg-slate-50 dark:hover:bg-white/[0.06] hover:border-slate-400 dark:hover:border-white/20";
 }
 
 function getSeatSelectedBg(seat) {
@@ -265,21 +266,21 @@ function handleContinue() {
 </script>
 
 <template>
-  <div class="seats-page min-h-screen text-white relative overflow-hidden">
+  <div class="seats-page min-h-screen bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-300">
     <!-- Background -->
     <div class="seats-bg"></div>
 
     <div class="relative z-10 min-h-screen flex flex-col">
       <!-- Header -->
       <header
-        class="py-3 px-5 flex items-center justify-between border-b border-white/[0.05]"
+        class="py-3 px-5 flex items-center justify-between border-b border-slate-200 dark:border-white/[0.05]"
       >
         <div class="flex items-center gap-3">
           <button
             @click="router.push('/layout/showtimes')"
-            class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] cursor-pointer"
+            class="w-9 h-9 rounded-xl flex items-center justify-center bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/[0.08] cursor-pointer"
           >
-            <ArrowLeft :size="18" class="text-neutral-400" />
+            <ArrowLeft :size="18" class="text-slate-500 dark:text-neutral-400" />
           </button>
           <div class="flex items-center gap-3">
             <img
@@ -292,7 +293,7 @@ function handleContinue() {
                 {{ t("client.nav.cinemaNameKH") }}
               </h1>
               <p
-                class="text-[10px] font-semibold text-neutral-500 mt-0.5 tracking-wide uppercase"
+                class="text-[10px] font-semibold text-slate-500 dark:text-neutral-500 mt-0.5 tracking-wide uppercase"
               >
                 {{ t("client.nav.cinemaNameEN") }}
               </p>
@@ -300,24 +301,34 @@ function handleContinue() {
           </div>
         </div>
 
-        <!-- Movie info pill -->
-        <div
-          class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06]"
-        >
-          <span class="text-[11px] font-semibold text-neutral-300">{{
-            hallName
-          }}</span>
-          <span class="text-neutral-600">·</span>
-          <span class="text-[11px] text-neutral-400">{{ screenType }}</span>
-          <span class="text-neutral-600">·</span>
-          <span class="text-[11px] text-neutral-400">{{ showtime }}</span>
+        <div class="flex items-center gap-3">
+          <!-- Movie info pill -->
+          <div
+            class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.06]"
+          >
+            <span class="text-[11px] font-semibold text-slate-700 dark:text-neutral-300">{{
+              hallName
+            }}</span>
+            <span class="text-slate-400 dark:text-neutral-600">·</span>
+            <span class="text-[11px] text-slate-500 dark:text-neutral-400">{{ screenType }}</span>
+            <span class="text-slate-400 dark:text-neutral-600">·</span>
+            <span class="text-[11px] text-slate-500 dark:text-neutral-400">{{ showtime }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+          <button
+            @click="router.back()"
+            class="w-10 h-10 rounded-xl bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.1] flex items-center justify-center hover:bg-slate-50 dark:hover:bg-white/[0.1] transition-colors cursor-pointer"
+          >
+            <ArrowLeft :size="20" class="text-slate-500 dark:text-neutral-400" />
+          </button>
+        </div>
         </div>
       </header>
 
       <!-- Movie Title Bar -->
-      <div class="px-5 py-4 border-b border-white/[0.04]">
+      <div class="px-5 py-4 border-b border-slate-200 dark:border-white/[0.04]">
         <h2 class="text-lg font-bold">{{ movieTitle }}</h2>
-        <p class="text-xs text-neutral-500 mt-0.5">
+        <p class="text-xs text-slate-500 dark:text-neutral-500 mt-0.5">
           {{ showDate }} · {{ showtime }} · {{ hallName }}
         </p>
       </div>
@@ -348,7 +359,7 @@ function handleContinue() {
             <!-- Row label left -->
             <div class="flex items-center justify-end w-6 sm:w-8">
               <span
-                class="text-center text-[10px] sm:text-[12px] font-bold text-neutral-500"
+                class="text-center text-[10px] sm:text-[12px] font-bold text-slate-500 dark:text-neutral-500"
               >
                 {{ rowData.row }}
               </span>
@@ -369,7 +380,7 @@ function handleContinue() {
                   seat.status === 'out_of_order'
                     ? 'cursor-not-allowed opacity-40'
                     : '',
-                  isSeatSelected(seat) ? 'text-white' : 'text-neutral-500',
+                  isSeatSelected(seat) ? 'text-white' : 'text-slate-600 dark:text-neutral-500',
                 ]"
                 :style="[
                   isSeatSelected(seat) ? getSeatSelectedBg(seat) : '',
@@ -388,7 +399,7 @@ function handleContinue() {
             <!-- Row label right -->
             <div class="flex items-center justify-start w-6 sm:w-8">
               <span
-                class="text-center text-[10px] sm:text-[12px] font-bold text-neutral-500"
+                class="text-center text-[10px] sm:text-[12px] font-bold text-slate-500 dark:text-neutral-500"
               >
                 {{ rowData.row }}
               </span>
@@ -403,38 +414,38 @@ function handleContinue() {
           >
             <div class="flex items-center gap-1.5">
               <div
-                class="w-5 h-5 rounded bg-white/[0.04] border border-white/[0.08]"
+                class="w-5 h-5 rounded bg-white dark:bg-white/[0.04] border border-slate-300 dark:border-white/[0.08]"
               ></div>
-              <span class="text-xs text-neutral-400">{{
+              <span class="text-xs text-slate-500 dark:text-neutral-400">{{
                 t("client.seats.available")
               }}</span>
             </div>
             <div class="flex items-center gap-1.5">
               <div class="w-5 h-5 rounded bg-blue-500"></div>
-              <span class="text-xs text-neutral-400">{{
+              <span class="text-xs text-slate-500 dark:text-neutral-400">{{
                 t("client.seats.selected")
               }}</span>
             </div>
             <div class="flex items-center gap-1.5">
               <div
-                class="w-5 h-5 rounded bg-white/[0.06] border border-white/[0.04] opacity-40"
+                class="w-5 h-5 rounded bg-slate-200 dark:bg-white/[0.06] border border-slate-300 dark:border-white/[0.04] opacity-40"
               ></div>
-              <span class="text-xs text-neutral-400">{{
+              <span class="text-xs text-slate-500 dark:text-neutral-400">{{
                 t("client.seats.booked")
               }}</span>
             </div>
             <div class="flex items-center gap-1.5">
               <div
-                class="w-5 h-5 rounded bg-red-900/20 border border-red-500/20"
+                class="w-5 h-5 rounded bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-500/20"
               ></div>
-              <span class="text-xs text-neutral-400">{{
+              <span class="text-xs text-slate-500 dark:text-neutral-400">{{
                 t("client.seats.unavailable")
               }}</span>
             </div>
           </div>
 
           <div
-            class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 pt-4 border-t border-white/[0.04]"
+            class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 pt-4 border-t border-slate-200 dark:border-white/[0.04]"
           >
             <div
               v-for="(cfg, key) in seatTypes"
@@ -442,7 +453,7 @@ function handleContinue() {
               class="flex items-center gap-2"
             >
               <div
-                class="w-9 h-5 rounded-[4px] bg-white/[0.04] border border-white/[0.08] border-b-[4px] box-border"
+                class="w-9 h-5 rounded-[4px] bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] border-b-[4px] box-border"
                 :style="{
                   borderBottomColor: cfg.color,
                   backgroundColor: `${cfg.color}1A`,
@@ -450,10 +461,10 @@ function handleContinue() {
               ></div>
               <div class="flex items-center gap-1.5">
                 <span
-                  class="text-[11px] text-neutral-300 font-bold uppercase tracking-tight"
+                  class="text-[11px] text-slate-700 dark:text-neutral-300 font-bold uppercase tracking-tight"
                   >{{ cfg.label }}</span
                 >
-                <span class="text-[11px] text-neutral-400 font-semibold"
+                <span class="text-[11px] text-slate-500 dark:text-neutral-400 font-semibold"
                   >${{ cfg.price.toFixed(2) }}</span
                 >
               </div>
@@ -464,7 +475,7 @@ function handleContinue() {
 
       <!-- Bottom Bar / Summary -->
       <div
-        class="seats-bottom-bar sticky bottom-0 px-5 py-4 border-t border-white/[0.06] flex items-center justify-between gap-4"
+        class="seats-bottom-bar sticky bottom-0 px-5 py-4 border-t border-slate-200 dark:border-white/[0.06] flex items-center justify-between gap-4"
       >
         <div class="flex-1 min-w-0">
           <div
@@ -480,7 +491,7 @@ function handleContinue() {
               {{ seat.seat_identifier || `${seat.row}-${seat.seat_number}` }}
             </span>
           </div>
-          <p v-if="selectedSeats.length > 0" class="text-xs text-neutral-400">
+          <p v-if="selectedSeats.length > 0" class="text-xs text-slate-500 dark:text-neutral-400">
             {{ selectedSeats.length }}
             {{
               selectedSeats.length > 1
@@ -488,11 +499,11 @@ function handleContinue() {
                 : t("client.seats.seat")
             }}
             ·
-            <span class="font-bold text-white"
+            <span class="font-bold text-slate-900 dark:text-white"
               >${{ totalPrice.toFixed(2) }}</span
             >
           </p>
-          <p v-else class="text-xs text-neutral-500">
+          <p v-else class="text-xs text-slate-500 dark:text-neutral-500">
             {{ t("client.seats.tapToSelect") }}
           </p>
         </div>
@@ -504,7 +515,7 @@ function handleContinue() {
             'seats-confirm-btn px-8 py-3 rounded-xl text-sm font-bold cursor-pointer whitespace-nowrap',
             selectedSeats.length > 0
               ? 'text-white'
-              : 'text-neutral-600 bg-white/[0.04] border border-white/[0.06] cursor-not-allowed',
+              : 'text-slate-400 dark:text-neutral-600 bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.06] cursor-not-allowed',
           ]"
         >
           {{ t("client.seats.continue") }}
@@ -515,10 +526,6 @@ function handleContinue() {
 </template>
 
 <style scoped>
-.seats-page {
-  background: #0a0a0c;
-}
-
 .seats-bg {
   position: fixed;
   inset: 0;
@@ -591,9 +598,12 @@ function handleContinue() {
 }
 
 .seats-bottom-bar {
-  background: rgba(10, 10, 12, 0.9);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+}
+.dark .seats-bottom-bar {
+  background: rgba(10, 10, 12, 0.9);
 }
 
 .seats-confirm-btn {

@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useBookingStore } from "@/stores/booking";
+import { isDark, toggleDark } from "@/composables/useTheme";
 import {
   ArrowLeft,
   QrCode,
@@ -10,6 +11,8 @@ import {
   CheckCircle2,
   ChevronRight,
   Loader2,
+  Sun,
+  Moon,
 } from "lucide-vue-next";
 import { useAuthStore } from "@/stores/auth";
 import { useUiStore } from "@/stores/uiStore";
@@ -218,19 +221,24 @@ const handleQRClose = async (isPaid) => {
 
 <template>
   <div
-    class="checkout-page min-h-screen text-white relative overflow-hidden pb-32"
+    class="checkout-page min-h-screen bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white relative overflow-hidden pb-32 transition-colors duration-300"
   >
     <div class="checkout-bg"></div>
 
     <div class="relative z-10 max-w-2xl mx-auto px-4 py-6">
-      <header class="flex items-center gap-4 mb-8">
-        <button
-          @click="router.back()"
-          class="w-10 h-10 rounded-xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] cursor-pointer"
-        >
-          <ArrowLeft :size="20" />
-        </button>
-        <h1 class="text-xl font-bold">{{ t("client.checkout.title") }}</h1>
+      <header class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-4">
+          <button
+            @click="router.back()"
+            class="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/[0.08] text-slate-600 dark:text-white cursor-pointer transition-colors"
+          >
+            <ArrowLeft :size="20" />
+          </button>
+          <h1 class="text-xl font-bold">{{ t("client.checkout.title") }}</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+        </div>
       </header>
 
       <div class="space-y-4">
@@ -241,8 +249,8 @@ const handleQRClose = async (isPaid) => {
           class="group relative overflow-hidden rounded-3xl border transition-all cursor-pointer p-5"
           :class="
             selectedMethod === method.id
-              ? 'bg-sky-500/[0.08] border-sky-500/50'
-              : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.1]'
+              ? 'bg-sky-50 dark:bg-sky-500/[0.08] border-sky-500/50'
+              : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.06] hover:bg-slate-50 dark:hover:bg-white/[0.05] hover:border-slate-300 dark:hover:border-white/[0.1]'
           "
         >
           <div class="flex items-start justify-between">
@@ -252,7 +260,7 @@ const handleQRClose = async (isPaid) => {
                 :class="
                   selectedMethod === method.id
                     ? 'bg-sky-500 text-white'
-                    : 'bg-white/[0.05] text-neutral-400'
+                    : 'bg-slate-100 dark:bg-white/[0.05] text-slate-400 dark:text-neutral-400'
                 "
               >
                 <component :is="method.icon" :size="24" />
@@ -261,13 +269,13 @@ const handleQRClose = async (isPaid) => {
                 <div class="flex items-center gap-2 mb-1">
                   <h3 class="font-bold">{{ method.name }}</h3>
                   <span
-                    class="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-neutral-500 font-bold uppercase tracking-wider"
+                    class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-neutral-500 font-bold uppercase tracking-wider"
                   >
                     {{ method.tag }}
                   </span>
                 </div>
                 <p
-                  class="text-sm text-neutral-400 max-w-[200px] leading-relaxed"
+                  class="text-sm text-slate-500 dark:text-neutral-400 max-w-[200px] leading-relaxed"
                 >
                   {{ method.description }}
                 </p>
@@ -279,7 +287,7 @@ const handleQRClose = async (isPaid) => {
               :class="
                 selectedMethod === method.id
                   ? 'border-sky-500 bg-sky-500'
-                  : 'border-white/[0.1]'
+                  : 'border-slate-200 dark:border-white/[0.1]'
               "
             >
               <CheckCircle2
@@ -294,20 +302,23 @@ const handleQRClose = async (isPaid) => {
 
       <!-- Payment Summary -->
       <div
-        class="mt-12 bg-white/[0.03] border border-white/[0.06] rounded-3xl p-6"
+        class="mt-12 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-3xl p-6 shadow-sm dark:shadow-none"
       >
         <div class="flex justify-between items-center mb-4">
-          <span class="text-neutral-400 text-sm font-medium">{{
-            t("client.checkout.toPayToday")
-          }}</span>
-          <span class="text-2xl font-bold text-white"
+          <span
+            class="text-slate-500 dark:text-neutral-400 text-sm font-medium"
+            >{{ t("client.checkout.toPayToday") }}</span
+          >
+          <span class="text-2xl font-bold text-slate-900 dark:text-white"
             >${{ totalPrice.toFixed(2) }}</span
           >
         </div>
         <div
-          class="flex items-start gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.04]"
+          class="flex items-start gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.04]"
         >
-          <span class="text-xs text-neutral-500 leading-relaxed">
+          <span
+            class="text-xs text-slate-500 dark:text-neutral-500 leading-relaxed"
+          >
             {{ t("client.checkout.termsInfo") }}
           </span>
         </div>
@@ -316,7 +327,7 @@ const handleQRClose = async (isPaid) => {
 
     <!-- Bottom Action -->
     <div
-      class="fixed bottom-0 left-0 right-0 z-40 p-4 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c] to-transparent backdrop-blur-md"
+      class="fixed bottom-0 left-0 right-0 z-40 p-4 checkout-footer-blur transition-colors duration-300"
     >
       <div class="max-w-2xl mx-auto">
         <button
@@ -345,9 +356,15 @@ const handleQRClose = async (isPaid) => {
 </template>
 
 <style scoped>
-.checkout-page {
-  background: #0a0a0c;
+.checkout-footer-blur {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
+.dark .checkout-footer-blur {
+  background: rgba(10, 10, 12, 0.95);
+}
+
 .checkout-bg {
   position: fixed;
   inset: 0;
@@ -356,5 +373,6 @@ const handleQRClose = async (isPaid) => {
     rgba(14, 165, 233, 0.05) 0%,
     transparent 40%
   );
+  pointer-events: none;
 }
 </style>

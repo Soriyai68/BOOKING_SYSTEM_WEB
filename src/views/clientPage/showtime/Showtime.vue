@@ -4,7 +4,10 @@ import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/stores/auth";
 import { debounce } from "lodash-es";
+import { isDark, toggleDark } from "@/composables/useTheme";
 import {
+  Sun,
+  Moon,
   MapPin,
   Clock,
   Armchair,
@@ -183,7 +186,7 @@ const handleReserveSeats = () => {
 </script>
 
 <template>
-  <div class="showtime-page min-h-screen text-white relative overflow-hidden">
+  <div class="showtime-page min-h-screen bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-300">
     <!-- Background -->
     <div class="showtime-bg"></div>
 
@@ -203,24 +206,24 @@ const handleReserveSeats = () => {
               {{ t("client.nav.cinemaNameKH") }}
             </h1>
             <p
-              class="text-[10px] font-semibold text-neutral-500 mt-0.5 tracking-wide uppercase"
+              class="text-[10px] font-semibold text-slate-500 dark:text-neutral-500 mt-0.5 tracking-wide uppercase"
             >
               {{ t("client.nav.cinemaNameEN") }}
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-4">
           <div
             class="flex items-center gap-3 cursor-pointer group"
             @click="toggleSettings"
           >
             <!-- User Name -->
             <div class="hidden sm:block text-right cursor-pointer">
-              <p class="text-[12px] font-bold text-white transition-colors">
+              <p class="text-[12px] font-bold text-slate-900 dark:text-white transition-colors">
                 {{ userProfile?.name?.split(" ")[0] || "Customer" }}
               </p>
-              <p class="text-[10px] text-neutral-400">
+              <p class="text-[10px] text-slate-500 dark:text-neutral-400">
                 {{ t("client.showtime.myAccount") }}
               </p>
             </div>
@@ -228,7 +231,7 @@ const handleReserveSeats = () => {
             <!-- Avatar with Badge -->
             <div class="relative">
               <button
-                class="w-9 h-9 rounded-xl border border-white/[0.08] overflow-hidden transition-colors flex items-center justify-center p-0 cursor-pointer"
+                class="w-9 h-9 rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden transition-colors flex items-center justify-center p-0 cursor-pointer"
                 :class="
                   userProfile?.photoUrl
                     ? 'bg-transparent'
@@ -277,13 +280,13 @@ const handleReserveSeats = () => {
             })
           }}
         </p>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
           {{ t("client.showtime.todaysShowtime1") }}
           <span class="showtime-gradient-text">{{
             t("client.showtime.todaysShowtime2")
           }}</span>
         </h2>
-        <p class="text-sm text-neutral-400 mt-1">
+        <p class="text-sm text-slate-600 dark:text-neutral-400 mt-1">
           {{
             t("client.showtime.sessionsAvailable", { count: currentMovieCount })
           }}
@@ -299,11 +302,11 @@ const handleReserveSeats = () => {
             v-for="date in dates"
             :key="date.day"
             @click="selectDate(date)"
-            class="flex flex-col items-center min-w-[60px] py-3 px-2 rounded-2xl border cursor-pointer"
+            class="flex flex-col items-center min-w-[60px] py-3 px-2 rounded-2xl border cursor-pointer transition-colors"
             :class="
               date.active
                 ? 'showtime-date-active'
-                : 'border-white/[0.06] bg-white/[0.03] hover:bg-white/[0.06] text-neutral-400'
+                : 'border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] hover:bg-slate-50 dark:hover:bg-white/[0.06] text-slate-500 dark:text-neutral-400'
             "
           >
             <span
@@ -320,8 +323,8 @@ const handleReserveSeats = () => {
 
       <!-- Search Bar -->
       <div class="mb-6">
-        <div class="showtime-search-bar" :class="{ active: searchActive }">
-          <Search :size="16" class="text-neutral-500 flex-shrink-0" />
+        <div class="showtime-search-bar !bg-white dark:!bg-white/[0.04] !border-slate-200 dark:!border-white/[0.06]" :class="{ 'active !bg-slate-50 dark:!bg-white/[0.07] !border-sky-500 dark:!border-sky-500/25': searchActive }">
+          <Search :size="16" class="text-slate-400 dark:text-neutral-500 flex-shrink-0" />
           <input
             v-model="searchQuery"
             @focus="searchActive = true"
@@ -339,7 +342,7 @@ const handleReserveSeats = () => {
             "
             class="showtime-search-clear"
           >
-            <X :size="14" class="text-neutral-400" />
+            <X :size="14" class="text-slate-500 dark:text-neutral-400" />
           </button>
         </div>
       </div>
@@ -353,10 +356,10 @@ const handleReserveSeats = () => {
           class="group rounded-2xl border overflow-hidden cursor-pointer"
           :class="[
             movie.disabled
-              ? 'opacity-40 cursor-not-allowed grayscale border-white/[0.04] bg-white/[0.02]'
+              ? 'opacity-40 cursor-not-allowed grayscale border-slate-200 dark:border-white/[0.04] bg-white dark:bg-white/[0.02]'
               : movie.selected
-                ? 'showtime-movie-selected border-sky-500/30 bg-sky-500/[0.04]'
-                : 'border-white/[0.06] bg-white/[0.03] hover:bg-white/[0.05] hover:border-white/[0.12]',
+                ? 'showtime-movie-selected border-sky-500/30 bg-sky-50/50 dark:bg-sky-500/[0.04]'
+                : 'border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] hover:bg-slate-50 dark:hover:bg-white/[0.05] hover:border-slate-300 dark:hover:border-white/[0.12]',
           ]"
         >
           <div class="flex gap-4 p-4">
@@ -477,11 +480,11 @@ const handleReserveSeats = () => {
         class="flex flex-col items-center justify-center py-20 text-center"
       >
         <div
-          class="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center mb-4 border border-white/[0.06]"
+          class="w-16 h-16 rounded-2xl bg-white dark:bg-white/[0.03] flex items-center justify-center mb-4 border border-slate-200 dark:border-white/[0.06]"
         >
-          <TicketX :size="32" class="text-neutral-600" />
+          <TicketX :size="32" class="text-slate-400 dark:text-neutral-600" />
         </div>
-        <h3 class="text-lg font-bold text-white mb-1">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">
           {{ t("bookings.noShowtimesFound") }}
         </h3>
         <!-- <p class="text-sm text-neutral-500 max-w-xs mx-auto">
@@ -524,10 +527,6 @@ const handleReserveSeats = () => {
 </template>
 
 <style scoped>
-.showtime-page {
-  background: #0a0a0c;
-}
-
 .showtime-bg {
   position: fixed;
   inset: 0;
@@ -546,12 +545,16 @@ const handleReserveSeats = () => {
 }
 
 .showtime-header {
-  background: rgba(10, 10, 12, 0.8);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   margin: 0 -1rem;
   padding-left: 1rem;
   padding-right: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+.dark .showtime-header {
+  background: rgba(10, 10, 12, 0.8);
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
@@ -580,12 +583,20 @@ const handleReserveSeats = () => {
 .showtime-footer-blur {
   background: linear-gradient(
     to top,
-    rgba(10, 10, 12, 0.95),
-    rgba(10, 10, 12, 0.8) 60%,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0.8) 60%,
     transparent
   );
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+}
+.dark .showtime-footer-blur {
+  background: linear-gradient(
+    to top,
+    rgba(10, 10, 12, 0.95),
+    rgba(10, 10, 12, 0.8) 60%,
+    transparent
+  );
 }
 
 .showtime-reserve-btn {
@@ -613,8 +624,6 @@ const handleReserveSeats = () => {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 14px;
   padding: 10px 14px;
   transition: all 0.25s ease;
@@ -633,7 +642,6 @@ const handleReserveSeats = () => {
   background: none;
   border: none;
   outline: none;
-  color: #fff;
   font-size: 13px;
   min-width: 0;
 }

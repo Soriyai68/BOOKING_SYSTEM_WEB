@@ -13,7 +13,10 @@ import {
   MapPin,
   Clock,
   Loader2,
+  Sun,
+  Moon,
 } from "lucide-vue-next";
+import { isDark, toggleDark } from "@/composables/useTheme";
 import { formatTime, formatDate } from "../../../utils/formatters";
 
 const router = useRouter();
@@ -56,13 +59,13 @@ const goToTickets = () => {
 
 <template>
   <div
-    class="confirmation-page min-h-screen text-white relative overflow-hidden flex flex-col items-center justify-center px-4 py-12"
+    class="confirmation-page min-h-screen bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white relative overflow-hidden flex flex-col items-center justify-center px-4 py-12 transition-colors duration-300"
   >
     <div class="conf-bg"></div>
 
     <div v-if="loading" class="relative z-10 flex flex-col items-center gap-4">
       <Loader2 class="animate-spin text-sky-500" :size="40" />
-      <p class="text-neutral-400">{{ t("messages.loading") }}</p>
+      <p class="text-slate-500 dark:text-neutral-400">{{ t("messages.loading") }}</p>
     </div>
 
     <div v-else-if="booking" class="relative z-10 w-full max-w-md text-center">
@@ -74,7 +77,7 @@ const goToTickets = () => {
           <CheckCircle2 :size="40" stroke-width="2.5" />
         </div>
         <div
-          class="absolute -top-4 -right-4 w-12 h-12 rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] flex items-center justify-center animate-bounce"
+          class="absolute -top-4 -right-4 w-12 h-12 rounded-2xl bg-white dark:bg-white/[0.03] backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] shadow-sm flex items-center justify-center animate-bounce"
         >
           <Ticket :size="20" class="text-sky-400" />
         </div>
@@ -83,19 +86,19 @@ const goToTickets = () => {
       <h1 class="text-3xl font-bold mb-3">
         {{ t("client.confirmation.title") }}
       </h1>
-      <p class="text-neutral-400 mb-10 leading-relaxed px-4">
+      <p class="text-slate-500 dark:text-neutral-400 mb-10 leading-relaxed px-4">
         {{ t("client.confirmation.desc") }}
       </p>
 
       <!-- Ticket Summary Card -->
       <div
-        class="bg-white/[0.03] border border-white/[0.06] rounded-[2.5rem] p-6 mb-10 text-left relative overflow-hidden group"
+        class="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-[2.5rem] p-6 mb-10 text-left relative overflow-hidden group shadow-sm dark:shadow-none"
       >
         <div class="absolute top-0 right-0 p-4">
           <div
-            class="w-10 h-10 rounded-xl bg-white/[0.05] flex items-center justify-center cursor-pointer hover:bg-white/[0.1] transition-colors"
+            class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center cursor-pointer hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-colors"
           >
-            <Share2 :size="18" class="text-neutral-400" />
+            <Share2 :size="18" class="text-slate-400 dark:text-neutral-400" />
           </div>
         </div>
 
@@ -107,19 +110,19 @@ const goToTickets = () => {
             />
           </div>
           <div class="flex-1 flex flex-col justify-center">
-            <h2 class="font-bold text-lg leading-tight mb-2">
+            <h2 class="font-bold text-lg leading-tight mb-2 text-slate-900 dark:text-white">
               {{ booking.movie?.title }}
             </h2>
             <div class="flex gap-1.5 flex-wrap">
               <span
                 v-for="seat in booking.seats"
                 :key="seat.seatId"
-                class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/[0.06] text-sky-400"
+                class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/[0.06] text-sky-600 dark:text-sky-400"
               >
                 {{ seat.seat_identifier }}
               </span>
             </div>
-            <p class="text-[10px] text-neutral-500 mt-2 font-mono">
+            <p class="text-[10px] text-slate-400 dark:text-neutral-500 mt-2 font-mono">
               {{ t("client.confirmation.bookingRef") }}: #{{
                 booking.reference_code
               }}
@@ -127,22 +130,22 @@ const goToTickets = () => {
           </div>
         </div>
 
-        <div class="space-y-3 pt-6 border-t border-white/[0.04]">
+        <div class="space-y-3 pt-6 border-t border-slate-100 dark:border-white/[0.04]">
           <div class="flex items-center gap-3 text-sm">
-            <Calendar :size="16" class="text-neutral-500" />
-            <span class="text-neutral-300 font-medium">{{
+            <Calendar :size="16" class="text-slate-400 dark:text-neutral-500" />
+            <span class="text-slate-700 dark:text-neutral-300 font-medium">{{
               formatDate(booking.showtime?.show_date)
             }}</span>
           </div>
           <div class="flex items-center gap-3 text-sm">
-            <Clock :size="16" class="text-neutral-500" />
-            <span class="text-neutral-300 font-medium">{{
+            <Clock :size="16" class="text-slate-400 dark:text-neutral-500" />
+            <span class="text-slate-700 dark:text-neutral-300 font-medium">{{
               formatTime(booking.showtime?.start_time)
             }}</span>
           </div>
           <div class="flex items-center gap-3 text-sm">
-            <MapPin :size="16" class="text-neutral-500" />
-            <span class="text-neutral-300 font-medium">{{
+            <MapPin :size="16" class="text-slate-400 dark:text-neutral-500" />
+            <span class="text-slate-700 dark:text-neutral-300 font-medium">{{
               booking.hall?.hall_name
             }}</span>
           </div>
@@ -153,14 +156,14 @@ const goToTickets = () => {
       <div class="space-y-4 w-full px-4">
         <button
           @click="goToTickets"
-          class="w-full py-4 rounded-2xl bg-white text-black font-bold text-sm cursor-pointer active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+          class="w-full py-4 rounded-2xl bg-white dark:bg-white text-black font-bold text-sm cursor-pointer shadow-sm active:scale-[0.98] transition-all flex items-center justify-center gap-2"
         >
           <span>{{ t("client.confirmation.viewTickets") }}</span>
           <ArrowRight :size="18" />
         </button>
         <button
           @click="handleFinish"
-          class="w-full py-4 rounded-2xl bg-white/[0.06] text-white font-bold text-sm cursor-pointer hover:bg-white/[0.1] active:scale-[0.98] transition-all"
+          class="w-full py-4 rounded-2xl bg-slate-200/50 dark:bg-white/[0.06] text-slate-700 dark:text-white font-bold text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-white/[0.1] active:scale-[0.98] transition-all"
         >
           {{ t("client.confirmation.backToHome") }}
         </button>
@@ -170,9 +173,6 @@ const goToTickets = () => {
 </template>
 
 <style scoped>
-.confirmation-page {
-  background: #0a0a0c;
-}
 .conf-bg {
   position: fixed;
   inset: 0;
@@ -187,5 +187,6 @@ const goToTickets = () => {
       rgba(139, 92, 246, 0.05) 0%,
       transparent 40%
     );
+  pointer-events: none;
 }
 </style>

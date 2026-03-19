@@ -176,7 +176,7 @@
         </el-sub-menu>
 
         <!-- Promotions -->
-        <el-sub-menu
+        <!-- <el-sub-menu
           v-if="isSuperAdmin || canViewPromotions"
           index="promotions"
         >
@@ -205,7 +205,7 @@
               $t("promotions.addPromotion") || "Add Promotion"
             }}</template>
           </el-menu-item>
-        </el-sub-menu>
+        </el-sub-menu> -->
 
         <el-sub-menu v-if="isSuperAdmin || canViewShowtimes" index="showtimes">
           <template #title>
