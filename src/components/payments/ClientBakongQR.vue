@@ -115,6 +115,7 @@ import {
   CheckCircle,
   Clock,
 } from "lucide-vue-next";
+import { useSocket } from "@/services/socketService";
 import { paymentService } from "@/services/paymentService";
 import { useUiStore } from "@/stores/uiStore";
 import { useI18n } from "vue-i18n";
@@ -152,7 +153,7 @@ const downloadQR = () => {
 };
 
 let countdownInterval = null;
-let pollingTimeout = null;
+let successTimeout = null;
 let isCancelled = false;
 
 const formatTime = (ms) => {
@@ -176,36 +177,43 @@ const onRegenerate = () => {
   emit("regenerate");
 };
 
-const checkPayment = async () => {
-  if (isCancelled || isPaid.value || !props?.payment?.md5) return;
-  try {
-    const paymentStatusResponse = await paymentService.checkPaymentStatus(
-      props?.payment?.md5,
-    );
-    console.log("Payment check response:", paymentStatusResponse);
-    if (
-      paymentStatusResponse?.data?.paid ||
-      paymentStatusResponse?.status === "COMPLETED"
-    ) {
-      console.log("Payment confirmed by backend!");
-      isPaid.value = true;
-      stopActivities();
-      setTimeout(() => emit("paid"), 1500); // Delayed to show success state
-    } else if (!isCancelled) {
-      pollingTimeout = setTimeout(checkPayment, 4000);
-    }
-  } catch (err) {
-    if (!isCancelled) {
-      pollingTimeout = setTimeout(checkPayment, 5000);
-    }
-  }
-};
-
 const stopActivities = () => {
   isCancelled = true;
   clearInterval(countdownInterval);
-  clearTimeout(pollingTimeout);
+  if (successTimeout) {
+    clearTimeout(successTimeout);
+    successTimeout = null;
+  }
 };
+
+// Socket listener for real-time payment status
+const { onEvent } = useSocket();
+
+onEvent("payment:status", (data) => {
+  if (isPaid.value || isCancelled) return;
+  
+  // Verify this payment update is for our current payment
+  // Checking both md5 and bookingId for maximum reliability
+  const isMatch = (data?.md5 && data.md5 === props.payment?.md5) || 
+                  (data?.bookingId && data.bookingId === props.payment?.bookingId);
+
+  if (isMatch) {
+    const isCompleted = data.status === "COMPLETED" || 
+                        data.status === "SUCCESS" || 
+                        data.status === "Completed" ||
+                        data.paid;
+                        
+    if (isCompleted) {
+      console.log("Payment confirmed via Socket.io!");
+      isPaid.value = true;
+      stopActivities();
+      successTimeout = setTimeout(() => {
+        emit("paid");
+        successTimeout = null;
+      }, 1500);
+    }
+  }
+});
 
 const startCountdown = () => {
   countdownInterval = setInterval(() => {
@@ -249,7 +257,6 @@ watch(
 
       if (remainingTime.value > 0) {
         startCountdown();
-        checkPayment();
       }
     }
   },

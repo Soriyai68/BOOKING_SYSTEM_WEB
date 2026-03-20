@@ -12,6 +12,7 @@ import i18n from './i18n'
 import PermissionPlugin, { initializePermissionSystem } from './plugins/permissions'
 import PermissionDirective from './directives/permission'
 import PermissionGuard from './components/common/PermissionGuard.vue'
+import { useSocket } from './services/socketService'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -35,6 +36,10 @@ app.use(ElementPlus)
 app.use(i18n)
 app.use(PermissionPlugin)
 app.use(PermissionDirective)
+
+// Initialize Socket.io
+const { initSocket } = useSocket()
+initSocket()
 
 app.mount('#app')
 

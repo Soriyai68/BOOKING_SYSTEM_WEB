@@ -114,7 +114,6 @@ const displayPhone = ref("");
 const form = reactive({
   name: "",
   phone: "",
-  email: "",
   username: "",
   customerType: "walkin",
   isActive: true,
@@ -146,13 +145,7 @@ const rules = computed(() => {
   const currentType = form.customerType;
   let phoneRules = [];
   let nameRules = [];
-  let emailRules = [
-    {
-      type: "email",
-      message: t("validation.emailInvalid"),
-      trigger: ["blur", "change"],
-    },
-  ];
+  let emailRules = [];
 
   if (currentType === "member") {
     nameRules.push({

@@ -1,12 +1,12 @@
 import { notificationService } from "@/services/notificationService";
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
+import { useSocket } from "@/services/socketService";
 
 export const useNotificationStore = defineStore("notification", () => {
   const notifications = ref([]);
   const unreadCount = ref(0);
   const loading = ref(false);
-  const pollingInterval = ref(null);
 
   const fetchNotifications = async () => {
     loading.value = true;
@@ -99,24 +99,22 @@ export const useNotificationStore = defineStore("notification", () => {
     }
   };
 
-  const startPolling = () => {
-    if (pollingInterval.value) return;
 
-    // Initial fetch
-    fetchNotifications();
-
-    // Poll every 30 seconds
-    pollingInterval.value = setInterval(() => {
-      fetchNotifications();
-    }, 30000);
-  };
-
-  const stopPolling = () => {
-    if (pollingInterval.value) {
-      clearInterval(pollingInterval.value);
-      pollingInterval.value = null;
+  // Socket listener for real-time notifications
+  const { onEvent } = useSocket();
+  
+  onEvent("notification:new", (data) => {
+    console.log("New real-time notification received:", data);
+    // Add to top of list
+    notifications.value.unshift(data);
+    if (!data.isRead) {
+      unreadCount.value++;
     }
-  };
+  });
+
+  // Also listen for general data updates that might trigger a refresh
+  onEvent("booking:created", () => fetchNotifications());
+  onEvent("payment:status", () => fetchNotifications());
 
   return {
     notifications,
@@ -127,7 +125,5 @@ export const useNotificationStore = defineStore("notification", () => {
     markAllAsRead,
     deleteNotification,
     deleteAllNotifications,
-    startPolling,
-    stopPolling,
   };
 });

@@ -118,12 +118,12 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
-  const telegramWebAppLogin = async (initData, phone_number) => {
+  const telegramWebAppLogin = async (initData, phone) => {
     isLoading.value = true;
     try {
       const response = await api.post("/customer/auth/telegram-webapp-login", {
         initData,
-        phone_number,
+        phone,
       });
       const responseData = response.data;
 

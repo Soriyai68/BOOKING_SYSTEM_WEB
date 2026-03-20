@@ -5,7 +5,6 @@ import {
   ArrowLeft,
   User as UserIcon,
   Phone,
-  Mail,
   Calendar,
   Save,
   Loader2,
@@ -26,6 +25,7 @@ const authStore = useAuthStore();
 const isLoading = ref(false);
 const isSaving = ref(false);
 const isEditing = ref(false);
+const isWebApp = ref(sessionStorage.getItem("isWebApp") === "true" || !!window.Telegram?.WebApp?.initData);
 const uiStore = useUiStore();
 
 const userProfile = computed(() => {
@@ -34,7 +34,6 @@ const userProfile = computed(() => {
     id: customerData.id,
     name: customerData.name || "Customer",
     phone: customerData.phone || "",
-    email: customerData.email || "",
     username: customerData.username || "",
     createdAt: customerData.createdAt
       ? new Date(customerData.createdAt).toLocaleDateString()
@@ -45,13 +44,11 @@ const userProfile = computed(() => {
 // For local editing
 const editForm = ref({
   phone: "",
-  email: "",
 });
 
 const initEditForm = () => {
   editForm.value = {
     phone: toLocalPhone(userProfile.value.phone),
-    email: userProfile.value.email,
   };
 };
 
@@ -62,7 +59,6 @@ const toggleEdit = () => {
     // Cancel editing
     editForm.value = {
       phone: toLocalPhone(userProfile.value.phone),
-      email: userProfile.value.email,
     };
   }
   isEditing.value = !isEditing.value;
@@ -71,18 +67,22 @@ const toggleEdit = () => {
 const handleSave = async () => {
   try {
     isSaving.value = true;
-    message.value = { text: "", type: "" };
+    // Client-side phone validation
+    const phoneVal = editForm.value.phone.replace(/\s+/g, ""); // Remove spaces
+    if (!/^0\d{8,9}$/.test(phoneVal)) {
+      uiStore.showToast(t("validation.phoneInvalid"), "warning");
+      isSaving.value = false;
+      return;
+    }
 
     const res = await api.put("/customer/auth/profile", {
       phone: editForm.value.phone,
-      email: editForm.value.email,
     });
 
     if (res.data?.success) {
       // Update local profile with potentially normalized phone from server
       const updatedCustomer = res.data.data.customer;
       userProfile.value.phone = updatedCustomer.phone;
-      userProfile.value.email = updatedCustomer.email;
 
       isEditing.value = false;
       uiStore.showToast(t("settings.updateSuccess"), "success");
@@ -96,6 +96,11 @@ const handleSave = async () => {
   } finally {
     isSaving.value = false;
   }
+};
+
+const handlePhoneInput = (e) => {
+  const value = e.target.value.replace(/\D/g, "").substring(0, 10);
+  editForm.value.phone = value;
 };
 </script>
 
@@ -194,34 +199,6 @@ const handleSave = async () => {
             </div>
           </div>
 
-          <!-- Email Section (Editable) -->
-          <div
-            class="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center gap-4 group transition-colors"
-            :class="{ 'border-sky-500/30 bg-sky-500/[0.05]': isEditing }"
-          >
-            <div
-              class="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 flex-shrink-0"
-            >
-              <Mail :size="20" />
-            </div>
-            <div class="flex-1 min-w-0">
-              <p
-                class="text-[11px] text-neutral-500 uppercase tracking-wider font-semibold mb-0.5"
-              >
-                {{ t("users.email") }}
-              </p>
-              <input
-                v-if="isEditing"
-                v-model="editForm.email"
-                type="email"
-                :placeholder="t('settings.emailPlaceholder')"
-                class="w-full bg-transparent border-none text-sm font-medium text-white p-0 focus:ring-0 placeholder-neutral-600 outline-none"
-              />
-              <p v-else class="text-sm font-medium text-white truncate">
-                {{ userProfile.email || t("settings.noneProvided") }}
-              </p>
-            </div>
-          </div>
 
           <!-- Phone Section (Editable) -->
           <div
@@ -243,6 +220,8 @@ const handleSave = async () => {
                 v-if="isEditing"
                 v-model="editForm.phone"
                 type="tel"
+                maxlength="10"
+                @input="handlePhoneInput"
                 :placeholder="t('settings.phonePlaceholder')"
                 class="w-full bg-transparent border-none text-sm font-medium text-white p-0 focus:ring-0 placeholder-neutral-600 outline-none"
               />
@@ -252,6 +231,31 @@ const handleSave = async () => {
                 }}
               </p>
             </div>
+          </div>
+
+          <!-- Sharing Tip for Mini App -->
+          <div
+            v-if="isWebApp && !userProfile.phone"
+            class="rounded-xl bg-sky-500/10 border border-sky-500/20 p-3 flex gap-3"
+          >
+            <div class="text-sky-400 flex-shrink-0 mt-0.5">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <p class="text-[11px] text-sky-200/70 leading-relaxed">
+              {{ t("settings.sharePhoneTip") }}
+            </p>
           </div>
 
           <!-- Member Since (Read Only) -->

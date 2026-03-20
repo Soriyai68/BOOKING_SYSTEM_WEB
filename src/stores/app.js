@@ -1,5 +1,6 @@
-import { defineStore } from "pinia";
 import { ref } from "vue";
+import { defineStore } from "pinia";
+import { useSocket } from "@/services/socketService";
 
 export const useAppStore = defineStore("app", () => {
   const sidebarCollapsed = ref(false);
@@ -70,6 +71,23 @@ export const useAppStore = defineStore("app", () => {
     dataVersion.value++;
     console.log("Global refresh triggered, new version:", dataVersion.value);
   };
+
+  // Socket listeners for global data refresh
+  const { onEvent } = useSocket();
+  const dataEvents = [
+    "showtime:created", "showtime:updated", "showtime:deleted", "showtime:restored",
+    "booking:created", "booking:updated", "booking:cancelled",
+    "customer:created",
+    "payment:status",
+    "seat:booked", "seat:released"
+  ];
+
+  dataEvents.forEach(event => {
+    onEvent(event, () => {
+      console.log(`Socket event [${event}] received, triggering global refresh`);
+      triggerRefresh();
+    });
+  });
 
   return {
     sidebarCollapsed,

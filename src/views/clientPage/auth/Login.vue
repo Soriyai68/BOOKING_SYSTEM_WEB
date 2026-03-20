@@ -84,18 +84,10 @@ const handleWebAppLogin = async () => {
 
     console.log("[Mini App] Requesting contact...");
 
-    const processCapture = async (phone_number) => {
-      // 1. Clean number: Remove all non-digits (keeps + if you want, but backend preferred digits)
-      // Strip everything except numbers. If it starts with +855 or 855, replace with 0
-      let cleaned = (phone_number || "").replace(/\D/g, "");
-      if (cleaned.startsWith("855")) {
-        cleaned = "0" + cleaned.slice(3);
-      } else if (!cleaned.startsWith("0") && cleaned.length > 6) {
-        cleaned = "0" + cleaned; // Assume local if no leading 0
-      }
-
+    const processCapture = async (phone) => {
       try {
-        const res = await authStore.telegramWebAppLogin(initData, cleaned);
+        // Send raw phone number; backend handles normalization
+        const res = await authStore.telegramWebAppLogin(initData, phone);
         const customerName = res?.data?.customer?.name;
         if (res?.success) {
           showToast(
@@ -114,10 +106,37 @@ const handleWebAppLogin = async () => {
 
     // Use requestContact (modern SDK way)
     tg.requestContact((callbackData) => {
+      console.log("[Mini App] Contact callback data (Full):", JSON.stringify(callbackData, null, 2));
       if (callbackData?.status === "sent") {
-        const num =
-          callbackData.response?.contact?.phone_number ||
-          callbackData.contact?.phone_number;
+        let num = null;
+        if (callbackData.response) {
+          if (typeof callbackData.response === 'string') {
+            try {
+              // Extract number from potentially double-encoded JSON or direct string
+              const digitsOnly = callbackData.response.replace(/\D/g, "");
+              if (digitsOnly.length >= 8 && digitsOnly.length <= 15) {
+                num = callbackData.response; 
+              } else {
+                const parsed = JSON.parse(callbackData.response);
+                num = parsed.contact?.phone_number || parsed.phone_number || callbackData.response;
+              }
+            } catch(e) {
+              num = callbackData.response;
+            }
+          } else {
+            num = callbackData.response.contact?.phone_number || 
+                  callbackData.response.phone_number || 
+                  callbackData.contact?.phone_number;
+          }
+        }
+        
+        if (!num) {
+          num = callbackData.contact?.phone_number || 
+                callbackData.phone_number ||
+                (typeof callbackData.response === "string" ? callbackData.response : null);
+        }
+        
+        console.log("[Mini App] Final extracted phone:", num);
         processCapture(num);
       } else {
         // Fallback: Try login WITHOUT phone number (Backend supports it for existing users)

@@ -80,16 +80,6 @@
             :placeholder="$t('customers.username')"
           />
         </el-form-item>
-        <el-form-item
-          v-if="form.customerType === 'guest'"
-          :label="$t('customers.email')"
-          prop="email"
-        >
-          <el-input
-            v-model="form.email"
-            :placeholder="$t('auth.emailPlaceholder')"
-          />
-        </el-form-item>
 
         <el-form-item :label="$t('customers.status')" prop="isActive">
           <el-switch
@@ -137,7 +127,6 @@ const displayPhone = ref("");
 const form = reactive({
   name: "",
   phone: "",
-  email: "",
   username: "",
   customerType: "walkin",
   isActive: true,
@@ -169,13 +158,7 @@ const rules = computed(() => {
   const currentType = form.customerType;
   let phoneRules = [];
   let nameRules = [];
-  let emailRules = [
-    {
-      type: "email",
-      message: t("validation.emailInvalid"),
-      trigger: ["blur", "change"],
-    },
-  ];
+  let emailRules = [];
 
   if (currentType === "member") {
     nameRules.push({
@@ -192,12 +175,6 @@ const rules = computed(() => {
     phoneRules.push({
       required: false,
       validator: validatePhone,
-      trigger: "blur",
-    });
-  } else if (currentType === "guest") {
-    emailRules.push({
-      required: false,
-      message: t("validation.required"),
       trigger: "blur",
     });
   }
@@ -217,7 +194,6 @@ watch(
   (newType) => {
     formRef.value?.clearValidate();
     if (newType === "walkin") {
-      form.email = "";
       form.username = "";
     } else if (newType === "guest") {
       form.name = "";
@@ -236,7 +212,6 @@ const loadCustomer = async () => {
     Object.assign(form, {
       name: customerData.name,
       phone: customerData.phone,
-      email: customerData.email,
       username: customerData.username,
       customerType: customerData.customerType,
       isActive: customerData.isActive,
@@ -279,7 +254,6 @@ const resetForm = () => {
     Object.assign(form, {
       name: originalCustomer.value.name,
       phone: originalCustomer.value.phone,
-      email: originalCustomer.value.email,
       username: originalCustomer.value.username,
       customerType: originalCustomer.value.customerType,
       isActive: originalCustomer.value.isActive,

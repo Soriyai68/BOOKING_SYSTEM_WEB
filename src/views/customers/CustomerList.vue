@@ -66,12 +66,7 @@
         </el-table-column>
         <el-table-column prop="phone" :label="$t('customers.phone')">
           <template #default="{ row }">
-            {{ toLocalPhone(row.phone) || "-" }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="email" :label="$t('customers.email')">
-          <template #default="{ row }">
-            {{ row.email || "-" }}
+            {{ toLocalPhone(row?.phone) || "-" }}
           </template>
         </el-table-column>
         <el-table-column
@@ -231,6 +226,7 @@ const loadCustomers = async (isBackground = false) => {
     const response = await customerService.getCustomers(params);
 
     customers.value = response.data;
+    console.log(customers.value);
     total.value = response.total;
   } catch (error) {
     console.error("Failed to load customers:", error);

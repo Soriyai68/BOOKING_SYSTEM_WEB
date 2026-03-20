@@ -30,9 +30,6 @@
         <el-descriptions-item :label="$t('customers.phone')">{{
           toLocalPhone(customer?.phone) || "-"
         }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('customers.email')">{{
-          customer?.email || "-"
-        }}</el-descriptions-item>
         <el-descriptions-item :label="$t('customers.username')">{{
           customer?.username || "-"
         }}</el-descriptions-item>

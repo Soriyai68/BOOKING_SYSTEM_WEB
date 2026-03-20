@@ -31,9 +31,7 @@ watch(
   () => authStore.isAuthenticated,
   (isAuth) => {
     if (isAuth) {
-      notificationStore.startPolling();
-    } else {
-      notificationStore.stopPolling();
+      notificationStore.fetchNotifications();
     }
   },
   { immediate: true },
