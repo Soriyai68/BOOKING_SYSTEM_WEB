@@ -262,7 +262,7 @@ const toggleStatus = async (customer) => {
 
     await ElMessageBox.confirm(
       t(`messages.confirm.${actionKey}`, {
-        name: customer.name || customer.phone || customer.email,
+        name: customer.name || toLocalPhone(customer.phone) || customer.username || "this customer",
       }),
       t("messages.confirm.title"),
       {

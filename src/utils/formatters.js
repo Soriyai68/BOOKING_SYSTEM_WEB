@@ -1,16 +1,19 @@
 import i18n from "@/i18n";
 
 export const toLocalPhone = (internationalNum) => {
-  if (!internationalNum) return "";
-  if (internationalNum.startsWith("+855")) {
-    const numberPart = internationalNum.substring(4);
+  if (internationalNum === undefined || internationalNum === null || internationalNum === "" || internationalNum === "undefined" || internationalNum === "null") {
+    return "";
+  }
+  
+  const str = String(internationalNum);
+  if (str.startsWith("+855")) {
+    const numberPart = str.substring(4);
     if (numberPart.startsWith("0")) {
-      // Handles cases like +855012345678
       return numberPart;
     }
     return "0" + numberPart;
   }
-  return internationalNum;
+  return str;
 };
 
 export const toInternationalPhone = (localNum) => {

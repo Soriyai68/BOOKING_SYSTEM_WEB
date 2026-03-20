@@ -104,48 +104,31 @@ const handleWebAppLogin = async () => {
       }
     };
 
-    // Use requestContact (modern SDK way)
-    tg.requestContact((callbackData) => {
-      console.log("[Mini App] Contact callback data (Full):", JSON.stringify(callbackData, null, 2));
-      if (callbackData?.status === "sent") {
+    // Use contactRequested event (most robust way)
+    tg.onEvent('contactRequested', async (eventData) => {
+      console.log("[Mini App] Contact Requested Event Received:", eventData);
+      
+      if (eventData.status === "sent") {
         let num = null;
-        if (callbackData.response) {
-          if (typeof callbackData.response === 'string') {
-            try {
-              // Extract number from potentially double-encoded JSON or direct string
-              const digitsOnly = callbackData.response.replace(/\D/g, "");
-              if (digitsOnly.length >= 8 && digitsOnly.length <= 15) {
-                num = callbackData.response; 
-              } else {
-                const parsed = JSON.parse(callbackData.response);
-                num = parsed.contact?.phone_number || parsed.phone_number || callbackData.response;
-              }
-            } catch(e) {
-              num = callbackData.response;
-            }
-          } else {
-            num = callbackData.response.contact?.phone_number || 
-                  callbackData.response.phone_number || 
-                  callbackData.contact?.phone_number;
-          }
-        }
-        
-        if (!num) {
-          num = callbackData.contact?.phone_number || 
-                callbackData.phone_number ||
-                (typeof callbackData.response === "string" ? callbackData.response : null);
+        if (eventData.response?.contact?.phone_number) {
+           num = eventData.response.contact.phone_number;
+        } else if (eventData.response?.phone_number) {
+           num = eventData.response.phone_number;
         }
         
         console.log("[Mini App] Final extracted phone:", num);
         processCapture(num);
       } else {
-        // Fallback: Try login WITHOUT phone number (Backend supports it for existing users)
-        console.warn(
-          "[Mini App] Phone sharing skipped, trying ID-only login...",
-        );
         processCapture(null);
       }
     });
+
+    try {
+      tg.requestContact();
+    } catch (err) {
+      console.error("[Mini App] requestContact call failed:", err);
+      processCapture(null);
+    }
   } catch (error) {
     console.error("[Mini App] Login flow failed:", error);
     showToast(t("client.login.telegramSdkError"), "error");
