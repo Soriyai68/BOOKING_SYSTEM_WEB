@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useBookingStore } from "@/stores/booking";
@@ -217,6 +217,53 @@ const handleQRClose = async (isPaid) => {
     isHandlingQRClose.value = false;
   }
 };
+
+const handleQRExpired = async () => {
+  // If we're already handling a close, don't trigger again
+  if (isHandlingQRClose.value) return;
+  
+  const currentPayment = bookingStore.paymentData;
+  if (!currentPayment) return;
+
+  const bId =
+    currentPayment.bookingId?._id ||
+    currentPayment.bookingId?.id ||
+    currentPayment.bookingId;
+
+  isProcessing.value = true;
+  try {
+    if (bId) {
+      // Cancel the booking on the backend when QR expires
+      await bookingService.cancelBooking(bId, { skipGlobalError: true });
+    }
+    
+    // Clear local state
+    bookingStore.paymentData = null;
+    showBakongQR.value = false;
+    
+    uiStore.showToast(t("payments.paymentExpired"), "error");
+  } catch (error) {
+    console.error("Failed to handle payment expiration:", error);
+  } finally {
+    isProcessing.value = false;
+  }
+};
+
+onMounted(() => {
+  // Check if we have an existing pending payment on mount (e.g. after reload)
+  if (bookingStore.paymentData && bookingStore.paymentData.status === "Pending") {
+    const expiration = bookingStore.paymentData.expiration;
+    const expTime = expiration ? new Date(expiration).getTime() : 0;
+    
+    // Only show if it hasn't expired yet
+    if (expTime > Date.now()) {
+      showBakongQR.value = true;
+    } else {
+      // If it already expired while page was closed, clear it
+      handleQRExpired();
+    }
+  }
+});
 </script>
 
 <template>
@@ -350,6 +397,7 @@ const handleQRClose = async (isPaid) => {
         :payment="paymentData"
         @close="handleQRClose"
         @paid="handlePaymentSuccess"
+        @expired="handleQRExpired"
       />
     </div>
   </div>

@@ -76,10 +76,9 @@
           <h3 class="status-title-large error">
             {{ $t("payments.paymentExpired") }}
           </h3>
-          <button @click="onRegenerate" class="btn-client-primary">
-            <RefreshCw :size="18" />
-            <span>{{ $t("actions.regenerate") }}</span>
-          </button>
+          <p class="status-subtitle-premium">
+            {{ $t("payments.expiredTryAgain") || "Please close and try booking again." }}
+          </p>
         </div>
 
         <div v-if="isPaid" class="status-view-unique">
@@ -130,7 +129,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["close", "regenerate", "paid"]);
+const emit = defineEmits(["close", "paid", "expired"]);
 
 const qrRef = ref(null);
 const remainingTime = ref(0);
@@ -172,10 +171,6 @@ const showQR = computed(
 );
 
 const onClose = () => emit("close", isPaid.value);
-const onRegenerate = () => {
-  hasExpiredToast.value = false;
-  emit("regenerate");
-};
 
 const stopActivities = () => {
   isCancelled = true;
@@ -232,6 +227,8 @@ const startCountdown = () => {
       hasExpiredToast.value = true;
       uiStore.showToast(t("payments.paymentExpired"), "warning");
       stopActivities();
+      // Notify parent that payment has expired
+      emit("expired");
     }
   }, 1000);
 };
