@@ -49,12 +49,6 @@
           show-icon
           :closable="false"
         />
-        <el-button
-          @click="onRegenerate"
-          type="primary"
-          class="regenerate-btn"
-          >{{ $t("actions.regenerate") }}</el-button
-        >
       </div>
 
       <div v-if="isPaid" class="status-section">
@@ -93,7 +87,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["close", "regenerate", "paid"]);
+const emit = defineEmits(["close", "paid"]);
 
 const qrRef = ref(null);
 const remainingTime = ref(0);
@@ -132,10 +126,6 @@ const showQR = computed(
 );
 
 const onClose = () => emit("close", isPaid.value);
-const onRegenerate = () => {
-  hasExpiredToast.value = false;
-  emit("regenerate");
-};
 
 const checkPayment = async () => {
   if (isCancelled || isPaid.value || !props?.payment?.md5) return;
@@ -311,10 +301,6 @@ onUnmounted(() => {
   width: 100%;
 }
 
-.regenerate-btn {
-  margin-top: 10px;
-  width: 100%;
-}
 
 .w-full {
   width: 100%;

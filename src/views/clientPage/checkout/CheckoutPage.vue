@@ -44,7 +44,7 @@ const paymentMethods = computed(() => [
 const selectedMethod = ref("bakong");
 const isProcessing = ref(false);
 const isHandlingQRClose = ref(false);
-// Always start fresh — don't auto-show a QR from a previous session
+// Handle QR visibility and persistence
 const showBakongQR = ref(false);
 const paymentData = computed({
   get: () => bookingStore.paymentData,
@@ -221,7 +221,7 @@ const handleQRClose = async (isPaid) => {
 const handleQRExpired = async () => {
   // If we're already handling a close, don't trigger again
   if (isHandlingQRClose.value) return;
-  
+
   const currentPayment = bookingStore.paymentData;
   if (!currentPayment) return;
 
@@ -236,12 +236,10 @@ const handleQRExpired = async () => {
       // Cancel the booking on the backend when QR expires
       await bookingService.cancelBooking(bId, { skipGlobalError: true });
     }
-    
     // Clear local state
+    // Modal is kept open to show expired state; state is cleared
     bookingStore.paymentData = null;
     showBakongQR.value = false;
-    
-    uiStore.showToast(t("payments.paymentExpired"), "error");
   } catch (error) {
     console.error("Failed to handle payment expiration:", error);
   } finally {
@@ -251,10 +249,13 @@ const handleQRExpired = async () => {
 
 onMounted(() => {
   // Check if we have an existing pending payment on mount (e.g. after reload)
-  if (bookingStore.paymentData && bookingStore.paymentData.status === "Pending") {
+  if (
+    bookingStore.paymentData &&
+    bookingStore.paymentData.status === "Pending"
+  ) {
     const expiration = bookingStore.paymentData.expiration;
     const expTime = expiration ? new Date(expiration).getTime() : 0;
-    
+
     // Only show if it hasn't expired yet
     if (expTime > Date.now()) {
       showBakongQR.value = true;
@@ -284,8 +285,7 @@ onMounted(() => {
           <h1 class="text-xl font-bold">{{ t("client.checkout.title") }}</h1>
         </div>
 
-        <div class="flex items-center gap-3">
-        </div>
+        <div class="flex items-center gap-3"></div>
       </header>
 
       <div class="space-y-4">

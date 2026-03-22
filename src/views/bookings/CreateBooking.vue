@@ -87,7 +87,6 @@
         :payment="bakongPaymentData"
         @paid="onPaymentPaid"
         @close="onPaymentDialogClose"
-        @regenerate="handleRegenerateQR"
         style="margin: 0 auto"
       />
     </el-dialog>
@@ -129,7 +128,6 @@ const isHandlingClose = ref(false);
 
 const loading = reactive({
   booking: false,
-  regeneratingQR: false,
 });
 
 const bookingState = reactive({
@@ -303,43 +301,6 @@ const submitBooking = async () => {
 /* ============ */
 /* OTHER FUNCTIONS */
 /* ============ */
-const handleRegenerateQR = async () => {
-  if (!currentBookingId.value) return;
-
-  loading.regeneratingQR = true;
-  try {
-    const booking = bookingState.showtime
-      ? {
-          _id: currentBookingId.value,
-          total_price: bookingSummary.value.totalPrice,
-          reference_code: "", // Will be handled by backend
-        }
-      : null;
-
-    if (!booking) return;
-
-    const paymentResponse = await paymentService.createPayment({
-      bookingId: booking._id,
-      amount: booking.total_price,
-      payment_method: "Bakong",
-      currency: "USD",
-      description: `Payment for booking`,
-    });
-
-    if (paymentResponse.success) {
-      bakongPaymentData.value = paymentResponse.data.payment;
-    } else {
-      ElMessage.error(
-        paymentResponse.message || t("payments.regenerateFailed"),
-      );
-    }
-  } catch (error) {
-    console.error("Failed to regenerate QR:", error);
-    ElMessage.error(t("errors.actionFailed"));
-  } finally {
-    loading.regeneratingQR = false;
-  }
-};
 
 const onPaymentPaid = async () => {
   ElMessage.success(t("payments.paymentSuccess"));
