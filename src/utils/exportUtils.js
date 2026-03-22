@@ -206,3 +206,92 @@ export const exportToPDF = (
 
   doc.save(`${filename}.pdf`);
 };
+
+/**
+ * Print data as a formatted table
+ * @param {Array} data - Array of objects
+ * @param {Array} columns - Array of column definitions [{ header: 'Name', dataKey: 'name' }]
+ * @param {String} title - Print title
+ */
+export const printTable = (data, columns, title = "Report") => {
+  if (!data || !data.length) return;
+
+  const printWindow = window.open("", "", "height=600,width=800");
+  
+  let html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${title}</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          color: #333;
+        }
+        h1 {
+          text-align: center;
+          color: #333;
+          margin-bottom: 30px;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+        }
+        th {
+          background-color: #3f51b5;
+          color: white;
+          padding: 12px;
+          text-align: left;
+          font-weight: bold;
+          border: 1px solid #ddd;
+        }
+        td {
+          padding: 10px;
+          border: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+          background-color: #f5f7fb;
+        }
+        tr:hover {
+          background-color: #f0f0f0;
+        }
+        @media print {
+          body {
+            margin: 0;
+          }
+          table {
+            page-break-inside: avoid;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <h1>${title}</h1>
+      <table>
+        <thead>
+          <tr>
+            ${columns.map((col) => `<th>${col.header}</th>`).join("")}
+          </tr>
+        </thead>
+        <tbody>
+          ${data
+            .map(
+              (row) => `
+            <tr>
+              ${columns.map((col) => `<td>${row[col.dataKey] || ""}</td>`).join("")}
+            </tr>
+          `,
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </body>
+    </html>
+  `;
+
+  printWindow.document.write(html);
+  printWindow.document.close();
+  printWindow.print();
+};

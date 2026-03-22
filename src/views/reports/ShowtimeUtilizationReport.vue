@@ -15,18 +15,30 @@
             </h2>
           </div>
           <div class="action-section">
-            <el-dropdown trigger="click" @command="handleExport">
-              <el-button type="primary" :icon="Download">
-                {{ $t("reports.export") }}
-              </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="csv">CSV</el-dropdown-item>
-                  <el-dropdown-item command="excel">Excel</el-dropdown-item>
-                  <el-dropdown-item command="pdf">PDF</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <el-button 
+              type="primary" 
+              @click="handleExport('csv')"
+              :icon="Download"
+              class="export-btn"
+            >
+              CSV
+            </el-button>
+            <el-button 
+              type="success" 
+              @click="handleExport('excel')"
+              :icon="Download"
+              class="export-btn"
+            >
+              Excel
+            </el-button>
+            <el-button 
+              type="danger" 
+              @click="handleExport('pdf')"
+              :icon="DocumentCopy"
+              class="export-btn"
+            >
+              Print
+            </el-button>
           </div>
         </div>
       </template>
@@ -193,12 +205,13 @@ import { ref, reactive, onMounted, watch } from "vue";
 import {
   ArrowLeft,
   Download,
+  DocumentCopy,
   InfoFilled,
   Search,
 } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import reportService from "@/services/reportService";
-import { exportToCSV, exportToExcel, exportToPDF } from "@/utils/exportUtils";
+import { exportToCSV, exportToExcel, printTable } from "@/utils/exportUtils";
 import dayjs from "dayjs";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/stores/app";
@@ -332,12 +345,7 @@ const handleExport = (type) => {
       { header: t("reports.revenuePerSeat"), dataKey: "revenuePerSeat" },
       { header: t("reports.bookingCount"), dataKey: "bookings" },
     ];
-    exportToPDF(
-      pdfData,
-      columns,
-      t("reports.showtimeUtilization"),
-      filename,
-    );
+    printTable(pdfData, columns, t("reports.showtimeUtilization"));
   }
 };
 
@@ -365,6 +373,21 @@ onMounted(() => {
 .title-section {
   display: flex;
   align-items: center;
+}
+
+.action-section {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.export-btn {
+  transition: all 0.3s ease;
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(151, 50, 50, 0.15);
 }
 
 .filters-section {

@@ -15,18 +15,30 @@
             </h2>
           </div>
           <div class="action-section">
-            <el-dropdown trigger="click" @command="handleExport">
-              <el-button type="primary" :icon="Download">
-                {{ $t("reports.export") }}
-              </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="csv">CSV</el-dropdown-item>
-                  <el-dropdown-item command="excel">Excel</el-dropdown-item>
-                  <el-dropdown-item command="pdf">PDF</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <el-button
+              type="primary"
+              @click="handleExport('csv')"
+              :icon="Download"
+              class="export-btn"
+            >
+              CSV
+            </el-button>
+            <el-button
+              type="success"
+              @click="handleExport('excel')"
+              :icon="Download"
+              class="export-btn"
+            >
+              Excel
+            </el-button>
+            <el-button
+              type="danger"
+              @click="handleExport('pdf')"
+              :icon="DocumentCopy"
+              class="export-btn"
+            >
+              Print
+            </el-button>
           </div>
         </div>
       </template>
@@ -203,12 +215,13 @@ import { ref, onMounted } from "vue";
 import {
   ArrowLeft,
   Download,
+  DocumentCopy,
   Search,
   InfoFilled,
 } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import reportService from "@/services/reportService";
-import { exportToCSV, exportToExcel, exportToPDF } from "@/utils/exportUtils";
+import { exportToCSV, exportToExcel, printTable } from "@/utils/exportUtils";
 import dayjs from "dayjs";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/stores/app";
@@ -301,12 +314,7 @@ const handleExport = (type) => {
       { header: t("reports.cancellationRate"), dataKey: "cancellation" },
       { header: t("reports.totalSeatsSold"), dataKey: "seats" },
     ];
-    exportToPDF(
-      pdfData,
-      columns,
-      t("reports.staffPerformance"),
-      filename,
-    );
+    printTable(pdfData, columns, t("reports.staffPerformance"));
   }
 };
 
@@ -314,7 +322,10 @@ onMounted(() => {
   appStore.setBreadcrumbs([
     { title: t("nav.dashboard"), path: "/admin/dashboard" },
     { title: t("nav.reportsNav"), path: "/admin/reports" },
-    { title: t("reports.staffPerformance"), path: "/admin/reports/staff-performance" },
+    {
+      title: t("reports.staffPerformance"),
+      path: "/admin/reports/staff-performance",
+    },
   ]);
   loadData();
 });
@@ -329,6 +340,10 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: var(--el-fill-color-blank);
+  padding: 16px;
+  margin: -16px -16px 16px -16px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
 .title-section {
@@ -336,10 +351,26 @@ onMounted(() => {
   align-items: center;
 }
 
+.action-section {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.export-btn {
+  transition: all 0.3s ease;
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(151, 50, 50, 0.15);
+}
+
 .filters {
-  padding: 16px;
-  background: #f5f7fa;
-  border-radius: 4px;
+  background-color: var(--el-fill-color-blank);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--el-border-color-lighter);
 }
 
 .pagination {

@@ -13,26 +13,30 @@
             <h2>{{ $t("reports.customerFrequency") }}</h2>
           </div>
           <div class="action-section">
-            <!-- <el-button
-              type="primary"
-              :icon="Refresh"
-              @click="loadData"
-              :loading="loading"
+            <el-button 
+              type="primary" 
+              @click="handleExport('csv')"
+              :icon="Download"
+              class="export-btn"
             >
-              {{ $t("actions.refresh") }}
-            </el-button> -->
-            <el-dropdown trigger="click" @command="handleExport">
-              <el-button type="primary" :icon="Download">
-                {{ $t("reports.export") || "Export Data" }}
-              </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="csv">CSV</el-dropdown-item>
-                  <el-dropdown-item command="excel">Excel</el-dropdown-item>
-                  <el-dropdown-item command="pdf">PDF</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+              CSV
+            </el-button>
+            <el-button 
+              type="success" 
+              @click="handleExport('excel')"
+              :icon="Download"
+              class="export-btn"
+            >
+              Excel
+            </el-button>
+            <el-button 
+              type="danger" 
+              @click="handleExport('pdf')"
+              :icon="DocumentCopy"
+              class="export-btn"
+            >
+              Print
+            </el-button>
           </div>
         </div>
       </template>
@@ -126,12 +130,12 @@
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import { Refresh, ArrowLeft, Download } from "@element-plus/icons-vue";
+import { Refresh, ArrowLeft, Download, DocumentCopy } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";
 import reportService from "@/services/reportService";
 import { useAppStore } from "@/stores/app";
-import { exportToCSV, exportToExcel, exportToPDF } from "@/utils/exportUtils";
+import { exportToCSV, exportToExcel, printTable } from "@/utils/exportUtils";
 import dayjs from "dayjs";
 
 const appStore = useAppStore();
@@ -203,7 +207,7 @@ const handleExport = (type) => {
       { header: t("reports.totalBookings"), dataKey: "total_bookings" },
       { header: t("reports.totalValue"), dataKey: "total_spend" },
     ];
-    exportToPDF(pdfData, columns, t("reports.customerFrequency"), filename);
+    printTable(pdfData, columns, t("reports.customerFrequency"));
   }
 };
 
@@ -239,8 +243,17 @@ onMounted(() => {
 
 .action-section {
   display: flex;
+  gap: 8px;
   align-items: center;
-  gap: 12px;
+}
+
+.export-btn {
+  transition: all 0.3s ease;
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(151, 50, 50, 0.15);
 }
 
 .card-header h2 {

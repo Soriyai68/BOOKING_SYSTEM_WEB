@@ -69,6 +69,7 @@ import {
   Clock,
   DataAnalysis,
   UserFilled,
+  Box,
 } from "@element-plus/icons-vue";
 
 const router = useRouter();
@@ -153,6 +154,17 @@ const allReports = [
     color: "#f97316",
     path: "reports/staff-performance",
     permission: PERMISSIONS.REPORTS_STAFF_PERFORMANCE,
+  },
+  {
+    id: "inventory-seat-management",
+    title: "Inventory & Seat Management",
+    titleKey: "reports.inventorySeatManagement",
+    description: "Analyze seat availability, occupancy rates, and seat type distribution.",
+    descriptionKey: "reports.inventorySeatManagementDesc",
+    icon: Box,
+    color: "#8b5cf6",
+    path: "reports/inventory-seat-management",
+    permission: PERMISSIONS.REPORTS_INVENTORY_SEAT_MANAGEMENT,
   },
 ];
 

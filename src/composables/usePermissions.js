@@ -130,6 +130,7 @@ export function usePermissions() {
     canViewShowtimeUtilizationReport: permissionStore.canViewShowtimeUtilizationReport,
     canViewCustomerDemographicReport: permissionStore.canViewCustomerDemographicReport,
     canViewStaffPerformanceReport: permissionStore.canViewStaffPerformanceReport,
+    canViewInventorySeatManagementReport: permissionStore.canViewInventorySeatManagementReport,
 
     // Data getters
     getPermissionsByModule: permissionStore.getPermissionsByModule,
@@ -249,6 +250,7 @@ export const PERMISSIONS = {
   REPORTS_SHOWTIME_UTILIZATION: 'reports.showtime-utilization.view',
   REPORTS_CUSTOMER_DEMOGRAPHIC: 'reports.customer-demographic.view',
   REPORTS_STAFF_PERFORMANCE: 'reports.staff-performance.view',
+  REPORTS_INVENTORY_SEAT_MANAGEMENT: 'reports.inventory-seat-management.view',
 
   // System
   DASHBOARD_VIEW: 'dashboard.view',

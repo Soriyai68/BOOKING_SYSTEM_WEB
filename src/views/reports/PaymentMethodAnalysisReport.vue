@@ -15,18 +15,30 @@
             </h2>
           </div>
           <div class="action-section">
-            <el-dropdown trigger="click" @command="handleExport">
-              <el-button type="primary" :icon="Download">
-                {{ $t("reports.export") }}
-              </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="csv">CSV</el-dropdown-item>
-                  <el-dropdown-item command="excel">Excel</el-dropdown-item>
-                  <el-dropdown-item command="pdf">PDF</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <el-button 
+              type="primary" 
+              @click="handleExport('csv')"
+              :icon="Download"
+              class="export-btn"
+            >
+              CSV
+            </el-button>
+            <el-button 
+              type="success" 
+              @click="handleExport('excel')"
+              :icon="Download"
+              class="export-btn"
+            >
+              Excel
+            </el-button>
+            <el-button 
+              type="danger" 
+              @click="handleExport('pdf')"
+              :icon="DocumentCopy"
+              class="export-btn"
+            >
+              Print
+            </el-button>
           </div>
         </div>
       </template>
@@ -253,15 +265,10 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed, watch } from "vue";
-import {
-  ArrowLeft,
-  Download,
-  InfoFilled,
-  Search,
-} from "@element-plus/icons-vue";
+import { ArrowLeft, Download, DocumentCopy, InfoFilled, Search } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import reportService from "@/services/reportService";
-import { exportToCSV, exportToExcel, exportToPDF } from "@/utils/exportUtils";
+import { exportToCSV, exportToExcel, printTable } from "@/utils/exportUtils";
 import dayjs from "dayjs";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/stores/app";
@@ -388,12 +395,7 @@ const handleExport = (type) => {
       { header: t("reports.firstTransactionDate"), dataKey: "firstDate" },
       { header: t("reports.lastTransactionDate"), dataKey: "lastDate" },
     ];
-    exportToPDF(
-      pdfData,
-      columns,
-      t("reports.paymentMethodAnalysis"),
-      filename,
-    );
+    printTable(pdfData, columns, t("reports.paymentMethodAnalysis"));
   }
 };
 
@@ -423,6 +425,21 @@ onMounted(() => {
   align-items: center;
 }
 
+.action-section {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.export-btn {
+  transition: all 0.3s ease;
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(151, 50, 50, 0.15);
+}
+
 .filters-section {
   background-color: var(--el-fill-color-blank);
   padding: 20px;
@@ -437,23 +454,12 @@ onMounted(() => {
 }
 
 .summary-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--el-bg-color);
+  color: var(--el-text-color-primary);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-}
-
-.summary-card:nth-child(2) {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.summary-card:nth-child(3) {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.summary-card:nth-child(4) {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  border: 1px solid var(--el-border-color-lighter);
 }
 
 .card-label {

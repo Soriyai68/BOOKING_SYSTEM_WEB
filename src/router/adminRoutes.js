@@ -640,6 +640,17 @@ const adminRoutesChildren = [
       hideInMenu: true,
     },
   },
+  {
+    path: "reports/inventory-seat-management",
+    name: "InventorySeatManagementReport",
+    component: () => import("@/views/reports/InventorySeatManagementReport.vue"),
+    meta: {
+      title: "Inventory & Seat Management Report",
+      titleKey: "reports.inventorySeatManagement",
+      ...createPermissionMeta(PERMISSIONS.REPORTS_INVENTORY_SEAT_MANAGEMENT),
+      hideInMenu: true,
+    },
+  },
 
   
   // system
