@@ -134,71 +134,149 @@ export const exportToPDF = (
   // Use orientation 'p' or 'l' based on column count
   const orientation = columns.length > 6 ? "l" : "p";
   const doc = new jsPDF(orientation);
+  const pageWidth = doc.internal.pageSize.width;
+  const pageHeight = doc.internal.pageSize.height;
 
   // Register Font
   doc.addFileToVFS("KhmerFont.ttf", KHMER_FONT_BASE64);
   doc.addFont("KhmerFont.ttf", "KhmerFont", "normal");
-
-  // Set Global Document Font
   doc.setFont("KhmerFont", "normal");
 
-  // Title with Shaper
-  doc.setFontSize(18);
-  doc.setTextColor(0, 0, 0); // Black RGB
-  doc.text(shapeKhmer(title), 14, 22);
+  // --- HEADER SECTION ---
+  // Background for Header
+  doc.setFillColor(26, 26, 26); // #1a1a1a
+  doc.rect(0, 0, pageWidth, 40, "F");
 
-  // Subtitle / Timestamp
+  // Logo Placeholder / Text Branding
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(20);
+  doc.text("RSB CINEMA EK PHNOM", 14, 20);
+  
+  doc.setFontSize(14);
+  doc.setTextColor(166, 141, 94); // #a68d5e (Gold Accent)
+  doc.text(shapeKhmer("រោងភាពយន្ត អ័រ អេស ប៊ី ឯកភ្នំ"), 14, 28);
+  
+  doc.setFontSize(9);
+  doc.setTextColor(255, 255, 255);
+  doc.text(shapeKhmer("Expert Movie Ticketing & Management Solution"), 14, 35);
+
+  // Report Title (Right Aligned)
+  doc.setFontSize(16);
+  const titleText = shapeKhmer(title.toUpperCase());
+  const titleWidth = doc.getTextWidth(titleText);
+  doc.text(titleText, pageWidth - titleWidth - 14, 25);
+
+  // --- INFO SECTION ---
+  doc.setTextColor(30, 41, 59); // Reset to dark
   doc.setFontSize(10);
-  doc.setTextColor(100, 100, 100); // Gray RGB
-  // doc.text(
-  //   shapeKhmer(`បង្កើតនៅថ្ងៃទី: ${new Date().toLocaleString()}`),
-  //   14,
-  //   30,
-  // );
+  let currentY = 50;
 
-  // Table Data Preparation (Strict Array-of-Arrays)
+  const timestamp = new Date().toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  doc.text(shapeKhmer(`បង្កើតនៅថ្ងៃទី (Generated Date): ${timestamp}`), 14, currentY);
+  doc.text(shapeKhmer(`ប្រភេទរបាយការណ៍ (Report Type): ${title}`), 14, currentY + 6);
+  
+  // Horizontal Line Separator
+  doc.setDrawColor(226, 232, 240); // Slate-200
+  doc.line(14, currentY + 12, pageWidth - 14, currentY + 12);
+
+  // --- TABLE SECTION ---
   const head = [columns.map((col) => shapeKhmer(col.header))];
   const body = data.map((row) =>
     columns.map((col) => {
       let val = row[col.dataKey];
-
-      // Auto-translate common values if they appear in English
       if (typeof val === "string" && KHMER_MAP[val]) {
         val = KHMER_MAP[val];
       }
+      
+      // Formatting for PDF
+      let displayVal = val === null || val === undefined ? "" : String(val);
+      
+      // Date Formatting: Simplified to YYYY-MM-DD
+      if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(displayVal)) {
+        displayVal = displayVal.split(" ")[0];
+      }
+      
+      // Currency Formatting: Add $ sign for numeric amount/price columns
+      const lowHeader = col.header.toLowerCase();
+      if ((lowHeader.includes('amount') || lowHeader.includes('price') || lowHeader.includes('ទឹកប្រាក់')) && !isNaN(parseFloat(displayVal))) {
+        displayVal = `$${parseFloat(displayVal).toFixed(2)}`;
+      }
 
-      return shapeKhmer(val === null || val === undefined ? "" : String(val));
+      return shapeKhmer(displayVal);
     }),
   );
 
   autoTable(doc, {
-    startY: 35,
+    startY: currentY + 18,
     head: head,
     body: body,
     theme: "striped",
     styles: {
       font: "KhmerFont",
-      fontStyle: "normal",
       fontSize: 9,
-      cellPadding: 3,
-      textColor: [0, 0, 0], // Default Body Text Black
+      cellPadding: 4,
+      textColor: [26, 26, 26],
+      lineColor: [226, 232, 240],
+      lineWidth: 0.1,
     },
     headStyles: {
-      fillColor: [63, 81, 181], // Indigo-ish RGB
-      textColor: [255, 255, 255], // White RGB
-      font: "KhmerFont",
+      fillColor: [26, 26, 26],
+      textColor: [255, 255, 255],
       fontStyle: "normal",
       fontSize: 10,
+      halign: "left",
     },
-    bodyStyles: {
-      font: "KhmerFont",
-      fontStyle: "normal",
+    columnStyles: {
+      0: { fontStyle: "normal" },
     },
     alternateRowStyles: {
-      fillColor: [245, 247, 251], // Light background
+      fillColor: [248, 250, 252],
     },
-    margin: { top: 35 },
-    // Extreme measures to ensure font is applied to every cell
+    margin: { left: 14, right: 14, top: 45, bottom: 20 },
+    didDrawPage: (data) => {
+      // --- FOOTER SECTION ---
+      doc.setFontSize(8);
+      doc.setTextColor(100, 116, 139); // Slate-500
+      
+      // Page Number
+      const str = "Page " + doc.internal.getNumberOfPages();
+      doc.text(str, pageWidth - 14 - doc.getTextWidth(str), pageHeight - 10);
+      
+      // Disclaimer / Company Info
+      doc.text(
+        shapeKhmer("ឯកសារសម្ងាត់របស់ក្រុមហ៊ុន - រក្សាសិទ្ធិគ្រប់យ៉ាង (Confidential - All Rights Reserved)"),
+        14,
+        pageHeight - 10,
+      );
+      
+      // Signature Section (only on the last page or every page?)
+      // We'll put it on the final page of each document for a professional finish.
+      const totalPages = doc.internal.getNumberOfPages();
+      if (data.pageNumber === totalPages) {
+        doc.setFontSize(9);
+        doc.setTextColor(30, 41, 59);
+        const sigY = pageHeight - 35;
+        
+        // Prepared By
+        doc.text(shapeKhmer("រៀបចំដោយ (Prepared By)"), 14, sigY);
+        doc.line(14, sigY + 5, 14 + 50, sigY + 5);
+        
+        // Approved By
+        const approvedText = shapeKhmer("អនុម័តដោយ (Approved By)");
+        const approvedWidth = doc.getTextWidth(approvedText);
+        doc.text(approvedText, pageWidth - 14 - approvedWidth, sigY);
+        doc.line(pageWidth - 14 - approvedWidth, sigY + 5, pageWidth - 14, sigY + 5);
+      }
+      
+      // Bottom border for footer
+      doc.setDrawColor(226, 232, 240);
+      doc.line(14, pageHeight - 15, pageWidth - 14, pageHeight - 15);
+    },
     didParseCell: (hookData) => {
       hookData.cell.styles.font = "KhmerFont";
     },
@@ -216,82 +294,223 @@ export const exportToPDF = (
 export const printTable = (data, columns, title = "Report") => {
   if (!data || !data.length) return;
 
-  const printWindow = window.open("", "", "height=600,width=800");
-  
+  const printWindow = window.open("", "", "height=800,width=1000");
+  const timestamp = new Date().toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
   let html = `
     <!DOCTYPE html>
-    <html>
+    <html lang="km">
     <head>
       <title>${title}</title>
       <style>
+        @import url('https://fonts.googleapis.com/css2?family=Freehand&family=Hanuman:wght@100;300;400;700;900&display=swap');
+        
         body {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-          color: #333;
+          font-family: 'Hanuman', Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          color: #1a1a1a;
+          -webkit-print-color-adjust: exact;
         }
-        h1 {
-          text-align: center;
-          color: #333;
+        
+        .header {
+          background-color: #1a1a1a;
+          color: white;
+          padding: 24px 40px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
           margin-bottom: 30px;
+          border-bottom: 4px solid #a68d5e;
         }
+        
+        .company-info h1 {
+          margin: 0;
+          font-size: 24px;
+          line-height: 1.2;
+          letter-spacing: 1px;
+        }
+        
+        .company-info h2 {
+          margin: 4px 0 0 0;
+          font-size: 18px;
+          color: #a68d5e;
+          font-weight: 500;
+        }
+        
+        .report-title {
+          text-align: right;
+        }
+        
+        .report-title h2 {
+          margin: 0;
+          font-size: 20px;
+          text-transform: uppercase;
+        }
+        
+        .content {
+          padding: 0 40px;
+        }
+        
+        .meta-info {
+          margin-bottom: 25px;
+          font-size: 13px;
+          color: #64748b;
+          border-bottom: 1px solid #e2e8f0;
+          padding-bottom: 15px;
+        }
+        
         table {
           width: 100%;
           border-collapse: collapse;
-          margin-top: 20px;
+          margin-top: 10px;
+          border: 1px solid #e2e8f0;
         }
+        
         th {
-          background-color: #3f51b5;
+          background-color: #1a1a1a;
           color: white;
-          padding: 12px;
+          padding: 16px 12px;
           text-align: left;
-          font-weight: bold;
-          border: 1px solid #ddd;
+          font-weight: 600;
+          font-size: 14px;
+          border: none;
         }
+        
         td {
-          padding: 10px;
-          border: 1px solid #ddd;
+          padding: 14px 12px;
+          border-bottom: 1px solid #f1f5f9;
+          font-size: 13px;
         }
+        
         tr:nth-child(even) {
-          background-color: #f5f7fb;
+          background-color: #f8fafc;
         }
-        tr:hover {
-          background-color: #f0f0f0;
+        
+        .footer {
+          margin-top: 50px;
+          padding: 20px 40px;
+          border-top: 1px solid #e2e8f0;
+          display: flex;
+          justify-content: space-between;
+          font-size: 11px;
+          color: #94a3b8;
         }
+        
+        .signature-section {
+          margin-top: 60px;
+          padding: 0 40px;
+          display: flex;
+          justify-content: space-between;
+          page-break-inside: avoid;
+        }
+        
+        .sig-line {
+          width: 250px;
+          border-top: 2px solid #1a1a1a;
+          padding-top: 10px;
+          font-weight: 600;
+          font-size: 14px;
+          text-align: center;
+        }
+        
         @media print {
-          body {
-            margin: 0;
+          .no-print {
+            display: none;
           }
-          table {
-            page-break-inside: avoid;
+          body {
+            padding-bottom: 50px;
+          }
+           @page {
+            margin: 0;
           }
         }
       </style>
     </head>
     <body>
-      <h1>${title}</h1>
-      <table>
-        <thead>
-          <tr>
-            ${columns.map((col) => `<th>${col.header}</th>`).join("")}
-          </tr>
-        </thead>
-        <tbody>
-          ${data
-            .map(
-              (row) => `
+      <div class="header">
+        <div class="company-info" style="display: flex; align-items: center; gap: 24px;">
+          <img src="/src/assets/rsb-cinema.png" alt="Logo" style="height: 70px; filter: brightness(0) invert(1) contrast(100%);">
+          <div>
+            <h1>RSB CINEMA EK PHNOM</h1>
+            <h2>រោងភាពយន្ត អ័រ អេស ប៊ី ឯកភ្នំ</h2>
+          </div>
+        </div>
+        <div class="report-title">
+          <h2 style="color: #a68d5e; font-size: 22px;">${title}</h2>
+          <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">${timestamp}</div>
+        </div>
+      </div>
+      
+      <div class="content">
+        <div class="meta-info">
+          <div>បង្កើតនៅថ្ងៃទី (Generated Date): ${timestamp}</div>
+          <div>ប្រភេទរបាយការណ៍ (Report Type): ${title}</div>
+        </div>
+        
+        <table>
+          <thead>
             <tr>
-              ${columns.map((col) => `<td>${row[col.dataKey] || ""}</td>`).join("")}
+              ${columns.map((col) => `<th>${col.header}</th>`).join("")}
             </tr>
-          `,
-            )
-            .join("")}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            ${data
+              .map(
+                (row) => `
+              <tr>
+                ${columns.map((col) => {
+                  let val = row[col.dataKey] || "";
+                  let displayVal = String(val);
+                  
+                  // Date Formatting
+                  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(displayVal)) {
+                    displayVal = displayVal.split(" ")[0];
+                  }
+                  
+                  // Currency Formatting
+                  const lowHeader = col.header.toLowerCase();
+                  const isFinancial = lowHeader.includes('amount') || lowHeader.includes('price') || lowHeader.includes('ទឹកប្រាក់');
+                  if (isFinancial && !isNaN(parseFloat(displayVal))) {
+                    displayVal = `$${parseFloat(displayVal).toFixed(2)}`;
+                  }
+                  
+                  return `<td style="${isFinancial ? 'text-align: right; font-weight: bold; color: #1a1a1a;' : ''}">${displayVal}</td>`;
+                }).join("")}
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+        
+        <div class="signature-section">
+          <div class="sig-line">រៀបចំដោយ (Prepared By)</div>
+          <div class="sig-line">អនុម័តដោយ (Approved By)</div>
+        </div>
+      </div>
+      
+      <div class="footer">
+        <div>ឯកសារសម្ងាត់របស់ក្រុមហ៊ុន - រក្សាសិទ្ធិគ្រប់យ៉ាង (Confidential - All Rights Reserved)</div>
+        <div class="no-print">Printed on: ${timestamp}</div>
+      </div>
+      
+      <script>
+        window.onload = function() {
+          setTimeout(function() {
+            window.print();
+            // window.close(); // Optional: close window after printing
+          }, 500);
+        };
+      </script>
     </body>
     </html>
   `;
 
   printWindow.document.write(html);
   printWindow.document.close();
-  printWindow.print();
 };

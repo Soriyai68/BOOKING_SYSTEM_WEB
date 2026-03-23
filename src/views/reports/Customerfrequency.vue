@@ -67,7 +67,7 @@
           min-width="130"
         >
           <template #default="{ row }">
-            <span>{{ row.customer_phone || "" }}</span>
+            <span>{{ toLocalPhone(row.customer_phone) || "" }}</span>
           </template>
         </el-table-column>
 
@@ -137,6 +137,7 @@ import reportService from "@/services/reportService";
 import { useAppStore } from "@/stores/app";
 import { exportToCSV, exportToExcel, printTable } from "@/utils/exportUtils";
 import dayjs from "dayjs";
+import { toLocalPhone } from "../../utils/formatters";
 
 const appStore = useAppStore();
 const { t } = useI18n();
