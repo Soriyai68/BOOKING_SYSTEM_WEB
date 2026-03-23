@@ -290,7 +290,11 @@ const handleExport = (type) => {
   if (type === "csv") {
     exportToCSV(data, filename);
   } else if (type === "excel") {
-    exportToExcel(data, filename);
+    exportToExcel(data, filename, {
+      summary: [
+        { label: t("reports.totalValue") || "Total Value", value: totalValue.value }
+      ]
+    });
   } else if (type === "pdf") {
     const pdfData = reportData.value.map((item) => ({
       date: formatDateTime(item.booking_date),
@@ -311,7 +315,11 @@ const handleExport = (type) => {
       { header: t("dashboard.seats"), dataKey: "seats" },
       { header: t("dashboard.total"), dataKey: "total" },
     ];
-    printTable(pdfData, columns, t("dashboard.bookingReportDetailed"));
+    printTable(pdfData, columns, t("dashboard.bookingReportDetailed"), {
+      summary: [
+        { label: t("reports.totalValue") || "Total Value", value: totalValue.value }
+      ]
+    });
   }
 };
 

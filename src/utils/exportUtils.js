@@ -107,10 +107,24 @@ const KHMER_MAP = {
  * @param {Array} data - Array of objects
  * @param {String} filename - Output filename
  */
-export const exportToExcel = (data, filename = "export") => {
+export const exportToExcel = (data, filename = "export", options = {}) => {
   if (!data || !data.length) return;
+  const { summary = [] } = options;
 
   const worksheet = XLSX.utils.json_to_sheet(data);
+  
+  // Add summary rows at the bottom
+  if (summary.length > 0) {
+    const nextRow = data.length + 2; // +1 for header, +1 for empty row
+    summary.forEach((item, index) => {
+      let val = item.value;
+      if (!isNaN(parseFloat(val))) {
+        val = `$${parseFloat(val).toFixed(2)}`;
+      }
+      XLSX.utils.sheet_add_aoa(worksheet, [[item.label, val]], { origin: `A${nextRow + index}` });
+    });
+  }
+
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
   XLSX.writeFile(workbook, `${filename}.xlsx`);
@@ -128,8 +142,10 @@ export const exportToPDF = (
   columns,
   title = "Report",
   filename = "report",
+  options = {}
 ) => {
   if (!data || !data.length) return;
+  const { summary = [] } = options;
 
   // Use orientation 'p' or 'l' based on column count
   const orientation = columns.length > 6 ? "l" : "p";
@@ -254,7 +270,41 @@ export const exportToPDF = (
         pageHeight - 10,
       );
       
-      // Signature Section (only on the last page or every page?)
+      // Summary Section (Grand Total, etc.)
+      if (data.pageNumber === totalPages && summary.length > 0) {
+        doc.setFontSize(11);
+        doc.setTextColor(26, 26, 26);
+        let summaryY = data.cursor.y + 10;
+        
+        // Ensure summary doesn't overlap signatures
+        if (summaryY > pageHeight - 60) {
+           // Maybe we should cap it or just push signatures? 
+           // For now, let's just draw it.
+        }
+
+        summary.forEach((item) => {
+          doc.setFont(undefined, 'bold');
+          const label = shapeKhmer(item.label);
+          doc.text(`${label}:`, 14, summaryY);
+          
+          let val = item.value;
+          if (!isNaN(parseFloat(val))) {
+            val = `$${parseFloat(val).toFixed(2)}`;
+          }
+          const valText = shapeKhmer(String(val));
+          const valWidth = doc.getTextWidth(valText);
+          doc.text(valText, pageWidth - 14 - valWidth, summaryY);
+          
+          summaryY += 8;
+        });
+        
+        // Add a separator line after summary if needed
+        doc.setDrawColor(166, 141, 94);
+        doc.setLineWidth(0.5);
+        doc.line(14, summaryY - 2, pageWidth - 14, summaryY - 2);
+      }
+
+      // Signature Section (only on the last page)
       // We'll put it on the final page of each document for a professional finish.
       const totalPages = doc.internal.getNumberOfPages();
       if (data.pageNumber === totalPages) {
@@ -291,8 +341,9 @@ export const exportToPDF = (
  * @param {Array} columns - Array of column definitions [{ header: 'Name', dataKey: 'name' }]
  * @param {String} title - Print title
  */
-export const printTable = (data, columns, title = "Report") => {
+export const printTable = (data, columns, title = "Report", options = {}) => {
   if (!data || !data.length) return;
+  const { summary = [] } = options;
 
   const printWindow = window.open("", "", "height=800,width=1000");
   const timestamp = new Date().toLocaleString("en-GB", {
@@ -401,6 +452,33 @@ export const printTable = (data, columns, title = "Report") => {
           color: #94a3b8;
         }
         
+        .summary-section {
+          margin-top: 30px;
+          border-top: 2px solid #a68d5e;
+          padding-top: 15px;
+        }
+
+        .summary-row {
+          display: flex;
+          justify-content: flex-end;
+          gap: 40px;
+          margin-bottom: 8px;
+        }
+
+        .summary-label {
+          font-weight: 600;
+          color: #1a1a1a;
+          font-size: 16px;
+        }
+
+        .summary-value {
+          font-weight: 800;
+          color: #1a1a1a;
+          font-size: 18px;
+          min-width: 120px;
+          text-align: right;
+        }
+
         .signature-section {
           margin-top: 60px;
           padding: 0 40px;
@@ -488,6 +566,21 @@ export const printTable = (data, columns, title = "Report") => {
           </tbody>
         </table>
         
+        <div class="summary-section">
+          ${summary.map(item => {
+            let val = item.value;
+            if (!isNaN(parseFloat(val))) {
+              val = `$${parseFloat(val).toFixed(2)}`;
+            }
+            return `
+              <div class="summary-row">
+                <span class="summary-label">${item.label}</span>
+                <span class="summary-value">${val}</span>
+              </div>
+            `;
+          }).join("")}
+        </div>
+
         <div class="signature-section">
           <div class="sig-line">រៀបចំដោយ (Prepared By)</div>
           <div class="sig-line">អនុម័តដោយ (Approved By)</div>

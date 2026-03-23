@@ -221,7 +221,12 @@ const handleExport = (type) => {
   if (type === "csv") {
     exportToCSV(data, filename);
   } else if (type === "excel") {
-    exportToExcel(data, filename);
+    const totalRevenue = reportData.value.reduce((sum, item) => sum + (item.total_revenue || 0), 0);
+    exportToExcel(data, filename, {
+      summary: [
+        { label: t("reports.totalRevenue") || "Total Revenue", value: totalRevenue }
+      ]
+    });
   } else if (type === "pdf") {
     const pdfData = reportData.value.map((item) => ({
       movie: item.title,
@@ -238,7 +243,12 @@ const handleExport = (type) => {
       { header: t("reports.seatsSold"), dataKey: "seats" },
       { header: t("reports.revenue"), dataKey: "revenue" },
     ];
-    printTable(pdfData, columns, t("reports.moviePerformanceDetailed"));
+    const totalRevenue = reportData.value.reduce((sum, item) => sum + (item.total_revenue || 0), 0);
+    printTable(pdfData, columns, t("reports.moviePerformanceDetailed"), {
+      summary: [
+        { label: t("reports.totalRevenue") || "Total Revenue", value: totalRevenue }
+      ]
+    });
   }
 };
 

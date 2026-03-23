@@ -364,7 +364,11 @@ const handleExport = (type) => {
   if (type === "csv") {
     exportToCSV(data, filename);
   } else if (type === "excel") {
-    exportToExcel(data, filename);
+    exportToExcel(data, filename, {
+      summary: [
+        { label: t("reports.totalRevenue") || "Total Revenue", value: totalRevenue.value }
+      ]
+    });
   } else if (type === "pdf") {
     const pdfData = reportData.value.map((item) => ({
       method: item.payment_method,
@@ -395,7 +399,11 @@ const handleExport = (type) => {
       { header: t("reports.firstTransactionDate"), dataKey: "firstDate" },
       { header: t("reports.lastTransactionDate"), dataKey: "lastDate" },
     ];
-    printTable(pdfData, columns, t("reports.paymentMethodAnalysis"));
+    printTable(pdfData, columns, t("reports.paymentMethodAnalysis"), {
+      summary: [
+        { label: t("reports.totalRevenue") || "Total Revenue", value: totalRevenue.value }
+      ]
+    });
   }
 };
 

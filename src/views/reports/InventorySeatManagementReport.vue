@@ -540,7 +540,13 @@ const handleExport = (type) => {
         [t("reports.count")]: item.count,
       }));
     }
-    exportToExcel(data, exportFilename);
+    const options = {};
+    if (activeTab.value === "types") {
+      options.summary = [
+        { label: t("reports.totalValue") || "Total Value", value: summaryData.value.total_inventory_value }
+      ];
+    }
+    exportToExcel(data, exportFilename, options);
   } else if (type === "pdf") {
     let pdfData = [];
     let columns = [];
@@ -595,7 +601,14 @@ const handleExport = (type) => {
       ];
     }
 
-    printTable(pdfData, columns, t("reports.inventorySeatManagement"));
+    const options = {};
+    if (activeTab.value === "types") {
+      options.summary = [
+        { label: t("reports.totalValue") || "Total Value", value: summaryData.value.total_inventory_value }
+      ];
+    }
+    
+    printTable(pdfData, columns, t("reports.inventorySeatManagement"), options);
   }
 };
 

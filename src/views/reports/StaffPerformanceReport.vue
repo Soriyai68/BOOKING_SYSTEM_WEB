@@ -289,7 +289,12 @@ const handleExport = (type) => {
       [t("reports.cancellationRate")]: item.cancellation_rate,
       [t("reports.totalSeatsSold")]: item.total_seats_sold,
     }));
-    exportToExcel(data, filename);
+    const totalRevenue = tableData.value.reduce((sum, item) => sum + (item.total_revenue_generated || 0), 0);
+    exportToExcel(data, filename, {
+      summary: [
+        { label: t("reports.totalRevenueGenerated") || "Total Revenue", value: totalRevenue }
+      ]
+    });
   } else if (type === "pdf") {
     const pdfData = tableData.value.map((item) => ({
       name: item.staff_name,
@@ -314,7 +319,12 @@ const handleExport = (type) => {
       { header: t("reports.cancellationRate"), dataKey: "cancellation" },
       { header: t("reports.totalSeatsSold"), dataKey: "seats" },
     ];
-    printTable(pdfData, columns, t("reports.staffPerformance"));
+    const totalRevenue = tableData.value.reduce((sum, item) => sum + (item.total_revenue_generated || 0), 0);
+    printTable(pdfData, columns, t("reports.staffPerformance"), {
+      summary: [
+        { label: t("reports.totalRevenueGenerated") || "Total Revenue", value: totalRevenue }
+      ]
+    });
   }
 };
 
