@@ -11,13 +11,13 @@
     </div>
     <div class="login-wrapper">
       <div class="login-branding">
-        <div class="branding-content">
+        <!-- <div class="branding-content">
           <el-icon class="branding-icon"><Film /></el-icon>
           <h2 class="branding-title">{{ $t("auth.brandingTitle") }}</h2>
           <p class="branding-description">
             {{ $t("auth.brandingSubtitle") }}
           </p>
-        </div>
+        </div> -->
       </div>
       <div class="login-container">
         <div class="login-box">
@@ -56,11 +56,11 @@
               />
             </el-form-item>
 
-            <el-form-item>
+            <!-- <el-form-item>
               <el-checkbox v-model="loginForm.remember">
                 {{ $t("auth.rememberMe") }}
               </el-checkbox>
-            </el-form-item>
+            </el-form-item> -->
 
             <el-form-item>
               <el-button

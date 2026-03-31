@@ -234,9 +234,9 @@ export default {
     loginFailed: "Login failed",
     invalidCredentials: "Invalid username/email or password",
     logoutSuccess: "Logged out successfully",
-    brandingTitle: "Booking System Pro",
+    brandingTitle: "Ninja Booking System",
     brandingSubtitle:
-      "Your all-in-one solution for managing movie theaters, showtimes, and bookings.",
+      "",
     demoMode: "Demo Mode",
     apiConnected: "API Connected",
     demoCredentials: "Demo login: +855123456789 / password123",

@@ -47,7 +47,7 @@
         ref="userTable"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" />
+        <!-- <el-table-column type="selection" width="55" /> -->
         <!-- <el-table-column prop="id" label="ID" width="80" /> -->
         <el-table-column prop="name" :label="$t('users.name')" />
         <el-table-column prop="username" :label="$t('users.username')" />

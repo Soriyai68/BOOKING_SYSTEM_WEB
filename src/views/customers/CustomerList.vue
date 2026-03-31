@@ -2,10 +2,10 @@
   <div class="customer-list">
     <div class="page-header">
       <h2>{{ $t("customers.title") }}</h2>
-      <el-button type="primary" @click="goToCreatePage">
+      <!-- <el-button type="primary" @click="goToCreatePage">
         <el-icon><Plus /></el-icon>
         {{ $t("customers.addCustomer") }}
-      </el-button>
+      </el-button> -->
     </div>
 
     <el-card class="filter-card" shadow="never">
