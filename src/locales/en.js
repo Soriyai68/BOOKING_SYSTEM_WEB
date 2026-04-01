@@ -235,8 +235,7 @@ export default {
     invalidCredentials: "Invalid username/email or password",
     logoutSuccess: "Logged out successfully",
     brandingTitle: "Ninja Booking System",
-    brandingSubtitle:
-      "",
+    brandingSubtitle: "",
     demoMode: "Demo Mode",
     apiConnected: "API Connected",
     demoCredentials: "Demo login: +855123456789 / password123",
@@ -847,7 +846,8 @@ export default {
       cash: "Cash",
     },
     cashInstructionsTitle: "Cash Payment",
-    cashInstructions: "Please collect the exact cash amount from the customer at the counter.",
+    cashInstructions:
+      "Please collect the exact cash amount from the customer at the counter.",
     bakongPayment: "Bakong Payment",
     payAtCinema: "Pay At Cinema",
     cashPayment: "Cash Payment",
@@ -975,7 +975,8 @@ export default {
     noneProvided: "None provided",
     emailPlaceholder: "Enter your email",
     phonePlaceholder: "Enter your phone number",
-    sharePhoneTip: "To enable automatic phone tracking, please open this app in the Telegram Mini App and choose 'Share Contact'.",
+    sharePhoneTip:
+      "To enable automatic phone tracking, please open this app in the Telegram Mini App and choose 'Share Contact'.",
     saving: "Saving Changes...",
     activeSessions: "Active Sessions",
     sessionsDesc: "Devices currently logged into your account",
@@ -1309,7 +1310,8 @@ export default {
     date: "Date",
     viewDetails: "View Details",
     paymentMethodAnalysis: "Payment Method Analysis",
-    paymentMethodDesc: "Analyze payment methods, success rates, and transaction patterns.",
+    paymentMethodDesc:
+      "Analyze payment methods, success rates, and transaction patterns.",
     totalTransactions: "Total Transactions",
     successful: "Successful",
     failed: "Failed",
@@ -1320,13 +1322,15 @@ export default {
     avgTransactionValue: "Avg Transaction Value",
     successfulTransactions: "Successful Transactions",
     failedTransactions: "Failed Transactions",
-    paymentMethodAnalysisNote: "This report provides insights into payment method performance, including transaction success rates, revenue contribution by method, and average transaction values. Use this data to optimize payment processing and identify preferred payment methods.",
+    paymentMethodAnalysisNote:
+      "This report provides insights into payment method performance, including transaction success rates, revenue contribution by method, and average transaction values. Use this data to optimize payment processing and identify preferred payment methods.",
     search: "Search",
     failedToLoadData: "Failed to load report data",
     firstTransactionDate: "First Transaction Date",
     lastTransactionDate: "Last Transaction Date",
     showtimeUtilization: "Showtime Utilization",
-    showtimeUtilizationDesc: "Analyze showtime performance, occupancy rates, and revenue per seat.",
+    showtimeUtilizationDesc:
+      "Analyze showtime performance, occupancy rates, and revenue per seat.",
     showtimeDate: "Showtime Date",
     startTime: "Start Time",
     endTime: "End Time",
@@ -1345,9 +1349,11 @@ export default {
     occupancyRate: "Occupancy Rate",
     revenuePerSeat: "Revenue Per Seat",
     bookingCount: "Booking Count",
-    showtimeUtilizationNote: "This report provides insights into showtime performance including occupancy rates, revenue generation, and seat utilization. Use this data to optimize scheduling, pricing, and capacity planning.",
+    showtimeUtilizationNote:
+      "This report provides insights into showtime performance including occupancy rates, revenue generation, and seat utilization. Use this data to optimize scheduling, pricing, and capacity planning.",
     customerDemographic: "Customer Demographic",
-    customerDemographicDesc: "Understand customer base composition, age groups, and geographic distribution.",
+    customerDemographicDesc:
+      "Understand customer base composition, age groups, and geographic distribution.",
     ageGroupDistribution: "Age Group Distribution",
     geographicDistribution: "Geographic Distribution",
     newVsReturning: "New vs Returning",
@@ -1369,9 +1375,11 @@ export default {
     province: "Province",
     customerType: "Customer Type",
     registrationDate: "Registration Date",
-    customerDemographicNote: "This report provides insights into customer demographics including age distribution, geographic spread, customer status, and retention metrics. Use this data to understand your customer base and tailor marketing strategies accordingly.",
+    customerDemographicNote:
+      "This report provides insights into customer demographics including age distribution, geographic spread, customer status, and retention metrics. Use this data to understand your customer base and tailor marketing strategies accordingly.",
     staffPerformance: "Staff Performance",
-    staffPerformanceDesc: "Track staff productivity, revenue generation, and booking metrics.",
+    staffPerformanceDesc:
+      "Track staff productivity, revenue generation, and booking metrics.",
     staffName: "Staff Name",
     role: "Role",
     totalBookingsProcessed: "Total Bookings Processed",
@@ -1383,14 +1391,17 @@ export default {
     confirmedBookings: "Confirmed Bookings",
     completedBookings: "Completed Bookings",
     cancelledBookings: "Cancelled Bookings",
-    staffPerformanceNote: "This report tracks staff performance metrics including bookings processed, revenue generated, completion rates, and cancellation rates. Use this data to identify top performers and areas for improvement.",
+    staffPerformanceNote:
+      "This report tracks staff performance metrics including bookings processed, revenue generated, completion rates, and cancellation rates. Use this data to identify top performers and areas for improvement.",
     inventorySeatManagement: "Inventory & Seat Management",
-    inventorySeatManagementDesc: "Analyze seat availability, occupancy rates, and seat type distribution.",
+    inventorySeatManagementDesc:
+      "Analyze seat availability, occupancy rates, and seat type distribution.",
     seatType: "Seat Type",
     totalCount: "Total Count",
     avgPrice: "Avg Price",
     count: "Count",
-    inventorySeatManagementNote: "This report provides insights into seat inventory management including occupancy rates by hall, seat type distribution, pricing analysis, and seat status breakdown. Use this data to optimize seating arrangements and pricing strategies.",
+    inventorySeatManagementNote:
+      "This report provides insights into seat inventory management including occupancy rates by hall, seat type distribution, pricing analysis, and seat status breakdown. Use this data to optimize seating arrangements and pricing strategies.",
     seatMaintenanceStatus: "Seat Maintenance Status",
     reset: "Reset",
   },
@@ -1462,8 +1473,8 @@ export default {
     nav: {
       signIn: "Sign In",
       showtimes: "Showtimes",
-      cinemaNameKH: "រោងភាពយន្ត អ័រ អេស ប៊ី​ ឯកភ្នំ",
-      cinemaNameEN: "RSB CINEMA EK PHNOM",
+      cinemaNameKH: "និនចា ប៊ុកឃីង",
+      cinemaNameEN: "NINJA BOOKING",
     },
     logout: "Log Out",
     login: {

@@ -105,17 +105,17 @@ const handleWebAppLogin = async () => {
     };
 
     // Use contactRequested event (most robust way)
-    tg.onEvent('contactRequested', async (eventData) => {
+    tg.onEvent("contactRequested", async (eventData) => {
       console.log("[Mini App] Contact Requested Event Received:", eventData);
-      
+
       if (eventData.status === "sent") {
         let num = null;
         if (eventData.response?.contact?.phone_number) {
-           num = eventData.response.contact.phone_number;
+          num = eventData.response.contact.phone_number;
         } else if (eventData.response?.phone_number) {
-           num = eventData.response.phone_number;
+          num = eventData.response.phone_number;
         }
-        
+
         console.log("[Mini App] Final extracted phone:", num);
         processCapture(num);
       } else {
@@ -211,7 +211,9 @@ onUnmounted(() => {
           class="w-16 h-18 object-contain"
         />
         <div>
-          <h1 class="text-sm font-bold leading-snug text-slate-900 dark:text-white">
+          <h1
+            class="text-sm font-bold leading-snug text-slate-900 dark:text-white"
+          >
             {{ t("client.nav.cinemaNameKH") }}
           </h1>
           <p
@@ -221,7 +223,6 @@ onUnmounted(() => {
           </p>
         </div>
       </div>
-
     </header>
 
     <!-- Content -->
@@ -230,7 +231,9 @@ onUnmounted(() => {
     >
       <div class="w-full max-w-[380px] space-y-8">
         <div class="text-center space-y-3">
-          <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h2
+            class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+          >
             {{
               isWebApp
                 ? firstName
@@ -359,16 +362,17 @@ onUnmounted(() => {
           t("client.login.termsOfService")
         }}</a>
         &
-        <a href="#" class="text-sky-500/80 hover:text-sky-600 dark:hover:text-sky-400">{{
-          t("client.login.privacyPolicy")
-        }}</a>
+        <a
+          href="#"
+          class="text-sky-500/80 hover:text-sky-600 dark:hover:text-sky-400"
+          >{{ t("client.login.privacyPolicy") }}</a
+        >
       </p>
     </footer>
   </div>
 </template>
 
 <style scoped>
-
 .login-bg-layer {
   position: fixed;
   inset: 0;

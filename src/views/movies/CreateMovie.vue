@@ -120,9 +120,9 @@
         </el-form-item>
 
         <!-- Poster Upload/URL -->
-        <!-- <el-form-item :label="$t('movies.poster')">
+        <el-form-item :label="$t('movies.poster')">
           <ImageUpload v-model="form.poster_url" />
-        </el-form-item> -->
+        </el-form-item>
 
         <!-- Trailer URL -->
         <!-- <el-form-item :label="$t('movies.trailerUrl')">
