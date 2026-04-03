@@ -25,7 +25,7 @@
             clearable
             :placeholder="$t('seats.selectShowtime')"
             @change="handleFilterChange"
-            style="width: 600px"
+            style="width: 250px"
             :loading="loading.showtimes"
           >
             <el-option

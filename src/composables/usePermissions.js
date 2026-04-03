@@ -132,6 +132,15 @@ export function usePermissions() {
     canViewStaffPerformanceReport: permissionStore.canViewStaffPerformanceReport,
     canViewInventorySeatManagementReport: permissionStore.canViewInventorySeatManagementReport,
 
+    // Backup permissions
+    canViewBackups: permissionStore.canViewBackups,
+    canCreateBackups: permissionStore.canCreateBackups,
+    canRestoreBackups: permissionStore.canRestoreBackups,
+    canDeleteBackups: permissionStore.canDeleteBackups,
+    canScheduleBackups: permissionStore.canScheduleBackups,
+    canViewBackupStats: permissionStore.canViewBackupStats,
+    canManageBackups: permissionStore.canManageBackups,
+
     // Data getters
     getPermissionsByModule: permissionStore.getPermissionsByModule,
     getAvailableModules: permissionStore.getAvailableModules,
@@ -258,7 +267,16 @@ export const PERMISSIONS = {
   SETTINGS_VIEW: 'settings.view',
   SETTINGS_EDIT: 'settings.edit',
   SETTINGS_MANAGE: 'settings.manage',
-  SYSTEM_MANAGE: 'system.manage'
+  SYSTEM_MANAGE: 'system.manage',
+
+  // Backups
+  BACKUPS_VIEW: 'backups.view',
+  BACKUPS_CREATE: 'backups.create',
+  BACKUPS_RESTORE: 'backups.restore',
+  BACKUPS_DELETE: 'backups.delete',
+  BACKUPS_SCHEDULE: 'backups.schedule',
+  BACKUPS_STATS: 'backups.stats',
+  BACKUPS_MANAGE: 'backups.manage'
 };
 
 /**

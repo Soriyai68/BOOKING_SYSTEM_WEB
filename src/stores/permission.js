@@ -165,6 +165,25 @@ export const usePermissionStore = defineStore("permission", () => {
   const canViewStaffPerformanceReport = computed(() => hasPermission("reports.staff-performance.view"));
   const canViewInventorySeatManagementReport = computed(() => hasPermission("reports.inventory-seat-management.view"));
 
+  // Backup permissions
+  const canViewBackups = computed(() => canView("backups"));
+  const canCreateBackups = computed(() => canCreate("backups"));
+  const canRestoreBackups = computed(() => hasPermission("backups.restore"));
+  const canDeleteBackups = computed(() => canDelete("backups"));
+  const canScheduleBackups = computed(() => hasPermission("backups.schedule"));
+  const canViewBackupStats = computed(() => hasPermission("backups.stats"));
+  const canManageBackups = computed(() => canManage("backups"));
+
+  // Booking Details permissions
+  const canViewBookingDetails = computed(() => canView("bookingdetails"));
+  const canCreateBookingDetails = computed(() => canCreate("bookingdetails"));
+  const canEditBookingDetails = computed(() => canEdit("bookingdetails"));
+  const canDeleteBookingDetails = computed(() => canDelete("bookingdetails"));
+  const canManageBookingDetails = computed(() => canManage("bookingdetails"));
+
+  // Seat Booking History
+  const canViewSeatBookingHistory = computed(() => hasPermission("seat-booking-history.view"));
+
   // Actions
   const fetchUserPermissions = async (force = false) => {
     // Don't fetch if not authenticated
@@ -396,6 +415,25 @@ export const usePermissionStore = defineStore("permission", () => {
     canEditSettings,
     canManageSettings,
     canManageSystem,
+
+    // Backup permissions
+    canViewBackups,
+    canCreateBackups,
+    canRestoreBackups,
+    canDeleteBackups,
+    canScheduleBackups,
+    canViewBackupStats,
+    canManageBackups,
+
+    // Booking Details permissions
+    canViewBookingDetails,
+    canCreateBookingDetails,
+    canEditBookingDetails,
+    canDeleteBookingDetails,
+    canManageBookingDetails,
+
+    // Seat Booking History
+    canViewSeatBookingHistory,
 
     // Actions
     fetchUserPermissions,

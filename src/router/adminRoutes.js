@@ -700,6 +700,26 @@ const adminRoutesChildren = [
           titleKey: "settings.privacySecurity",
         },
       },
+      {
+        path: "backup-restore",
+        name: "BackupRestore",
+        component: () => import("@/views/settings/BackupRestore.vue"),
+        meta: {
+          title: "Backup & Restore",
+          titleKey: "backup.backupRestore",
+          ...createPermissionMeta(PERMISSIONS.BACKUPS_VIEW),
+        },
+      },
+      {
+        path: "backup-schedule",
+        name: "BackupSchedule",
+        component: () => import("@/views/settings/BackupSchedule.vue"),
+        meta: {
+          title: "Backup Schedule",
+          titleKey: "backup.backupSchedule",
+          ...createPermissionMeta(PERMISSIONS.BACKUPS_SCHEDULE),
+        },
+      },
     ],
   },
   {

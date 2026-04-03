@@ -126,6 +126,44 @@
                     </div>
                   </el-card>
                 </template>
+
+                <!-- Backup Management Cards (Admin/SuperAdmin Only) -->
+                <template v-if="canViewBackups">
+                  <el-card
+                    class="stat-card"
+                    @click="handleMenuSelect('backup-restore')"
+                  >
+                    <div class="stat-content">
+                      <div class="stat-icon icon-green">
+                        <Database :size="24" />
+                      </div>
+                      <div class="stat-details">
+                        <span class="stat-title">{{ t('backup.backupRestore') }}</span>
+                        <span class="stat-desc">
+                          {{ t('backup.backupRestoreDescription') }}
+                        </span>
+                      </div>
+                    </div>
+                  </el-card>
+
+                  <el-card
+                    v-if="canScheduleBackups"
+                    class="stat-card"
+                    @click="handleMenuSelect('backup-schedule')"
+                  >
+                    <div class="stat-content">
+                      <div class="stat-icon icon-orange">
+                        <Clock :size="24" />
+                      </div>
+                      <div class="stat-details">
+                        <span class="stat-title">{{ t('backup.backupSchedule') }}</span>
+                        <span class="stat-desc">
+                          {{ t('backup.backupScheduleDescription') }}
+                        </span>
+                      </div>
+                    </div>
+                  </el-card>
+                </template>
               </div>
             </div>
           </div>
@@ -141,13 +179,15 @@ import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
-import { User, Activity, Shield, ArrowLeft, UserCog } from "lucide-vue-next";
+import { usePermissions } from "@/composables/usePermissions";
+import { User, Activity, Shield, ArrowLeft, UserCog, Database, Clock } from "lucide-vue-next";
 
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const appStore = useAppStore();
 const authStore = useAuthStore();
+const { canViewBackups, canScheduleBackups } = usePermissions();
 
 const user = computed(() => authStore.user);
 
@@ -158,6 +198,8 @@ const pageTitle = computed(() => {
   if (route.name === "SystemPermissions") return t("system.permissions");
   if (route.name === "SystemRolePermissions")
     return t("system.rolePermissions");
+  if (route.name === "BackupRestore") return t("backup.backupRestore");
+  if (route.name === "BackupSchedule") return t("backup.backupSchedule");
   return t("settings.accountSettings");
 });
 
@@ -172,6 +214,10 @@ const handleMenuSelect = (index) => {
     router.push({ name: "SystemPermissions" });
   } else if (index === "role-permissions") {
     router.push({ name: "SystemRolePermissions" });
+  } else if (index === "backup-restore") {
+    router.push({ name: "BackupRestore" });
+  } else if (index === "backup-schedule") {
+    router.push({ name: "BackupSchedule" });
   }
 };
 
@@ -313,6 +359,16 @@ onMounted(() => {
 .icon-red {
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
+}
+
+.icon-green {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.icon-orange {
+  background: rgba(249, 115, 22, 0.1);
+  color: #f97316;
 }
 
 .stat-details {
