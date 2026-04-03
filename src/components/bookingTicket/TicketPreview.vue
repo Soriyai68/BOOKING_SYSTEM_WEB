@@ -2,7 +2,7 @@
   <div class="ticket-preview-container" v-if="booking">
     <div class="ticket-container printable-ticket">
       <div class="header">
-        <h1 class="cinema-name">RSB Cinema Erk Pnhom</h1>
+        <h1 class="cinema-name">Ninja Booking</h1>
         <p class="datetime">
           {{ formatDateWithDay(booking.showtime_id?.show_date) }} |
           {{ formatTime(booking.showtime_id?.start_time) }}
