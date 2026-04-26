@@ -180,6 +180,7 @@ const loadSchedule = async () => {
   try {
     const response = await showtimeService.getShowtimes({
       show_date: selectedDate.value,
+      forBooking: true,
       per_page: 15,
       sort_by: "start_time",
       sort_order: "asc",
