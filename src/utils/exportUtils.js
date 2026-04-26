@@ -166,11 +166,12 @@ export const exportToPDF = (
   // Logo Placeholder / Text Branding
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(20);
-  doc.text("RSB CINEMA EK PHNOM", 14, 20);
+  doc.text("NINJA BOOKING SYSTEM", 14, 20);
   
   doc.setFontSize(14);
   doc.setTextColor(166, 141, 94); // #a68d5e (Gold Accent)
-  doc.text(shapeKhmer("រោងភាពយន្ត អ័រ អេស ប៊ី ឯកភ្នំ"), 14, 28);
+  doc.text(shapeKhmer("ប្រព័ន្ធកក់ នីនចា"), 14, 28);
+  
   
   doc.setFontSize(9);
   doc.setTextColor(255, 255, 255);
@@ -514,8 +515,8 @@ export const printTable = (data, columns, title = "Report", options = {}) => {
         <div class="company-info" style="display: flex; align-items: center; gap: 24px;">
           <img src="/src/assets/rsb-cinema.png" alt="Logo" style="height: 70px; filter: brightness(0) invert(1) contrast(100%);">
           <div>
-            <h1>RSB CINEMA EK PHNOM</h1>
-            <h2>រោងភាពយន្ត អ័រ អេស ប៊ី ឯកភ្នំ</h2>
+            <h1>NINJA BOOKING SYSTEM</h1>
+            <h2>ប្រព័ន្ធកក់ នីនចា</h2>
           </div>
         </div>
         <div class="report-title">

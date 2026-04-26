@@ -1456,8 +1456,10 @@ export default {
     nav: {
       signIn: "ចូល",
       showtimes: "ម៉ោងបញ្ចាំង",
-      cinemaNameKH: "រោងភាពយន្ត អ័រ អេស ប៊ី​ ឯកភ្នំ",
-      cinemaNameEN: "RSB CINEMA EK PHNOM",
+      // cinemaNameKH: "រោងភាពយន្ត អ័រ អេស ប៊ី​ ឯកភ្នំ",
+      // cinemaNameEN: "RSB CINEMA EK PHNOM",
+       cinemaNameKH: "ប្រព័ន្ធកក់ នីនចា",
+      cinemaNameEN: "NINJA BOOKING SYSTEM"
     },
     logout: "ចាកចេញ",
     login: {
