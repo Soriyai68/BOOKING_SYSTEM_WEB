@@ -109,8 +109,8 @@ const apiStatus = ref({
 });
 
 const loginForm = reactive({
-  username: "superadmin",
-  password: "superadmin123",
+  username: "",
+  password: "",
   remember: false,
 });
 
