@@ -407,18 +407,20 @@
       destroy-on-close
     >
       <div v-if="editingBooking" class="edit-seats-container">
-        <!-- <el-alert
-          :title="$t('bookings.editSeatsWarning')"
-          type="warning"
+        <el-alert
+          v-if="editingBooking.currentPricePerSeat"
+          :title="$t('bookings.samePriceRestrictionInfo', { price: formatCurrency(editingBooking.currentPricePerSeat) })"
+          type="info"
           show-icon
           :closable="false"
           style="margin-bottom: 20px"
-        /> -->
+        />
 
         <SelectSeatsStep
           :showtime="editingBooking.showtime"
           v-model="newSelectedSeatIds"
           :exclude-booking-id="editingBooking.id"
+          :restrict-to-price="editingBooking.currentPricePerSeat"
           @update:selectedSeatDetails="onSeatsUpdated"
         />
 
@@ -756,7 +758,17 @@ const handleEditSeats = (booking) => {
       booking.showtime?.hall_id ||
       booking.showtime?.hall_id?._id,
   };
-  editingBooking.value = { ...booking, showtime: showtimeInfo };
+  
+  // Calculate current price per seat to restrict seat selection
+  const currentPricePerSeat = booking.seat_count > 0 
+    ? booking.total_price / booking.seat_count 
+    : null;
+  
+  editingBooking.value = { 
+    ...booking, 
+    showtime: showtimeInfo,
+    currentPricePerSeat 
+  };
 
   // Initialize with current seats
   const currentSeatIds = (booking.seats || []).map((s) => {
@@ -788,7 +800,7 @@ const confirmSeatUpdate = async () => {
     );
 
     if (response.success) {
-      ElMessage.success(t("messages.updateSuccess"));
+      ElMessage.success(t("bookings.updateSuccess"));
       editSeatsDialogVisible.value = false;
       appStore.triggerRefresh(); // Sync change
     } else {

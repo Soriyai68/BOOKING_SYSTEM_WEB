@@ -99,6 +99,8 @@ export default {
     sameRowError: "All selected seats must be in the same row.",
     noGapsError:
       "Seats must be continuous. No gaps are allowed between selected seats.",
+    samePriceError: "You can only select seats with the same price: ${price}",
+    samePriceRestrictionInfo: "You can only change to seats with the same price ({price}) as your current booking.",
     confirmedNav: "Confirmed",
     pendingNav: "Pending",
     cancelledNav: "Cancelled",
@@ -488,6 +490,7 @@ export default {
       expired: "Expired",
       canceled: "Canceled",
       unavailable: "Unavailable",
+      priceRestricted: "Different Price",
     },
     updateStatus: "Update Status",
     originalInfo: "Original Information",

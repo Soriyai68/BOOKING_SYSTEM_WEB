@@ -98,6 +98,12 @@
             </div>
             <span>{{ $t("seats.statuses.unavailable") }}</span>
           </div>
+          <div v-if="props.restrictToPrice !== null" class="legend-item">
+            <div class="seat price-restricted">
+              <span class="seat-number"></span>
+            </div>
+            <span>{{ $t("seats.statuses.priceRestricted") }}</span>
+          </div>
         </div>
 
         <div class="legend-divider"></div>
@@ -135,6 +141,10 @@ const props = defineProps({
   },
   excludeBookingId: {
     type: [String, Number],
+    default: null,
+  },
+  restrictToPrice: {
+    type: Number,
     default: null,
   },
 });
@@ -263,6 +273,12 @@ const getSeatClass = (seat) => {
     return "unavailable";
   if (bookedSeats.value.includes(seatId)) return "booked";
   if (props.modelValue.has(seatId)) return "selected";
+  
+  // If price restriction is enabled, mark seats with different prices as unavailable
+  if (props.restrictToPrice !== null && seat.price !== props.restrictToPrice) {
+    return "price-restricted";
+  }
+  
   return "available";
 };
 
@@ -295,6 +311,12 @@ const toggleSeat = (seat) => {
     seat.status === "out_of_order"
   )
     return;
+
+  // Check price restriction
+  if (props.restrictToPrice !== null && seat.price !== props.restrictToPrice) {
+    ElMessage.error(t("bookings.samePriceError", { price: props.restrictToPrice }));
+    return;
+  }
 
   const newSelectedSeats = new Set(props.modelValue);
   const isSelecting = !newSelectedSeats.has(seatId);
@@ -513,6 +535,14 @@ const toggleSeat = (seat) => {
   border: 1px solid #fde2e2;
   color: #f56c6c;
   cursor: not-allowed;
+}
+
+.seat.price-restricted {
+  background-color: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #ea580c;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .legend {
