@@ -1,12 +1,12 @@
 <template>
   <div class="select-seats-step">
-    <el-alert
+    <!-- <el-alert
       :title="$t('bookings.selectSeatsInstruction')"
       type="info"
       show-icon
       :closable="false"
       style="margin-bottom: 20px"
-    ></el-alert>
+    ></el-alert> -->
     <div
       v-if="loading.seats"
       v-loading="loading.seats"

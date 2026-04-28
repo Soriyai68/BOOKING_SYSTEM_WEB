@@ -230,7 +230,6 @@
                     {{ $t("actions.view") }}
                   </el-dropdown-item>
                   <el-dropdown-item
-                    v-if="hasPermission('bookings.edit')"
                     command="edit"
                     class="text-primary"
                   >
@@ -263,11 +262,7 @@
                     {{ $t("payments.createPayment") }}
                   </el-dropdown-item>
                   <el-dropdown-item
-                    v-if="
-                      hasPermission('bookings.edit') &&
-                      row.payment_status !== 'Completed' &&
-                      row.booking_status !== 'Cancelled'
-                    "
+                    v-if="canEditSeats(row)"
                     command="editSeats"
                     class="text-primary"
                   >
@@ -412,13 +407,13 @@
       destroy-on-close
     >
       <div v-if="editingBooking" class="edit-seats-container">
-        <el-alert
+        <!-- <el-alert
           :title="$t('bookings.editSeatsWarning')"
           type="warning"
           show-icon
           :closable="false"
           style="margin-bottom: 20px"
-        />
+        /> -->
 
         <SelectSeatsStep
           :showtime="editingBooking.showtime"
@@ -505,7 +500,31 @@ const { t } = useI18n();
 const router = useRouter();
 const appStore = useAppStore();
 const { getAdminPath } = usePath();
-const { hasPermission } = usePermissions();
+const { hasPermission, canEditBookings } = usePermissions();
+
+// Check if seats can be edited for a booking
+const canEditSeats = (booking) => {
+  // Must have permission to edit bookings
+  if (!hasPermission('bookings.edit')) {
+    return false;
+  }
+  
+  // Cannot edit seats for cancelled bookings
+  if (booking.booking_status === 'Cancelled') {
+    return false;
+  }
+  
+  // Can edit seats for Pending, Confirmed, and Completed bookings
+  return ['Pending', 'Confirmed', 'Completed'].includes(booking.booking_status);
+};
+
+// Debug superadmin permissions
+console.log('Debug permissions:', {
+  userRole: appStore.user?.role,
+  isSuperAdmin: appStore.user?.role === 'superadmin',
+  canEditBookings: canEditBookings.value,
+  hasPermission: hasPermission('bookings.edit')
+});
 
 const loading = reactive({
   bookings: false,
@@ -760,11 +779,11 @@ const confirmSeatUpdate = async () => {
   loading.updatingSeats = true;
   try {
     const seatIds = Array.from(newSelectedSeatIds.value);
-    const response = await bookingService.updateBooking(
+    const response = await bookingService.changeSeats(
       editingBooking.value.id,
       {
         seats: seatIds,
-        total_price: calculatedTotalPrice.value,
+        totalPrice: calculatedTotalPrice.value,
       },
     );
 
