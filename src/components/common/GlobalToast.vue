@@ -17,14 +17,14 @@ const uiStore = useUiStore();
       >
         <div
           :class="[
-            'premium-toast flex items-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-bold shadow-[0_20px_50px_rgba(0,0,0,0.5)] border backdrop-blur-2xl relative overflow-hidden min-w-[300px] max-w-[90vw]',
+            'premium-toast flex items-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-bold shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border backdrop-blur-2xl relative overflow-hidden min-w-[300px] max-w-[90vw]',
             toast.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+              ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
               : toast.type === 'error'
-                ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                ? 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400'
                 : toast.type === 'warning'
-                  ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
-                  : 'bg-sky-500/10 border-sky-500/20 text-sky-400',
+                  ? 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-600 dark:text-amber-400'
+                  : 'bg-sky-50 dark:bg-sky-500/10 border-sky-200 dark:border-sky-500/20 text-sky-600 dark:text-sky-400',
           ]"
         >
           <!-- Icon Wrap -->
@@ -32,12 +32,12 @@ const uiStore = useUiStore();
             :class="[
               'w-8 h-8 rounded-xl flex items-center justify-center shrink-0',
               toast.type === 'success'
-                ? 'bg-emerald-500/20'
+                ? 'bg-emerald-500/20 dark:bg-emerald-500/20'
                 : toast.type === 'error'
-                  ? 'bg-red-500/20'
+                  ? 'bg-red-500/20 dark:bg-red-500/20'
                   : toast.type === 'warning'
-                    ? 'bg-amber-500/20'
-                    : 'bg-sky-500/20',
+                    ? 'bg-amber-500/20 dark:bg-amber-500/20'
+                    : 'bg-sky-500/20 dark:bg-sky-500/20',
             ]"
           >
             <CheckCircle v-if="toast.type === 'success'" :size="18" />

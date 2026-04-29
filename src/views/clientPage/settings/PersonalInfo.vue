@@ -106,7 +106,7 @@ const handlePhoneInput = (e) => {
 
 <template>
   <div
-    class="personal-info-page min-h-screen text-white relative overflow-hidden"
+    class="personal-info-page min-h-screen bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-300"
   >
     <!-- Background -->
     <div class="settings-bg"></div>
@@ -114,14 +114,14 @@ const handlePhoneInput = (e) => {
     <div class="relative z-10 min-h-screen flex flex-col">
       <!-- Header -->
       <header
-        class="py-3 px-5 flex items-center justify-between border-b border-white/[0.05]"
+        class="py-3 px-5 flex items-center justify-between border-b border-slate-200 dark:border-white/[0.05]"
       >
         <div class="flex items-center gap-3">
           <button
             @click="router.back()"
-            class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] cursor-pointer"
+            class="w-9 h-9 rounded-xl flex items-center justify-center bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/[0.08] cursor-pointer"
           >
-            <ArrowLeft :size="18" class="text-neutral-400" />
+            <ArrowLeft :size="18" class="text-slate-500 dark:text-neutral-400" />
           </button>
           <h1 class="text-sm font-bold">{{ t("settings.personalInfo") }}</h1>
         </div>
@@ -132,8 +132,8 @@ const handlePhoneInput = (e) => {
           class="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
           :class="
             isEditing
-              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
-              : 'bg-white/[0.05] text-neutral-300 border border-white/[0.08]'
+              ? 'bg-red-500/10 text-red-500 dark:text-red-400 border border-red-500/20'
+              : 'bg-white dark:bg-white/[0.05] text-slate-500 dark:text-neutral-300 border border-slate-200 dark:border-white/[0.08]'
           "
         >
           <template v-if="isEditing">
@@ -158,7 +158,7 @@ const handlePhoneInput = (e) => {
         <div v-else class="space-y-4">
           <!-- Name Section (Read Only) -->
           <div
-            class="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center gap-4 opacity-80 backdrop-blur-sm"
+            class="rounded-2xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-4 flex items-center gap-4 opacity-80 backdrop-blur-sm shadow-sm dark:shadow-none"
           >
             <div
               class="w-10 h-10 rounded-full bg-sky-500/10 flex items-center justify-center text-sky-400 flex-shrink-0"
@@ -167,11 +167,11 @@ const handlePhoneInput = (e) => {
             </div>
             <div class="flex-1 min-w-0">
               <p
-                class="text-[11px] text-neutral-500 uppercase tracking-wider font-semibold mb-0.5"
+                class="text-[11px] text-slate-400 dark:text-neutral-500 uppercase tracking-wider font-semibold mb-0.5"
               >
                 {{ t("users.name") }}
               </p>
-              <p class="text-sm font-medium text-white truncate">
+              <p class="text-sm font-medium text-slate-900 dark:text-white truncate">
                 {{ userProfile.name }}
               </p>
             </div>
@@ -180,7 +180,7 @@ const handlePhoneInput = (e) => {
           <!-- Username Section (Telegram info - Read Only) -->
           <div
             v-if="userProfile.username"
-            class="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center gap-4 opacity-80"
+            class="rounded-2xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-4 flex items-center gap-4 opacity-80 shadow-sm dark:shadow-none"
           >
             <div
               class="w-10 h-10 rounded-full bg-violet-500/10 flex items-center justify-center text-violet-400 flex-shrink-0"
@@ -189,11 +189,11 @@ const handlePhoneInput = (e) => {
             </div>
             <div class="flex-1 min-w-0">
               <p
-                class="text-[11px] text-neutral-500 uppercase tracking-wider font-semibold mb-0.5"
+                class="text-[11px] text-slate-400 dark:text-neutral-500 uppercase tracking-wider font-semibold mb-0.5"
               >
                 {{ t("users.username") }}
               </p>
-              <p class="text-sm font-medium text-white truncate">
+              <p class="text-sm font-medium text-slate-900 dark:text-white truncate">
                 @{{ userProfile.username }}
               </p>
             </div>
@@ -202,8 +202,8 @@ const handlePhoneInput = (e) => {
 
           <!-- Phone Section (Editable) -->
           <div
-            class="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center gap-4 group transition-colors"
-            :class="{ 'border-sky-500/30 bg-sky-500/[0.05]': isEditing }"
+            class="rounded-2xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-4 flex items-center gap-4 group transition-colors shadow-sm dark:shadow-none"
+            :class="{ 'border-sky-500/30 bg-sky-500/[0.05] dark:bg-sky-500/[0.05]': isEditing }"
           >
             <div
               class="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 flex-shrink-0"
@@ -212,7 +212,7 @@ const handlePhoneInput = (e) => {
             </div>
             <div class="flex-1 min-w-0">
               <p
-                class="text-[11px] text-neutral-500 uppercase tracking-wider font-semibold mb-0.5"
+                class="text-[11px] text-slate-400 dark:text-neutral-500 uppercase tracking-wider font-semibold mb-0.5"
               >
                 {{ t("users.phone") }}
               </p>
@@ -223,9 +223,9 @@ const handlePhoneInput = (e) => {
                 maxlength="10"
                 @input="handlePhoneInput"
                 :placeholder="t('settings.phonePlaceholder')"
-                class="w-full bg-transparent border-none text-sm font-medium text-white p-0 focus:ring-0 placeholder-neutral-600 outline-none"
+                class="w-full bg-transparent border-none text-sm font-medium text-slate-900 dark:text-white p-0 focus:ring-0 placeholder-slate-400 dark:placeholder-neutral-600 outline-none"
               />
-              <p v-else class="text-sm font-medium text-white truncate">
+              <p v-else class="text-sm font-medium text-slate-900 dark:text-white truncate">
                 {{
                   toLocalPhone(userProfile.phone) || t("settings.noneProvided")
                 }}
@@ -260,7 +260,7 @@ const handlePhoneInput = (e) => {
 
           <!-- Member Since (Read Only) -->
           <div
-            class="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center gap-4 opacity-80"
+            class="rounded-2xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-4 flex items-center gap-4 opacity-80 shadow-sm dark:shadow-none"
           >
             <div
               class="w-10 h-10 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-400 flex-shrink-0"
@@ -269,11 +269,11 @@ const handlePhoneInput = (e) => {
             </div>
             <div class="flex-1 min-w-0">
               <p
-                class="text-[11px] text-neutral-500 uppercase tracking-wider font-semibold mb-0.5"
+                class="text-[11px] text-slate-400 dark:text-neutral-500 uppercase tracking-wider font-semibold mb-0.5"
               >
                 {{ t("settings.memberSince") }}
               </p>
-              <p class="text-sm font-medium text-white truncate">
+              <p class="text-sm font-medium text-slate-900 dark:text-white truncate">
                 {{ userProfile.createdAt }}
               </p>
             </div>
@@ -301,7 +301,7 @@ const handlePhoneInput = (e) => {
 
 <style scoped>
 .personal-info-page {
-  background: #0a0a0c;
+  /* background: #0a0a0c; */
 }
 
 .settings-bg {

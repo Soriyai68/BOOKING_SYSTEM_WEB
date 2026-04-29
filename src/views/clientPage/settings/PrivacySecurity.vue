@@ -95,7 +95,7 @@ onMounted(fetchSessions);
 
 <template>
   <div
-    class="privacy-security-page min-h-screen text-white relative overflow-hidden"
+    class="privacy-security-page min-h-screen bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-300"
   >
     <!-- Background -->
     <div class="settings-bg"></div>
@@ -103,13 +103,13 @@ onMounted(fetchSessions);
     <div class="relative z-10 min-h-screen flex flex-col">
       <!-- Header -->
       <header
-        class="py-3 px-5 flex items-center gap-3 border-b border-white/[0.05]"
+        class="py-3 px-5 flex items-center gap-3 border-b border-slate-200 dark:border-white/[0.05]"
       >
         <button
           @click="router.back()"
-          class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] cursor-pointer"
+          class="w-9 h-9 rounded-xl flex items-center justify-center bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/[0.08] cursor-pointer"
         >
-          <ArrowLeft :size="18" class="text-neutral-400" />
+          <ArrowLeft :size="18" class="text-slate-500 dark:text-neutral-400" />
         </button>
         <h1 class="text-sm font-bold">{{ t("settings.privacySecurity") }}</h1>
       </header>
@@ -135,7 +135,7 @@ onMounted(fetchSessions);
               <h2 class="text-sm font-bold">
                 {{ t("settings.activeSessions") }}
               </h2>
-              <p class="text-[11px] text-neutral-500">
+              <p class="text-[11px] text-slate-400 dark:text-neutral-500">
                 {{ t("settings.sessionsDesc") }}
               </p>
             </div>
@@ -149,10 +149,10 @@ onMounted(fetchSessions);
             <div
               v-for="session in sessions"
               :key="session.sessionId"
-              class="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center gap-4"
+              class="rounded-2xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-4 flex items-center gap-4 shadow-sm dark:shadow-none"
             >
               <div
-                class="w-10 h-10 rounded-full bg-white/[0.05] flex items-center justify-center text-neutral-400"
+                class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center text-slate-400 dark:text-neutral-400"
               >
                 <Smartphone
                   v-if="session.device?.type === 'mobile'"
@@ -162,7 +162,7 @@ onMounted(fetchSessions);
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2">
-                  <p class="text-sm font-medium text-white truncate">
+                  <p class="text-sm font-medium text-slate-900 dark:text-white truncate">
                     <template
                       v-if="session.device?.vendor || session.device?.model"
                     >
@@ -180,7 +180,7 @@ onMounted(fetchSessions);
                     {{ t("settings.thisDevice") }}
                   </span>
                 </div>
-                <p class="text-[11px] text-neutral-500">
+                <p class="text-[11px] text-slate-400 dark:text-neutral-500">
                   {{ session.ip }} •
                   {{ new Date(session.loginTime).toLocaleDateString() }}
                 </p>
@@ -188,7 +188,7 @@ onMounted(fetchSessions);
               <button
                 v-if="!session.isCurrent"
                 @click="handleLogoutSession(session.sessionId)"
-                class="p-2 rounded-lg hover:bg-red-500/10 text-neutral-500 hover:text-red-400 transition-colors"
+                class="p-2 rounded-lg bg-slate-50 dark:bg-transparent hover:bg-red-500/10 text-slate-400 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                 title="Logout device"
               >
                 <LogOut :size="16" />
@@ -198,7 +198,7 @@ onMounted(fetchSessions);
             <button
               v-if="sessions.length > 1"
               @click="handleLogoutOthers"
-              class="w-full py-3 rounded-xl border border-white/[0.08] bg-white/[0.02] text-[11px] font-bold text-neutral-400 hover:bg-white/[0.05] transition-colors"
+              class="w-full py-3 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.02] text-[11px] font-bold text-slate-400 dark:text-neutral-400 hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors shadow-sm dark:shadow-none"
             >
               {{ t("settings.logoutOtherDevices") }}
             </button>
@@ -214,7 +214,7 @@ onMounted(fetchSessions);
           </h2>
 
           <div
-            class="rounded-2xl border border-red-500/10 bg-red-500/[0.02] p-4"
+            class="rounded-2xl border border-red-500/10 bg-white dark:bg-red-500/[0.02] p-4 shadow-sm dark:shadow-none"
           >
             <div class="flex items-start gap-3">
               <div
@@ -223,10 +223,10 @@ onMounted(fetchSessions);
                 <AlertTriangle :size="16" />
               </div>
               <div class="flex-1">
-                <p class="text-xs font-semibold text-neutral-200">
+                <p class="text-xs font-semibold text-slate-800 dark:text-neutral-200">
                   {{ t("settings.deleteAccount") }}
                 </p>
-                <p class="text-[11px] text-neutral-500 mt-1 leading-relaxed">
+                <p class="text-[11px] text-slate-400 dark:text-neutral-500 mt-1 leading-relaxed">
                   {{ t("settings.deleteAccountDesc") }}
                 </p>
               </div>
@@ -253,7 +253,7 @@ onMounted(fetchSessions);
       ></div>
 
       <div
-        class="relative w-full max-w-sm bg-[#0f0f12] border border-white/[0.08] rounded-3xl p-6 shadow-2xl animate-in fade-in slide-in-from-bottom-5"
+        class="relative w-full max-w-sm bg-white dark:bg-[#0f0f12] border border-slate-200 dark:border-white/[0.08] rounded-3xl p-6 shadow-2xl animate-in fade-in slide-in-from-bottom-5"
       >
         <div
           class="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 mb-4"
@@ -261,10 +261,10 @@ onMounted(fetchSessions);
           <Trash2 :size="24" />
         </div>
 
-        <h3 class="text-lg font-bold text-white mb-2">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">
           {{ t("settings.deleteAccountConfirmTitle") }}
         </h3>
-        <p class="text-sm text-neutral-400 mb-6 leading-relaxed">
+        <p class="text-sm text-slate-500 dark:text-neutral-400 mb-6 leading-relaxed">
           {{ t("settings.deleteAccountConfirmDesc") }}
         </p>
 
@@ -280,7 +280,7 @@ onMounted(fetchSessions);
 
           <button
             @click="showDeleteModal = false"
-            class="w-full py-4 rounded-xl bg-white/[0.05] text-neutral-300 font-bold hover:bg-white/[0.08] transition-all"
+            class="w-full py-4 rounded-xl bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-neutral-300 font-bold hover:bg-slate-200 dark:hover:bg-white/[0.08] transition-all"
           >
             {{ t("settings.cancel") }}
           </button>
@@ -292,7 +292,7 @@ onMounted(fetchSessions);
 
 <style scoped>
 .privacy-security-page {
-  background: #0a0a0c;
+  /* background: #0a0a0c; */
 }
 
 .settings-bg {

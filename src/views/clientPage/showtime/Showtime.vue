@@ -647,6 +647,10 @@ const handleReserveSeats = () => {
 }
 
 .showtime-search-input::placeholder {
+  color: #94a3b8;
+}
+
+.dark .showtime-search-input::placeholder {
   color: rgba(255, 255, 255, 0.25);
 }
 

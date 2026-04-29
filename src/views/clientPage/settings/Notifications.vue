@@ -106,7 +106,7 @@ const deleteAllNotifications = async () => {
 
 <template>
   <div
-    class="notifications-page min-h-screen text-white relative overflow-hidden"
+    class="notifications-page min-h-screen bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-300"
   >
     <!-- Background -->
     <div class="settings-bg"></div>
@@ -114,14 +114,14 @@ const deleteAllNotifications = async () => {
     <div class="relative z-10 min-h-screen flex flex-col">
       <!-- Header -->
       <header
-        class="py-3 px-5 flex items-center justify-between border-b border-white/[0.05]"
+        class="py-3 px-5 flex items-center justify-between border-b border-slate-200 dark:border-white/[0.05]"
       >
         <div class="flex items-center gap-3">
           <button
             @click="router.back()"
-            class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] cursor-pointer"
+            class="w-9 h-9 rounded-xl flex items-center justify-center bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/[0.08] cursor-pointer"
           >
-            <ArrowLeft :size="18" class="text-neutral-400" />
+            <ArrowLeft :size="18" class="text-slate-500 dark:text-neutral-400" />
           </button>
           <h1 class="text-sm font-bold">{{ t("settings.notifications") }}</h1>
         </div>
@@ -150,11 +150,11 @@ const deleteAllNotifications = async () => {
             v-for="item in notifications"
             :key="item._id"
             @click="handleNotificationClick(item)"
-            class="group rounded-2xl border border-white/[0.06] overflow-hidden p-4 transition-all duration-300 cursor-pointer active:scale-[0.99]"
+            class="group rounded-2xl border border-slate-200 dark:border-white/[0.06] overflow-hidden p-4 transition-all duration-300 cursor-pointer active:scale-[0.99] shadow-sm dark:shadow-none"
             :class="[
               item.isRead
-                ? 'bg-white/[0.02] hover:bg-white/[0.04]'
-                : 'bg-white/[0.05] border-sky-500/20 ring-1 ring-sky-500/10 hover:bg-white/[0.07]',
+                ? 'bg-white dark:bg-white/[0.02] hover:bg-slate-50 dark:hover:bg-white/[0.04]'
+                : 'bg-white dark:bg-white/[0.05] border-sky-500/20 dark:border-sky-500/20 ring-1 ring-sky-500/10 hover:bg-slate-50 dark:hover:bg-white/[0.07]',
             ]"
           >
             <div class="flex items-center justify-between gap-4">
@@ -165,18 +165,18 @@ const deleteAllNotifications = async () => {
                 ></span>
                 <div class="flex-1 min-w-0">
                   <h3
-                    class="text-sm font-semibold truncate group-hover:text-sky-400 transition-colors"
+                    class="text-sm font-semibold truncate text-slate-900 dark:text-white group-hover:text-sky-500 dark:group-hover:text-sky-400 transition-colors"
                   >
                     {{ getLocalizedTitle(item) }}
                   </h3>
-                  <span class="text-[10px] text-neutral-500 mt-0.5 block">
+                  <span class="text-[10px] text-slate-400 dark:text-neutral-500 mt-0.5 block">
                     {{ getRelativeTime(item.createdAt) }}
                   </span>
                 </div>
               </div>
               <button
                 @click.stop="deleteNotification(item._id)"
-                class="w-8 h-8 rounded-lg flex items-center justify-center bg-white/[0.03] hover:bg-red-500/10 hover:text-red-400 text-neutral-500 transition-all"
+                class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-white/[0.03] hover:bg-red-500/10 hover:text-red-500 dark:hover:text-red-400 text-slate-400 dark:text-neutral-500 transition-all"
               >
                 <Trash2 :size="14" />
               </button>
@@ -187,7 +187,7 @@ const deleteAllNotifications = async () => {
           v-else
           class="rounded-2xl border border-white/[0.06] overflow-hidden bg-white/[0.02] p-10 text-center"
         >
-          <p class="text-sm text-neutral-400">
+          <p class="text-sm text-slate-400 dark:text-neutral-400">
             {{ t("messages.noNotifications") }}
           </p>
         </div>
@@ -205,7 +205,7 @@ const deleteAllNotifications = async () => {
       ></div>
 
       <div
-        class="relative w-full max-w-sm bg-[#0f0f12]/90 border border-white/[0.08] rounded-3xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-300 backdrop-blur-xl"
+        class="relative w-full max-w-sm bg-white dark:bg-[#0f0f12]/90 border border-slate-200 dark:border-white/[0.08] rounded-3xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-300 backdrop-blur-xl"
       >
         <div class="flex items-center gap-3 mb-4">
           <div
@@ -214,10 +214,10 @@ const deleteAllNotifications = async () => {
             <Bell :size="20" />
           </div>
           <div class="flex-1 min-w-0">
-            <h3 class="text-base font-bold text-white leading-tight">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white leading-tight">
               {{ getLocalizedTitle(selectedNotification) }}
             </h3>
-            <p class="text-[11px] text-neutral-500 mt-0.5">
+            <p class="text-[11px] text-slate-400 dark:text-neutral-500 mt-0.5">
               {{ getRelativeTime(selectedNotification.createdAt) }}
             </p>
           </div>
@@ -225,7 +225,7 @@ const deleteAllNotifications = async () => {
 
         <div class="max-h-[300px] overflow-y-auto mb-6 custom-scrollbar pr-2">
           <p
-            class="text-sm text-neutral-300 leading-relaxed whitespace-pre-wrap"
+            class="text-sm text-slate-600 dark:text-neutral-300 leading-relaxed whitespace-pre-wrap"
           >
             {{ getLocalizedMessage(selectedNotification) }}
           </p>
@@ -233,7 +233,7 @@ const deleteAllNotifications = async () => {
 
         <button
           @click="selectedNotification = null"
-          class="w-full py-4 rounded-2xl bg-white/[0.05] text-white font-bold hover:bg-white/[0.08] transition-all border border-white/[0.08]"
+          class="w-full py-4 rounded-2xl bg-slate-900 dark:bg-white/[0.05] text-white font-bold hover:bg-slate-800 dark:hover:bg-white/[0.08] transition-all border border-slate-800 dark:border-white/[0.08]"
         >
           {{ t("actions.close") || "Close" }}
         </button>
@@ -244,7 +244,7 @@ const deleteAllNotifications = async () => {
 
 <style scoped>
 .notifications-page {
-  background: #0a0a0c;
+  /* background: #0a0a0c; */
 }
 
 .settings-bg {

@@ -118,26 +118,26 @@ const getActionLabel = (action) => {
 
 <template>
   <div
-    class="activity-logs-page min-h-screen text-white relative overflow-hidden flex flex-col"
+    class="activity-logs-page min-h-screen bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white relative overflow-hidden flex flex-col transition-colors duration-300"
   >
     <!-- Background -->
     <div class="activity-bg"></div>
 
     <!-- Header -->
     <header
-      class="relative z-10 py-4 px-5 flex items-center gap-4 border-b border-white/[0.05] bg-[#0a0a0c]/80 backdrop-blur-md"
+      class="relative z-10 py-4 px-5 flex items-center gap-4 border-b border-slate-200 dark:border-white/[0.05] bg-white/80 dark:bg-[#0a0a0c]/80 backdrop-blur-md"
     >
       <button
         @click="router.back()"
-        class="w-10 h-10 rounded-xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] cursor-pointer"
+        class="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/[0.08] cursor-pointer"
       >
-        <ArrowLeft :size="20" class="text-neutral-400" />
+        <ArrowLeft :size="20" class="text-slate-500 dark:text-neutral-400" />
       </button>
       <div>
-        <h1 class="text-lg font-bold leading-none">
+        <h1 class="text-lg font-bold leading-none text-slate-900 dark:text-white">
           {{ t("settings.privacySecurity") }}
         </h1>
-        <p class="text-xs text-neutral-500 mt-1.5">
+        <p class="text-xs text-slate-400 dark:text-neutral-500 mt-1.5">
           {{ t("activity_logs.title") }}
         </p>
       </div>
@@ -159,14 +159,14 @@ const getActionLabel = (action) => {
         class="flex flex-col items-center justify-center py-20 text-center"
       >
         <div
-          class="w-20 h-20 rounded-3xl bg-white/[0.03] flex items-center justify-center mb-6 border border-white/[0.06]"
+          class="w-20 h-20 rounded-3xl bg-white dark:bg-white/[0.03] flex items-center justify-center mb-6 border border-slate-200 dark:border-white/[0.06] shadow-sm dark:shadow-none"
         >
-          <Activity :size="32" class="text-neutral-600" />
+          <Activity :size="32" class="text-slate-300 dark:text-neutral-600" />
         </div>
-        <h3 class="text-lg font-bold text-neutral-300 mb-2">
+        <h3 class="text-lg font-bold text-slate-400 dark:text-neutral-300 mb-2">
           {{ t("activity_logs.noActivities") }}
         </h3>
-        <p class="text-neutral-500 text-sm max-w-[240px]">
+        <p class="text-slate-400 dark:text-neutral-500 text-sm max-w-[240px]">
           {{ t("activity_logs.noActivitiesDesc") }}
         </p>
       </div>
@@ -175,7 +175,7 @@ const getActionLabel = (action) => {
         <div
           v-for="log in logs"
           :key="log._id"
-          class="log-card p-4 rounded-3xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] transition-all"
+          class="log-card p-4 rounded-3xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-all shadow-sm dark:shadow-none"
         >
           <div class="flex gap-4">
             <!-- Action Icon -->
@@ -189,7 +189,7 @@ const getActionLabel = (action) => {
             <!-- Log Info -->
             <div class="flex-1 min-w-0">
               <div class="flex items-start justify-between gap-2">
-                <h4 class="font-bold text-sm truncate uppercase tracking-wider">
+                <h4 class="font-bold text-sm truncate uppercase tracking-wider text-slate-800 dark:text-white">
                   {{ getActionLabel(log.action) }}
                 </h4>
                 <span class="text-[10px] font-bold text-neutral-500 shrink-0">
@@ -214,7 +214,7 @@ const getActionLabel = (action) => {
                   v-if="log.ipAddress"
                   class="flex items-center gap-1.5 text-[10px] text-neutral-400 font-medium"
                 >
-                  <CalendarClock :size="12" class="text-neutral-500" />
+                  <CalendarClock :size="12" class="text-slate-400 dark:text-neutral-500" />
                   IP: {{ log.ipAddress }}
                 </div>
               </div>
@@ -245,11 +245,11 @@ const getActionLabel = (action) => {
           <button
             @click="fetchLogs(pagination.currentPage - 1)"
             :disabled="pagination.currentPage === 1"
-            class="px-4 py-2 rounded-xl bg-white/[0.05] border border-white/[0.1] text-xs font-bold disabled:opacity-30 cursor-pointer"
+            class="px-4 py-2 rounded-xl bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.1] text-xs font-bold text-slate-600 dark:text-white disabled:opacity-30 cursor-pointer shadow-sm dark:shadow-none"
           >
             {{ t("actions.previous") }}
           </button>
-          <span class="text-xs font-bold text-neutral-500">
+          <span class="text-xs font-bold text-slate-400 dark:text-neutral-500">
             {{
               t("activity_logs.pageOf", {
                 page: pagination.currentPage,
@@ -260,7 +260,7 @@ const getActionLabel = (action) => {
           <button
             @click="fetchLogs(pagination.currentPage + 1)"
             :disabled="pagination.currentPage === pagination.totalPages"
-            class="px-4 py-2 rounded-xl bg-white/[0.05] border border-white/[0.1] text-xs font-bold disabled:opacity-30 cursor-pointer"
+            class="px-4 py-2 rounded-xl bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.1] text-xs font-bold text-slate-600 dark:text-white disabled:opacity-30 cursor-pointer shadow-sm dark:shadow-none"
           >
             {{ t("actions.next") }}
           </button>
@@ -272,7 +272,7 @@ const getActionLabel = (action) => {
 
 <style scoped>
 .activity-logs-page {
-  background: #0a0a0c;
+  /* background: #0a0a0c; */
 }
 
 .activity-bg {

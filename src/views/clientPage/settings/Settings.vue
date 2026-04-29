@@ -72,10 +72,10 @@ onMounted(async () => {
 
 const handleLogout = async () => {
   const confirmed = await uiStore.confirm({
-    title: t("auth.logoutConfirm.title"),
+    title: t("settings.logoutConfirm.title"),
     message:
-      t("auth.logoutConfirm.message") || "Are you sure you want to log out?",
-    confirmText: t("auth.logoutConfirm.confirmButton"),
+      t("settings.logoutConfirm.message") || "Are you sure you want to log out?",
+    confirmText: t("settings.logoutConfirm.confirmButton"),
     cancelText: t("common.cancel"),
     type: "danger",
   });
@@ -155,7 +155,7 @@ const menuItems = computed(() => [
       {
         id: "theme",
         icon: isDark.value ? Moon : Sun,
-        title: t("settings.theme") || "Dark Mode",
+        title: isDark.value ? (t("settings.lightMode") || "Light Mode") : (t("settings.darkMode") || "Dark Mode"),
         subtitle: t("settings.themeDesc") || "Toggle between light and dark theme",
         type: "toggle",
       },
@@ -190,7 +190,7 @@ const menuItems = computed(() => [
         <!-- Profile Preview Card -->
         <div class="px-5 py-6">
           <div
-            class="settings-profile-card bg-white dark:bg-white/[0.01] rounded-2xl border border-slate-200 dark:border-white/[0.06] p-6 shadow-sm dark:shadow-none"
+            class="settings-profile-card bg-white dark:bg-white/[0.03] rounded-2xl border border-slate-200 dark:border-white/[0.06] p-6 shadow-sm dark:shadow-none"
           >
             <div class="flex items-center gap-4">
               <!-- Avatar -->
@@ -292,7 +292,7 @@ const menuItems = computed(() => [
               {{ section.label }}
             </h3>
             <div
-              class="rounded-2xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-transparent overflow-hidden divide-y divide-slate-100 dark:divide-white/[0.04] shadow-sm dark:shadow-none"
+              class="rounded-2xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] overflow-hidden divide-y divide-slate-100 dark:divide-white/[0.04] shadow-sm dark:shadow-none"
             >
               <button
                 v-for="item in section.items"
@@ -377,7 +377,7 @@ const menuItems = computed(() => [
           <div>
             <button
               @click="handleLogout"
-              class="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white dark:bg-transparent border border-red-500/10 dark:border-red-500/10 hover:bg-red-50 dark:hover:bg-red-500/[0.04] cursor-pointer transition-colors shadow-sm dark:shadow-none"
+              class="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white dark:bg-white/[0.02] border border-red-500/10 dark:border-red-500/10 hover:bg-red-50 dark:hover:bg-red-500/[0.04] cursor-pointer transition-colors shadow-sm dark:shadow-none"
             >
               <LogOut :size="16" class="text-red-400" />
               <span class="text-sm font-semibold text-red-400">{{

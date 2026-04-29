@@ -6,6 +6,8 @@ export const isDark = useDark({
   attribute: 'class',
   valueDark: 'dark',
   valueLight: '',
+  initialValue: 'light',
+  storageKey: 'ninja-booking-theme',
 });
 
 export const toggleDark = useToggle(isDark);

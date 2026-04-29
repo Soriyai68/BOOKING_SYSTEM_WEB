@@ -21,7 +21,7 @@ const uiStore = useUiStore();
       <Transition name="scale">
         <div
           v-if="uiStore.dialog.show"
-          class="relative w-full max-w-sm bg-[#0f1115] border border-white/[0.08] rounded-[2rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)]"
+          class="relative w-full max-w-sm bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/[0.08] rounded-[2rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.1)] dark:shadow-[0_50px_100px_rgba(0,0,0,0.8)]"
         >
           <div class="p-8">
             <!-- Icon -->
@@ -47,10 +47,10 @@ const uiStore = useUiStore();
 
             <!-- Content -->
             <div class="text-center space-y-2 mb-8">
-              <h3 class="text-xl font-bold text-white">
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white">
                 {{ uiStore.dialog.title }}
               </h3>
-              <p class="text-neutral-400 text-sm leading-relaxed">
+              <p class="text-slate-500 dark:text-neutral-400 text-sm leading-relaxed">
                 {{ uiStore.dialog.message }}
               </p>
             </div>
@@ -63,14 +63,14 @@ const uiStore = useUiStore();
                   'w-full py-4 rounded-2xl font-bold text-sm transition-all active:scale-[0.98] cursor-pointer',
                   uiStore.dialog.type === 'danger'
                     ? 'bg-red-500 text-white shadow-lg shadow-red-500/20'
-                    : 'bg-white text-black',
+                    : 'bg-slate-900 dark:bg-white text-white dark:text-black',
                 ]"
               >
                 {{ uiStore.dialog.confirmText }}
               </button>
               <button
                 @click="uiStore.handleCancel"
-                class="w-full py-4 rounded-2xl font-bold text-sm text-neutral-400 bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-all active:scale-[0.98] cursor-pointer"
+                class="w-full py-4 rounded-2xl font-bold text-sm text-slate-500 dark:text-neutral-400 bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.06] transition-all active:scale-[0.98] cursor-pointer"
               >
                 {{ uiStore.dialog.cancelText }}
               </button>

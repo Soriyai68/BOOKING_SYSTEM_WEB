@@ -1,31 +1,31 @@
 <template>
   <div class="client-qr-container">
-    <div class="glass-morph-overlay"></div>
+    <div class="glass-morph-overlay bg-white/95 dark:bg-[#0f0f14]/85 border border-slate-200 dark:border-white/[0.08] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)]"></div>
 
     <div class="qr-card-wrapper">
       <!-- Decorative Ticket Notches -->
-      <div class="ticket-notch notch-left"></div>
-      <div class="ticket-notch notch-right"></div>
+      <div class="ticket-notch notch-left bg-slate-50 dark:bg-[#0a0a0c]"></div>
+      <div class="ticket-notch notch-right bg-slate-50 dark:bg-[#0a0a0c]"></div>
 
       <div class="card-header-premium">
         <div class="header-content">
           <span class="premium-label">{{ $t("payments.paymentDetails") }}</span>
           <div class="header-line"></div>
         </div>
-        <button class="close-action-btn" @click="onClose" aria-label="Close">
+        <button class="close-action-btn bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] text-slate-400 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white" @click="onClose" aria-label="Close">
           <X :size="18" />
         </button>
       </div>
 
       <div class="card-main-body">
-        <div class="amount-section">
-          <p class="label-muted">{{ $t("payments.amount") }}</p>
+        <div class="amount-section bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05]">
+          <p class="label-muted text-slate-400 dark:text-neutral-500">{{ $t("payments.amount") }}</p>
           <div class="price-display">
             <span class="currency-symbol">$</span>
-            <span class="value-large">{{
+            <span class="value-large text-slate-900 dark:text-white">{{
               payment?.amount?.toLocaleString()
             }}</span>
-            <span class="currency-code">{{ payment?.currency }}</span>
+            <span class="currency-code text-slate-400 dark:text-neutral-500">{{ payment?.currency }}</span>
           </div>
         </div>
 
@@ -36,7 +36,7 @@
             <div class="corner t-r"></div>
             <div class="corner b-l"></div>
             <div class="corner b-r"></div>
-            <div class="qr-inner-shadow" ref="qrRef">
+            <div class="qr-inner-shadow border border-slate-100 dark:border-transparent" ref="qrRef">
               <qrcode-vue
                 :value="payment.qr"
                 :size="200"
@@ -46,27 +46,27 @@
             </div>
           </div>
 
-          <div class="timer-badge-unique">
-            <div class="timer-icon">
+          <div class="timer-badge-unique bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08]">
+            <div class="timer-icon text-amber-500 dark:text-amber-400">
               <Clock :size="14" />
             </div>
             <div class="timer-text-group">
-              <span class="timer-label">{{ $t("payments.expiresIn") }}</span>
+              <span class="timer-label text-slate-400 dark:text-neutral-500">{{ $t("payments.expiresIn") }}</span>
               <span
-                class="timer-countdown"
-                :class="{ 'text-critical': remainingTime < 60000 }"
+                class="timer-countdown text-slate-900 dark:text-white"
+                :class="{ 'text-red-500 dark:text-red-400': remainingTime < 60000 }"
               >
                 {{ formatTime(remainingTime) }}
               </span>
             </div>
           </div>
 
-          <button @click="downloadQR" class="btn-client-secondary">
+          <button @click="downloadQR" class="btn-client-secondary bg-slate-900 dark:bg-white/[0.05] border border-slate-800 dark:border-white/[0.1] text-white hover:bg-slate-800 dark:hover:bg-white/[0.08]">
             <Download :size="18" />
             <span>{{ $t("payments.saveQR") || "Save QR Image" }}</span>
           </button>
 
-          <p class="hint-text-premium">{{ $t("payments.scanToPay") }}</p>
+          <p class="hint-text-premium text-slate-400 dark:text-neutral-500">{{ $t("payments.scanToPay") }}</p>
         </div>
 
         <div v-if="expired" class="status-view-unique">
@@ -85,17 +85,17 @@
           <div class="status-icon-box success">
             <CheckCircle :size="40" />
           </div>
-          <h3 class="status-title-large success">
+          <h3 class="status-title-large success text-slate-900 dark:text-white">
             {{ $t("payments.paymentSuccess") }}
           </h3>
-          <p class="status-subtitle-premium">
+          <p class="status-subtitle-premium text-slate-500 dark:text-neutral-500">
             {{ $t("payments.paymentCompleted") }}
           </p>
         </div>
       </div>
 
       <div class="card-footer-action">
-        <button @click="onClose" class="btn-client-dismiss">
+        <button @click="onClose" class="btn-client-dismiss border border-slate-200 dark:border-white/[0.08] text-slate-400 dark:text-neutral-500 hover:text-slate-900 dark:hover:text-white">
           {{ $t("actions.close") }}
         </button>
       </div>
@@ -171,9 +171,59 @@ const showQR = computed(
 
 const onClose = () => emit("close", isPaid.value);
 
+// Add polling for robustness (fallback for WebSocket)
+let pollingInterval = null;
+
+const startPolling = () => {
+  if (!props.payment?.md5 || isCancelled) return;
+  
+  // Clear any existing polling
+  if (pollingInterval) clearInterval(pollingInterval);
+  
+  pollingInterval = setInterval(async () => {
+    if (isPaid.value || isCancelled) {
+      clearInterval(pollingInterval);
+      return;
+    }
+    
+    try {
+      // We only poll if the QR is still visible and not expired
+      if (showQR.value) {
+        console.log("[BakongQR] Polling status for md5:", props.payment.md5);
+        const response = await paymentService.checkPaymentStatus(props.payment.md5);
+        console.log("[BakongQR] Polling response:", response);
+
+        const status = (response?.status || "").toUpperCase();
+        const isCompleted = status === "COMPLETED" || 
+                            status === "SUCCESS" || 
+                            response?.data?.paid === true ||
+                            response?.data?.status === "Completed";
+
+        if (response?.success && isCompleted) {
+          console.log("[BakongQR] Payment confirmed via Polling fallback!");
+          isPaid.value = true;
+          stopActivities();
+          successTimeout = setTimeout(() => {
+            console.log("[BakongQR] Emitting 'paid' event to parent");
+            emit("paid");
+            successTimeout = null;
+          }, 1500);
+        }
+      }
+    } catch (err) {
+      // Silent fail for polling errors
+      console.debug("Polling failed:", err);
+    }
+  }, 5000); // Check every 5 seconds
+};
+
 const stopActivities = () => {
   isCancelled = true;
   clearInterval(countdownInterval);
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
   if (successTimeout) {
     clearTimeout(successTimeout);
     successTimeout = null;
@@ -186,27 +236,38 @@ const { onEvent } = useSocket();
 onEvent("payment:status", (data) => {
   if (isPaid.value || isCancelled) return;
   
+  // Helper to extract ID string from object or string
+  const getID = (obj) => {
+    if (!obj) return null;
+    return (obj._id || obj.id || obj).toString();
+  };
+
+  const currentBookingId = getID(props.payment?.bookingId);
+  const eventBookingId = getID(data?.bookingId);
+  
   // Verify this payment update is for our current payment
   // Checking both md5 and bookingId for maximum reliability
   const isMatch = (data?.md5 && data.md5 === props.payment?.md5) || 
-                  (data?.bookingId && data.bookingId === props.payment?.bookingId);
+                  (eventBookingId && eventBookingId === currentBookingId);
 
-  if (isMatch) {
-    const isCompleted = data.status === "COMPLETED" || 
-                        data.status === "SUCCESS" || 
-                        data.status === "Completed" ||
-                        data.paid;
-                        
-    if (isCompleted) {
-      console.log("Payment confirmed via Socket.io!");
-      isPaid.value = true;
-      stopActivities();
-      successTimeout = setTimeout(() => {
-        emit("paid");
-        successTimeout = null;
-      }, 1500);
+    if (isMatch) {
+      console.log("[BakongQR] Match found in socket event:", data);
+      const status = (data.status || "").toUpperCase();
+      const isCompleted = status === "COMPLETED" || 
+                          status === "SUCCESS" || 
+                          data.paid;
+                          
+      if (isCompleted) {
+        console.log("[BakongQR] Payment confirmed via Socket.io!");
+        isPaid.value = true;
+        stopActivities();
+        successTimeout = setTimeout(() => {
+          console.log("[BakongQR] Emitting 'paid' event to parent");
+          emit("paid");
+          successTimeout = null;
+        }, 1500);
+      }
     }
-  }
 });
 
 const startCountdown = () => {
@@ -253,6 +314,7 @@ watch(
 
       if (remainingTime.value > 0) {
         startCountdown();
+        startPolling(); // Start fallback polling alongside socket
       }
     }
   },
@@ -276,12 +338,12 @@ onUnmounted(() => stopActivities());
 .glass-morph-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(15, 15, 20, 0.85);
+  /* background: rgba(15, 15, 20, 0.85); */
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-radius: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.6);
+  /* border: 1px solid rgba(255, 255, 255, 0.08); */
+  /* box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.6); */
   z-index: -1;
 }
 
@@ -299,7 +361,7 @@ onUnmounted(() => stopActivities());
   top: 50%;
   width: 24px;
   height: 24px;
-  background: #0a0a0c; /* Matches site background */
+  /* background: #0a0a0c; /* Matches site background */
   border-radius: 50%;
   transform: translateY(-50%);
   z-index: 2;
@@ -362,9 +424,9 @@ onUnmounted(() => stopActivities());
 .amount-section {
   text-align: center;
   padding: 24px;
-  background: rgba(255, 255, 255, 0.03);
+  /* background: rgba(255, 255, 255, 0.03); */
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  /* border: 1px solid rgba(255, 255, 255, 0.05); */
   margin-bottom: 32px;
 }
 
@@ -393,7 +455,7 @@ onUnmounted(() => stopActivities());
 .value-large {
   font-size: 42px;
   font-weight: 900;
-  color: #fff;
+  /* color: #fff; */
   letter-spacing: -0.01em;
 }
 
@@ -468,8 +530,8 @@ onUnmounted(() => stopActivities());
   align-items: center;
   gap: 12px;
   padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* background: rgba(255, 255, 255, 0.03); */
+  /* border: 1px solid rgba(255, 255, 255, 0.08); */
   border-radius: 100px;
 }
 
@@ -480,7 +542,7 @@ onUnmounted(() => stopActivities());
 .timer-countdown {
   font-size: 18px;
   font-weight: 800;
-  color: #fff;
+  /* color: #fff; */
   font-variant-numeric: tabular-nums;
 }
 
@@ -523,10 +585,10 @@ onUnmounted(() => stopActivities());
 .btn-client-secondary {
   width: 100%;
   height: 52px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* background: rgba(255, 255, 255, 0.05); */
+  /* border: 1px solid rgba(255, 255, 255, 0.1); */
   border-radius: 16px;
-  color: #fff;
+  /* color: #fff; */
   font-weight: 600;
   font-size: 14px;
   display: flex;
@@ -586,7 +648,7 @@ onUnmounted(() => stopActivities());
 }
 
 .status-title-large.success {
-  color: #fff;
+  /* color: #fff; */
 }
 .status-title-large.error {
   color: #ef4444;
@@ -602,9 +664,9 @@ onUnmounted(() => stopActivities());
   width: 100%;
   padding: 16px;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* border: 1px solid rgba(255, 255, 255, 0.08); */
   border-radius: 16px;
-  color: rgba(255, 255, 255, 0.5);
+  /* color: rgba(255, 255, 255, 0.5); */
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;

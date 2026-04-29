@@ -9,15 +9,34 @@
         show-icon
       >
         <template #default>
-          <p>ប្រព័ន្ធបម្រុងទុកត្រូវការឧបករណ៍មូលដ្ឋានទិន្នន័យ MongoDB ដើម្បីដំឡើងនៅលើប្រព័ន្ធរបស់អ្នក។</p>
+          <p>
+            ប្រព័ន្ធបម្រុងទុកត្រូវការឧបករណ៍មូលដ្ឋានទិន្នន័យ MongoDB
+            ដើម្បីដំឡើងនៅលើប្រព័ន្ធរបស់អ្នក។
+          </p>
           <div class="install-instructions">
             <p><strong>ជម្រើសការដំឡើង៖</strong></p>
             <ul>
-              <li>ទាញយកពី៖ <a href="https://www.mongodb.com/try/download/database-tools" target="_blank">MongoDB Database Tools</a></li>
-              <li>ប្រើ Chocolatey៖ <code>choco install mongodb-database-tools</code></li>
-              <li>ប្រើ Scoop៖ <code>scoop install mongodb-database-tools</code></li>
+              <li>
+                ទាញយកពី៖
+                <a
+                  href="https://www.mongodb.com/try/download/database-tools"
+                  target="_blank"
+                  >MongoDB Database Tools</a
+                >
+              </li>
+              <li>
+                ប្រើ Chocolatey៖
+                <code>choco install mongodb-database-tools</code>
+              </li>
+              <li>
+                ប្រើ Scoop៖ <code>scoop install mongodb-database-tools</code>
+              </li>
             </ul>
-            <p><strong>បន្ទាប់ពីការដំឡើង៖</strong> ចាប់ផ្តើម terminal/IDE របស់អ្នកឡើងវិញ ហើយដំណើរការ <code>npm run check:mongodump</code> ដើម្បីផ្ទៀងផ្ទាត់។</p>
+            <p>
+              <strong>បន្ទាប់ពីការដំឡើង៖</strong> ចាប់ផ្តើម terminal/IDE
+              របស់អ្នកឡើងវិញ ហើយដំណើរការ
+              <code>npm run check:mongodump</code> ដើម្បីផ្ទៀងផ្ទាត់។
+            </p>
           </div>
         </template>
       </el-alert>
@@ -26,9 +45,9 @@
     <!-- Header Section -->
     <div class="header-section">
       <div class="header-content">
-        <h3 class="section-title">{{ t('backup.title') }}</h3>
+        <h3 class="section-title">{{ t("backup.title") }}</h3>
         <p class="section-description">
-          {{ t('backup.backupRestoreDescription') }}
+          {{ t("backup.backupRestoreDescription") }}
         </p>
       </div>
       <div class="header-actions">
@@ -38,20 +57,20 @@
           :loading="isCreatingBackup"
           @click="createBackup"
         >
-          <Database :size="16" />
-          {{ t('backup.createBackup') }}
+          <Database :size="16" style="margin-right: 5px" />
+          {{ t("backup.createBackup") }}
         </el-button>
         <el-button
           v-if="canRestoreBackups && backups.length > 0"
           type="warning"
           @click="showRestoreDialog()"
         >
-          <RotateCcw :size="16" />
-          {{ t('backup.restoreDatabase') }}
+          <RotateCcw :size="16" style="margin-right: 5px" />
+          {{ t("backup.restoreDatabase") }}
         </el-button>
         <el-button @click="refreshBackups" :loading="isLoading">
-          <RefreshCw :size="16" />
-          {{ t('backup.refresh') }}
+          <RefreshCw :size="16" style="margin-right: 5px" />
+          {{ t("backup.refresh") }}
         </el-button>
       </div>
     </div>
@@ -60,53 +79,53 @@
     <div class="stats-section" v-if="stats">
       <el-row :gutter="20">
         <el-col :xs="24" :sm="12" :md="6">
-          <el-card class="stat-card">
-            <div class="stat-content">
-              <div class="stat-icon icon-blue">
-                <Archive :size="20" />
+          <el-card class="stat-card" shadow="never">
+            <div class="stat-container">
+              <div class="stat-icon-box blue">
+                <Archive :size="24" />
               </div>
               <div class="stat-details">
+                <span class="stat-label">{{ t("backup.totalBackups") }}</span>
                 <span class="stat-value">{{ stats.totalBackups }}</span>
-                <span class="stat-label">{{ t('backup.totalBackups') }}</span>
               </div>
             </div>
           </el-card>
         </el-col>
         <el-col :xs="24" :sm="12" :md="6">
-          <el-card class="stat-card">
-            <div class="stat-content">
-              <div class="stat-icon icon-green">
-                <HardDrive :size="20" />
+          <el-card class="stat-card" shadow="never">
+            <div class="stat-container">
+              <div class="stat-icon-box green">
+                <HardDrive :size="24" />
               </div>
               <div class="stat-details">
+                <span class="stat-label">{{ t("backup.totalSize") }}</span>
                 <span class="stat-value">{{ stats.totalSizeFormatted }}</span>
-                <span class="stat-label">{{ t('backup.totalSize') }}</span>
               </div>
             </div>
           </el-card>
         </el-col>
         <el-col :xs="24" :sm="12" :md="6">
-          <el-card class="stat-card">
-            <div class="stat-content">
-              <div class="stat-icon icon-purple">
-                <Clock :size="20" />
+          <el-card class="stat-card" shadow="never">
+            <div class="stat-container">
+              <div class="stat-icon-box orange">
+                <Clock :size="24" />
               </div>
               <div class="stat-details">
+                <span class="stat-label">{{ t("backup.scheduled") }}</span>
                 <span class="stat-value">{{ stats.scheduledBackups }}</span>
-                <span class="stat-label">{{ t('backup.scheduled') }}</span>
               </div>
             </div>
           </el-card>
         </el-col>
         <el-col :xs="24" :sm="12" :md="6">
-          <el-card class="stat-card">
-            <div class="stat-content">
-              <div class="stat-icon icon-orange">
-                <User :size="20" />
+          <el-card class="stat-card" shadow="never">
+            <div class="stat-container">
+              <div class="stat-icon-box purple">
+                <User :size="24" />
               </div>
               <div class="stat-details">
+                <span class="stat-label">{{ t("backup.manual") }}</span>
                 <span class="stat-value">{{ stats.manualBackups }}</span>
-                <span class="stat-label">{{ t('backup.manual') }}</span>
               </div>
             </div>
           </el-card>
@@ -119,11 +138,11 @@
       <el-card class="backups-card">
         <template #header>
           <div class="card-header">
-            <span class="card-title">{{ t('backup.availableBackups') }}</span>
+            <span class="card-title">{{ t("backup.availableBackups") }}</span>
             <el-input
               v-model="searchQuery"
               :placeholder="t('backup.searchBackups')"
-              style="width: 200px"
+              style="width: 250px"
               clearable
             >
               <template #prefix>
@@ -137,224 +156,396 @@
           :data="filteredBackups"
           v-loading="isLoading"
           :empty-text="t('backup.noBackupsFound')"
-          class="backups-table"
         >
-          <el-table-column prop="name" :label="t('backup.backupName')" min-width="200">
+          <el-table-column
+            prop="name"
+            :label="t('backup.backupName')"
+            min-width="200"
+          >
             <template #default="{ row }">
               <div class="backup-name">
-                <el-tag
-                  :type="row.type === 'scheduled' ? 'success' : 'primary'"
-                  size="small"
-                  class="backup-type-tag"
-                >
-                  {{ backupService.formatBackupType(row.type) }}
-                </el-tag>
                 <span class="name-text">{{ row.name }}</span>
               </div>
             </template>
           </el-table-column>
 
-          <el-table-column prop="description" :label="t('backup.description')" min-width="150">
+          <el-table-column
+            prop="description"
+            :label="t('backup.description')"
+            min-width="150"
+          >
             <template #default="{ row }">
-              <span class="description-text">{{ row.description || t('backup.noDescription') }}</span>
+              <span class="description-text">{{
+                row.description || t("backup.noDescription")
+              }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column prop="size" :label="t('backup.size')" width="100">
+          <el-table-column prop="size" :label="t('backup.size')" width="140">
             <template #default="{ row }">
-              <span class="size-text">{{ backupService.formatBytes(row.size) }}</span>
-            </template>
-          </el-table-column>
-
-          <el-table-column prop="createdAt" :label="t('backup.created')" width="120">
-            <template #default="{ row }">
-              <div class="date-info">
-                <span class="date-text">{{ formatDate(row.createdAt) }}</span>
-                <span class="age-text">{{ backupService.getBackupAge(row.createdAt) }}</span>
+              <div class="size-badge-standard">
+                {{ backupService.formatBytes(row.size) }}
               </div>
             </template>
           </el-table-column>
 
-          <el-table-column :label="t('backup.actions')" width="200" fixed="right">
+          <el-table-column
+            prop="createdAt"
+            :label="t('backup.created')"
+            width="160"
+          >
             <template #default="{ row }">
-              <div class="action-buttons">
-                <el-button
-                  size="small"
-                  @click="viewBackupDetails(row)"
-                >
+              {{ formatDate(row.createdAt) }}
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            :label="t('backup.actions')"
+            width="160"
+            fixed="right"
+          >
+            <template #default="{ row }">
+              <el-button-group>
+                <el-button size="small" @click="viewBackupDetails(row)">
                   <Eye :size="14" />
                 </el-button>
                 <el-button
-                  v-if="canRestoreBackups"
                   size="small"
                   type="warning"
+                  v-if="canRestoreBackups"
                   @click="showRestoreDialog(row)"
                 >
                   <RotateCcw :size="14" />
                 </el-button>
                 <el-button
-                  v-if="canDeleteBackups"
                   size="small"
                   type="danger"
+                  v-if="canDeleteBackups"
                   @click="confirmDeleteBackup(row)"
                 >
                   <Trash2 :size="14" />
                 </el-button>
-              </div>
+              </el-button-group>
             </template>
           </el-table-column>
         </el-table>
       </el-card>
     </div>
 
-    <!-- Create Backup Dialog -->
+    <!-- Create Backup Dialog (Premium Style) -->
     <el-dialog
       v-model="showCreateDialog"
-      :title="t('backup.createBackup')"
-      width="500px"
-      :close-on-click-modal="false"
+      width="600px"
+      class="premium-large-dialog"
+      :show-close="false"
+      append-to-body
     >
-      <el-form :model="createForm" label-width="120px">
-        <el-form-item :label="t('backup.description')">
-          <el-input
-            v-model="createForm.description"
-            :placeholder="t('backup.messages.enterBackupDescription')"
-            maxlength="255"
-            show-word-limit
-          />
-        </el-form-item>
-      </el-form>
-      
+      <template #header>
+        <div class="p-dialog-header">
+          <div class="header-left">
+            <div class="p-header-icon">
+              <Database :size="18" />
+            </div>
+            <span class="p-header-title">{{ t("backup.createBackup") }}</span>
+          </div>
+          <el-button
+            circle
+            class="p-close-header-btn"
+            @click="showCreateDialog = false"
+          >
+            <X :size="20" />
+          </el-button>
+        </div>
+      </template>
+
+      <div class="premium-details-container animate-fade-in">
+        <!-- Quick Info Box -->
+        <div class="premium-details-header">
+          <div class="details-icon-outer manual">
+            <div class="details-icon-inner">
+              <Archive :size="32" />
+            </div>
+          </div>
+          <div class="details-title-box">
+            <h3 class="premium-backup-name" style="font-size: 18px; margin-bottom: 2px;">
+              {{ t("backup.newBackupRequest") || 'New Backup Request' }}
+            </h3>
+            <p class="p-description">
+              {{ t("backup.createBackupHint") || 'Capture a snapshot of the current database state.' }}
+            </p>
+          </div>
+        </div>
+
+        <el-form :model="createForm" label-position="top">
+          <el-form-item :label="t('backup.description')">
+            <el-input
+              v-model="createForm.description"
+              :placeholder="t('backup.messages.enterBackupDescription')"
+              maxlength="255"
+              show-word-limit
+              type="textarea"
+              :rows="4"
+              class="premium-input-large"
+            />
+          </el-form-item>
+        </el-form>
+      </div>
+
       <template #footer>
-        <el-button @click="showCreateDialog = false">{{ t('backup.cancel') }}</el-button>
-        <el-button
-          type="primary"
-          :loading="isCreatingBackup"
-          @click="confirmCreateBackup"
-        >
-          {{ t('backup.createBackup') }}
-        </el-button>
+        <div class="premium-dialog-footer">
+          <el-button
+            @click="showCreateDialog = false"
+            class="p-action-btn primary"
+          >
+            {{ t("backup.cancel") }}
+          </el-button>
+          <el-button
+            type="primary"
+            :loading="isCreatingBackup"
+            class="p-action-btn main"
+            style="color: white;"
+            @click="confirmCreateBackup"
+          >
+            <Database :size="16" />
+            {{ t("backup.createBackup") }}
+          </el-button>
+        </div>
       </template>
     </el-dialog>
 
-    <!-- Restore Dialog -->
+    <!-- Restore Dialog (Premium Style) -->
     <el-dialog
       v-model="showRestoreDialogVisible"
-      :title="t('backup.restoreDatabase')"
-      width="500px"
-      :close-on-click-modal="false"
+      width="800px"
+      top="12vh"
+      class="premium-large-dialog"
+      :show-close="false"
+      append-to-body
     >
-      <div class="restore-warning">
-        <el-alert
-          :title="t('backup.warning')"
-          type="warning"
-          :closable="false"
-          show-icon
-        >
-          <p>{{ t('backup.messages.restoreWarningMessage') }}</p>
-          <p v-if="restoreForm.selectedBackupName">
-            <strong>{{ t('backup.backupName') }}:</strong> {{ restoreForm.selectedBackupName }}
-          </p>
-        </el-alert>
+      <template #header>
+        <div class="p-dialog-header">
+          <div class="header-left">
+            <div class="p-header-icon warning">
+              <RotateCcw :size="18" />
+            </div>
+            <span class="p-header-title">{{
+              t("backup.restoreDatabase")
+            }}</span>
+          </div>
+          <el-button
+            circle
+            class="p-close-header-btn"
+            @click="showRestoreDialogVisible = false"
+          >
+            <X :size="20" />
+          </el-button>
+        </div>
+      </template>
+
+      <div class="premium-details-container animate-fade-in">
+        <div class="restore-warning-premium">
+          <div class="warning-icon-box">
+            <AlertTriangle :size="32" />
+          </div>
+          <div class="warning-text-box">
+            <h4>{{ t("backup.criticalAction") }}</h4>
+            <p>{{ t("backup.messages.restoreWarningMessage") }}</p>
+          </div>
+        </div>
+
+        <div class="premium-details-grid">
+          <div class="premium-info-card full-width">
+            <div class="p-card-icon"><Database :size="20" /></div>
+            <div class="p-card-content">
+              <span class="p-label">{{ t("backup.selectBackup") }}</span>
+              <el-select
+                v-model="restoreForm.selectedBackupName"
+                class="premium-select"
+                style="width: 100%"
+                :placeholder="t('backup.messages.chooseBackupToRestore')"
+                filterable
+              >
+                <el-option
+                  v-for="backup in backups"
+                  :key="backup.name"
+                  :label="`${backup.name} (${formatDate(backup.createdAt)})`"
+                  :value="backup.name"
+                />
+              </el-select>
+            </div>
+          </div>
+
+          <div class="premium-info-card full-width">
+            <div class="p-card-icon"><Trash2 :size="20" /></div>
+            <div class="p-card-content">
+              <div class="switch-row">
+                <div class="switch-info">
+                  <span class="p-label">{{ t("backup.dropDatabase") }}</span>
+                  <p class="p-description">
+                    {{ t("backup.messages.dropDatabaseHelp") }}
+                  </p>
+                </div>
+                <el-switch
+                  v-model="restoreForm.dropDatabase"
+                  active-color="#ef4444"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <el-form :model="restoreForm" label-width="140px" style="margin-top: 20px;">
-        <el-form-item :label="t('backup.selectBackup')" required>
-          <el-select
-            v-model="restoreForm.selectedBackupName"
-            :placeholder="t('backup.messages.chooseBackupToRestore')"
-            style="width: 100%"
-            filterable
-          >
-            <el-option
-              v-for="backup in backups"
-              :key="backup.name"
-              :label="`${backup.name} (${formatDate(backup.createdAt)})`"
-              :value="backup.name"
-            >
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span>{{ backup.name }}</span>
-                <span style="color: var(--el-text-color-secondary); font-size: 12px;">
-                  {{ backupService.formatBytes(backup.size) }}
-                </span>
-              </div>
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="t('backup.dropDatabase')">
-          <el-switch
-            v-model="restoreForm.dropDatabase"
-            :active-text="t('backup.messages.yes')"
-            :inactive-text="t('backup.messages.no')"
-          />
-          <div class="form-help-text">
-            {{ t('backup.messages.dropDatabaseHelp') }}
-          </div>
-        </el-form-item>
-      </el-form>
-      
       <template #footer>
-        <el-button @click="showRestoreDialogVisible = false">{{ t('backup.cancel') }}</el-button>
-        <el-button
-          type="danger"
-          :loading="isRestoring"
-          @click="confirmRestore"
-        >
-          {{ t('backup.restoreDatabase') }}
-        </el-button>
+        <div class="premium-dialog-footer">
+          <el-button
+            @click="showRestoreDialogVisible = false"
+            class="p-action-btn primary"
+          >
+            {{ t("backup.cancel") }}
+          </el-button>
+          <el-button
+            type="danger"
+            class="p-action-btn danger"
+            :loading="isRestoring"
+            @click="confirmRestore"
+          >
+            <RotateCcw :size="16" style="margin-right: 5px" />
+            {{ t("backup.restoreDatabase") }}
+          </el-button>
+        </div>
       </template>
     </el-dialog>
 
-    <!-- Backup Details Dialog -->
+    <!-- Backup Details Dialog (THE FOCUS) -->
     <el-dialog
       v-model="showDetailsDialog"
-      :title="t('backup.backupDetails')"
-      width="600px"
+      width="800px"
+      top="12vh"
+      class="premium-large-dialog"
+      :show-close="false"
+      append-to-body
     >
-      <div v-if="selectedBackup" class="backup-details">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item :label="t('backup.backupName')">
-            {{ selectedBackup.name }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="t('backup.type')">
-            <el-tag :type="selectedBackup.type === 'scheduled' ? 'success' : 'primary'">
-              {{ backupService.formatBackupType(selectedBackup.type) }}
-            </el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item :label="t('backup.description')">
-            {{ selectedBackup.description || t('backup.noDescription') }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="t('backup.database')">
-            {{ selectedBackup.database }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="t('backup.size')">
-            {{ backupService.formatBytes(selectedBackup.size) }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="t('backup.created')">
-            {{ formatDateTime(selectedBackup.createdAt) }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="t('backup.age')">
-            {{ backupService.getBackupAge(selectedBackup.createdAt) }}
-          </el-descriptions-item>
-          <el-descriptions-item :label="t('backup.path')">
-            <code class="path-text">{{ selectedBackup.path }}</code>
-          </el-descriptions-item>
-        </el-descriptions>
+      <template #header>
+        <div class="p-dialog-header">
+          <div class="header-left">
+            <div class="p-header-icon">
+              <Database :size="24" />
+            </div>
+            <span class="p-header-title">{{ t("backup.backupDetails") }}</span>
+          </div>
+          <el-button
+            circle
+            class="p-close-header-btn"
+            @click="showDetailsDialog = false"
+          >
+            <X :size="20" />
+          </el-button>
+        </div>
+      </template>
+
+      <div
+        v-if="selectedBackup"
+        class="premium-details-container animate-fade-in"
+      >
+        <div class="premium-details-header">
+          <div class="details-icon-outer" :class="selectedBackup.type">
+            <div class="details-icon-inner">
+              <Archive v-if="selectedBackup.type === 'manual'" :size="40" />
+              <Clock v-else :size="40" />
+            </div>
+          </div>
+          <div class="details-title-box">
+            <h2 class="premium-backup-name">{{ selectedBackup.name }}</h2>
+            <div class="badge-row">
+              <div :class="['premium-status-badge', selectedBackup.type]">
+                <div class="status-dot"></div>
+                {{ backupService.formatBackupType(selectedBackup.type) }}
+              </div>
+              <div class="premium-meta-badge">
+                <HardDrive :size="14" />
+                {{ backupService.formatBytes(selectedBackup.size) }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="premium-details-grid">
+          <div class="premium-info-card">
+            <div class="p-card-icon"><AlignLeft :size="24" /></div>
+            <div class="p-card-content">
+              <span class="p-label">{{ t("backup.description") }}</span>
+              <span class="p-value large">{{
+                selectedBackup.description || t("backup.noDescription")
+              }}</span>
+            </div>
+          </div>
+          <div class="premium-info-card">
+            <div class="p-card-icon"><Server :size="24" /></div>
+            <div class="p-card-content">
+              <span class="p-label">{{ t("backup.database") }}</span>
+              <span class="p-value highlight-blue large">{{
+                selectedBackup.database
+              }}</span>
+            </div>
+          </div>
+          <div class="premium-info-card">
+            <div class="p-card-icon"><Calendar :size="24" /></div>
+            <div class="p-card-content">
+              <span class="p-label">{{ t("backup.created") }}</span>
+              <span class="p-value large">{{
+                formatDateTime(selectedBackup.createdAt)
+              }}</span>
+            </div>
+          </div>
+          <div class="premium-info-card">
+            <div class="p-card-icon"><History :size="24" /></div>
+            <div class="p-card-content">
+              <span class="p-label">{{ t("backup.age") }}</span>
+              <span class="p-value large">{{
+                backupService.getBackupAge(selectedBackup.createdAt)
+              }}</span>
+            </div>
+          </div>
+          <div class="premium-info-card full-width">
+            <div class="p-card-icon"><FileCode :size="24" /></div>
+            <div class="p-card-content">
+              <span class="p-label">{{ t("backup.path") }}</span>
+              <div class="p-path-container">
+                <code>{{ selectedBackup.path }}</code>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      
       <template #footer>
-        <el-button @click="showDetailsDialog = false">{{ t('backup.close') }}</el-button>
+        <div class="premium-dialog-footer">
+          <el-button
+            @click="showDetailsDialog = false"
+            class="p-action-btn primary"
+          >
+            {{ t("backup.close") }}
+          </el-button>
+          <el-button
+            v-if="canRestoreBackups"
+            type="warning"
+            class="p-action-btn warning"
+            @click="showRestoreDialog(selectedBackup)"
+          >
+            <RotateCcw :size="16" style="margin-right: 5px" />
+            {{ t("backup.restore") }}
+          </el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { useI18n } from 'vue-i18n';
-import { usePermissions } from '@/composables/usePermissions';
-import { backupService } from '@/services/backupService';
+import { ref, computed, onMounted } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { useI18n } from "vue-i18n";
+import { usePermissions } from "@/composables/usePermissions";
+import { backupService } from "@/services/backupService";
 import {
   Database,
   RefreshCw,
@@ -365,66 +556,63 @@ import {
   Search,
   Eye,
   RotateCcw,
-  Trash2
-} from 'lucide-vue-next';
+  Trash2,
+  AlertTriangle,
+  X,
+  AlignLeft,
+  Server,
+  Calendar,
+  History,
+  FileCode,
+} from "lucide-vue-next";
 
-// Permissions
-const { canViewBackups, canCreateBackups, canRestoreBackups, canDeleteBackups } = usePermissions();
-
-// i18n
+const {
+  canViewBackups,
+  canCreateBackups,
+  canRestoreBackups,
+  canDeleteBackups,
+} = usePermissions();
 const { t } = useI18n();
 
-// Reactive data
 const backups = ref([]);
 const stats = ref(null);
 const isLoading = ref(false);
 const isCreatingBackup = ref(false);
 const isRestoring = ref(false);
-const searchQuery = ref('');
-const mongoToolsAvailable = ref(true); // Assume available initially
+const searchQuery = ref("");
+const mongoToolsAvailable = ref(true);
 
-// Dialog states
 const showCreateDialog = ref(false);
 const showRestoreDialogVisible = ref(false);
 const showDetailsDialog = ref(false);
 const selectedBackup = ref(null);
 
-// Form data
-const createForm = ref({
-  description: ''
-});
+const createForm = ref({ description: "" });
+const restoreForm = ref({ selectedBackupName: "", dropDatabase: false });
 
-const restoreForm = ref({
-  selectedBackupName: '',
-  dropDatabase: false
-});
-
-// Computed
 const filteredBackups = computed(() => {
   if (!searchQuery.value) return backups.value;
-  
   const query = searchQuery.value.toLowerCase();
-  return backups.value.filter(backup =>
-    backup.name.toLowerCase().includes(query) ||
-    (backup.description && backup.description.toLowerCase().includes(query))
+  return backups.value.filter(
+    (backup) =>
+      backup.name.toLowerCase().includes(query) ||
+      (backup.description && backup.description.toLowerCase().includes(query)),
   );
 });
 
-// Methods
 const loadBackups = async () => {
   try {
     isLoading.value = true;
     const response = await backupService.getBackups();
-    
     if (response.success) {
       backups.value = response.data;
-      mongoToolsAvailable.value = true; // If we can load backups, tools might be available
+      mongoToolsAvailable.value = true;
     } else {
-      ElMessage.error(t('backup.messages.failedToLoadBackups'));
+      ElMessage.error(t("backup.messages.failedToLoadBackups"));
     }
   } catch (error) {
-    console.error('Error loading backups:', error);
-    ElMessage.error(t('backup.messages.errorLoadingBackups'));
+    console.error("Error loading backups:", error);
+    ElMessage.error(t("backup.messages.errorLoadingBackups"));
   } finally {
     isLoading.value = false;
   }
@@ -433,12 +621,11 @@ const loadBackups = async () => {
 const loadStats = async () => {
   try {
     const response = await backupService.getBackupStats();
-    
     if (response.success) {
       stats.value = response.data;
     }
   } catch (error) {
-    console.error('Error loading backup stats:', error);
+    console.error("Error loading backup stats:", error);
   }
 };
 
@@ -447,47 +634,37 @@ const refreshBackups = async () => {
 };
 
 const createBackup = () => {
-  createForm.value.description = '';
+  createForm.value.description = "";
   showCreateDialog.value = true;
 };
 
 const confirmCreateBackup = async () => {
   try {
     isCreatingBackup.value = true;
-    const response = await backupService.createBackup(createForm.value.description);
-    
+    const response = await backupService.createBackup(
+      createForm.value.description,
+    );
     if (response.success) {
-      ElMessage.success(t('backup.messages.backupCreatedSuccessfully'));
+      ElMessage.success(t("backup.messages.backupCreatedSuccessfully"));
       showCreateDialog.value = false;
       await refreshBackups();
     } else {
-      // Handle MongoDB tools not installed error
-      if (response.error && response.error.includes('mongodump command not found')) {
+      if (
+        response.error &&
+        response.error.includes("mongodump command not found")
+      ) {
         ElMessageBox.alert(
-          `ឧបករណ៍មូលដ្ឋានទិន្នន័យ MongoDB មិនត្រូវបានដំឡើងនៅលើប្រព័ន្ធរបស់អ្នកទេ។ 
-          
-ដើម្បីដំឡើង៖
-1. ទាញយកពី៖ https://www.mongodb.com/try/download/database-tools
-2. ឬប្រើ Chocolatey៖ choco install mongodb-database-tools
-3. បន្ថែមឧបករណ៍ទៅ PATH របស់ប្រព័ន្ធ
-4. ចាប់ផ្តើម terminal/IDE របស់អ្នកឡើងវិញ
-5. ដំណើរការ៖ npm run check:mongodump ដើម្បីផ្ទៀងផ្ទាត់
-
-ប្រព័ន្ធបម្រុងទុកត្រូវការពាក្យបញ្ជា mongodump និង mongorestore ដើម្បីដំណើរការ។`,
-          'ត្រូវការឧបករណ៍ MongoDB',
-          {
-            confirmButtonText: 'យល់ព្រម',
-            type: 'warning',
-            dangerouslyUseHTMLString: false
-          }
+          t("backup.messages.mongoToolsRequired"),
+          t("backup.messages.mongoToolsTitle"),
+          { confirmButtonText: t("backup.confirmTitle"), type: "warning" },
         );
       } else {
-        ElMessage.error(response.message || 'បរាជ័យក្នុងការបង្កើតការបម្រុងទុក');
+        ElMessage.error(response.message || t("backup.messages.failedToCreateBackup"));
       }
     }
   } catch (error) {
-    console.error('Error creating backup:', error);
-    ElMessage.error('កំហុសក្នុងការបង្កើតការបម្រុងទុក');
+    console.error("Error creating backup:", error);
+    ElMessage.error("កំហុសក្នុងការបង្កើតការបម្រុងទុក");
   } finally {
     isCreatingBackup.value = false;
   }
@@ -495,76 +672,47 @@ const confirmCreateBackup = async () => {
 
 const showRestoreDialog = (backup = null) => {
   if (backup) {
-    // Called from table action - pre-select the backup
     selectedBackup.value = backup;
     restoreForm.value.selectedBackupName = backup.name;
   } else {
-    // Called from general restore button - let user select
     selectedBackup.value = null;
-    restoreForm.value.selectedBackupName = '';
+    restoreForm.value.selectedBackupName = "";
   }
   restoreForm.value.dropDatabase = false;
   showRestoreDialogVisible.value = true;
 };
 
 const confirmRestore = async () => {
-  // Validate that a backup is selected
   if (!restoreForm.value.selectedBackupName) {
-    ElMessage.error('សូមជ្រើសរើសការបម្រុងទុកដើម្បីស្តារ');
+    ElMessage.error(t("backup.messages.pleaseSelectBackup"));
     return;
   }
-
   try {
     await ElMessageBox.confirm(
-      'នេះនឹងស្តារមូលដ្ឋានទិន្នន័យពីការបម្រុងទុកដែលបានជ្រើសរើស។ សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។ បន្ត?',
-      'បញ្ជាក់ការស្តារ',
+      t("backup.messages.confirmRestoreDatabase"),
+      t("backup.messages.restoreTitle"),
       {
-        confirmButtonText: 'ស្តារ',
-        cancelButtonText: 'បោះបង់',
-        type: 'warning',
-        confirmButtonClass: 'el-button--danger'
-      }
+        confirmButtonText: t("backup.restore"),
+        cancelButtonText: t("backup.cancel"),
+        type: "warning",
+        confirmButtonClass: "el-button--danger",
+      },
     );
-
     isRestoring.value = true;
-    
     const response = await backupService.restoreBackup(
       restoreForm.value.selectedBackupName,
-      { dropDatabase: restoreForm.value.dropDatabase }
+      { dropDatabase: restoreForm.value.dropDatabase },
     );
-    
     if (response.success) {
-      ElMessage.success('បានស្តារមូលដ្ឋានទិន្នន័យដោយជោគជ័យ');
+      ElMessage.success(t("backup.messages.databaseRestoredSuccessfully"));
       showRestoreDialogVisible.value = false;
     } else {
-      // Handle MongoDB tools not installed error
-      if (response.error && response.error.includes('mongorestore command not found')) {
-        ElMessageBox.alert(
-          `ឧបករណ៍មូលដ្ឋានទិន្នន័យ MongoDB មិនត្រូវបានដំឡើងនៅលើប្រព័ន្ធរបស់អ្នកទេ។ 
-          
-ដើម្បីដំឡើង៖
-1. ទាញយកពី៖ https://www.mongodb.com/try/download/database-tools
-2. ឬប្រើ Chocolatey៖ choco install mongodb-database-tools
-3. បន្ថែមឧបករណ៍ទៅ PATH របស់ប្រព័ន្ធ
-4. ចាប់ផ្តើម terminal/IDE របស់អ្នកឡើងវិញ
-5. ដំណើរការ៖ npm run check:mongodump ដើម្បីផ្ទៀងផ្ទាត់
-
-ប្រព័ន្ធបម្រុងទុកត្រូវការពាក្យបញ្ជា mongodump និង mongorestore ដើម្បីដំណើរការ។`,
-          'ត្រូវការឧបករណ៍ MongoDB',
-          {
-            confirmButtonText: 'យល់ព្រម',
-            type: 'warning',
-            dangerouslyUseHTMLString: false
-          }
-        );
-      } else {
-        ElMessage.error(response.message || 'បរាជ័យក្នុងការស្តារការបម្រុងទុក');
-      }
+      ElMessage.error(response.message || t("backup.messages.failedToRestoreBackup"));
     }
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('Error restoring backup:', error);
-      ElMessage.error('កំហុសក្នុងការស្តារការបម្រុងទុក');
+    if (error !== "cancel") {
+      console.error("Error restoring backup:", error);
+      ElMessage.error(t("backup.messages.errorRestoringBackup"));
     }
   } finally {
     isRestoring.value = false;
@@ -574,28 +722,25 @@ const confirmRestore = async () => {
 const confirmDeleteBackup = async (backup) => {
   try {
     await ElMessageBox.confirm(
-      `តើអ្នកប្រាកដថាចង់លុបការបម្រុងទុក "${backup.name}" មែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។`,
-      'បញ្ជាក់ការលុប',
+      t("backup.messages.confirmDeleteBackup", { name: backup.name }),
+      t("backup.messages.deleteTitle"),
       {
-        confirmButtonText: 'លុប',
-        cancelButtonText: 'បោះបង់',
-        type: 'warning',
-        confirmButtonClass: 'el-button--danger'
-      }
+        confirmButtonText: t("backup.delete"),
+        cancelButtonText: t("backup.cancel"),
+        type: "warning",
+      },
     );
-
     const response = await backupService.deleteBackup(backup.name);
-    
     if (response.success) {
-      ElMessage.success('បានលុបការបម្រុងទុកដោយជោគជ័យ');
+      ElMessage.success("បានលុបការបម្រុងទុកដោយជោគជ័យ");
       await refreshBackups();
     } else {
-      ElMessage.error(response.message || 'បរាជ័យក្នុងការលុបការបម្រុងទុក');
+      ElMessage.error(response.message || "បរាជ័យក្នុងការលុបការបម្រុងទុក");
     }
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('Error deleting backup:', error);
-      ElMessage.error('កំហុសក្នុងការលុបការបម្រុងទុក');
+    if (error !== "cancel") {
+      console.error("Error deleting backup:", error);
+      ElMessage.error("កំហុសក្នុងការលុបការបម្រុងទុក");
     }
   }
 };
@@ -605,15 +750,9 @@ const viewBackupDetails = (backup) => {
   showDetailsDialog.value = true;
 };
 
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString();
-};
+const formatDate = (dateString) => new Date(dateString).toLocaleDateString();
+const formatDateTime = (dateString) => new Date(dateString).toLocaleString();
 
-const formatDateTime = (dateString) => {
-  return new Date(dateString).toLocaleString();
-};
-
-// Lifecycle
 onMounted(() => {
   refreshBackups();
 });
@@ -623,223 +762,542 @@ onMounted(() => {
 .backup-restore-container {
   padding: 0;
 }
-
-.tools-status-section {
-  margin-bottom: 24px;
-}
-
-.install-instructions {
-  margin-top: 12px;
-}
-
-.install-instructions ul {
-  margin: 8px 0;
-  padding-left: 20px;
-}
-
-.install-instructions li {
-  margin: 4px 0;
-}
-
-.install-instructions code {
-  background: rgba(0, 0, 0, 0.1);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 13px;
-}
-
-.install-instructions a {
-  color: var(--el-color-primary);
-  text-decoration: none;
-}
-
-.install-instructions a:hover {
-  text-decoration: underline;
-}
-
 .header-section {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 24px;
-  gap: 20px;
 }
-
-.header-content h3 {
+.section-title {
   margin: 0 0 8px 0;
   font-size: 20px;
   font-weight: 600;
-  color: var(--el-text-color-primary);
 }
-
 .section-description {
   margin: 0;
   color: var(--el-text-color-secondary);
   font-size: 14px;
 }
-
 .header-actions {
   display: flex;
-  gap: 12px;
-  flex-shrink: 0;
+}
+.stats-section {
+  margin-bottom: 24px;
+}
+.stat-card {
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1.5px solid #f1f5f9;
+  box-shadow: none;
 }
 
+.stat-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.backups-card {
+  border-radius: 12px;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-title {
+  font-weight: 600;
+}
+.name-text {
+  font-family: monospace;
+  font-size: 13px;
+}
+.description-text {
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+}
+.restore-warning {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fdf6ec;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  color: #e6a23c;
+}
+.restore-warning p {
+  margin: 0;
+  font-size: 13px;
+}
+.switch-help {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  margin-left: 12px;
+}
 .stats-section {
   margin-bottom: 24px;
 }
 
 .stat-card {
   border-radius: 12px;
-  border: 1px solid var(--el-border-color-light);
+  border: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
 }
 
-.stat-content {
+.stat-card:hover {
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.stat-container {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 8px;
+  padding: 4px;
 }
 
-.stat-icon {
-  width: 40px;
-  height: 40px;
+.stat-icon-box {
+  width: 48px;
+  height: 48px;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.icon-blue {
-  background: rgba(59, 130, 246, 0.1);
+.stat-icon-box.blue {
+  background: #eff6ff;
   color: #3b82f6;
 }
-
-.icon-green {
-  background: rgba(34, 197, 94, 0.1);
+.stat-icon-box.green {
+  background: #f0fdf4;
   color: #22c55e;
 }
-
-.icon-purple {
-  background: rgba(168, 85, 247, 0.1);
-  color: #a855f7;
-}
-
-.icon-orange {
-  background: rgba(249, 115, 22, 0.1);
+.stat-icon-box.orange {
+  background: #fff7ed;
   color: #f97316;
+}
+.stat-icon-box.purple {
+  background: #faf5ff;
+  color: #a855f7;
 }
 
 .stat-details {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-
-.stat-value {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
 }
 
 .stat-label {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
 }
 
-.backups-card {
-  border-radius: 12px;
+.stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1e293b;
 }
 
-.card-header {
+/* PREMIUM VIEW DIALOG (THE FOCUS) */
+/* PREMIUM LARGE DIALOG (Balanced for system content) */
+.premium-large-dialog :deep(.el-dialog) {
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.25);
+  background: #ffffff;
+  max-height: 85vh;
+  width: 800px;
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-large-dialog :deep(.el-dialog__body) {
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.p-dialog-header {
+  padding: 16px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.card-title {
-  font-weight: 600;
-  color: var(--el-text-color-primary);
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.backup-name {
+.p-header-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #eef2ff;
+  color: #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.p-header-icon :deep(svg) {
+  width: 18px;
+  height: 18px;
+}
+
+.p-header-icon.warning {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.p-header-icon.danger {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.p-header-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.p-close-header-btn {
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  width: 28px;
+  height: 28px;
+}
+
+.premium-details-container {
+  padding: 24px;
+}
+
+.premium-details-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid #f1f5f9;
+}
+
+.details-icon-outer {
+  width: 70px;
+  height: 70px;
+  border-radius: 18px;
+  padding: 5px;
+}
+
+.details-icon-outer.manual {
+  background: rgba(99, 102, 241, 0.1);
+}
+.details-icon-outer.scheduled {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.details-icon-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.details-icon-inner :deep(svg) {
+  width: 32px;
+  height: 32px;
+}
+
+.manual .details-icon-inner {
+  background: linear-gradient(135deg, #818cf8, #6366f1);
+  color: white;
+}
+.scheduled .details-icon-inner {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  color: white;
+}
+
+.premium-backup-name {
+  margin: 0 0 6px 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: -0.3px;
+}
+
+.badge-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.premium-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.premium-status-badge.manual {
+  background: #eef2ff;
+  color: #6366f1;
+  border: 1px solid #e0e7ff;
+}
+.premium-status-badge.scheduled {
+  background: #ecfdf5;
+  color: #10b981;
+  border: 1px solid #d1fae5;
+}
+
+.status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.premium-meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 30px;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid #f1f5f9;
+}
+
+.premium-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.premium-info-card {
+  padding: 16px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1.5px solid #f1f5f9;
+  display: flex;
+  gap: 12px;
+}
+
+.premium-info-card:hover {
+  border-color: #6366f1;
+}
+
+.premium-info-card.full-width {
+  grid-column: span 2;
+}
+
+.p-card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.p-card-icon :deep(svg) {
+  width: 16px;
+  height: 16px;
+}
+
+.p-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+
+.p-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.p-value.large {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.highlight-blue {
+  color: #6366f1;
+}
+
+.p-path-container {
+  margin-top: 5px;
+  padding: 10px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.p-path-container code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: #475569;
+}
+
+.premium-dialog-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.p-action-btn {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 13px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.backup-type-tag {
-  font-size: 11px;
+.p-action-btn.primary {
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
 }
 
-.name-text {
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+.p-action-btn.warning {
+  background: #f59e0b;
+  border: none;
+  color: white;
+}
+
+.restore-warning-premium {
+  display: flex;
+  gap: 20px;
+  padding: 24px;
+  background: #fef2f2;
+  border-radius: 20px;
+  border: 1.5px solid #fee2e2;
+  margin-bottom: 24px;
+}
+
+.warning-icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.1);
+}
+
+.warning-text-box h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #991b1b;
+}
+
+.warning-text-box p {
+  margin: 0;
   font-size: 13px;
+  color: #b91c1c;
+  line-height: 1.5;
 }
 
-.description-text {
-  color: var(--el-text-color-secondary);
-  font-size: 13px;
+.premium-select :deep(.el-input__wrapper) {
+  background: #ffffff !important;
+  box-shadow: none !important;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px 12px;
 }
 
-.size-text {
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 13px;
-  color: var(--el-text-color-primary);
+.switch-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
-.date-info {
+.switch-info {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.date-text {
-  font-size: 13px;
-  color: var(--el-text-color-primary);
-}
-
-.age-text {
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-}
-
-.action-buttons {
-  display: flex;
-  gap: 4px;
-}
-
-.restore-warning {
-  margin-bottom: 16px;
-}
-
-.form-help-text {
+.p-description {
   font-size: 12px;
-  color: var(--el-text-color-secondary);
-  margin-top: 4px;
+  color: #94a3b8;
+  margin: 0;
 }
 
-.backup-details {
-  margin: 16px 0;
+.p-action-btn.danger {
+  background: #ef4444;
+  border: none;
+  color: white;
+  box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
 }
 
-.path-text {
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 12px;
-  background: var(--el-fill-color-light);
-  padding: 2px 6px;
-  border-radius: 4px;
-  color: var(--el-text-color-primary);
+/* .p-action-btn.danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(239, 68, 68, 0.4);
+} */
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
 }
 
-@media (max-width: 768px) {
-  .header-section {
-    flex-direction: column;
-    align-items: stretch;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
   }
-
-  .header-actions {
-    justify-content: flex-end;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
+}
+.premium-input-large :deep(.el-textarea__inner) {
+  border-radius: 12px;
+  padding: 12px;
+  border-color: #e2e8f0;
+  font-size: 14px;
+}
+
+.premium-input-large :deep(.el-textarea__inner:focus) {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
 }
 </style>
