@@ -79,6 +79,7 @@ const loadHalls = async (theaterId) => {
       const response = await hallService.getHalls({
         theater_id: theaterId,
         per_page: 100,
+        status: "active", // Only load active halls
       });
       halls.value = response.data || [];
     } catch (error) {

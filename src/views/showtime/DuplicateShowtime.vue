@@ -76,7 +76,7 @@ onMounted(async () => {
   try {
     const [movieRes, hallRes, theaterRes] = await Promise.all([
       movieService.getMovies({ per_page: 100, status: "now_showing" }),
-      hallService.getHalls({ per_page: 100 }),
+      hallService.getHalls({ per_page: 100, status: "active" }), // Only load active halls
       theaterService.getTheaters({ per_page: 100 }),
     ]);
     movies.value = movieRes.data || [];

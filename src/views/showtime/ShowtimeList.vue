@@ -343,7 +343,10 @@ const loadTheaters = async () => {
 
 const loadHalls = async () => {
   try {
-    const response = await hallService.getHalls({ per_page: 100 });
+    const response = await hallService.getHalls({ 
+      per_page: 100,
+      status: "active" // Only load active halls
+    });
     if (response && response.data) {
       halls.value = response.data;
     }
