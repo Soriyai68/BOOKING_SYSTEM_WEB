@@ -199,6 +199,18 @@ export default {
       message:
         'Booking {ref} created for "{movie}".\n\nPlease complete your {method} payment to confirm your seats.\n\nSeats: {seats}',
     },
+    booking_deleted: {
+      title: "Booking Deleted",
+      message: "Your booking {ref} has been deleted.",
+    },
+    customer_registered: {
+      title: "Registration Successful",
+      message: "Welcome {name}! Your account has been registered successfully.",
+    },
+    general: {
+      title: "Notification",
+      message: "{message}",
+    },
     welcome: {
       title: "Welcome to Movie Booking!",
       message:
@@ -962,6 +974,9 @@ export default {
     saving: "Saving Changes...",
     manageAccount:
       "Manage your administrative account settings and view your activity history.",
+    profile: "Profile",
+    profileDesc: "Update your name, email, and profile photo",
+    accountSettings: "Account Settings",
   },
 
   // Activity Logs

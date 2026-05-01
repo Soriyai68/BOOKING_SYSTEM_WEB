@@ -105,10 +105,18 @@ export const useNotificationStore = defineStore("notification", () => {
   
   onEvent("notification:new", (data) => {
     console.log("New real-time notification received:", data);
-    // Add to top of list
-    notifications.value.unshift(data);
-    if (!data.isRead) {
-      unreadCount.value++;
+    
+    // The payload is typically { userId, notification } from the backend
+    const actualNotification = data.notification ? data.notification : data;
+    
+    // Prevent duplicate entries if fetchNotifications already got it
+    if (!notifications.value.some(n => n._id === actualNotification._id)) {
+      // Add to top of list
+      notifications.value.unshift(actualNotification);
+      
+      if (!actualNotification.isRead) {
+        unreadCount.value++;
+      }
     }
   });
 

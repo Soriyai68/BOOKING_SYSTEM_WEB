@@ -205,6 +205,18 @@ export default {
       message:
         'ការកក់ {ref} បានបង្កើតសម្រាប់ "{movie}"។\n\nសូមបំពេញការបង់ប្រាក់ {method} របស់អ្នកដើម្បីបញ្ជាក់កៅអី។\n\nកៅអី: {seats}',
     },
+    booking_deleted: {
+      title: "ការកក់ត្រូវបានលុប",
+      message: "ការកក់ {ref} របស់អ្នកត្រូវបានលុប។",
+    },
+    customer_registered: {
+      title: "ការចុះឈ្មោះបានជោគជ័យ",
+      message: "សូមស្វាគមន៍ {name}! គណនីរបស់អ្នកត្រូវបានចុះឈ្មោះដោយជោគជ័យ។",
+    },
+    general: {
+      title: "ការជូនដំណឹង",
+      message: "{message}",
+    },
     welcome: {
       title: "សូមស្វាគមន៍មកកាន់ប្រព័ន្ធកក់សំបុត្រកុន!",
       message:

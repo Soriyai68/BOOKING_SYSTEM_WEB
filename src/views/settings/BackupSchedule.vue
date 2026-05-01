@@ -152,17 +152,17 @@ onMounted(() => loadSchedule());
 </script>
 
 <style scoped>
-.backup-schedule-container { padding: 0; background: #ffffff; min-height: 100%; }
-.header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; background: #ffffff; }
-.section-title { margin: 0 0 8px 0; font-size: 20px; font-weight: 600; }
+.backup-schedule-container { padding: 0; background: var(--el-bg-color); min-height: 100%; }
+.header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+.section-title { margin: 0 0 8px 0; font-size: 20px; font-weight: 600; color: var(--el-text-color-primary); }
 .section-description { margin: 0; color: var(--el-text-color-secondary); font-size: 14px; }
 .header-actions { display: flex; gap: 12px; }
 .status-section, .config-section { margin-bottom: 24px; }
-.status-card, .config-card { border-radius: 8px; background: #ffffff; }
+.status-card, .config-card { border-radius: 8px; }
 .card-header { display: flex; justify-content: space-between; align-items: center; }
-.card-title { font-weight: 600; }
+.card-title { font-weight: 600; color: var(--el-text-color-primary); }
 .info-item { display: flex; flex-direction: column; gap: 4px; }
 .info-label { font-size: 12px; color: var(--el-text-color-secondary); }
-.info-value { font-size: 14px; font-weight: 600; }
+.info-value { font-size: 14px; font-weight: 600; color: var(--el-text-color-primary); }
 .cron-help { font-size: 12px; color: var(--el-text-color-secondary); margin-top: 4px; }
 </style>
