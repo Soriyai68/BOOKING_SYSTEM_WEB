@@ -552,8 +552,8 @@ const toggleSeat = (seat) => {
   gap: 24px;
   width: 100%;
   padding: 30px;
-  background-color: white;
-  border-top: 1px solid #f2f6fc;
+  background-color: var(--el-bg-color-overlay);
+  border-top: 1px solid var(--el-border-color-lighter);
 }
 
 .legend-row {

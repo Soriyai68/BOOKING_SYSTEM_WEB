@@ -201,7 +201,7 @@ const handlePhoneInput = (e) => {
 
 
           <!-- Phone Section (Editable) -->
-          <div
+          <!-- <div
             class="rounded-2xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-4 flex items-center gap-4 group transition-colors shadow-sm dark:shadow-none"
             :class="{ 'border-sky-500/30 bg-sky-500/[0.05] dark:bg-sky-500/[0.05]': isEditing }"
           >
@@ -231,10 +231,10 @@ const handlePhoneInput = (e) => {
                 }}
               </p>
             </div>
-          </div>
+          </div> -->
 
           <!-- Sharing Tip for Mini App -->
-          <div
+          <!-- <div
             v-if="isWebApp && !userProfile.phone"
             class="rounded-xl bg-sky-500/10 border border-sky-500/20 p-3 flex gap-3"
           >
@@ -256,7 +256,7 @@ const handlePhoneInput = (e) => {
             <p class="text-[11px] text-sky-200/70 leading-relaxed">
               {{ t("settings.sharePhoneTip") }}
             </p>
-          </div>
+          </div> -->
 
           <!-- Member Since (Read Only) -->
           <div

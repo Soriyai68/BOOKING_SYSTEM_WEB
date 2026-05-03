@@ -946,6 +946,11 @@ export default {
     darkMode: "Dark Mode",
     lightMode: "Light Mode",
     themeDesc: "Switch between light and dark modes",
+    security: "Security",
+    changePassword: "Change Password",
+    currentPassword: "Current Password",
+    newPassword: "New Password",
+    confirmPassword: "Confirm Password",
     telegramConnected: "Telegram Connected",
     logoutConfirm: {
       title: "Confirm Logout",
@@ -1718,5 +1723,13 @@ export default {
       deleteTitle: "Confirm Delete",
       restoreTitle: "Confirm Restore",
     },
+  },
+
+  // System Management
+  system: {
+    permissions: "System Permissions",
+    permissionsDesc: "Manage system access permissions",
+    rolePermissions: "Role Permissions",
+    rolePermissionsDesc: "Assign permissions to roles",
   },
 };

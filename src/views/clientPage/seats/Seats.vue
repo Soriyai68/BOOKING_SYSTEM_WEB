@@ -408,7 +408,7 @@ function handleContinue() {
         </div>
 
         <!-- Legend -->
-        <div class="flex flex-col items-center justify-center gap-[10px] mt-6">
+        <div class="w-full max-w-xl mx-auto rounded-2xl bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] px-5 py-4 mt-6 flex flex-col items-center gap-[10px]">
           <div
             class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 mb-3"
           >

@@ -82,52 +82,24 @@ const handleWebAppLogin = async () => {
       return;
     }
 
-    console.log("[Mini App] Requesting contact...");
-
-    const processCapture = async (phone) => {
-      try {
-        // Send raw phone number; backend handles normalization
-        const res = await authStore.telegramWebAppLogin(initData, phone);
-        const customerName = res?.data?.customer?.name;
-        if (res?.success) {
-          showToast(
-            t("client.login.welcomeBackMsg", { name: customerName }),
-            "success",
-          );
-          router.push("/layout");
-        }
-      } catch (err) {
-        console.error("[Mini App] Login request failed:", err);
-        showToast(t("client.login.serverAuthFailed"), "error");
-      } finally {
-        isLoading.value = false;
-      }
-    };
-
-    // Use contactRequested event (most robust way)
-    tg.onEvent("contactRequested", async (eventData) => {
-      console.log("[Mini App] Contact Requested Event Received:", eventData);
-
-      if (eventData.status === "sent") {
-        let num = null;
-        if (eventData.response?.contact?.phone_number) {
-          num = eventData.response.contact.phone_number;
-        } else if (eventData.response?.phone_number) {
-          num = eventData.response.phone_number;
-        }
-
-        console.log("[Mini App] Final extracted phone:", num);
-        processCapture(num);
-      } else {
-        processCapture(null);
-      }
-    });
+    console.log("[Mini App] Authenticating with Telegram data...");
 
     try {
-      tg.requestContact();
+      // Send login request without phone number
+      const res = await authStore.telegramWebAppLogin(initData, null);
+      const customerName = res?.data?.customer?.name;
+      if (res?.success) {
+        showToast(
+          t("client.login.welcomeBackMsg", { name: customerName }),
+          "success",
+        );
+        router.push("/layout");
+      }
     } catch (err) {
-      console.error("[Mini App] requestContact call failed:", err);
-      processCapture(null);
+      console.error("[Mini App] Login request failed:", err);
+      showToast(t("client.login.serverAuthFailed"), "error");
+    } finally {
+      isLoading.value = false;
     }
   } catch (error) {
     console.error("[Mini App] Login flow failed:", error);
