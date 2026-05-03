@@ -1,12 +1,13 @@
 <template>
-  <div class="create-customer">
-    <div class="page-header">
-      <h2>{{ $t("customers.createCustomer") }}</h2>
-      <el-button @click="$router.back()">
-        <el-icon><ArrowLeft /></el-icon>
-        {{ $t("actions.back") }}
-      </el-button>
-    </div>
+  <PermissionGuard permissions="customers.create" show-fallback>
+    <div class="create-customer">
+      <div class="page-header">
+        <h2>{{ $t("customers.createCustomer") }}</h2>
+        <el-button @click="$router.back()">
+          <el-icon><ArrowLeft /></el-icon>
+          {{ $t("actions.back") }}
+        </el-button>
+      </div>
 
     <el-card>
       <el-form
@@ -91,6 +92,7 @@
       </el-form>
     </el-card>
   </div>
+  </PermissionGuard>
 </template>
 
 <script setup>
@@ -102,6 +104,7 @@ import { ArrowLeft } from "@element-plus/icons-vue";
 import { useAppStore } from "@/stores/app";
 import { customerService } from "@/services/customerService";
 import { toInternationalPhone } from "@/utils/formatters";
+import PermissionGuard from "@/components/common/PermissionGuard.vue";
 
 const router = useRouter();
 const appStore = useAppStore();

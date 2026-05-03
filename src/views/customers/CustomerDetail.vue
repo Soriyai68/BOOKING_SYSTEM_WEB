@@ -1,12 +1,13 @@
 <template>
-  <div class="customer-detail">
-    <div class="page-header">
-      <h2>{{ $t("customers.customerDetails") }}</h2>
-      <el-button @click="$router.back()">
-        <el-icon><ArrowLeft /></el-icon>
-        {{ $t("actions.back") }}
-      </el-button>
-    </div>
+  <PermissionGuard permissions="customers.view" show-fallback>
+    <div class="customer-detail">
+      <div class="page-header">
+        <h2>{{ $t("customers.customerDetails") }}</h2>
+        <el-button @click="$router.back()">
+          <el-icon><ArrowLeft /></el-icon>
+          {{ $t("actions.back") }}
+        </el-button>
+      </div>
 
     <el-card v-loading="loading">
       <div v-if="loadError" class="error-state">
@@ -66,6 +67,7 @@
       </el-descriptions>
     </el-card>
   </div>
+  </PermissionGuard>
 </template>
 
 <script setup>
@@ -75,6 +77,7 @@ import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/stores/app";
 import { customerService } from "@/services/customerService";
 import { formatDate, toLocalPhone } from "@/utils/formatters";
+import PermissionGuard from "@/components/common/PermissionGuard.vue";
 import {
   ElMessage,
   ElResult,
