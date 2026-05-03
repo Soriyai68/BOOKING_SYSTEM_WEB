@@ -248,7 +248,7 @@
 
         <!-- Customer Management -->
         <el-sub-menu
-          v-if="isSuperAdmin || canViewUsers || canCreateUsers"
+          v-if="isSuperAdmin || canViewCustomers || canCreateCustomers"
           index="customers"
         >
           <template #title>
@@ -257,21 +257,24 @@
             </el-icon>
             <span>{{ $t("customers.title") }}</span>
           </template>
-          <el-menu-item :index="pathPrefix + '/customers'">
+          <el-menu-item 
+            v-if="isSuperAdmin || canViewCustomers"
+            :index="pathPrefix + '/customers'"
+          >
             <el-icon>
               <Users />
             </el-icon>
             <template #title>{{ $t("customers.allCustomers") }}</template>
           </el-menu-item>
-          <!-- <el-menu-item
-            v-if="isSuperAdmin || canCreateUsers"
+          <el-menu-item
+            v-if="isSuperAdmin || canCreateCustomers"
             :index="pathPrefix + '/customers/create'"
           >
             <el-icon>
               <Plus />
             </el-icon>
             <template #title>{{ $t("customers.createCustomer") }}</template>
-          </el-menu-item> -->
+          </el-menu-item>
         </el-sub-menu>
 
         <!-- Reports -->
@@ -359,6 +362,8 @@ const {
   canViewBookings,
   canViewBookingTickets,
   canViewPayments,
+  canViewCustomers,
+  canCreateCustomers,
   canViewReports,
   isSuperAdmin,
 } = usePermissions();

@@ -99,6 +99,12 @@ export function usePermissions() {
     canDeletePayments: permissionStore.canDeletePayments,
     canManagePayments: permissionStore.canManagePayments,
 
+    canViewCustomers: permissionStore.canViewCustomers,
+    canCreateCustomers: permissionStore.canCreateCustomers,
+    canEditCustomers: permissionStore.canEditCustomers,
+    canDeleteCustomers: permissionStore.canDeleteCustomers,
+    canManageCustomers: permissionStore.canManageCustomers,
+
     canViewPromotions: permissionStore.canViewPromotions,
     canCreatePromotions: permissionStore.canCreatePromotions,
     canEditPromotions: permissionStore.canEditPromotions,
@@ -240,6 +246,13 @@ export const PERMISSIONS = {
   PAYMENTS_EDIT: 'payments.edit',
   PAYMENTS_DELETE: 'payments.delete',
   PAYMENTS_MANAGE: 'payments.manage',
+
+  // Customers
+  CUSTOMERS_VIEW: 'customers.view',
+  CUSTOMERS_CREATE: 'customers.create',
+  CUSTOMERS_EDIT: 'customers.edit',
+  CUSTOMERS_DELETE: 'customers.delete',
+  CUSTOMERS_MANAGE: 'customers.manage',
 
   // Reports
   REPORTS_VIEW: 'reports.view',

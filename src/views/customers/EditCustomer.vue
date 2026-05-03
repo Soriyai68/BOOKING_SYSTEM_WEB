@@ -1,12 +1,13 @@
 <template>
-  <div class="edit-customer">
-    <div class="page-header">
-      <h2>{{ $t("customers.editCustomer") }}</h2>
-      <el-button @click="$router.back()">
-        <el-icon><ArrowLeft /></el-icon>
-        {{ $t("actions.back") }}
-      </el-button>
-    </div>
+  <PermissionGuard permissions="customers.edit" show-fallback>
+    <div class="edit-customer">
+      <div class="page-header">
+        <h2>{{ $t("customers.editCustomer") }}</h2>
+        <el-button @click="$router.back()">
+          <el-icon><ArrowLeft /></el-icon>
+          {{ $t("actions.back") }}
+        </el-button>
+      </div>
 
     <el-card v-loading="pageLoading">
       <div v-if="loadError" class="error-state">
@@ -100,6 +101,7 @@
       </el-form>
     </el-card>
   </div>
+  </PermissionGuard>
 </template>
 
 <script setup>
@@ -111,6 +113,7 @@ import { ArrowLeft } from "@element-plus/icons-vue";
 import { useAppStore } from "@/stores/app";
 import { customerService } from "@/services/customerService";
 import { toInternationalPhone, toLocalPhone } from "@/utils/formatters";
+import PermissionGuard from "@/components/common/PermissionGuard.vue";
 
 const route = useRoute();
 const router = useRouter();

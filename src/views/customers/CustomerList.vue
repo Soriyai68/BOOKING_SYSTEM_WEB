@@ -1,12 +1,17 @@
 <template>
-  <div class="customer-list">
-    <div class="page-header">
-      <h2>{{ $t("customers.title") }}</h2>
-      <!-- <el-button type="primary" @click="goToCreatePage">
-        <el-icon><Plus /></el-icon>
-        {{ $t("customers.addCustomer") }}
-      </el-button> -->
-    </div>
+  <PermissionGuard permissions="customers.view" show-fallback>
+    <div class="customer-list">
+      <!-- <div class="page-header">
+        <h2>{{ $t("customers.title") }}</h2>
+        <el-button 
+          v-permission="'customers.create'"
+          type="primary" 
+          @click="goToCreatePage"
+        >
+          <el-icon><Plus /></el-icon>
+          {{ $t("customers.addCustomer") }}
+        </el-button>
+      </div> -->
 
     <el-card class="filter-card" shadow="never">
       <div class="toolbar">
@@ -97,6 +102,7 @@
         <el-table-column :label="$t('actions.title')" width="220">
           <template #default="{ row }">
             <el-button
+              v-permission="'customers.view'"
               type="info"
               size="small"
               link
@@ -106,6 +112,7 @@
               {{ $t("actions.view") }}
             </el-button>
             <el-button
+              v-permission="'customers.edit'"
               type="primary"
               size="small"
               link
@@ -116,6 +123,7 @@
             </el-button>
             <el-button
               v-if="!row.deleted_at"
+              v-permission="'customers.delete'"
               type="danger"
               size="small"
               link
@@ -125,6 +133,7 @@
             </el-button>
             <el-button
               v-else
+              v-permission="'customers.edit'"
               type="success"
               size="small"
               link
@@ -134,6 +143,7 @@
             </el-button>
             <el-button
               v-if="!row.deleted_at"
+              v-permission="'customers.edit'"
               :type="row.isActive ? 'warning' : 'success'"
               size="small"
               link
@@ -161,6 +171,7 @@
       </div>
     </el-card>
   </div>
+  </PermissionGuard>
 </template>
 
 <script setup>
@@ -174,10 +185,13 @@ import { useI18n } from "vue-i18n";
 import { debounce } from "lodash-es";
 import { toLocalPhone } from "@/utils/formatters";
 import { useAutoRefresh } from "@/composables/useAutoRefresh";
+import { usePermissions } from "@/composables/usePermissions";
+import PermissionGuard from "@/components/common/PermissionGuard.vue";
 
 const appStore = useAppStore();
 const router = useRouter();
 const { t } = useI18n();
+const { canViewCustomers, canCreateCustomers, canEditCustomers, canDeleteCustomers } = usePermissions();
 
 const loading = ref(false);
 const searchText = ref("");

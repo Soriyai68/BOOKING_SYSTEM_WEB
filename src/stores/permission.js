@@ -145,6 +145,12 @@ export const usePermissionStore = defineStore("permission", () => {
   const canDeletePayments = computed(() => canDelete("payments"));
   const canManagePayments = computed(() => canManage("payments"));
 
+  const canViewCustomers = computed(() => canView("customers"));
+  const canCreateCustomers = computed(() => canCreate("customers"));
+  const canEditCustomers = computed(() => canEdit("customers"));
+  const canDeleteCustomers = computed(() => canDelete("customers"));
+  const canManageCustomers = computed(() => canManage("customers"));
+
   // Reports permissions
   const canViewReports = computed(() => hasPermission("reports.view"));
   const canViewTotalCustomersReport = computed(() => hasPermission("reports.total-customers.view"));
@@ -389,6 +395,12 @@ export const usePermissionStore = defineStore("permission", () => {
     canEditPayments,
     canDeletePayments,
     canManagePayments,
+
+    canViewCustomers,
+    canCreateCustomers,
+    canEditCustomers,
+    canDeleteCustomers,
+    canManageCustomers,
 
     canViewReports,
     canViewTotalCustomersReport,

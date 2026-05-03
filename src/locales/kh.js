@@ -282,6 +282,7 @@ export default {
     passwordMin: "លេខសម្ងាត់ត្រូវមានយ៉ាងហោចណាស់ ៬ តូ",
     emailRequired: "សូមបញ្ចូលអ៊ីមែលរបស់អ្នក",
     emailInvalid: "សូមបញ្ចូលអ៊ីមែលត្រឹមត្រូវ",
+    nameLength: "ឈ្មោះត្រូវតែមានចន្លោះពី ២ ទៅ ៥០ តួអក្សរ",
     verified: "បានផ្ទៀងផ្ទាត់",
     unverified: "មិនទានផ្ទៀងផ្ទាត់",
   },
@@ -932,7 +933,7 @@ export default {
     searchPermissions: "ស្វែងរកសិទ្ធិ...",
   },
 
-  // Settings
+  // Settings (Updated for profile page)
   settings: {
     title: "ការកំណត់",
     account: "គណនី",
@@ -1118,6 +1119,9 @@ export default {
     passwordsDoNotMatch: "លេខសម្ងាត់មិនត្រូវគ្នាទេ",
     photoUpdated: "ធ្វើបច្ចុប្បន្នភាពរូបភាពប្រវត្តិរូបបានជោគជ័យ",
     photoUploadFailed: "បរាជ័យក្នុងការផ្ទុកឡើងរូបភាពប្រវត្តិរូប",
+    avatarFormatError: "រូបភាពប្រវត្តិរូបត្រូវតែជាទម្រង់ JPG, PNG, ឬ WebP!",
+    avatarSizeError: "ទំហំរូបភាពប្រវត្តិរូបត្រូវតែតិចជាង 5MB!",
+    uploadFailed: "បរាជ័យក្នុងការផ្ទុកឡើង",
   },
 
   // Common Actions
@@ -1751,6 +1755,10 @@ export default {
     account: "ការកំណត់គណនី",
     personalInfo: "ព័ត៌មានផ្ទាល់ខ្លួន",
     personalInfoDesc: "ធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូប និងព័ត៌មានទំនាក់ទំនង",
+    profile: "ព័ត៌មានផ្ទាល់ខ្លួន",
+    profileDesc: "ធ្វើបច្ចុប្បន្នភាពឈ្មោះ អ៊ីមែល និងរូបភាពរបស់អ្នក",
+    accountSettings: "ការកំណត់គណនី",
+    manageAccount: "គ្រប់គ្រងការកំណត់គណនីរដ្ឋបាលរបស់អ្នក និងមើលប្រវត្តិសកម្មភាព។",
     privacySecurity: "ឯកជនភាព និងសុវត្ថិភាព",
     privacySecurityDesc: "គ្រប់គ្រងពាក្យសម្ងាត់ និងសុវត្ថិភាពរបស់អ្នក",
     activityHistory: "ប្រវត្តិនៃសកម្មភាព",
@@ -1765,6 +1773,10 @@ export default {
     darkMode: "ម៉ូដងងឹត",
     lightMode: "ម៉ូដពន្លឺ",
     themeDesc: "ផ្លាស់ប្តូររវាងម៉ូដពន្លឺ និងងងឹត",
+    changePassword: "ផ្លាស់ប្តូរលេខសម្ងាត់",
+    currentPassword: "លេខសម្ងាត់បច្ចុប្បន្ន",
+    newPassword: "លេខសម្ងាត់ថ្មី",
+    confirmPassword: "បញ្ជាក់លេខសម្ងាត់",
     telegramConnected: "Telegram ត្រូវបានភ្ជាប់",
     logoutConfirm: {
       title: "បញ្ជាក់ការចាកចេញ",

@@ -275,6 +275,7 @@ export default {
     passwordMin: "Password must be at least 6 characters",
     emailRequired: "Please input your email",
     emailInvalid: "Please input a valid email",
+    nameLength: "Name must be between 2 and 50 characters",
     verified: "Verified",
     unverified: "Unverified",
   },
@@ -926,7 +927,7 @@ export default {
     searchPermissions: "Search permissions...",
   },
 
-  // Settings
+  // Settings (Updated for profile page)
   settings: {
     title: "Settings",
     account: "Account Settings",
@@ -968,6 +969,14 @@ export default {
     updateError: "Failed to update settings. Please try again.",
     save: "Save",
     updateSuccess: "Profile updated successfully!",
+    changePassword: "Change Password",
+    currentPassword: "Current Password",
+    newPassword: "New Password",
+    confirmPassword: "Confirm Password",
+    updateProfile: "Update Profile",
+    memberSince: "Member Since",
+    noneProvided: "None Provided",
+    emailPlaceholder: "Enter your email",
     phonePlaceholder: "Enter your phone number",
     sharePhoneTip:
       "To enable automatic phone tracking, please open this app in the Telegram Mini App and choose 'Share Contact'.",
@@ -1106,6 +1115,9 @@ export default {
     passwordsDoNotMatch: "Passwords do not match",
     photoUpdated: "Profile photo updated successfully",
     photoUploadFailed: "Failed to upload profile photo",
+    avatarFormatError: "Avatar must be JPG, PNG, or WebP format!",
+    avatarSizeError: "Avatar size must be less than 5MB!",
+    uploadFailed: "Upload failed",
   },
 
   // Common Actions

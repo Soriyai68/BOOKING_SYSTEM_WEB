@@ -64,6 +64,8 @@ const adminRoutesChildren = [
     meta: {
       title: "Customers Management",
       titleKey: "customers.title",
+      requiresPermission: true,
+      permissions: ["customers.view"],
     },
   },
   {
@@ -73,6 +75,8 @@ const adminRoutesChildren = [
     meta: {
       title: "Create Customer",
       titleKey: "customers.createCustomer",
+      requiresPermission: true,
+      permissions: ["customers.create"],
     },
   },
   {
@@ -82,6 +86,8 @@ const adminRoutesChildren = [
     meta: {
       title: "Edit Customer",
       titleKey: "customers.editCustomer",
+      requiresPermission: true,
+      permissions: ["customers.edit"],
     },
   },
   {
@@ -91,6 +97,8 @@ const adminRoutesChildren = [
     meta: {
       title: "Customer Details",
       titleKey: "customers.customerDetails",
+      requiresPermission: true,
+      permissions: ["customers.view"],
     },
   },
 
